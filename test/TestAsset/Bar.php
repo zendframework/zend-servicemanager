@@ -8,12 +8,11 @@
  * @package   Zend_ServiceManager
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace ZendTest\ServiceManager\TestAsset;
 
-/**
- * @category   Zend
- * @package    Zend_ServiceManager
- * @subpackage Exception
- */
-class ServiceNotFoundException extends InvalidArgumentException
-{}
+class Bar
+{
+    public function __construct(array $foo) {
+    
+    }
+}

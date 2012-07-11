@@ -8,12 +8,16 @@
  * @package   Zend_ServiceManager
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace ZendTest\ServiceManager\TestAsset;
 
-/**
- * @category   Zend
- * @package    Zend_ServiceManager
- * @subpackage Exception
- */
-class ServiceNotFoundException extends InvalidArgumentException
-{}
+use Zend\ServiceManager\FactoryInterface,
+Zend\ServiceManager\ServiceLocatorInterface;
+
+class ExceptionThrowingFactory implements FactoryInterface
+{
+    public function createService(ServiceLocatorInterface $serviceLocator)
+    {
+        throw new FooException("A");
+        return new Foo;
+    }
+}
