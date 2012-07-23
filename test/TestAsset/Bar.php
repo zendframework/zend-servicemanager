@@ -10,13 +10,9 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-
-class FooFactory implements FactoryInterface
+class Bar
 {
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __construct(array $foo)
     {
-        return new Foo;
     }
 }
