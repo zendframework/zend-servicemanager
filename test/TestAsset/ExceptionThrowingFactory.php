@@ -13,10 +13,11 @@ namespace ZendTest\ServiceManager\TestAsset;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class FooFactory implements FactoryInterface
+class ExceptionThrowingFactory implements FactoryInterface
 {
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
+        throw new FooException("A");
         return new Foo;
     }
 }
