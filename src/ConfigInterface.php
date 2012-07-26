@@ -8,15 +8,9 @@
  * @package   Zend_ServiceManager
  */
 
-namespace ZendTest\ServiceManager\TestAsset;
+namespace Zend\ServiceManager;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-
-class FooFactory implements FactoryInterface
+interface ConfigInterface
 {
-    public function createService(ServiceLocatorInterface $serviceLocator)
-    {
-        return new Foo;
-    }
+    public function configureServiceManager(ServiceManager $serviceManager);
 }
