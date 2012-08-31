@@ -1,0 +1,31 @@
+{
+    "name": "zendframework/zend-servicemanager",
+    "description": " ",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "zf2",
+        "servicemanager"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Zend\\ServiceManager": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "suggest": {
+        "zendframework/zend-di": "Zend\\Di component"
+    },
+    "homepage": "https://github.com/zendframework/zend-service-manager",
+    "autoload-dev": {
+        "psr-4": {
+            "ZendTest\\ServiceManager\\": "test/"
+        }
+    },
+    "require-dev": {
+        "fabpot/php-cs-fixer": "1.7.*",
+        "satooshi/php-coveralls": "dev-master",
+        "phpunit/PHPUnit": "~4.0"
+    }
+}
