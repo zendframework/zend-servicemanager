@@ -13,17 +13,36 @@ namespace Zend\ServiceManager;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * @category Zend
- * @package  Zend_ServiceManager
+ * @category  Zend
+ * @package   Zend_ServiceManager
  */
-interface InitializerInterface
+trait ServiceLocatorAwareTrait
 {
     /**
-     * Initialize
+     * @var ServiceLocator
+     */
+    protected $serviceLocator = null;
+
+    /**
+     * Set service locator
      *
-     * @param $instance
      * @param ServiceLocatorInterface $serviceLocator
      * @return mixed
      */
-    public function initialize($instance, ServiceLocatorInterface $serviceLocator);
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+
+        return $this;
+    }
+
+    /**
+     * Get service locator
+     *
+     * @return ServiceLocator
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
 }

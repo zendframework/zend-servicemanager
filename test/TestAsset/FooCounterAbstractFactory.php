@@ -14,18 +14,31 @@ use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Class used to try to simulate a cyclic dependency in ServiceManager.
+ * Abstract factory that keeps track of the number of times it is instantiated
  */
-class CircularDependencyAbstractFactory implements AbstractFactoryInterface
+class FooCounterAbstractFactory implements AbstractFactoryInterface
 {
-    public $expectedInstance = 'a retrieved value';
+    /**
+     * @var int
+     */
+    public static $instantiationCount = 0;
+
+    /**
+     * Increments instantiation count
+     */
+    public function __construct()
+    {
+        self::$instantiationCount += 1;
+    }
 
     /**
      * {@inheritDoc}
      */
     public function canCreateServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
     {
-        return true;
+        if ($name == 'foo') {
+            return true;
+        }
     }
 
     /**
@@ -33,10 +46,6 @@ class CircularDependencyAbstractFactory implements AbstractFactoryInterface
      */
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
     {
-        if ($serviceLocator->has($name)) {
-            return $serviceLocator->get($name);
-        }
-
-        return $this->expectedInstance;
+        return new Foo;
     }
 }

@@ -8,13 +8,19 @@
  * @package   Zend_ServiceManager
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace Zend\ServiceManager;
 
 /**
- * @category   Zend
- * @package    Zend_ServiceManager
- * @subpackage Exception
+ * @category Zend
+ * @package  Zend_ServiceManager
  */
-class CircularDependencyFoundException extends RuntimeException
+interface ConfigInterface
 {
+    /**
+     * Configure service manager
+     *
+     * @param ServiceManager $serviceManager
+     * @return void
+     */
+    public function configureServiceManager(ServiceManager $serviceManager);
 }
