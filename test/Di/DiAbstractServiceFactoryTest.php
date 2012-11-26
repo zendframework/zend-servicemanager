@@ -1,10 +1,17 @@
 <?php
+/**
+ * Zend Framework (http://framework.zend.com/)
+ *
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_ServiceManager
+ */
 
 namespace ZendTest\ServiceManager\Di;
 
-use Zend\ServiceManager\Di\DiAbstractServiceFactory,
-    Zend\ServiceManager\ServiceManager,
-    Zend\ServiceManager\Di\DiInstanceManagerProxy;
+use Zend\ServiceManager\Di\DiAbstractServiceFactory;
+use Zend\ServiceManager\ServiceManager;
 
 class DiAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -78,7 +85,7 @@ class DiAbstractServiceFactoryTest extends \PHPUnit_Framework_TestCase
 
         // will check instance configurations
         $this->assertFalse($instance->canCreateServiceWithName($locator, __NAMESPACE__ . '\Non\Existing', __NAMESPACE__ . '\Non\Existing'));
-        $im->setConfiguration(__NAMESPACE__ . '\Non\Existing', array('parameters' => array('a' => 'b')));
+        $im->setConfig(__NAMESPACE__ . '\Non\Existing', array('parameters' => array('a' => 'b')));
         $this->assertTrue($instance->canCreateServiceWithName($locator, __NAMESPACE__ . '\Non\Existing', __NAMESPACE__ . '\Non\Existing'));
 
         // will check preferences for abstract types
