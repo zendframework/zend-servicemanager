@@ -13,16 +13,18 @@ namespace ZendTest\ServiceManager\TestAsset;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class FooAbstractFactory implements AbstractFactoryInterface
+class BarAbstractFactory implements AbstractFactoryInterface
 {
     public function canCreateServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
     {
-        if ($name == 'foo') {
-            return true;
+        if ($name != 'bar') {
+            return false;
         }
+        return true;
     }
+
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
     {
-        return new Foo;
+        return new Bar(array());
     }
 }

@@ -11,27 +11,16 @@
 namespace Zend\ServiceManager;
 
 /**
- * Service locator interface
- *
  * @category Zend
- * @package Zend_ServiceManager
+ * @package  Zend_ServiceManager
  */
-interface ServiceLocatorInterface
+interface ConfigInterface
 {
     /**
-     * Retrieve a registered instance
+     * Configure service manager
      *
-     * @param  string  $name
-     * @throws Exception\ServiceNotFoundException
-     * @return object|array
+     * @param ServiceManager $serviceManager
+     * @return void
      */
-    public function get($name);
-
-    /**
-     * Check for a registered instance
-     *
-     * @param  string|array  $name
-     * @return bool
-     */
-    public function has($name);
+    public function configureServiceManager(ServiceManager $serviceManager);
 }

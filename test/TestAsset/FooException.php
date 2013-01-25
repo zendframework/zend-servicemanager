@@ -8,13 +8,9 @@
  * @package   Zend_ServiceManager
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace ZendTest\ServiceManager\TestAsset;
 
-/**
- * @category   Zend
- * @package    Zend_ServiceManager
- * @subpackage Exception
- */
-class ServiceNotCreatedException extends RuntimeException
+
+class FooException extends \Exception
 {
 }
