@@ -13,16 +13,30 @@ namespace ZendTest\ServiceManager\TestAsset;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class FooAbstractFactory implements AbstractFactoryInterface
+/**
+ * Class used to try to simulate a cyclic dependency in ServiceManager.
+ */
+class CircularDependencyAbstractFactory implements AbstractFactoryInterface
 {
+    public $expectedInstance = 'a retrieved value';
+
+    /**
+     * {@inheritDoc}
+     */
     public function canCreateServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
     {
-        if ($name == 'foo') {
-            return true;
-        }
+        return true;
     }
+
+    /**
+     * {@inheritDoc}
+     */
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
     {
-        return new Foo;
+        if ($serviceLocator->has($name)) {
+            return $serviceLocator->get($name);
+        }
+
+        return $this->expectedInstance;
     }
 }

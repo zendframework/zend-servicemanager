@@ -10,19 +10,14 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-use Zend\ServiceManager\AbstractFactoryInterface;
+use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class FooAbstractFactory implements AbstractFactoryInterface
+class ExceptionThrowingFactory implements FactoryInterface
 {
-    public function canCreateServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        if ($name == 'foo') {
-            return true;
-        }
-    }
-    public function createServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
-    {
+        throw new FooException("A");
         return new Foo;
     }
 }

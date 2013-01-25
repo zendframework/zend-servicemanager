@@ -1,13 +1,25 @@
 <?php
+/**
+ * Zend Framework (http://framework.zend.com/)
+ *
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_ServiceManager
+ */
 
 namespace ZendTest\ServiceManager\Di;
 
-use Zend\ServiceManager\Di\DiServiceFactory,
-    Zend\ServiceManager\Di\DiInstanceManagerProxy;
+use Zend\Di\Di;
+use Zend\ServiceManager\Di\DiServiceFactory;
+use Zend\ServiceManager\ServiceManager;
 
 class DiServiceFactoryTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @var DiServiceFactory
+     */
     protected $diServiceFactory = null;
 
     /**@#+
