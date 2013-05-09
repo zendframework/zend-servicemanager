@@ -17,6 +17,12 @@
     "suggest": {
         "zendframework/zend-di": "Zend\\Di component"
     },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.2-dev",
+            "dev-develop": "2.3-dev"
+        }
+    },
     "homepage": "https://github.com/zendframework/zend-service-manager",
     "autoload-dev": {
         "psr-4": {
