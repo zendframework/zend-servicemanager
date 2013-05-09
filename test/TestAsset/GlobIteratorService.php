@@ -7,8 +7,11 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace ZendTest\ServiceManager\TestAsset;
 
-class ServiceNotCreatedException extends RuntimeException
+class GlobIteratorService extends \GlobIterator
 {
+    public function __construct()
+    {
+    }
 }

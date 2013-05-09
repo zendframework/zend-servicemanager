@@ -9,16 +9,13 @@
 
 namespace Zend\ServiceManager;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
-
-interface InitializerInterface
+interface MutableCreationOptionsInterface
 {
     /**
-     * Initialize
+     * Set creation options
      *
-     * @param $instance
-     * @param ServiceLocatorInterface $serviceLocator
-     * @return mixed
+     * @param  array $options
+     * @return void
      */
-    public function initialize($instance, ServiceLocatorInterface $serviceLocator);
+    public function setCreationOptions(array $options);
 }
