@@ -6,6 +6,7 @@
         "zf2",
         "servicemanager"
     ],
+    "homepage": "https://github.com/zendframework/zend-service-manager",
     "autoload": {
         "psr-4": {
             "Zend\\ServiceManager\\": "src/"
@@ -14,7 +15,14 @@
     "require": {
         "php": ">=5.3.3"
     },
+    "require-dev": {
+        "zendframework/zend-di": "self.version",
+        "fabpot/php-cs-fixer": "1.7.*",
+        "satooshi/php-coveralls": "dev-master",
+        "phpunit/PHPUnit": "~4.0"
+    },
     "suggest": {
+        "ocramius/proxy-manager": "ProxyManager 0.5.* to handle lazy initialization of services",
         "zendframework/zend-di": "Zend\\Di component"
     },
     "extra": {
@@ -23,15 +31,9 @@
             "dev-develop": "2.3-dev"
         }
     },
-    "homepage": "https://github.com/zendframework/zend-service-manager",
     "autoload-dev": {
         "psr-4": {
             "ZendTest\\ServiceManager\\": "test/"
         }
-    },
-    "require-dev": {
-        "fabpot/php-cs-fixer": "1.7.*",
-        "satooshi/php-coveralls": "dev-master",
-        "phpunit/PHPUnit": "~4.0"
     }
 }
