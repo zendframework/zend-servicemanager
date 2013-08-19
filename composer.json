@@ -14,12 +14,6 @@
     "require": {
         "php": ">=5.3.3"
     },
-    "require-dev": {
-        "zendframework/zend-di": "self.version",
-        "fabpot/php-cs-fixer": "1.7.*",
-        "satooshi/php-coveralls": "dev-master",
-        "phpunit/PHPUnit": "~4.0"
-    },
     "suggest": {
         "zendframework/zend-di": "Zend\\Di component"
     },
@@ -34,5 +28,10 @@
         "psr-4": {
             "ZendTest\\ServiceManager\\": "test/"
         }
+    },
+    "require-dev": {
+        "fabpot/php-cs-fixer": "1.7.*",
+        "satooshi/php-coveralls": "dev-master",
+        "phpunit/PHPUnit": "~4.0"
     }
 }
