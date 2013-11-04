@@ -7,18 +7,8 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager\TestAsset;
+namespace Zend\ServiceManager\Exception;
 
-use Zend\ServiceManager\AbstractPluginManager;
-use Zend\ServiceManager\Exception;
-
-class FooPluginManager extends AbstractPluginManager
+class CircularReferenceException extends RuntimeException
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function validatePlugin($plugin)
-    {
-        return;
-    }
 }
