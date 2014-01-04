@@ -7,15 +7,8 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager;
+namespace Zend\ServiceManager\Exception;
 
-interface ConfigInterface
+class CircularReferenceException extends RuntimeException
 {
-    /**
-     * Configure service manager
-     *
-     * @param ServiceManager $serviceManager
-     * @return void
-     */
-    public function configureServiceManager(ServiceManager $serviceManager);
 }
