@@ -9,7 +9,7 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-class Foo
+class FooFake
 {
 
 }
