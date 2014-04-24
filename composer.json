@@ -6,6 +6,7 @@
         "zf2",
         "servicemanager"
     ],
+    "homepage": "https://github.com/zendframework/zend-service-manager",
     "autoload": {
         "psr-4": {
             "Zend\\ServiceManager\\": "src/"
@@ -29,7 +30,6 @@
             "dev-develop": "2.4-dev"
         }
     },
-    "homepage": "https://github.com/zendframework/zend-service-manager",
     "autoload-dev": {
         "psr-4": {
             "ZendTest\\ServiceManager\\": "test/"
