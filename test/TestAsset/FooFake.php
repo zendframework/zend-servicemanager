@@ -7,15 +7,9 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager;
+namespace ZendTest\ServiceManager\TestAsset;
 
-interface ConfigInterface
+class FooFake
 {
-    /**
-     * Configure service manager
-     *
-     * @param ServiceManager $serviceManager
-     * @return void
-     */
-    public function configureServiceManager(ServiceManager $serviceManager);
+
 }
