@@ -9,22 +9,19 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-use stdClass;
-use Zend\ServiceManager\MutableCreationOptionsInterface;
+use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-/**
- * implements multiple interface invokable object mock
- */
-class CallableWithMutableCreationOptions implements MutableCreationOptionsInterface
+class FooFakeAbstractFactory implements AbstractFactoryInterface
 {
-    public function setCreationOptions(array $options)
+    public function canCreateServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
     {
-        $this->options = $options;
+        if ($name == 'foo') {
+            return true;
+        }
     }
-
-    public function __invoke(ServiceLocatorInterface $serviceLocator, $cName, $rName)
+    public function createServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
     {
-        return new stdClass;
+        return new FooFake;
     }
 }
