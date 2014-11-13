@@ -13,24 +13,30 @@ use stdClass;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class TrollAbstractFactory implements AbstractFactoryInterface
+class WaitingAbstractFactory implements AbstractFactoryInterface
 {
-    public $inexistingServiceCheckResult = null;
+    public $waitingService = null;
+
+    public $canCreateCallCount = 0;
+
+    public $createNullService = false;
+
+    public $throwExceptionWhenCreate = false;
 
     public function canCreateServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
     {
-        // Check if a non-existing service exists
-        $this->inexistingServiceCheckResult = $serviceLocator->has('NonExistingService');
-
-        if ($requestedName === 'SomethingThatCanBeCreated') {
-            return true;
-        }
-
-        return false;
+        $this->canCreateCallCount++;
+        return $requestedName === $this->waitingService;
     }
 
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
     {
+        if ($this->throwExceptionWhenCreate) {
+            throw new FooException('E');
+        }
+        if ($this->createNullService) {
+            return null;
+        }
         return new stdClass;
     }
 }
