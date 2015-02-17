@@ -3,14 +3,17 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
 namespace Zend\ServiceManager;
 
+use ReflectionClass;
+
 class ServiceManager implements ServiceLocatorInterface
 {
+
     /**@#+
      * Constants
      */
@@ -56,14 +59,14 @@ class ServiceManager implements ServiceLocatorInterface
     protected $pendingAbstractFactoryRequests = array();
 
     /**
-     * @var integer
+     * @var string
      */
-    protected $nestedContextCounter = -1;
+    protected $lastAbstractFactoryUsed = null;
 
     /**
-     * @var array
+     * @var string
      */
-    protected $nestedContext = array();
+    protected $lastCanonicalNameUsed   = null;
 
     /**
      * @var array
@@ -427,30 +430,6 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * @param  string $name
-     * @return bool
-     * @throws Exception\ServiceNotFoundException
-     */
-    public function isShared($name)
-    {
-        $cName = $this->canonicalizeName($name);
-
-        if (!$this->has($name)) {
-            throw new Exception\ServiceNotFoundException(sprintf(
-                '%s: A service by the name "%s" was not found',
-                get_class($this) . '::' . __FUNCTION__,
-                $name
-            ));
-        }
-
-        if (!isset($this->shared[$cName])) {
-            return $this->shareByDefault();
-        }
-        
-        return $this->shared[$cName];
-    }
-
-    /**
      * Resolve the alias for the given canonical name
      *
      * @param  string $cName The canonical name to resolve
@@ -515,7 +494,6 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         if (!$instance) {
-            $this->checkNestedContextStart($cName);
             if (
                 isset($this->invokableClasses[$cName])
                 || isset($this->factories[$cName])
@@ -534,12 +512,10 @@ class ServiceManager implements ServiceLocatorInterface
             } elseif ($usePeeringServiceManagers && !$this->retrieveFromPeeringManagerFirst) {
                 $instance = $this->retrieveFromPeeringManager($name);
             }
-            $this->checkNestedContextStop();
         }
 
         // Still no instance? raise an exception
         if ($instance === null) {
-            $this->checkNestedContextStop(true);
             if ($isAlias) {
                 throw new Exception\ServiceNotFoundException(sprintf(
                     'An alias "%s" was requested but no service could be found.',
@@ -636,14 +612,12 @@ class ServiceManager implements ServiceLocatorInterface
         if ($instance === null && isset($this->invokableClasses[$cName])) {
             $instance = $this->createFromInvokable($cName, $rName);
         }
-        $this->checkNestedContextStart($cName);
+
         if ($instance === null && $this->canCreateFromAbstractFactory($cName, $rName)) {
             $instance = $this->createFromAbstractFactory($cName, $rName);
         }
-        $this->checkNestedContextStop();
 
         if ($instance === null && $this->throwExceptionInCreate) {
-            $this->checkNestedContextStop(true);
             throw new Exception\ServiceNotFoundException(sprintf(
                 'No valid instance was found for %s%s',
                 $cName,
@@ -669,57 +643,65 @@ class ServiceManager implements ServiceLocatorInterface
 
     /**
      * Determine if we can create an instance.
-     * Proxies to has()
      *
      * @param  string|array $name
      * @param  bool         $checkAbstractFactories
      * @return bool
-     * @deprecated this method is being deprecated as of zendframework 2.3, and may be removed in future major versions
+     *
+     * @deprecated this method is being deprecated as of zendframework 2.2, and may be removed in future major versions
      */
     public function canCreate($name, $checkAbstractFactories = true)
     {
-        trigger_error(sprintf('%s is deprecated; please use %s::has', __METHOD__, __CLASS__), E_USER_DEPRECATED);
-        return $this->has($name, $checkAbstractFactories, false);
+        if (is_array($name)) {
+            list($cName, $rName) = $name;
+        } else {
+            $rName = $name;
+            $cName = $this->canonicalizeName($rName);
+        }
+
+        return (
+            isset($this->invokableClasses[$cName])
+            || isset($this->factories[$cName])
+            || isset($this->aliases[$cName])
+            || isset($this->instances[$cName])
+            || ($checkAbstractFactories && $this->canCreateFromAbstractFactory($cName, $rName))
+        );
     }
 
     /**
-     * Determine if an instance exists.
-     *
-     * @param  string|array  $name  An array argument accepts exactly two values.
-     *                              Example: array('canonicalName', 'requestName')
+     * @param  string|array  $name
      * @param  bool          $checkAbstractFactories
      * @param  bool          $usePeeringServiceManagers
      * @return bool
      */
     public function has($name, $checkAbstractFactories = true, $usePeeringServiceManagers = true)
     {
-        if (is_string($name)) {
+        if (is_array($name)) {
+            list($cName, $rName) = $name;
+        } else {
             $rName = $name;
 
             // inlined code from ServiceManager::canonicalizeName for performance
             if (isset($this->canonicalNames[$rName])) {
-                $cName = $this->canonicalNames[$rName];
+                $cName = $this->canonicalNames[$name];
             } else {
                 $cName = $this->canonicalizeName($name);
             }
-        } elseif (is_array($name) && count($name) >= 2) {
-            list($cName, $rName) = $name;
-        } else {
-            return false;
         }
 
-        if (isset($this->invokableClasses[$cName])
+        if (
+            isset($this->invokableClasses[$cName])
             || isset($this->factories[$cName])
             || isset($this->aliases[$cName])
             || isset($this->instances[$cName])
-            || ($checkAbstractFactories && $this->canCreateFromAbstractFactory($cName, $rName))
+            || ($checkAbstractFactories && $this->canCreateFromAbstractFactory($cName, $name))
         ) {
             return true;
         }
 
         if ($usePeeringServiceManagers) {
             foreach ($this->peeringServiceManagers as $peeringServiceManager) {
-                if ($peeringServiceManager->has($name)) {
+                if ($peeringServiceManager->has($rName)) {
                     return true;
                 }
             }
@@ -737,33 +719,33 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function canCreateFromAbstractFactory($cName, $rName)
     {
-        if (array_key_exists($cName, $this->nestedContext)) {
-            $context = $this->nestedContext[$cName];
-            if ($context === false) {
-                return false;
-            } elseif (is_object($context)) {
-                return !isset($this->pendingAbstractFactoryRequests[get_class($context).$cName]);
-            }
-        }
-        $this->checkNestedContextStart($cName);
         // check abstract factories
-        $result = false;
-        $this->nestedContext[$cName] = false;
         foreach ($this->abstractFactories as $abstractFactory) {
-            $pendingKey = get_class($abstractFactory).$cName;
-            if (isset($this->pendingAbstractFactoryRequests[$pendingKey])) {
-                $result = false;
-                break;
+            $factoryClass = get_class($abstractFactory);
+
+            if (
+                isset($this->pendingAbstractFactoryRequests[$factoryClass])
+                && $this->pendingAbstractFactoryRequests[$factoryClass] == $rName
+            ) {
+                return false;
             }
 
+            $objectHash = spl_object_hash($abstractFactory);
+
+            if ($this->lastAbstractFactoryUsed === $objectHash && $this->lastCanonicalNameUsed === $cName) {
+                $this->lastAbstractFactoryUsed = $this->lastCanonicalNameUsed = null;
+                return false;
+            }
+
+            $this->lastAbstractFactoryUsed = $objectHash;
+            $this->lastCanonicalNameUsed   = $cName;
+
             if ($abstractFactory->canCreateServiceWithName($this, $cName, $rName)) {
-                $this->nestedContext[$cName] = $abstractFactory;
-                $result = true;
-                break;
+                $this->lastAbstractFactoryUsed = $this->lastCanonicalNameUsed = null;
+                return true;
             }
         }
-        $this->checkNestedContextStop();
-        return $result;
+        return false;
     }
 
     /**
@@ -989,7 +971,6 @@ class ServiceManager implements ServiceLocatorInterface
     {
         foreach ($this->peeringServiceManagers as $peeringServiceManager) {
             if ($peeringServiceManager->has($name)) {
-                $this->shared[$name] = $peeringServiceManager->isShared($name);
                 return $peeringServiceManager->get($name);
             }
         }
@@ -1004,7 +985,6 @@ class ServiceManager implements ServiceLocatorInterface
 
         foreach ($this->peeringServiceManagers as $peeringServiceManager) {
             if ($peeringServiceManager->has($name)) {
-                $this->shared[$name] = $peeringServiceManager->isShared($name);
                 return $peeringServiceManager->get($name);
             }
         }
@@ -1075,21 +1055,31 @@ class ServiceManager implements ServiceLocatorInterface
      */
     protected function createFromAbstractFactory($canonicalName, $requestedName)
     {
-        if (isset($this->nestedContext[$canonicalName])) {
-            $abstractFactory = $this->nestedContext[$canonicalName];
-            $pendingKey = get_class($abstractFactory).$canonicalName;
-            try {
-                $this->pendingAbstractFactoryRequests[$pendingKey] = true;
-                $instance = $this->createServiceViaCallback(
-                    array($abstractFactory, 'createServiceWithName'),
+        foreach ($this->abstractFactories as $index => $abstractFactory) {
+            // support factories as strings
+            if (is_string($abstractFactory) && class_exists($abstractFactory, true)) {
+                $this->abstractFactories[$index] = $abstractFactory = new $abstractFactory;
+            } elseif (!$abstractFactory instanceof AbstractFactoryInterface) {
+                throw new Exception\ServiceNotCreatedException(sprintf(
+                    'While attempting to create %s%s an abstract factory could not produce a valid instance.',
                     $canonicalName,
-                    $requestedName
-                );
-                unset($this->pendingAbstractFactoryRequests[$pendingKey]);
-                return $instance;
+                    ($requestedName ? '(alias: ' . $requestedName . ')' : '')
+                ));
+            }
+            try {
+                if ($abstractFactory->canCreateServiceWithName($this, $canonicalName, $requestedName)) {
+                    $this->pendingAbstractFactoryRequests[get_class($abstractFactory)] = $requestedName;
+                    $instance = $this->createServiceViaCallback(
+                        array($abstractFactory, 'createServiceWithName'),
+                        $canonicalName,
+                        $requestedName
+                    );
+                    unset($this->pendingAbstractFactoryRequests[get_class($abstractFactory)]);
+                } else {
+                    $instance = null;
+                }
             } catch (\Exception $e) {
-                unset($this->pendingAbstractFactoryRequests[$pendingKey]);
-                $this->checkNestedContextStop(true);
+                unset($this->pendingAbstractFactoryRequests[get_class($abstractFactory)]);
                 throw new Exception\ServiceNotCreatedException(
                     sprintf(
                         'An abstract factory could not create an instance of %s%s.',
@@ -1100,42 +1090,10 @@ class ServiceManager implements ServiceLocatorInterface
                     $e
                 );
             }
+            if ($instance !== null) {
+                return $instance;
+            }
         }
-        return null;
-    }
-
-    /**
-     *
-     * @param string $cName
-     * @return self
-     */
-    protected function checkNestedContextStart($cName)
-    {
-        if ($this->nestedContextCounter === -1 || !isset($this->nestedContext[$cName])) {
-            $this->nestedContext[$cName] = null;
-        }
-        $this->nestedContextCounter++;
-        return $this;
-    }
-
-    /**
-     *
-     * @param bool $force
-     * @return self
-     */
-    protected function checkNestedContextStop($force = false)
-    {
-        if ($force) {
-            $this->nestedContextCounter = -1;
-            $this->nestedContext = array();
-            return $this;
-        }
-
-        $this->nestedContextCounter--;
-        if ($this->nestedContextCounter === -1) {
-            $this->nestedContext = array();
-        }
-        return $this;
     }
 
     /**
@@ -1153,6 +1111,7 @@ class ServiceManager implements ServiceLocatorInterface
         };
 
         for ($i = 0; $i < $delegatorsCount; $i += 1) {
+
             $delegatorFactory = $this->delegators[$canonicalName][$i];
 
             if (is_string($delegatorFactory)) {
@@ -1187,8 +1146,6 @@ class ServiceManager implements ServiceLocatorInterface
      * @see https://bugs.php.net/bug.php?id=53727
      * @see https://github.com/zendframework/zf2/pull/1807
      *
-     * @deprecated since zf 2.3 requires PHP >= 5.3.23
-     *
      * @param string $className
      * @param string $type
      * @return bool
@@ -1197,7 +1154,17 @@ class ServiceManager implements ServiceLocatorInterface
      */
     protected static function isSubclassOf($className, $type)
     {
-        return is_subclass_of($className, $type);
+        if (is_subclass_of($className, $type)) {
+            return true;
+        }
+        if (version_compare(PHP_VERSION, '5.3.7', '>=')) {
+            return false;
+        }
+        if (!interface_exists($type)) {
+            return false;
+        }
+        $r = new ReflectionClass($className);
+        return $r->implementsInterface($type);
     }
 
     /**
