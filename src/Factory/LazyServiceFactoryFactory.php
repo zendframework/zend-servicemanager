@@ -24,7 +24,7 @@ class LazyServiceFactoryFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ServiceLocatorInterface $serviceLocator, $className, array $options = [])
+    public function __invoke(ServiceLocatorInterface $serviceLocator, $requestedName, array $options = [])
     {
         // @TODO: in ZF3 we should have a FQCN key for config
 

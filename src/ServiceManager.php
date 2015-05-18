@@ -93,8 +93,9 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function get($name, array $options = [])
     {
-        // We start by checking if the service is cached (this is the fastest method)
-        if (isset($this->services[$name])) {
+        // We start by checking if the service is cached (this is the fastest method). If options is not empty, we
+        // never "share" because this could create unexpected behaviour
+        if (empty($options) && isset($this->services[$name])) {
             return $this->services[$name];
         }
 

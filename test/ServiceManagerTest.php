@@ -119,4 +119,21 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
         $object = $serviceManager->get(stdClass::class);
         $this->assertInstanceOf(stdClass::class, $object);
     }
+
+    public function testNeverShareIfOptionsArePassed()
+    {
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                stdClass::class => InvokableFactory::class
+            ],
+            'shared' => [
+                stdClass::class => true
+            ]
+        ]);
+
+        $object1 = $serviceManager->get(stdClass::class);
+        $object2 = $serviceManager->get(stdClass::class, ['foo' => 'bar']);
+
+        $this->assertNotSame($object1, $object2);
+    }
 }

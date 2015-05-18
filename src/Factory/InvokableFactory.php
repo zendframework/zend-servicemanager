@@ -19,8 +19,8 @@ final class InvokableFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ServiceLocatorInterface $serviceLocator, $className, array $options = [])
+    public function __invoke(ServiceLocatorInterface $serviceLocator, $requestedName, array $options = [])
     {
-        return new $className($options);
+        return new $requestedName($options);
     }
 }

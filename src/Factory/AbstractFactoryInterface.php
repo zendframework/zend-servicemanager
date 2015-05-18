@@ -22,8 +22,8 @@ interface AbstractFactoryInterface extends FactoryInterface
     /**
      * Can create the object?
      *
-     * @param  string $name
+     * @param  string $requestedName
      * @return bool
      */
-    public function canCreateServiceWithName($name);
+    public function canCreateServiceWithName($requestedName);
 }

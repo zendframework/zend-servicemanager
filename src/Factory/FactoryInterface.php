@@ -23,9 +23,9 @@ interface FactoryInterface
      * Create an object
      *
      * @param  ServiceLocatorInterface $serviceLocator
-     * @param  string                  $className
+     * @param  string                  $requestedName
      * @param  array                   $options
      * @return object
      */
-    public function __invoke(ServiceLocatorInterface $serviceLocator, $className, array $options = []);
+    public function __invoke(ServiceLocatorInterface $serviceLocator, $requestedName, array $options = []);
 }
