@@ -12,7 +12,7 @@ namespace Zend\ServiceManager\Factory;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Factory to create newable objects
+ * Factory to create newable classes
  */
 final class InvokableFactory implements FactoryInterface
 {
