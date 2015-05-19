@@ -18,9 +18,43 @@
 
 namespace ZendTest\ServiceManager\Factory;
 
+use Zend\ServiceManager\Factory\LazyServiceFactoryFactory;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\Exception\InvalidArgumentException;
+use ZendTest\ServiceManager\Asset\InvokableObject;
+
 class LazyServiceFactoryFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testToDo()
+    public function testExceptionThrownWhenLazyServiceConfigMissing()
     {
+        $serviceLocator = $this->getMock(ServiceLocatorInterface::class);
+        $factory        = new LazyServiceFactoryFactory();
+
+        $this->setExpectedException(
+            InvalidArgumentException::class,
+            'Missing "lazy_services" config key'
+        );
+
+        $object = $factory($serviceLocator, InvokableObject::class);
+    }
+
+    public function testExceptionThrownWhenLazyServiceConfigMissingClassMap()
+    {
+        $serviceLocator = $this->getMock(ServiceLocatorInterface::class);
+        $serviceLocator->expects($this->once())
+            ->method('get')
+            ->with('Config')
+            ->will($this->returnValue([
+                'lazy_services' => []
+            ]));
+
+        $factory = new LazyServiceFactoryFactory();
+
+        $this->setExpectedException(
+            InvalidArgumentException::class,
+            'Missing "class_map" config key in "lazy_services"'
+        );
+
+        $object = $factory($serviceLocator, InvokableObject::class);
     }
 }
