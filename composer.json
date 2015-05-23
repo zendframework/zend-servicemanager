@@ -16,7 +16,7 @@
         "php": ">=5.3.23"
     },
     "require-dev": {
-        "zendframework/zend-di": "self.version",
+        "zendframework/zend-di": "~2.4",
         "fabpot/php-cs-fixer": "1.7.*",
         "satooshi/php-coveralls": "dev-master",
         "phpunit/PHPUnit": "~4.0"
