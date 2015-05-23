@@ -6,7 +6,7 @@
         "zf2",
         "servicemanager"
     ],
-    "homepage": "https://github.com/zendframework/zend-service-manager",
+    "homepage": "https://github.com/zendframework/zend-servicemanager",
     "autoload": {
         "psr-4": {
             "Zend\\ServiceManager\\": "src/"
