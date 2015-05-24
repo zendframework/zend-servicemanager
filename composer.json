@@ -25,6 +25,8 @@
         "ocramius/proxy-manager": "ProxyManager 0.5.* to handle lazy initialization of services",
         "zendframework/zend-di": "Zend\\Di component"
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "extra": {
         "branch-alias": {
             "dev-master": "2.4-dev",
