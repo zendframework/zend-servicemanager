@@ -63,9 +63,9 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
     {
         parent::__construct($configuration);
         $self = $this;
-        $this->addInitializer(function ($instance) use ($self) {
+        $this->addInitializer(function ($instance) {
             if ($instance instanceof ServiceLocatorAwareInterface) {
-                $instance->setServiceLocator($self);
+                $instance->setServiceLocator($this);
             }
         });
     }
