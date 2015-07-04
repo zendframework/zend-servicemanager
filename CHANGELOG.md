@@ -130,6 +130,9 @@ class MyFactory implements FactoryInterface
 In practice, this should reduce code as dependencies often come from the main service locator, and not the plugin
 manager itself.
 
+- `PluginManager` now enforce the need for the main service locator in their constructor. In ZF2, people often forgot
+to set the parent locator, which leads to bugs in factories trying to fetch dependencies from the parent locator.
+
 - `MutableCreationOptionsInterface` has been removed, as options can now be passed directly through factories. (??)
 
 - `ServiceLocatorAwareInterface` and its associated trait has been removed. It was an anti-pattern, and you are encouraged
@@ -154,3 +157,39 @@ $sm = new \Zend\ServiceManager\ServiceManager([
 
 $sm->get(MyClassA::class); // MyFactory will receive MyClassA::class as second parameter
 ```
+
+- Writing a plugin manager has been simplified. If you have simple needs, you no longer need to implement the complete
+`validate` method.
+
+In ZF 2.x, if your plugin manager only accepts to create instances that implement `Zend\Validator\ValidatorInterface`,
+you needed to write this code:
+
+```php
+class MyPluginManager extends AbstractPluginManager
+{
+  public function validate($instance)
+  {
+    if ($instance instanceof \Zend\Validator\ValidatorInterface) {
+      return;
+    }
+
+    throw new InvalidServiceException(sprintf(
+      'Plugin manager "%s" expected an instance of type "%s", but "%s" was received',
+       __CLASS__,
+       \Zend\Validator\ValidatorInterface::class,
+       is_object($instance) ? get_class($instance) : gettype($instance)
+    ));
+  }
+}
+```
+
+In ZF 3.x:
+
+```php
+class MyPluginManager extends AbstractPluginManager
+{
+  protected $instanceOf = \Zend\Validator\ValidatorInterface::class;
+}
+```
+
+Of course, you can still override `validate` method if your logic is more complex.
