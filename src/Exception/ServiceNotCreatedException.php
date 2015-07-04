@@ -9,11 +9,11 @@
 
 namespace Zend\ServiceManager\Exception;
 
-use RuntimeException;
+use RuntimeException as SplRuntimeException;
 
 /**
  * ServiceNotCreatedException
  */
-class ServiceNotCreatedException extends RuntimeException implements ExceptionInterface
+class ServiceNotCreatedException extends SplRuntimeException implements ExceptionInterface
 {
 }

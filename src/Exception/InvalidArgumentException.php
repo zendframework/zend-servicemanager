@@ -9,11 +9,11 @@
 
 namespace Zend\ServiceManager\Exception;
 
-use InvalidArgumentException as BaseInvalidArgumentException;
+use InvalidArgumentException as SplInvalidArgumentException;
 
 /**
  * InvalidFactoryException
  */
-class InvalidArgumentException extends BaseInvalidArgumentException implements ExceptionInterface
+class InvalidArgumentException extends SplInvalidArgumentException implements ExceptionInterface
 {
 }

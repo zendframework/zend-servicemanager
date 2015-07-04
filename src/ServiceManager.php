@@ -45,6 +45,15 @@ class ServiceManager implements ServiceLocatorInterface
     protected $initializers = [];
 
     /**
+     * A list of aliases
+     *
+     * Should map one alias to a service name, or another alias (aliases are recursively resolved)
+     *
+     * @var array
+     */
+    protected $aliases = [];
+
+    /**
      * A list of already loaded services (this act as a local cache)
      *
      * @var array
@@ -93,20 +102,21 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function get($name, array $options = [])
     {
+        $name = $this->resolveAlias($name);
+
         // We start by checking if the service is cached (this is the fastest method). If options is not empty, we
         // never "share" because this could create unexpected behaviour
         if (empty($options) && isset($this->services[$name])) {
             return $this->services[$name];
         }
 
-        // Let's create the service by fetching the factory
-        $factory = $this->getFactory($name);
-
         try {
             if (!isset($this->delegators[$name])) {
-                $object = $factory($this->creationContext, $name, $options);
+                // Let's create the service by fetching the factory
+                $factory = $this->getFactory($name);
+                $object  = $factory($this->creationContext, $name, $options);
             } else {
-                $object = $this->createDelegatorFromFactory($name, $options);
+                $object = $this->createDelegatorFromName($name, $options);
             }
         } catch (Exception $exception) {
             throw new ServiceNotCreatedException(sprintf(
@@ -133,6 +143,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function has($name, $checkAbstractFactories = false)
     {
+        $name  = $this->resolveAlias($name);
         $found = isset($this->services[$name]) || isset($this->factories[$name]);
 
         if ($found || !$checkAbstractFactories) {
@@ -187,7 +198,7 @@ class ServiceManager implements ServiceLocatorInterface
      * @param  array  $options
      * @return object
      */
-    protected function createDelegatorFromFactory($name, array $options = [])
+    protected function createDelegatorFromName($name, array $options = [])
     {
         $delegatorsCount  = count($this->delegators[$name]);
         $creationCallback = function() use ($name, $options) {
@@ -229,6 +240,7 @@ class ServiceManager implements ServiceLocatorInterface
         $this->factories       = isset($config['factories']) ? $config['factories'] : [];
         $this->delegators      = isset($config['delegators']) ? $config['delegators'] : [];
         $this->shared          = isset($config['shared']) ? $config['shared'] : [];
+        $this->aliases         = isset($config['aliases']) ? $config['aliases'] : [];
         $this->sharedByDefault = isset($config['shared_by_default']) ? $config['shared_by_default'] : $this->sharedByDefault;
 
         // For abstract factories and initializers, we always directly instantiate them to avoid checks during construction
@@ -271,5 +283,23 @@ class ServiceManager implements ServiceLocatorInterface
                 ));
             }
         }
+    }
+
+    /**
+     * Recursively resolve an alias name to a service name
+     *
+     * @param  string $alias
+     * @return string
+     */
+    private function resolveAlias($alias)
+    {
+        $name = $alias;
+
+        do {
+            $canBeResolved = isset($this->aliases[$name]);
+            $name          = $canBeResolved ? $this->aliases[$name] : $name;
+        } while ($canBeResolved);
+
+        return $name;
     }
 }

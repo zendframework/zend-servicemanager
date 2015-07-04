@@ -3,10 +3,11 @@
     "description": " ",
     "license": "BSD-3-Clause",
     "keywords": [
-        "zf3",
-        "servicemanager"
+        "zf",
+        "servicemanager",
+        "service-manager"
     ],
-    "homepage": "https://github.com/zendframework/zend-service-manager",
+    "homepage": "https://github.com/zendframework/zend-servicemanager",
     "autoload": {
         "psr-4": {
             "Zend\\ServiceManager\\": "src/"

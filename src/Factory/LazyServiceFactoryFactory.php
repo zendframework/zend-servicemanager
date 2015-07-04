@@ -26,8 +26,6 @@ class LazyServiceFactoryFactory implements FactoryInterface
      */
     public function __invoke(ServiceLocatorInterface $serviceLocator, $requestedName, array $options = [])
     {
-        // @TODO: in ZF3 we should have a FQCN key for config
-
         $config = $serviceLocator->get('Config');
 
         if (!isset($config['lazy_services'])) {
