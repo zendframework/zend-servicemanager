@@ -9,10 +9,12 @@
 
 namespace Zend\ServiceManager;
 
+use Interop\Container\ContainerInterface;
+
 /**
  * Interface for service locator
  */
-interface ServiceLocatorInterface 
+interface ServiceLocatorInterface extends ContainerInterface
 {
     /**
      * Retrieve a service by its name, with optional options
