@@ -34,6 +34,12 @@ class ServiceManagerTest extends TestCase
         $this->serviceManager = new ServiceManager;
     }
 
+    public function testInteroperabilityInterface()
+    {
+        $serviceManager = new ServiceManager();
+        $this->assertInstanceOf("Interop\Container\ContainerInterface", $serviceManager);
+    }
+
     /**
      * @covers Zend\ServiceManager\ServiceManager::__construct
      */
