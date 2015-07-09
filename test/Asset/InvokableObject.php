@@ -7,13 +7,20 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace ZendTest\ServiceManager\Asset;
 
-use InvalidArgumentException as SplInvalidArgumentException;
-
-/**
- * InvalidFactoryException
- */
-class InvalidArgumentException extends SplInvalidArgumentException implements ExceptionInterface
+class InvokableObject
 {
+    /**
+     * @var array
+     */
+    public $options;
+
+    /**
+     * @param array $options
+     */
+    public function __construct(array $options = [])
+    {
+        $this->options = $options;
+    }
 }

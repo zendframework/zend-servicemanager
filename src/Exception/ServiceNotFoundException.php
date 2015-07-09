@@ -9,6 +9,12 @@
 
 namespace Zend\ServiceManager\Exception;
 
-class ServiceNotFoundException extends InvalidArgumentException
+use Interop\Container\Exception\NotFoundException;
+use InvalidArgumentException as SplInvalidArgumentException;
+
+/**
+ * ServiceNotFoundException
+ */
+class ServiceNotFoundException extends SplInvalidArgumentException implements ExceptionInterface, NotFoundException
 {
 }

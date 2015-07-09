@@ -9,11 +9,14 @@
 
 namespace Zend\ServiceManager\Exception;
 
-use InvalidArgumentException as SplInvalidArgumentException;
+use RuntimeException as SplRuntimeException;
 
 /**
- * InvalidFactoryException
+ * InvalidServiceException
+ *
+ * This exception is triggered by plugin managers when the created object does not match
+ * the plugin manager's conditions
  */
-class InvalidArgumentException extends SplInvalidArgumentException implements ExceptionInterface
+class InvalidServiceException extends SplRuntimeException implements ExceptionInterface
 {
 }

@@ -1,7 +1,5 @@
 <?php
 $finder = Symfony\CS\Finder\DefaultFinder::create()
-    ->in('src')
-    ->in('test')
     ->notPath('TestAsset')
     ->notPath('_files')
     ->filter(function (SplFileInfo $file) {
@@ -31,8 +29,8 @@ $config->fixers(
         'method_argument_space',
         'object_operator',
         'php_closing_tag',
+        'psr0',
         'remove_lines_between_uses',
-        'short_array_syntax',
         'short_tag',
         'standardize_not_equal',
         'trailing_spaces',
