@@ -231,6 +231,7 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
      *      - factories: a list of key value that map a service name with a factory
      *      - abstract_factories: a list of object or string of abstract factories
      *      - shared: a list of key value that map a service name to a boolean
+     *      - aliases: a list of key value that map an alias to a service name (or to another alias)
      *      - shared_by_default: boolean
      *
      * @param  array $config
