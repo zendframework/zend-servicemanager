@@ -27,6 +27,10 @@ class SimpleAbstractFactory implements AbstractFactoryInterface
      */
     public function __invoke(ServiceLocatorInterface $serviceLocator, $className, array $options = [])
     {
+        if (empty($options)) {
+            return new $className();
+        }
+
         return new $className($options);
     }
 }

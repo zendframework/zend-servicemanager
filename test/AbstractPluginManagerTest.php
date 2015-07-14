@@ -47,7 +47,7 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
         $config = [
             'factories' => [
                 InvokableObject::class => new InvokableFactory(),
-                stdClass::class          => new InvokableFactory()
+                stdClass::class        => new InvokableFactory()
             ]
         ];
 

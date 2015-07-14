@@ -9,11 +9,16 @@
 
 namespace ZendTest\ServiceManager;
 
+use DateTime;
 use stdClass;
+use Zend\ServiceManager\Exception\ServiceNotCreatedException;
+use Zend\ServiceManager\Initializer\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
+use ZendTest\ServiceManager\Asset\FailingFactory;
 use ZendTest\ServiceManager\Asset\InvokableObject;
+use ZendTest\ServiceManager\Asset\SimpleAbstractFactory;
 
 class ServiceManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -110,6 +115,17 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(stdClass::class, $object);
     }
 
+    public function testCanCreateServiceWithAbstractFactory()
+    {
+        $serviceManager = new ServiceManager([
+            'abstract_factories' => [
+                new SimpleAbstractFactory()
+            ]
+        ]);
+
+        $serviceManager->get(DateTime::class);
+    }
+
     public function testCanCreateServiceWithAlias()
     {
         $serviceManager = new ServiceManager([
@@ -129,6 +145,33 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($serviceManager->has('baz'));
     }
 
+    public function testCanCheckServiceExistenceWithoutCheckingAbstractFactories()
+    {
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                stdClass::class => InvokableFactory::class
+            ]
+        ]);
+
+        $this->assertTrue($serviceManager->has(stdClass::class));
+        $this->assertFalse($serviceManager->has(DateTime::class));
+    }
+
+    public function testCanCheckServiceExistenceWithCheckingAbstractFactories()
+    {
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                stdClass::class => InvokableFactory::class
+            ],
+            'abstract_factories' => [
+                new SimpleAbstractFactory() // This one always return true
+            ]
+        ]);
+
+        $this->assertTrue($serviceManager->has(stdClass::class, true));
+        $this->assertTrue($serviceManager->has(DateTime::class, true));
+    }
+
     public function testNeverShareIfOptionsArePassed()
     {
         $serviceManager = new ServiceManager([
@@ -144,5 +187,41 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
         $object2 = $serviceManager->get(stdClass::class, ['foo' => 'bar']);
 
         $this->assertNotSame($object1, $object2);
+    }
+
+    public function testInitializersAreRunAfterCreation()
+    {
+        $initializer = $this->getMock(InitializerInterface::class);
+
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                stdClass::class => InvokableFactory::class
+            ],
+            'initializers' => [
+                $initializer
+            ]
+        ]);
+
+        $initializer->expects($this->once())
+                    ->method('__invoke')
+                    ->with($serviceManager, $this->isInstanceOf(stdClass::class));
+
+        // We call it twice to make sure that the initializer is only called once
+
+        $serviceManager->get(stdClass::class);
+        $serviceManager->get(stdClass::class);
+    }
+
+    public function testThrowExceptionIfServiceCannotBeCreated()
+    {
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                stdClass::class => FailingFactory::class
+            ]
+        ]);
+
+        $this->setExpectedException(ServiceNotCreatedException::class);
+
+        $serviceManager->get(stdClass::class);
     }
 }
