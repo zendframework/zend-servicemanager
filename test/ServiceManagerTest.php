@@ -14,7 +14,6 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\Asset\InvokableObject;
-use ZendTest\ServiceManager\Asset\SimpleAbstractFactory;
 
 class ServiceManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -109,6 +108,25 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
 
         $object = $serviceManager->get(stdClass::class);
         $this->assertInstanceOf(stdClass::class, $object);
+    }
+
+    public function testCanCreateServiceWithAlias()
+    {
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                InvokableObject::class => InvokableFactory::class
+            ],
+            'aliases' => [
+                'foo' => InvokableObject::class,
+                'bar' => 'foo'
+            ]
+        ]);
+
+        $object = $serviceManager->get('bar');
+
+        $this->assertInstanceOf(InvokableObject::class, $object);
+        $this->assertTrue($serviceManager->has('bar'));
+        $this->assertFalse($serviceManager->has('baz'));
     }
 
     public function testNeverShareIfOptionsArePassed()
