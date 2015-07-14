@@ -13,7 +13,6 @@ matrix:
     - php: 7
     - php: hhvm 
   allow_failures:
-    - php: 7
     - php: hhvm
 
 notifications:
@@ -27,8 +26,8 @@ install:
   - composer install --no-interaction --prefer-source
 
 script:
-  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then ./vendor/bin/phpunit -c phpunit.xml.travis --coverage-clover clover.xml ; fi
-  - if [[ $EXECUTE_TEST_COVERALLS != 'true' ]]; then ./vendor/bin/phpunit -c phpunit.xml.travis ; fi
+  - if [[ $EXECUTE_TEST_COVERALLS == 'true' ]]; then ./vendor/bin/phpunit --coverage-clover clover.xml ; fi
+  - if [[ $EXECUTE_TEST_COVERALLS != 'true' ]]; then ./vendor/bin/phpunit ; fi
   - if [[ $EXECUTE_CS_CHECK == 'true' ]]; then ./vendor/bin/php-cs-fixer fix -v --diff --dry-run --config-file=.php_cs ; fi
 
 after_script:
