@@ -7,13 +7,11 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace ZendTest\ServiceManager\TestAsset;
 
-use RuntimeException as SplRuntimeException;
+use Zend\ServiceManager\AbstractPluginManager;
 
-/**
- * ServiceNotCreatedException
- */
-class ServiceNotCreatedException extends SplRuntimeException implements ExceptionInterface
+class SimplePluginManager extends AbstractPluginManager
 {
+    protected $instanceOf = InvokableObject::class;
 }

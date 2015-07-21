@@ -7,13 +7,20 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace ZendTest\ServiceManager\TestAsset;
 
-use RuntimeException as SplRuntimeException;
-
-/**
- * ServiceNotCreatedException
- */
-class ServiceNotCreatedException extends SplRuntimeException implements ExceptionInterface
+class InvokableObject
 {
+    /**
+     * @var array
+     */
+    public $options;
+
+    /**
+     * @param array $options
+     */
+    public function __construct(array $options = [])
+    {
+        $this->options = $options;
+    }
 }
