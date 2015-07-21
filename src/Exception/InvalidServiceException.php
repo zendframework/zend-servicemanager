@@ -12,8 +12,11 @@ namespace Zend\ServiceManager\Exception;
 use RuntimeException as SplRuntimeException;
 
 /**
- * ServiceNotCreatedException
+ * InvalidServiceException
+ *
+ * This exception is triggered by plugin managers when the created object does not match
+ * the plugin manager's conditions
  */
-class ServiceNotCreatedException extends SplRuntimeException implements ExceptionInterface
+class InvalidServiceException extends SplRuntimeException implements ExceptionInterface
 {
 }
