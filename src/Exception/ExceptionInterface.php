@@ -9,6 +9,11 @@
 
 namespace Zend\ServiceManager\Exception;
 
-interface ExceptionInterface
+use Interop\Container\Exception\ContainerException;
+
+/**
+ * Base exception
+ */
+interface ExceptionInterface extends ContainerException
 {
 }
