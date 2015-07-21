@@ -12,6 +12,7 @@ namespace ZendTest\ServiceManager;
 use DateTime;
 use stdClass;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
+use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
@@ -19,6 +20,7 @@ use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\Asset\FailingFactory;
 use ZendTest\ServiceManager\Asset\InvokableObject;
 use ZendTest\ServiceManager\Asset\SimpleAbstractFactory;
+use ZendTest\ServiceManager\Asset\SimpleServiceManager;
 
 class ServiceManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -221,6 +223,33 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->setExpectedException(ServiceNotCreatedException::class);
+
+        $serviceManager->get(stdClass::class);
+    }
+
+    public function testConfigurationCanBeMerged()
+    {
+        $serviceManager = new SimpleServiceManager([
+            'factories' => [
+                DateTime::class => InvokableFactory::class
+            ]
+        ]);
+
+        $this->assertTrue($serviceManager->has(DateTime::class));
+        $this->assertTrue($serviceManager->has(stdClass::class));
+    }
+
+    public function testConfigurationTakesPrecedenceWhenMerged()
+    {
+        $factory = $this->getMock(FactoryInterface::class);
+
+        $factory->expects($this->once())->method('__invoke');
+
+        $serviceManager = new SimpleServiceManager([
+            'factories' => [
+                stdClass::class => $factory
+            ]
+        ]);
 
         $serviceManager->get(stdClass::class);
     }

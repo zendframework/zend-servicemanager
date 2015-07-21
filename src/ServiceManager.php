@@ -230,6 +230,7 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
      *
      *      - factories: a list of key value that map a service name with a factory
      *      - abstract_factories: a list of object or string of abstract factories
+     *      - delegators: a list of services map to one or more delegators
      *      - shared: a list of key value that map a service name to a boolean
      *      - aliases: a list of key value that map an alias to a service name (or to another alias)
      *      - shared_by_default: boolean
@@ -239,10 +240,10 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
      */
     protected function configure(array $config)
     {
-        $this->factories       = isset($config['factories']) ? $config['factories'] : [];
-        $this->delegators      = isset($config['delegators']) ? $config['delegators'] : [];
-        $this->shared          = isset($config['shared']) ? $config['shared'] : [];
-        $this->aliases         = isset($config['aliases']) ? $config['aliases'] : [];
+        $this->factories       = (isset($config['factories']) ? $config['factories'] : []) + $this->factories;
+        $this->delegators      = array_merge_recursive($this->delegators, isset($config['delegators']) ? $config['delegators'] : []);
+        $this->shared          = (isset($config['shared']) ? $config['shared'] : []) + $this->shared;
+        $this->aliases         = (isset($config['aliases']) ? $config['aliases'] : []) + $this->aliases;
         $this->sharedByDefault = isset($config['shared_by_default']) ? $config['shared_by_default'] : $this->sharedByDefault;
 
         // For abstract factories and initializers, we always directly instantiate them to avoid checks during construction
