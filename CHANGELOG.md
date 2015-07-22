@@ -15,10 +15,11 @@ All notable changes to this project will be documented in this file, in reverse 
   
   ```php
   $sm = new \Zend\ServiceManager\ServiceManager([
-    'factories'  => [
-      MyClassA::class => MyFactory::class,
-      MyClassB::class => MyFactory::class
-    ]
+      'factories'  => [
+          MyClassA::class => MyFactory::class,
+          MyClassB::class => MyFactory::class,
+          'MyClassC'      => 'MyFactory' // This is equivalent as using ::class
+      ],
   ]);
   
   $sm->get(MyClassA::class); // MyFactory will receive MyClassA::class as second parameter
@@ -53,9 +54,12 @@ All notable changes to this project will be documented in this file, in reverse 
   In version 3, this becomes:
   
   ```php
+  use Zend\ServiceManager\AbstractPluginManager;
+  use Zend\Validator\ValidatorInterface;
+  
   class MyPluginManager extends AbstractPluginManager
   {
-    protected $instanceOf = \Zend\Validator\ValidatorInterface::class;
+      protected $instanceOf = ValidatorInterface::class;
   }
   ```
   
@@ -137,7 +141,7 @@ changes, outlined in this section.
 - The ServiceManager is now immutable. Once configured, it cannot be altered.
   You need to create a new service manager if you need to change the
   configuration. This ensures safer and more aggressive caching. A new method,
-  `withConfig()` allows you to create a new instance that merges the provided
+  `withConfig()`, allows you to create a new instance that merges the provided
   configuration.
 
 - Interfaces for `FactoryInterface`, `DelegatorFactoryInterface` and
