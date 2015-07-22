@@ -7,27 +7,24 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Proxy;
+namespace Zend\ServiceManager\Factory;
 
-use ProxyManager\Configuration;
+use ProxyManager\Configuration as ProxyConfiguration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\Exception;
+use Zend\ServiceManager\Proxy\LazyServiceFactory;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Service factory responsible of instantiating {@see \Zend\ServiceManager\Proxy\LazyServiceFactory}
- * and configuring it starting from application configuration
+ * Factory to create a lazy factory
  */
 class LazyServiceFactoryFactory implements FactoryInterface
 {
     /**
      * {@inheritDoc}
-     *
-     * @return \Zend\ServiceManager\Proxy\LazyServiceFactory
      */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ServiceLocatorInterface $serviceLocator, $requestedName, array $options = [])
     {
         $config = $serviceLocator->get('Config');
 
@@ -41,7 +38,7 @@ class LazyServiceFactoryFactory implements FactoryInterface
             throw new Exception\InvalidArgumentException('Missing "class_map" config key in "lazy_services"');
         }
 
-        $factoryConfig = new Configuration();
+        $factoryConfig = new ProxyConfiguration();
 
         if (isset($lazyServices['proxies_namespace'])) {
             $factoryConfig->setProxiesNamespace($lazyServices['proxies_namespace']);
@@ -51,7 +48,7 @@ class LazyServiceFactoryFactory implements FactoryInterface
             $factoryConfig->setProxiesTargetDir($lazyServices['proxies_target_dir']);
         }
 
-        if (!isset($lazyServices['write_proxy_files']) || ! $lazyServices['write_proxy_files']) {
+        if (!isset($lazyServices['write_proxy_files']) || !$lazyServices['write_proxy_files']) {
             $factoryConfig->setGeneratorStrategy(new EvaluatingGeneratorStrategy());
         }
 

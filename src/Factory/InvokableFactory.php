@@ -7,16 +7,20 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager\TestAsset;
+namespace Zend\ServiceManager\Factory;
 
-use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class ExceptionThrowingFactory implements FactoryInterface
+/**
+ * Factory to create newable classes
+ */
+final class InvokableFactory implements FactoryInterface
 {
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    /**
+     * {@inheritDoc}
+     */
+    public function __invoke(ServiceLocatorInterface $serviceLocator, $requestedName, array $options = [])
     {
-        throw new FooException("A");
-        return new Foo;
+        return new $requestedName($options);
     }
 }

@@ -9,7 +9,18 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-
-class FooException extends \Exception
+class InvokableObject
 {
+    /**
+     * @var array
+     */
+    public $options;
+
+    /**
+     * @param array $options
+     */
+    public function __construct(array $options = [])
+    {
+        $this->options = $options;
+    }
 }

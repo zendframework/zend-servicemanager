@@ -7,15 +7,14 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager;
+namespace ZendTest\ServiceManager\TestAsset;
 
-interface FactoryInterface
+class FactoryObject
 {
-    /**
-     * Create service
-     *
-     * @param ServiceLocatorInterface $serviceLocator
-     * @return mixed
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator);
+    public $dependency;
+
+    public function __construct($dependency)
+    {
+        $this->dependency = $dependency;
+    }
 }

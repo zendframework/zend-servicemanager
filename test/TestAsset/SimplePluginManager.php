@@ -9,7 +9,9 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-class FooFake
-{
+use Zend\ServiceManager\AbstractPluginManager;
 
+class SimplePluginManager extends AbstractPluginManager
+{
+    protected $instanceOf = InvokableObject::class;
 }

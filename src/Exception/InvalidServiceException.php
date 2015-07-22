@@ -7,14 +7,14 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager;
+namespace Zend\ServiceManager\Exception;
 
-interface ServiceManagerAwareInterface
+use RuntimeException as SplRuntimeException;
+
+/**
+ * This exception is thrown by plugin managers when the created object does not match
+ * the plugin manager's conditions
+ */
+class InvalidServiceException extends SplRuntimeException implements ExceptionInterface
 {
-    /**
-     * Set service manager
-     *
-     * @param ServiceManager $serviceManager
-     */
-    public function setServiceManager(ServiceManager $serviceManager);
 }

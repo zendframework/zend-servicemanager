@@ -9,6 +9,11 @@
 
 namespace Zend\ServiceManager\Exception;
 
-class ServiceNotCreatedException extends RuntimeException
+use RuntimeException as SplRuntimeException;
+
+/**
+ * This exception is thrown when the service locator do not manage to create the service (factory that has an error...)
+ */
+class ServiceNotCreatedException extends SplRuntimeException implements ExceptionInterface
 {
 }

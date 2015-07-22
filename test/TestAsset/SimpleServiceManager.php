@@ -7,8 +7,15 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace ZendTest\ServiceManager\TestAsset;
 
-class CircularReferenceException extends RuntimeException
+use stdClass;
+use Zend\ServiceManager\Factory\InvokableFactory;
+use Zend\ServiceManager\ServiceManager;
+
+class SimpleServiceManager extends ServiceManager
 {
+    protected $factories = [
+        stdClass::class => InvokableFactory::class
+    ];
 }
