@@ -12,11 +12,12 @@ by the `FactoryInterface` interface. Now, this interface receives the `$requeste
 Example:
 
 ```php
-$sm = new \Zend\ServiceManager\ServiceManager([
-  'factories'  => [
-    MyClassA::class => MyFactory::class,
-    MyClassB::class => MyFactory::class
-  ]
+$sm = new Zend\ServiceManager\ServiceManager([
+    'factories'  => [
+        MyClassA::class => MyFactory::class,
+        MyClassB::class => MyFactory::class,
+        'MyClassC'      => 'MyFactory' // This is equivalent as using ::class
+    ]
 ]);
 
 $sm->get(MyClassA::class); // MyFactory will receive MyClassA::class as second parameter
@@ -31,28 +32,31 @@ you needed to write this code:
 ```php
 class MyPluginManager extends AbstractPluginManager
 {
-  public function validate($instance)
-  {
-    if ($instance instanceof \Zend\Validator\ValidatorInterface) {
-      return;
-    }
+    public function validate($instance)
+    {
+        if ($instance instanceof \Zend\Validator\ValidatorInterface) {
+            return;
+        }
 
-    throw new InvalidServiceException(sprintf(
-      'Plugin manager "%s" expected an instance of type "%s", but "%s" was received',
-       __CLASS__,
-       \Zend\Validator\ValidatorInterface::class,
-       is_object($instance) ? get_class($instance) : gettype($instance)
-    ));
-  }
+        throw new InvalidServiceException(sprintf(
+            'Plugin manager "%s" expected an instance of type "%s", but "%s" was received',
+            __CLASS__,
+            Zend\Validator\ValidatorInterface::class,
+            is_object($instance) ? get_class($instance) : gettype($instance)
+        ));
+    }
 }
 ```
 
 In ZF 3.x:
 
 ```php
+use Zend\ServiceManager\AbstractPluginManager;
+use Zend\Validator\ValidatorInterface;
+
 class MyPluginManager extends AbstractPluginManager
 {
-  protected $instanceOf = \Zend\Validator\ValidatorInterface::class;
+    protected $instanceOf = ValidatorInterface::class;
 }
 ```
 
@@ -74,23 +78,25 @@ In ZF 2.x:
 
 ```php
 return [
-  'service_manager' => [
-    'invokables' => [
-      MyClass::class => MyClass:class
+    'service_manager' => [
+        'invokables' => [
+            MyClass::class => MyClass::class
+        ]
     ]
-  ]
 ];
 ```
 
 In ZF 3.x:
 
 ```php
+use Zend\ServiceManager\Factory\InvokableFactory;
+
 return [
-  'service_manager' => [
-    'factories' => [
-      MyClass::class => \Zend\ServiceManager\Factory\InvokableFactory:class
+    'service_manager' => [
+        'factories' => [
+            MyClass::class => InvokableFactory::class
+        ]
     ]
-  ]
 ];
 ```
 
@@ -110,8 +116,8 @@ simply pass an array.
 In ZF 2.x:
 
 ```php
-$config = new \Zend\ServiceManager\Config([
-  'factories'  => [...]
+$config = new Zend\ServiceManager\Config([
+    'factories'  => [...]
 ]);
 
 $sm = new \Zend\ServiceManager\ServiceManager($config);
@@ -120,8 +126,8 @@ $sm = new \Zend\ServiceManager\ServiceManager($config);
 In ZF 3.x:
 
 ```php
-$sm = new \Zend\ServiceManager\ServiceManager([
-  'factories'  => [...]
+$sm = new Zend\ServiceManager\ServiceManager([
+    'factories'  => [...]
 ]);
 ```
 
@@ -137,10 +143,10 @@ For instance, here is a simple ZF 2.x factory:
 ```php
 class MyFactory implements FactoryInterface
 {
-  function createService(ServiceLocatorInterface $sl)
-  {
-    // ...
-  }
+    function createService(ServiceLocatorInterface $sl)
+    {
+        // ...
+    }
 }
 ```
 
@@ -149,10 +155,10 @@ The equivalent ZF 3.x factory:
 ```php
 class MyFactory implements FactoryInterface
 {
-  function __invoke(ServiceLocatorInterface $sl, $requestedName)
-  {
-    // ...
-  }
+    function __invoke(ServiceLocatorInterface $sl, $requestedName)
+    {
+        // ...
+    }
 }
 ```
 
@@ -168,14 +174,14 @@ In ZF 2.x, if a factory was set to a service name defined in a plugin manager:
 ```php
 class MyFactory implements FactoryInterface
 {
-  function createService(ServiceLocatorInterface $sl)
-  {
-    // $sl is actually a plugin manager
+    function createService(ServiceLocatorInterface $sl)
+    {
+        // $sl is actually a plugin manager
 
-    $parentLocator = $sl->getServiceLocator();
+        $parentLocator = $sl->getServiceLocator();
 
-    // ...
-  }
+        // ...
+    }
 }
 ```
 
@@ -184,13 +190,13 @@ In ZF 3.x:
 ```php
 class MyFactory implements FactoryInterface
 {
-  function __invoke(ServiceLocatorInterface $sl, $requestedName)
-  {
-    // $sl is already the main, parent service locator. If you need to retrieve the plugin manager again, you
-    // can retrieve it through the SL
-    $pluginManager = $sl->get(MyPluginManager::class);
-    // ...
-  }
+    function __invoke(ServiceLocatorInterface $sl, $requestedName)
+    {
+        // $sl is already the main, parent service locator. If you need to retrieve the plugin manager again, you
+        // can retrieve it through the SL
+        $pluginManager = $sl->get(MyPluginManager::class);
+        // ...
+    }
 }
 ```
 

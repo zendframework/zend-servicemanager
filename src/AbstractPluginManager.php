@@ -19,9 +19,9 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
     /**
      * An object type that the created instance must be instanced of
      *
-     * @var string
+     * @var null|string
      */
-    protected $instanceOf = null;
+    In $instanceOf = null;
 
     /**
      * @param ServiceLocatorInterface $parentLocator

@@ -11,9 +11,6 @@ namespace Zend\ServiceManager\Exception;
 
 use InvalidArgumentException as SplInvalidArgumentException;
 
-/**
- * InvalidFactoryException
- */
 class InvalidArgumentException extends SplInvalidArgumentException implements ExceptionInterface
 {
 }
