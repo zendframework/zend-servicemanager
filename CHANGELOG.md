@@ -2,31 +2,13 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 2.6.0 - TBD
+## 2.6.0 - 2015-07-23
 
 ### Added
 
 - [#4](https://github.com/zendframework/zend-servicemanager/pull/4) updates the
     `ServiceManager` to [implement the container-interop interface](https://github.com/container-interop/container-interop),
     allowing interoperability with applications that consume that interface.
-
-### Deprecated
-
-- Nothing.
-
-### Removed
-
-- Nothing.
-
-### Fixed
-
-- Nothing.
-
-## 2.5.2 - TBD
-
-### Added
-
-- Nothing.
 
 ### Deprecated
 
