@@ -13,7 +13,8 @@
         }
     },
     "require": {
-        "php": ">=5.5"
+        "php": ">=5.5",
+        "container-interop/container-interop": "~1.0"
     },
     "require-dev": {
         "zendframework/zend-di": "~2.5",
