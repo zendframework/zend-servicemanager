@@ -119,7 +119,21 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function get($name)
     {
-        return $this->build($name);
+        $name = $this->resolveAlias($name);
+
+        // We start by checking if the service is cached (this is the fastest method).
+        if (isset($this->services[$name])) {
+            return $this->services[$name];
+        }
+
+        $object = $this->doCreate($name);
+
+        if (($this->sharedByDefault && !isset($this->shared[$name]))
+            || (isset($this->shared[$name]) && $this->shared[$name])) {
+            $this->services[$name] = $object;
+        }
+
+        return $object;
     }
 
     /**
@@ -129,40 +143,8 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function build($name, array $options = [])
     {
-        $name = $this->resolveAlias($name);
-
-        // We start by checking if the service is cached (this is the fastest method). If options is not empty, we
-        // never "share" because this could create unexpected behaviour
-        if (empty($options) && isset($this->services[$name])) {
-            return $this->services[$name];
-        }
-
-        try {
-            if (!isset($this->delegators[$name])) {
-                // Let's create the service by fetching the factory
-                $factory = $this->getFactory($name);
-                $object  = $factory($this->creationContext, $name, $options);
-            } else {
-                $object = $this->createDelegatorFromName($name, $options);
-            }
-        } catch (Exception $exception) {
-            throw new ServiceNotCreatedException(sprintf(
-                'Service with name "%s" could not be created. Reason: %s',
-                $name,
-                $exception->getMessage()
-            ));
-        }
-
-        foreach ($this->initializers as $initializer) {
-            $initializer($this->creationContext, $object);
-        }
-
-        if (($this->sharedByDefault && !isset($this->shared[$name]))
-            || (isset($this->shared[$name]) && $this->shared[$name])) {
-            $this->services[$name] = $object;
-        }
-
-        return $object;
+        // We never cache when using "build"
+        return $this->doCreate($this->resolveAlias($name), $options);
     }
 
     /**
@@ -330,5 +312,35 @@ class ServiceManager implements ServiceLocatorInterface
         } while ($canBeResolved);
 
         return $name;
+    }
+
+    /**
+     * @param  string $resolvedName
+     * @param  array  $options
+     * @return mixed
+     */
+    private function doCreate($resolvedName, $options = [])
+    {
+        try {
+            if (!isset($this->delegators[$resolvedName])) {
+                // Let's create the service by fetching the factory
+                $factory = $this->getFactory($resolvedName);
+                $object  = $factory($this->creationContext, $resolvedName, $options);
+            } else {
+                $object = $this->createDelegatorFromName($resolvedName, $options);
+            }
+        } catch (Exception $exception) {
+            throw new ServiceNotCreatedException(sprintf(
+                'Service with name "%s" could not be created. Reason: %s',
+                $resolvedName,
+                $exception->getMessage()
+            ));
+        }
+
+        foreach ($this->initializers as $initializer) {
+            $initializer($this->creationContext, $object);
+        }
+
+        return $object;
     }
 }
