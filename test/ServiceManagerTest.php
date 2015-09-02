@@ -273,6 +273,13 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($newServiceManager->has(DateTime::class));
         $this->assertTrue($newServiceManager->has(stdClass::class));
+
+        // Make sure the context has been updated for the new container
+
+        $reflectionProperty = new \ReflectionProperty($newServiceManager, 'creationContext');
+        $reflectionProperty->setAccessible(true);
+
+        $this->assertSame($newServiceManager, $reflectionProperty->getValue($newServiceManager));
     }
 
     public function testOverrideConfigWhenMerged()
