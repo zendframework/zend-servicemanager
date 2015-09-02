@@ -168,68 +168,6 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Get a factory for the given service name
-     *
-     * @param  string $name
-     * @return callable
-     * @throws ServiceNotFoundException
-     */
-    protected function getFactory($name)
-    {
-        $factory = isset($this->factories[$name]) ? $this->factories[$name] : null;
-
-        if (is_string($factory)) {
-            $this->factories[$name] = $factory = new $factory();
-        }
-
-        if (is_callable($factory)) {
-            return $factory;
-        }
-
-        // Check abstract factories
-        foreach ($this->abstractFactories as $abstractFactory) {
-            if ($abstractFactory->canCreateServiceWithName($name)) {
-                return $abstractFactory;
-            }
-        }
-
-        throw new ServiceNotFoundException(sprintf(
-            'An invalid or missing factory was given for creating service "%s". Did you make sure you added the service
-             into the service manager configuration?',
-            $name
-        ));
-    }
-
-    /**
-     * @param  string $name
-     * @param  array  $options
-     * @return object
-     */
-    protected function createDelegatorFromName($name, array $options = [])
-    {
-        $delegatorsCount  = count($this->delegators[$name]);
-        $creationCallback = function () use ($name, $options) {
-            // Code is inlined for performance reason, instead of abstracting the creation
-            $factory = $this->getFactory($name);
-            return $factory($this->creationContext, $name, $options);
-        };
-
-        for ($i = 0 ; $i < $delegatorsCount ; ++$i) {
-            $delegatorFactory = $this->delegators[$name][$i];
-
-            if (is_string($delegatorFactory)) {
-                $delegatorFactory = $this->delegators[$name][$i] = new $delegatorFactory();
-            }
-
-            $creationCallback = function () use ($delegatorFactory, $name, $creationCallback, $options) {
-                return $delegatorFactory($this->creationContext, $name, $creationCallback, $options);
-            };
-        }
-
-        return $creationCallback($this->creationContext, $name, $creationCallback, $options);
-    }
-
-    /**
      * Configure the service manager
      *
      * Valid top keys are:
@@ -313,10 +251,72 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
+     * Get a factory for the given service name
+     *
+     * @param  string $name
+     * @return callable
+     * @throws ServiceNotFoundException
+     */
+    private function getFactory($name)
+    {
+        $factory = isset($this->factories[$name]) ? $this->factories[$name] : null;
+
+        if (is_string($factory)) {
+            $this->factories[$name] = $factory = new $factory();
+        }
+
+        if (is_callable($factory)) {
+            return $factory;
+        }
+
+        // Check abstract factories
+        foreach ($this->abstractFactories as $abstractFactory) {
+            if ($abstractFactory->canCreateServiceWithName($name)) {
+                return $abstractFactory;
+            }
+        }
+
+        throw new ServiceNotFoundException(sprintf(
+            'An invalid or missing factory was given for creating service "%s". Did you make sure you added the service
+             into the service manager configuration?',
+            $name
+        ));
+    }
+
+    /**
+     * @param  string $name
+     * @param  array  $options
+     * @return object
+     */
+    private function createDelegatorFromName($name, array $options = [])
+    {
+        $delegatorsCount  = count($this->delegators[$name]);
+        $creationCallback = function () use ($name, $options) {
+            // Code is inlined for performance reason, instead of abstracting the creation
+            $factory = $this->getFactory($name);
+            return $factory($this->creationContext, $name, $options);
+        };
+
+        for ($i = 0 ; $i < $delegatorsCount ; ++$i) {
+            $delegatorFactory = $this->delegators[$name][$i];
+
+            if (is_string($delegatorFactory)) {
+                $delegatorFactory = $this->delegators[$name][$i] = new $delegatorFactory();
+            }
+
+            $creationCallback = function () use ($delegatorFactory, $name, $creationCallback, $options) {
+                return $delegatorFactory($this->creationContext, $name, $creationCallback, $options);
+            };
+        }
+
+        return $creationCallback($this->creationContext, $name, $creationCallback, $options);
+    }
+
+    /**
      * Create a new instance with an already resolved name
      *
      * This is a highly performance sensitive method, do not modify if you have not benchmarked it carefully
-     * 
+     *
      * @param  string $resolvedName
      * @param  array  $options
      * @return mixed
