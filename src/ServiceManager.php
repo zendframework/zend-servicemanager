@@ -21,7 +21,7 @@ use Zend\ServiceManager\Initializer\InitializerInterface;
 /**
  * Service Manager
  */
-class ServiceManager implements ServiceLocatorInterface, ContainerInterface
+class ServiceManager implements ServiceLocatorInterface
 {
     /**
      * A list of factories (either as string name or callable)
@@ -83,7 +83,7 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
     protected $shared = [];
 
     /**
-     * @var ServiceLocatorInterface
+     * @var ContainerInterface
      */
     protected $creationContext;
 
@@ -94,6 +94,24 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
     {
         $this->creationContext = $this;
         $this->configure($config);
+    }
+
+    /**
+     * Create a new service locator with config's merged
+     *
+     * Note that the original service locator is left untouched (as with PSR-7 interfaces)
+     *
+     * @param  array $config
+     * @return ContainerInterface
+     */
+    public function withConfig(array $config)
+    {
+        $container                  = clone $this;
+        $container->creationContext = $container;
+
+        $container->configure($config);
+
+        return $container;
     }
 
     /**
@@ -137,6 +155,11 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
         }
 
         return $object;
+    }
+
+    public function build($name, array $options = [])
+    {
+
     }
 
     /**

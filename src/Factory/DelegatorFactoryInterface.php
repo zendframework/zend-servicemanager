@@ -9,7 +9,7 @@
 
 namespace Zend\ServiceManager\Factory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
 /**
  * Delegator factory interface
@@ -19,11 +19,11 @@ interface DelegatorFactoryInterface
     /**
      * A factory that creates delegates of a given service
      *
-     * @param  ServiceLocatorInterface $serviceLocator
-     * @param  string                  $name
-     * @param  callable                $callback
-     * @param  array                   $options
+     * @param  ContainerInterface $container
+     * @param  string             $name
+     * @param  callable           $callback
+     * @param  array              $options
      * @return object
      */
-    public function __invoke(ServiceLocatorInterface $serviceLocator, $name, callable $callback, array $options = []);
+    public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = []);
 }

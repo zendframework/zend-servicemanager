@@ -9,11 +9,11 @@
 
 namespace ZendTest\ServiceManager;
 
+use Interop\Container\ContainerInterface;
 use stdClass;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimplePluginManager;
 
@@ -29,12 +29,12 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $serviceLocator = $this->getMock(ServiceLocatorInterface::class);
-        $pluginManager  = new SimplePluginManager($serviceLocator, $config);
+        $container     = $this->getMock(ContainerInterface::class);
+        $pluginManager = new SimplePluginManager($container, $config);
 
         $invokableFactory->expects($this->once())
                          ->method('__invoke')
-                         ->with($serviceLocator, InvokableObject::class)
+                         ->with($container, InvokableObject::class)
                          ->will($this->returnValue(new InvokableObject()));
 
         $object = $pluginManager->get(InvokableObject::class);
@@ -51,8 +51,8 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $serviceLocator = $this->getMock(ServiceLocatorInterface::class);
-        $pluginManager  = new SimplePluginManager($serviceLocator, $config);
+        $container     = $this->getMock(ContainerInterface::class);
+        $pluginManager = new SimplePluginManager($container, $config);
 
         // Assert no exception is triggered because the plugin manager validate ObjectWithOptions
         $pluginManager->get(InvokableObject::class);

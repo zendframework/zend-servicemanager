@@ -9,12 +9,12 @@
 
 namespace Zend\ServiceManager\Factory;
 
+use Interop\Container\ContainerInterface;
 use ProxyManager\Configuration as ProxyConfiguration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use Zend\ServiceManager\Exception;
 use Zend\ServiceManager\Proxy\LazyServiceFactory;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory to create a lazy factory
@@ -24,9 +24,9 @@ class LazyServiceFactoryFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ServiceLocatorInterface $serviceLocator, $requestedName, array $options = [])
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = [])
     {
-        $config = $serviceLocator->get('Config');
+        $config = $container->get('config');
 
         if (!isset($config['lazy_services'])) {
             throw new Exception\InvalidArgumentException('Missing "lazy_services" config key');

@@ -9,8 +9,8 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
+use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 class SimpleAbstractFactory implements AbstractFactoryInterface
 {
@@ -25,7 +25,7 @@ class SimpleAbstractFactory implements AbstractFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ServiceLocatorInterface $serviceLocator, $className, array $options = [])
+    public function __invoke(ContainerInterface $container, $className, array $options = [])
     {
         if (empty($options)) {
             return new $className();

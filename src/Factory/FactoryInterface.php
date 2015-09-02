@@ -9,7 +9,7 @@
 
 namespace Zend\ServiceManager\Factory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
 /**
  * Interface for a factory
@@ -22,10 +22,10 @@ interface FactoryInterface
     /**
      * Create an object
      *
-     * @param  ServiceLocatorInterface $serviceLocator
-     * @param  string                  $requestedName
-     * @param  array                   $options
+     * @param  ContainerInterface $container
+     * @param  string             $requestedName
+     * @param  array              $options
      * @return object
      */
-    public function __invoke(ServiceLocatorInterface $serviceLocator, $requestedName, array $options = []);
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = []);
 }

@@ -9,18 +9,18 @@
 
 namespace ZendTest\ServiceManager\Factory;
 
+use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 
 class InvokableFactoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testCanCreateObject()
     {
-        $serviceLocator = $this->getMock(ServiceLocatorInterface::class);
-        $factory        = new InvokableFactory();
+        $container = $this->getMock(ContainerInterface::class);
+        $factory   = new InvokableFactory();
 
-        $object = $factory($serviceLocator, InvokableObject::class, ['foo' => 'bar']);
+        $object = $factory($container, InvokableObject::class, ['foo' => 'bar']);
 
         $this->assertInstanceOf(InvokableObject::class, $object);
         $this->assertEquals(['foo' => 'bar'], $object->options);

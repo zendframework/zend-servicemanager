@@ -9,6 +9,7 @@
 
 namespace Zend\ServiceManager;
 
+use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 
 /**
@@ -21,13 +22,13 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      *
      * @var null|string
      */
-    In $instanceOf = null;
+    protected $instanceOf = null;
 
     /**
-     * @param ServiceLocatorInterface $parentLocator
-     * @param array                   $config
+     * @param ContainerInterface $parentLocator
+     * @param array              $config
      */
-    public function __construct(ServiceLocatorInterface $parentLocator, array $config)
+    public function __construct(ContainerInterface $parentLocator, array $config)
     {
         parent::__construct($config);
         $this->creationContext = $parentLocator;

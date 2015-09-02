@@ -9,7 +9,7 @@
 
 namespace Zend\ServiceManager\Initializer;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
 /**
  * Interface for an initializer
@@ -22,9 +22,9 @@ interface InitializerInterface
     /**
      * Initialize the given instance
      *
-     * @param  ServiceLocatorInterface $serviceLocator
-     * @param  object                  $instance
+     * @param  ContainerInterface $container
+     * @param  object             $instance
      * @return void
      */
-    public function __invoke(ServiceLocatorInterface $serviceLocator, $instance);
+    public function __invoke(ContainerInterface $container, $instance);
 }

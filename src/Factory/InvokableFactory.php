@@ -9,7 +9,7 @@
 
 namespace Zend\ServiceManager\Factory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Interop\Container\ContainerInterface;
 
 /**
  * Factory to create newable classes
@@ -19,7 +19,7 @@ final class InvokableFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ServiceLocatorInterface $serviceLocator, $requestedName, array $options = [])
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = [])
     {
         return new $requestedName($options);
     }
