@@ -116,10 +116,18 @@ class ServiceManager implements ServiceLocatorInterface
 
     /**
      * {@inheritDoc}
+     */
+    public function get($name)
+    {
+        return $this->build($name);
+    }
+
+    /**
+     * {@inheritDoc}
      *
      * This is a highly performance sensitive method, do not modify if you have not benchmarked it carefully
      */
-    public function get($name, array $options = [])
+    public function build($name, array $options = [])
     {
         $name = $this->resolveAlias($name);
 
@@ -155,11 +163,6 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         return $object;
-    }
-
-    public function build($name, array $options = [])
-    {
-
     }
 
     /**

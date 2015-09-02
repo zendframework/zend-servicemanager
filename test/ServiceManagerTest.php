@@ -10,7 +10,6 @@
 namespace ZendTest\ServiceManager;
 
 use DateTime;
-use Prophecy\Comparator\Factory;
 use stdClass;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\FactoryInterface;
