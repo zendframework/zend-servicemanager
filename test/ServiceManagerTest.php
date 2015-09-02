@@ -10,6 +10,7 @@
 namespace ZendTest\ServiceManager;
 
 use DateTime;
+use Prophecy\Comparator\Factory;
 use stdClass;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\FactoryInterface;
@@ -252,5 +253,49 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $serviceManager->get(stdClass::class);
+    }
+
+    public function testCanCreateNewLocatorWithMergedConfig()
+    {
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                DateTime::class => InvokableFactory::class
+            ]
+        ]);
+
+        $newServiceManager = $serviceManager->withConfig([
+            'factories' => [
+                stdClass::class => InvokableFactory::class
+            ]
+        ]);
+
+        $this->assertTrue($serviceManager->has(DateTime::class));
+        $this->assertFalse($serviceManager->has(stdClass::class));
+
+        $this->assertTrue($newServiceManager->has(DateTime::class));
+        $this->assertTrue($newServiceManager->has(stdClass::class));
+    }
+
+    public function testOverrideConfigWhenMerged()
+    {
+        $firstFactory  = $this->getMock(FactoryInterface::class);
+        $secondFactory = $this->getMock(FactoryInterface::class);
+
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                DateTime::class => $firstFactory
+            ]
+        ]);
+
+        $newServiceManager = $serviceManager->withConfig([
+            'factories' => [
+                DateTime::class => $secondFactory
+            ]
+        ]);
+
+        $firstFactory->expects($this->never())->method('__invoke');
+        $secondFactory->expects($this->once())->method('__invoke');
+
+        $newServiceManager->get(DateTime::class);
     }
 }
