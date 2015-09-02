@@ -138,8 +138,6 @@ class ServiceManager implements ServiceLocatorInterface
 
     /**
      * {@inheritDoc}
-     *
-     * This is a highly performance sensitive method, do not modify if you have not benchmarked it carefully
      */
     public function build($name, array $options = [])
     {
@@ -315,6 +313,10 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
+     * Create a new instance with an already resolved name
+     *
+     * This is a highly performance sensitive method, do not modify if you have not benchmarked it carefully
+     * 
      * @param  string $resolvedName
      * @param  array  $options
      * @return mixed
