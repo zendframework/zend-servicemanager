@@ -100,7 +100,7 @@ return [
 ];
 ```
 
-* `MutableCreationOptionsInterface` has been removed, as options can now be passed directly through factories. (??)
+* `MutableCreationOptionsInterface` has been removed, as options can now be passed directly through factories.
 
 * `ServiceLocatorAwareInterface` and its associated trait has been removed. It was an anti-pattern, and you are encouraged
 to inject your dependencies in factories instead of injecting the whole service locator.
@@ -133,6 +133,16 @@ $sm = new Zend\ServiceManager\ServiceManager([
 
 * Service manager is now immutable. Once configured, it cannot be altered. You need to create a new service manager
 if you need to change the configuration. This allow to ensure safer and more aggressive caching.
+
+If you want to add config, you can use the new `withConfig` method. This works as for PSR-7 interfaces:
+
+```php
+$newContainer = $oldContainer->withConfig([
+    'factories' => [...]
+]);
+```
+
+The old container is left untouched, and create a new one with config merged.
 
 * Interfaces for `FactoryInterface`, `DelegatorFactoryInterface` and `AbstractFactoryInterface` have changed. Now,
 they are all callable. This allow to optimize performance. Most of the time, rewriting a factory to match new interface
