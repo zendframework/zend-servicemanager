@@ -22,7 +22,7 @@ interface ServiceLocatorInterface extends ContainerInterface
      *
      * @param  string $name
      * @param  array  $options
-     * @return object
+     * @return mixed
      * @throws Exception\ServiceNotFoundException If no factory/abstract factory could be found to create the instance
      * @throws Exception\ServiceNotCreatedException If factory/delegator fails to create the instance
      */
