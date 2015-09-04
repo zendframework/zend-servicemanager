@@ -1,0 +1,12 @@
+{
+  "title": "zend-servicemanager: service locator component",
+  "content": [
+    {"Intro": "../README.md"},
+    {"Quick Start": "book/quick-start.md"},
+    {"Configuring the service manager": "book/configuring-the-service-manager.md"},
+    {"Delegators": "book/delegators.md"},
+    {"Lazy services": "book/lazy-services.md"},
+    {"Plugin managers": "book/plugin-managers.md"}
+  ],
+  "target": "./html"
+}
