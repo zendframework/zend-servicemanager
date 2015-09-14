@@ -22,8 +22,8 @@ interface DelegatorFactoryInterface
      * @param  ContainerInterface $container
      * @param  string             $name
      * @param  callable           $callback
-     * @param  array              $options
+     * @param  null|array         $options
      * @return object
      */
-    public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = []);
+    public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null);
 }

@@ -9,26 +9,23 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-class InvokableObject
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+
+class FailingAbstractFactory implements AbstractFactoryInterface
 {
     /**
-     * @var array
+     * {@inheritDoc}
      */
-    public $options;
-
-    /**
-     * @param array $options
-     */
-    public function __construct(array $options = [])
+    public function canCreateServiceWithName($name)
     {
-        $this->options = $options;
+        return false;
     }
 
     /**
-     * @return array
+     * {@inheritDoc}
      */
-    public function getOptions()
+    public function __invoke(ContainerInterface $container, $className, array $options = [])
     {
-        return $this->options;
     }
 }

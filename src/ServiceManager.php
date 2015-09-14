@@ -90,7 +90,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct(array $config = [])
     {
         $this->creationContext = $this;
         $this->configure($config);
@@ -184,6 +184,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     protected function configure(array $config)
     {
+        $this->services        = (isset($config['services']) ? $config['services'] : []) + $this->services;
         $this->factories       = (isset($config['factories']) ? $config['factories'] : []) + $this->factories;
         $this->delegators      = array_merge_recursive($this->delegators, isset($config['delegators'])
             ? $config['delegators']
@@ -208,8 +209,8 @@ class ServiceManager implements ServiceLocatorInterface
                 }
 
                 throw new InvalidArgumentException(sprintf(
-                    'An invalid abstract factory was registered. A callable or an instance of "%s" was expected, but
-                    "%s" was received',
+                    'An invalid abstract factory was registered. A callable or an instance of "%s" was expected, '
+                    . 'but "%s" was received',
                     AbstractFactoryInterface::class,
                     is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory)
                 ));
@@ -302,11 +303,29 @@ class ServiceManager implements ServiceLocatorInterface
             return $factory($this->creationContext, $name, $options);
         };
 
-        for ($i = 0; $i < $delegatorsCount; ++$i) {
+        for ($i = 0; $i < $delegatorsCount; $i += 1) {
             $delegatorFactory = $this->delegators[$name][$i];
+
+            if (is_string($delegatorFactory) && ! class_exists($delegatorFactory)) {
+                throw new ServiceNotCreatedException(sprintf(
+                    'An invalid delegator was provided. A callable or an instance of "%s" as expected, '
+                    . 'but "%s" was received',
+                    DelegatorFactoryInterface::class,
+                    $delegatorFactory
+                ));
+            }
 
             if (is_string($delegatorFactory)) {
                 $delegatorFactory = $this->delegators[$name][$i] = new $delegatorFactory();
+            }
+
+            if (! is_callable($delegatorFactory)) {
+                throw new ServiceNotCreatedException(sprintf(
+                    'An invalid delegator was provided. A callable or an instance of "%s" as expected, '
+                    . 'but "%s" was received',
+                    DelegatorFactoryInterface::class,
+                    is_object($delegatorFactory) ? get_class($delegatorFactory) : gettype($delegatorFactory)
+                ));
             }
 
             $creationCallback = function () use ($delegatorFactory, $name, $creationCallback, $options) {
@@ -341,7 +360,7 @@ class ServiceManager implements ServiceLocatorInterface
                 'Service with name "%s" could not be created. Reason: %s',
                 $resolvedName,
                 $exception->getMessage()
-            ));
+            ), $exception->getCode(), $exception);
         }
 
         foreach ($this->initializers as $initializer) {

@@ -15,6 +15,7 @@ use RecursiveIteratorIterator;
 use RecursiveRegexIterator;
 use RegexIterator;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\LazyServiceFactoryFactory;
 use Zend\ServiceManager\Proxy\LazyServiceFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
@@ -169,5 +170,59 @@ class LazyServiceFactoryFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertRegexp('/^TestAssetProxy\\\\/', get_class($instance));
         $this->assertProxyFileWritten();
+    }
+
+    /**
+     * @covers \Zend\ServiceManager\Proxy\LazyServiceFactory::__invoke
+     */
+    public function testLazyServicesProxyToOriginal()
+    {
+        $container = $this->getMock(ContainerInterface::class);
+        $container->expects($this->once())
+            ->method('get')
+            ->with('config')
+            ->will($this->returnValue([
+                'lazy_services' => [
+                    'class_map' => [
+                        InvokableObject::class => InvokableObject::class,
+                    ],
+                ],
+            ]));
+
+        $lazyFactory = new LazyServiceFactoryFactory();
+        $factory     = $lazyFactory($container, InvokableObject::class);
+        $this->assertInstanceOf(LazyServiceFactory::class, $factory);
+
+        $test = $factory($container, InvokableObject::class, function () {
+            return new InvokableObject(['foo' => 'bar']);
+        });
+        $this->assertInstanceOf(InvokableObject::class, $test);
+        $options = $test->getOptions();
+        $this->assertInternalType('array', $options);
+        $this->assertEquals(['foo' => 'bar'], $options);
+    }
+
+    public function testReturnedLazyFactoryThrowsExceptionIfClassNotFoundInMapWhenInvoked()
+    {
+        $container = $this->getMock(ContainerInterface::class);
+        $container->expects($this->once())
+            ->method('get')
+            ->with('config')
+            ->will($this->returnValue([
+                'lazy_services' => [
+                    'class_map' => [
+                        InvokableObject::class => InvokableObject::class,
+                    ],
+                ],
+            ]));
+
+        $lazyFactory = new LazyServiceFactoryFactory();
+        $factory     = $lazyFactory($container, stdClass::class);
+        $this->assertInstanceOf(LazyServiceFactory::class, $factory);
+
+        $this->setExpectedException(ServiceNotFoundException::class, 'not found');
+        $test = $factory($container, stdClass::class, function () {
+            $this->fail('Callback for lazy service should never be reached');
+        });
     }
 }

@@ -11,12 +11,14 @@ namespace ZendTest\ServiceManager;
 
 use DateTime;
 use stdClass;
+use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
+use ZendTest\ServiceManager\TestAsset\FailingAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
@@ -303,5 +305,292 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
         $secondFactory->expects($this->once())->method('__invoke');
 
         $newServiceManager->get(DateTime::class);
+    }
+
+    /**
+     * @group has
+     */
+    public function testHasReturnsFalseIfServiceNotConfigured()
+    {
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                stdClass::class => InvokableFactory::class,
+            ],
+        ]);
+        $this->assertFalse($serviceManager->has('Some\Made\Up\Entry'));
+    }
+
+    /**
+     * @group has
+     */
+    public function testHasReturnsTrueIfServiceIsConfigured()
+    {
+        $serviceManager = new ServiceManager([
+            'services' => [
+                stdClass::class => new stdClass,
+            ],
+        ]);
+        $this->assertTrue($serviceManager->has(stdClass::class));
+    }
+
+    /**
+     * @group has
+     */
+    public function testHasReturnsTrueIfFactoryIsConfigured()
+    {
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                stdClass::class => InvokableFactory::class,
+            ],
+        ]);
+        $this->assertTrue($serviceManager->has(stdClass::class));
+    }
+
+    /**
+     * @group has
+     */
+    public function testHasDoesNotCheckAbstractFactoriesByDefault()
+    {
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                stdClass::class => InvokableFactory::class,
+            ],
+            'abstract_factories' => [
+                new SimpleAbstractFactory(),
+            ],
+        ]);
+
+        $this->assertFalse($serviceManager->has(DateTime::class));
+    }
+
+    public function abstractFactories()
+    {
+        return [
+            'simple'  => [new SimpleAbstractFactory(), 'assertTrue'],
+            'failing' => [new FailingAbstractFactory(), 'assertFalse'],
+        ];
+    }
+
+    /**
+     * @group has
+     * @dataProvider abstractFactories
+     */
+    public function testHasCanCheckAbstractFactoriesWhenRequested($abstractFactory, $assertion)
+    {
+        $serviceManager = new ServiceManager([
+            'abstract_factories' => [
+                $abstractFactory,
+            ],
+        ]);
+
+        $this->{$assertion}($serviceManager->has(DateTime::class, true));
+    }
+
+    /**
+     * @covers \Zend\ServiceManager\ServiceManager::configure
+     */
+    public function testCanConfigureAllServiceTypes()
+    {
+        $serviceManager = new ServiceManager([
+            'services' => [
+                'config' => ['foo' => 'bar'],
+            ],
+            'factories' => [
+                stdClass::class => InvokableFactory::class,
+            ],
+            'delegators' => [
+                stdClass::class => [
+                    function ($container, $name, $callback) {
+                        $instance = $callback();
+                        $instance->foo = 'bar';
+                        return $instance;
+                    },
+                ],
+            ],
+            'shared' => [
+                'config'        => true,
+                stdClass::class => true,
+            ],
+            'aliases' => [
+                'Aliased' => stdClass::class,
+            ],
+            'shared_by_default' => false,
+            'abstract_factories' => [
+                new SimpleAbstractFactory(),
+            ],
+            'initializers' => [
+                function ($container, $instance) {
+                    if (! $instance instanceof stdClass) {
+                        return;
+                    }
+                    $instance->bar = 'baz';
+                },
+            ],
+        ]);
+
+        $dateTime = $serviceManager->get(DateTime::class);
+        $this->assertInstanceOf(DateTime::class, $dateTime);
+        $notShared = $serviceManager->get(DateTime::class);
+        $this->assertInstanceOf(DateTime::class, $notShared);
+        $this->assertNotSame($dateTime, $notShared);
+
+        $config = $serviceManager->get('config');
+        $this->assertInternalType('array', $config);
+        $this->assertSame($config, $serviceManager->get('config'));
+
+        $stdClass = $serviceManager->get(stdClass::class);
+        $this->assertInstanceOf(stdClass::class, $stdClass);
+        $this->assertSame($stdClass, $serviceManager->get(stdClass::class));
+        $this->assertEquals('bar', $stdClass->foo);
+        $this->assertEquals('baz', $stdClass->bar);
+    }
+
+    /**
+     * @covers \Zend\ServiceManager\ServiceManager::configure
+     */
+    public function testCanSpecifyAbstractFactoryUsingStringViaConfiguration()
+    {
+        $serviceManager = new ServiceManager([
+            'abstract_factories' => [
+                SimpleAbstractFactory::class,
+            ],
+        ]);
+
+        $dateTime = $serviceManager->get(DateTime::class);
+        $this->assertInstanceOf(DateTime::class, $dateTime);
+    }
+
+    public function invalidFactories()
+    {
+        return [
+            'null'                 => [null],
+            'true'                 => [true],
+            'false'                => [false],
+            'zero'                 => [0],
+            'int'                  => [1],
+            'zero-float'           => [0.0],
+            'float'                => [1.1],
+            'array'                => [['foo', 'bar']],
+            'non-invokable-object' => [(object) ['foo' => 'bar']],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidFactories
+     * @covers \Zend\ServiceManager\ServiceManager::configure
+     */
+    public function testPassingInvalidAbstractFactoryTypeViaConfigurationRaisesException($factory)
+    {
+        $this->setExpectedException(InvalidArgumentException::class, 'invalid abstract factory');
+        $serviceManager = new ServiceManager([
+            'abstract_factories' => [
+                $factory,
+            ],
+        ]);
+    }
+
+    public function testCanSpecifyInitializerUsingStringViaConfiguration()
+    {
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                stdClass::class => InvokableFactory::class,
+            ],
+            'initializers' => [
+                TestAsset\SimpleInitializer::class,
+            ],
+        ]);
+
+        $instance = $serviceManager->get(stdClass::class);
+        $this->assertInstanceOf(stdClass::class, $instance);
+        $this->assertEquals('bar', $instance->foo);
+    }
+
+    /**
+     * @dataProvider invalidFactories
+     * @covers \Zend\ServiceManager\ServiceManager::configure
+     */
+    public function testPassingInvalidInitializerTypeViaConfigurationRaisesException($initializer)
+    {
+        $this->setExpectedException(InvalidArgumentException::class, 'invalid initializer');
+        $serviceManager = new ServiceManager([
+            'initializers' => [
+                $initializer,
+            ],
+        ]);
+    }
+
+    /**
+     * @covers \Zend\ServiceManager\ServiceManager::getFactory
+     */
+    public function testGetRaisesExceptionWhenNoFactoryIsResolved()
+    {
+        $serviceManager = new ServiceManager();
+        $this->setExpectedException(ServiceNotCreatedException::class, 'invalid or missing factory');
+        $serviceManager->get('Some\Unknown\Service');
+    }
+
+    /**
+     * @covers \Zend\ServiceManager\ServiceManager::doCreate
+     * @covers \Zend\ServiceManager\ServiceManager::createDelegatorFromName
+     */
+    public function testCanWrapCreationInDelegators()
+    {
+        $config = [
+            'option' => 'OPTIONED',
+        ];
+        $serviceManager = new ServiceManager([
+            'services'  => [
+                'config' => $config,
+            ],
+            'factories' => [
+                stdClass::class => InvokableFactory::class,
+            ],
+            'delegators' => [
+                stdClass::class => [
+                    TestAsset\PreDelegator::class,
+                    function ($container, $name, $callback) {
+                        $instance = $callback();
+                        $instance->foo = 'bar';
+                        return $instance;
+                    },
+                ],
+            ],
+        ]);
+
+        $instance = $serviceManager->get(stdClass::class);
+        $this->assertEquals($config['option'], $instance->option);
+        $this->assertEquals('bar', $instance->foo);
+    }
+
+    public function invalidDelegators()
+    {
+        $invalidDelegators = $this->invalidFactories();
+        $invalidDelegators['invalid-classname']   = ['not-a-class-name'];
+        $invalidDelegators['non-invokable-class'] = [stdClass::class];
+        return $invalidDelegators;
+    }
+
+    /**
+     * @dataProvider invalidDelegators
+     * @covers \Zend\ServiceManager\ServiceManager::createDelegatorFromName
+     */
+    public function testInvalidDelegatorShouldRaiseExceptionDuringCreation($delegator)
+    {
+        $config = [
+            'option' => 'OPTIONED',
+        ];
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                stdClass::class => InvokableFactory::class,
+            ],
+            'delegators' => [
+                stdClass::class => [
+                    $delegator,
+                ],
+            ],
+        ]);
+
+        $this->setExpectedException(ServiceNotCreatedException::class, 'invalid delegator');
+        $serviceManager->get(stdClass::class);
     }
 }

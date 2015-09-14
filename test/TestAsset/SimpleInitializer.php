@@ -9,26 +9,20 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-class InvokableObject
+use Interop\Container\ContainerInterface;
+use stdClass;
+use Zend\ServiceManager\Initializer\InitializerInterface;
+
+class SimpleInitializer implements InitializerInterface
 {
     /**
-     * @var array
+     * {@inheritDoc}
      */
-    public $options;
-
-    /**
-     * @param array $options
-     */
-    public function __construct(array $options = [])
+    public function __invoke(ContainerInterface $container, $instance)
     {
-        $this->options = $options;
-    }
-
-    /**
-     * @return array
-     */
-    public function getOptions()
-    {
-        return $this->options;
+        if (! $instance instanceof stdClass) {
+            return;
+        }
+        $instance->foo = 'bar';
     }
 }
