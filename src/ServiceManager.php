@@ -185,12 +185,17 @@ class ServiceManager implements ServiceLocatorInterface
     protected function configure(array $config)
     {
         $this->factories       = (isset($config['factories']) ? $config['factories'] : []) + $this->factories;
-        $this->delegators      = array_merge_recursive($this->delegators, isset($config['delegators']) ? $config['delegators'] : []);
+        $this->delegators      = array_merge_recursive($this->delegators, isset($config['delegators'])
+            ? $config['delegators']
+            : []);
         $this->shared          = (isset($config['shared']) ? $config['shared'] : []) + $this->shared;
         $this->aliases         = (isset($config['aliases']) ? $config['aliases'] : []) + $this->aliases;
-        $this->sharedByDefault = isset($config['shared_by_default']) ? $config['shared_by_default'] : $this->sharedByDefault;
+        $this->sharedByDefault = isset($config['shared_by_default'])
+            ? $config['shared_by_default']
+            : $this->sharedByDefault;
 
-        // For abstract factories and initializers, we always directly instantiate them to avoid checks during construction
+        // For abstract factories and initializers, we always directly
+        // instantiate them to avoid checks during construction
         if (isset($config['abstract_factories'])) {
             foreach ($config['abstract_factories'] as $abstractFactory) {
                 if (is_string($abstractFactory)) {
@@ -297,7 +302,7 @@ class ServiceManager implements ServiceLocatorInterface
             return $factory($this->creationContext, $name, $options);
         };
 
-        for ($i = 0 ; $i < $delegatorsCount ; ++$i) {
+        for ($i = 0; $i < $delegatorsCount; ++$i) {
             $delegatorFactory = $this->delegators[$name][$i];
 
             if (is_string($delegatorFactory)) {

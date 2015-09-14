@@ -23,7 +23,8 @@ interface PluginManagerInterface extends ServiceLocatorInterface
      *
      * @param  object $instance
      * @return void
-     * @throws InvalidServiceException If created instance does not respect the constraint on type imposed by the plugin manager
+     * @throws InvalidServiceException If created instance does not respect the
+     *     constraint on type imposed by the plugin manager
      */
     public function validate($instance);
 }
