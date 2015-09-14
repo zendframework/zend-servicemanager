@@ -12,7 +12,7 @@ namespace Zend\ServiceManager\Factory;
 /**
  * Interface for an abstract factory
  *
- * An abstract factory extends the factory interface, but also have an additional "canCreateService" method,
+ * An abstract factory extends the factory interface, but also has an additional "canCreateService" method,
  * that is called to check if the abstract factory can create an instance of the given type. You should limit
  * the count of abstract factory to a minimum to keep good performance. Starting from ServiceManager v3, remember
  * that you can also attach multiple names to the same factory, which reduce the need for abstract factories
