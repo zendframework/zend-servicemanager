@@ -88,7 +88,7 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($object1, $object2);
     }
 
-    public function testCanCreateObjectWithInvokableFactory()
+    public function testCanBuildObjectWithInvokableFactory()
     {
         $serviceManager = new ServiceManager([
             'factories' => [
@@ -96,7 +96,7 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
             ]
         ]);
 
-        $object = $serviceManager->get(InvokableObject::class, ['foo' => 'bar']);
+        $object = $serviceManager->build(InvokableObject::class, ['foo' => 'bar']);
 
         $this->assertInstanceOf(InvokableObject::class, $object);
         $this->assertEquals(['foo' => 'bar'], $object->options);
@@ -174,7 +174,7 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($serviceManager->has(DateTime::class, true));
     }
 
-    public function testNeverShareIfOptionsArePassed()
+    public function testBuildNeverSharesInstances()
     {
         $serviceManager = new ServiceManager([
             'factories' => [
@@ -185,8 +185,8 @@ class ServiceManagerTest extends \PHPUnit_Framework_TestCase
             ]
         ]);
 
-        $object1 = $serviceManager->get(stdClass::class);
-        $object2 = $serviceManager->get(stdClass::class, ['foo' => 'bar']);
+        $object1 = $serviceManager->build(stdClass::class);
+        $object2 = $serviceManager->build(stdClass::class, ['foo' => 'bar']);
 
         $this->assertNotSame($object1, $object2);
     }
