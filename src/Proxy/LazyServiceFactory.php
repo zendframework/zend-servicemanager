@@ -9,11 +9,11 @@
 
 namespace Zend\ServiceManager\Proxy;
 
+use Interop\Container\ContainerInterface;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use Zend\ServiceManager\Exception;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Delegator factory responsible of instantiating lazy loading value holder proxies of
@@ -49,7 +49,7 @@ final class LazyServiceFactory implements DelegatorFactoryInterface
      *
      * @return object|\ProxyManager\Proxy\LazyLoadingInterface|\ProxyManager\Proxy\ValueHolderInterface
      */
-    public function __invoke(ServiceLocatorInterface $serviceLocator, $name, callable $callback)
+    public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = [])
     {
         $initializer = function (&$wrappedInstance, LazyLoadingInterface $proxy) use ($callback) {
             $proxy->setProxyInitializer(null);
