@@ -10,6 +10,7 @@
 namespace ZendTest\ServiceManager\Factory;
 
 use Interop\Container\ContainerInterface;
+use PHPUnit_Framework_TestCase as TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RecursiveRegexIterator;
@@ -20,7 +21,11 @@ use Zend\ServiceManager\Factory\LazyServiceFactoryFactory;
 use Zend\ServiceManager\Proxy\LazyServiceFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 
-class LazyServiceFactoryFactoryTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers \Zend\ServiceManager\Factory\LazyServiceFactoryFactory
+ * @covers \Zend\ServiceManager\Proxy\LazyServiceFactory
+ */
+class LazyServiceFactoryFactoryTest extends TestCase
 {
     public $proxyDir;
 

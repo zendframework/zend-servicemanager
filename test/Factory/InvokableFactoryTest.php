@@ -10,10 +10,14 @@
 namespace ZendTest\ServiceManager\Factory;
 
 use Interop\Container\ContainerInterface;
+use PHPUnit_Framework_TestCase as TestCase;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 
-class InvokableFactoryTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers \Zend\ServiceManager\Factory\InvokableFactory
+ */
+class InvokableFactoryTest extends TestCase
 {
     public function testCanCreateObject()
     {

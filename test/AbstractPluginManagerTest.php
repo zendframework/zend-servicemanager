@@ -10,6 +10,7 @@
 namespace ZendTest\ServiceManager;
 
 use Interop\Container\ContainerInterface;
+use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Factory\FactoryInterface;
@@ -17,7 +18,10 @@ use Zend\ServiceManager\Factory\InvokableFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimplePluginManager;
 
-class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers \Zend\ServiceManager\AbstractPluginManager
+ */
+class AbstractPluginManagerTest extends TestCase
 {
     public function testInjectCreationContextInFactories()
     {

@@ -10,6 +10,7 @@
 namespace ZendTest\ServiceManager;
 
 use DateTime;
+use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
@@ -24,7 +25,10 @@ use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
 
-class ServiceManagerTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers \Zend\ServiceManager\ServiceManager
+ */
+class ServiceManagerTest extends TestCase
 {
     public function testIsSharedByDefault()
     {
