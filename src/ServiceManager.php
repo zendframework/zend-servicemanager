@@ -11,6 +11,9 @@ namespace Zend\ServiceManager;
 
 use Exception;
 use Interop\Container\ContainerInterface;
+use ProxyManager\Configuration as ProxyConfiguration;
+use ProxyManager\Factory\LazyLoadingValueHolderFactory;
+use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
@@ -39,6 +42,16 @@ class ServiceManager implements ServiceLocatorInterface
      * @var string[]|DelegatorFactoryInterface[]
      */
     protected $delegators = [];
+
+    /**
+     * @var array
+     */
+    protected $lazyServices = [];
+
+    /**
+     * @var Proxy\LazyServiceFactory
+     */
+    protected $lazyServicesDelegator;
 
     /**
      * @var InitializerInterface[]
@@ -117,9 +130,7 @@ class ServiceManager implements ServiceLocatorInterface
     {
         $container                  = clone $this;
         $container->creationContext = $container;
-
         $container->configure($config);
-
         return $container;
     }
 
@@ -195,6 +206,14 @@ class ServiceManager implements ServiceLocatorInterface
      * - shared: service name => flag pairs; the flag is a boolean indicating
      *   whether or not the service is shared.
      * - aliases: alias => service name pairs.
+     * - lazy_services: lazy service configuration; can contain the keys:
+     *   - class_map: service name => class name pairs.
+     *   - proxies_namespace: string namespace to use for generated proxy
+     *     classes.
+     *   - proxies_target_dir: directory in which to write generated proxy
+     *     classes; uses system temporary by default.
+     *   - write_proxy_files: boolean indicating whether generated proxy
+     *     classes should be written; defaults to boolean false.
      * - shared_by_default: boolean, indicating if services in this instance
      *   should be shared by default.
      *
@@ -210,9 +229,18 @@ class ServiceManager implements ServiceLocatorInterface
             : []);
         $this->shared          = (isset($config['shared']) ? $config['shared'] : []) + $this->shared;
         $this->aliases         = (isset($config['aliases']) ? $config['aliases'] : []) + $this->aliases;
+        $this->lazyServices    = array_merge_recursive($this->lazyServices, isset($config['lazy_services'])
+            ? $config['lazy_services']
+            : []);
         $this->sharedByDefault = isset($config['shared_by_default'])
             ? $config['shared_by_default']
             : $this->sharedByDefault;
+
+        // If lazy service configuration was provided, reset the lazy services
+        // delegator factory.
+        if (isset($config['lazy_services']) && ! empty($config['lazy_services'])) {
+            $this->lazyServicesDelegator = null;
+        }
 
         // For abstract factories and initializers, we always directly
         // instantiate them to avoid checks during service construction.
@@ -325,6 +353,10 @@ class ServiceManager implements ServiceLocatorInterface
         for ($i = 0; $i < $delegatorsCount; $i += 1) {
             $delegatorFactory = $this->delegators[$name][$i];
 
+            if ($delegatorFactory === Proxy\LazyServiceFactory::class) {
+                $delegatorFactory = $this->createLazyServiceDelegatorFactory();
+            }
+
             if (is_string($delegatorFactory) && ! class_exists($delegatorFactory)) {
                 throw new ServiceNotCreatedException(sprintf(
                     'An invalid delegator was provided. A callable or an instance of "%s" as expected, '
@@ -387,5 +419,47 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         return $object;
+    }
+
+    /**
+     * Create the lazy services delegator factory.
+     *
+     * Creates the lazy services delegator factory based on the lazy_services
+     * configuration present.
+     *
+     * @return Proxy\LazyServiceFactory
+     */
+    private function createLazyServiceDelegatorFactory()
+    {
+        if ($this->lazyServicesDelegator) {
+            return $this->lazyServicesDelegator;
+        }
+
+        if (! isset($this->lazyServices['class_map'])) {
+            throw new Exception\InvalidArgumentException('Missing "class_map" config key in "lazy_services"');
+        }
+
+        $factoryConfig = new ProxyConfiguration();
+
+        if (isset($this->lazyServices['proxies_namespace'])) {
+            $factoryConfig->setProxiesNamespace($this->lazyServices['proxies_namespace']);
+        }
+
+        if (isset($this->lazyServices['proxies_target_dir'])) {
+            $factoryConfig->setProxiesTargetDir($this->lazyServices['proxies_target_dir']);
+        }
+
+        if (! isset($this->lazyServices['write_proxy_files']) || ! $this->lazyServices['write_proxy_files']) {
+            $factoryConfig->setGeneratorStrategy(new EvaluatingGeneratorStrategy());
+        }
+
+        spl_autoload_register($factoryConfig->getProxyAutoloader());
+
+        $this->lazyServicesDelegator = new Proxy\LazyServiceFactory(
+            new LazyLoadingValueHolderFactory($factoryConfig),
+            $this->lazyServices['class_map']
+        );
+
+        return $this->lazyServicesDelegator;
     }
 }

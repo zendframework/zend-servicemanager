@@ -14,6 +14,9 @@ constructor. The following keys are:
 - `shared`: associative array that map a service name to a boolean, in order to
   indicate the service manager if it should cache or not a service created
   through the `get` method, independant of the `shared_by_default` setting.
+- `lazy_services`: configuration for the lazy service proxy manager, and a class
+  map of service:class pairs that will act as lazy services; see the
+  [lazy services documentation](lazy-services.md) for more details.
 - `shared_by_default`: boolean that indicates whether services created through
   the `get` method should be cached. This is true by default.
 
