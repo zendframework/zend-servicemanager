@@ -36,10 +36,16 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
 
     /**
      * {@inheritDoc}
+     *
+     * @param string $name Service name of plugin to retrieve.
+     * @param null|array $options Options to use when creating the instance.
+     * @return mixed
+     * @throws InvalidServiceException if the plugin created is invalid for the
+     *     plugin context.
      */
-    public function get($name, array $options = [])
+    public function get($name, array $options = null)
     {
-        $instance = parent::get($name, $options);
+        $instance = $this->build($name, $options);
         $this->validate($instance);
 
         return $instance;

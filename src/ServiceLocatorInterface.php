@@ -18,13 +18,15 @@ use Zend\ServiceManager\Exception;
 interface ServiceLocatorInterface extends ContainerInterface
 {
     /**
-     * Build a service by its name, using optional options (such services are NEVER cached)
+     * Build a service by its name, using optional options (such services are NEVER cached).
      *
      * @param  string $name
-     * @param  array  $options
+     * @param  null|array  $options
      * @return mixed
-     * @throws Exception\ServiceNotFoundException If no factory/abstract factory could be found to create the instance
-     * @throws Exception\ServiceNotCreatedException If factory/delegator fails to create the instance
+     * @throws Exception\ServiceNotFoundException If no factory/abstract
+     *     factory could be found to create the instance.
+     * @throws Exception\ServiceNotCreatedException If factory/delegator fails
+     *     to create the instance.
      */
-    public function build($name, array $options = []);
+    public function build($name, array $options = null);
 }

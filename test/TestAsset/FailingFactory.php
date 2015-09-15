@@ -17,7 +17,7 @@ class FailingFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = [])
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         throw new \RuntimeException('There is an error');
     }

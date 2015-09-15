@@ -25,7 +25,7 @@ class SimpleAbstractFactory implements AbstractFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ContainerInterface $container, $className, array $options = [])
+    public function __invoke(ContainerInterface $container, $className, array $options = null)
     {
         if (empty($options)) {
             return new $className();

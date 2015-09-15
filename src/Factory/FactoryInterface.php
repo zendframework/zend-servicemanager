@@ -24,8 +24,8 @@ interface FactoryInterface
      *
      * @param  ContainerInterface $container
      * @param  string             $requestedName
-     * @param  array              $options
+     * @param  null|array         $options
      * @return object
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = []);
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null);
 }

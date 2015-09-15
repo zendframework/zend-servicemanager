@@ -88,6 +88,11 @@ class ServiceManager implements ServiceLocatorInterface
     protected $creationContext;
 
     /**
+     * Constructor.
+     *
+     * See {@see \Zend\ServiceManager\ServiceManager::configure()} for details
+     * on what $config accepts.
+     *
      * @param array $config
      */
     public function __construct(array $config = [])
@@ -97,9 +102,13 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Create a new service locator with config's merged
+     * Create a new service locator that merges the provided configuration.
      *
-     * Note that the original service locator is left untouched (as with PSR-7 interfaces)
+     * Note that the original service locator is left untouched (as with PSR-7
+     * interfaces).
+     *
+     * See {@see \Zend\ServiceManager\ServiceManager::configure()} for details
+     * on what $config accepts.
      *
      * @param  array $config
      * @return ContainerInterface
@@ -139,7 +148,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * {@inheritDoc}
      */
-    public function build($name, array $options = [])
+    public function build($name, array $options = null)
     {
         // We never cache when using "build"
         return $this->doCreate($this->resolveAlias($name), $options);
@@ -172,12 +181,22 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * Valid top keys are:
      *
-     *      - factories: a list of key value that map a service name with a factory
-     *      - abstract_factories: a list of object or string of abstract factories
-     *      - delegators: a list of services map to one or more delegators
-     *      - shared: a list of key value that map a service name to a boolean
-     *      - aliases: a list of key value that map an alias to a service name (or to another alias)
-     *      - shared_by_default: boolean
+     * - services: service name => service instance pairs
+     * - factories: service name => factory pairs; factories may be any
+     *   callable, string name resolving to an invokable class, or string name
+     *   resolving to a FactoryInterface instance.
+     * - abstract_factories: an array of abstract factories; these may be
+     *   instances of AbstractFactoryInterface, or string names resolving to
+     *   classes that implement that interface.
+     * - delegators: service name => list of delegator factories for the given
+     *   service; each item in the list may be a callable, a string name
+     *   resolving to an invokable class, or a string name resolving to a class
+     *   implementing DelegatorFactoryInterface.
+     * - shared: service name => flag pairs; the flag is a boolean indicating
+     *   whether or not the service is shared.
+     * - aliases: alias => service name pairs.
+     * - shared_by_default: boolean, indicating if services in this instance
+     *   should be shared by default.
      *
      * @param  array $config
      * @return void
@@ -196,7 +215,7 @@ class ServiceManager implements ServiceLocatorInterface
             : $this->sharedByDefault;
 
         // For abstract factories and initializers, we always directly
-        // instantiate them to avoid checks during construction
+        // instantiate them to avoid checks during service construction.
         if (isset($config['abstract_factories'])) {
             foreach ($config['abstract_factories'] as $abstractFactory) {
                 if (is_string($abstractFactory)) {
@@ -290,11 +309,11 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * @param  string $name
-     * @param  array  $options
+     * @param  string     $name
+     * @param  null|array $options
      * @return object
      */
-    private function createDelegatorFromName($name, array $options = [])
+    private function createDelegatorFromName($name, array $options = null)
     {
         $delegatorsCount  = count($this->delegators[$name]);
         $creationCallback = function () use ($name, $options) {
@@ -341,11 +360,11 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * This is a highly performance sensitive method, do not modify if you have not benchmarked it carefully
      *
-     * @param  string $resolvedName
-     * @param  array  $options
+     * @param  string     $resolvedName
+     * @param  null|array $options
      * @return mixed
      */
-    private function doCreate($resolvedName, $options = [])
+    private function doCreate($resolvedName, array $options = null)
     {
         try {
             if (!isset($this->delegators[$resolvedName])) {
