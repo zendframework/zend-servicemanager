@@ -9,14 +9,12 @@
 
 namespace Zend\ServiceManager\Exception;
 
-use Interop\Container\Exception\NotFoundException;
-use InvalidArgumentException as SplInvalidArgumentException;
+use RuntimeException as SplRuntimeException;
 
 /**
- * This exception is thrown when the service locator do not manage to find a valid factory to create a service
+ * This exception is thrown by plugin managers when the created object does not match
+ * the plugin manager's conditions
  */
-class ServiceNotFoundException extends SplInvalidArgumentException implements
-    ExceptionInterface,
-    NotFoundException
+class InvalidServiceException extends SplRuntimeException implements ExceptionInterface
 {
 }
