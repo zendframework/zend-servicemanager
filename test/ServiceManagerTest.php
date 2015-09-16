@@ -569,7 +569,7 @@ class ServiceManagerTest extends TestCase
     public function invalidDelegators()
     {
         $invalidDelegators = $this->invalidFactories();
-        $invalidDelegators['invalid-classname']   = ['not-a-class-name'];
+        $invalidDelegators['invalid-classname']   = ['not-a-class-name', 'invalid delegator'];
         $invalidDelegators['non-invokable-class'] = [stdClass::class];
         return $invalidDelegators;
     }
@@ -578,7 +578,7 @@ class ServiceManagerTest extends TestCase
      * @dataProvider invalidDelegators
      * @covers \Zend\ServiceManager\ServiceManager::createDelegatorFromName
      */
-    public function testInvalidDelegatorShouldRaiseExceptionDuringCreation($delegator)
+    public function testInvalidDelegatorShouldRaiseExceptionDuringCreation($delegator, $contains = 'non-callable delegator')
     {
         $config = [
             'option' => 'OPTIONED',
@@ -594,7 +594,7 @@ class ServiceManagerTest extends TestCase
             ],
         ]);
 
-        $this->setExpectedException(ServiceNotCreatedException::class, 'invalid delegator');
+        $this->setExpectedException(ServiceNotCreatedException::class, $contains);
         $serviceManager->get(stdClass::class);
     }
 }
