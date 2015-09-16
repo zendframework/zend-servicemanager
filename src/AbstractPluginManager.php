@@ -36,10 +36,16 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
     protected $instanceOf = null;
 
     /**
+     * Constructor.
+     *
+     * Sets the provided $parentLocator as the creation context for all
+     * factories; for $config, {@see \Zend\ServiceManager\ServiceManager::configure()}
+     * for details on its accepted structure.
+     *
      * @param ContainerInterface $parentLocator
      * @param array              $config
      */
-    public function __construct(ContainerInterface $parentLocator, array $config)
+    public function __construct(ContainerInterface $parentLocator, array $config = [])
     {
         parent::__construct($config);
         $this->creationContext = $parentLocator;
