@@ -384,10 +384,10 @@ class ServiceManager implements ServiceLocatorInterface
 
             if (! is_callable($delegatorFactory)) {
                 throw new ServiceNotCreatedException(sprintf(
-                    'An invalid delegator was provided. A callable or an instance of "%s" was expected, '
-                    . 'but "%s" was received',
-                    DelegatorFactoryInterface::class,
-                    is_object($delegatorFactory) ? get_class($delegatorFactory) : gettype($delegatorFactory)
+                    'A non-callable delegator, "%s", was provided; expected a callable or '
+                    . 'instance of "%s"',
+                    is_object($delegatorFactory) ? get_class($delegatorFactory) : gettype($delegatorFactory),
+                    DelegatorFactoryInterface::class
                 ));
             }
 
