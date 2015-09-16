@@ -18,4 +18,5 @@
     <!-- Paths to check -->
     <file>src</file>
     <file>test</file>
+    <exclude-pattern>*/test/log/*</exclude-pattern>
 </ruleset>

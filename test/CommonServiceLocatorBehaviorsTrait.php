@@ -520,8 +520,10 @@ trait CommonServiceLocatorBehaviorsTrait
      * @dataProvider invalidDelegators
      * @covers \Zend\ServiceManager\ServiceManager::createDelegatorFromName
      */
-    public function testInvalidDelegatorShouldRaiseExceptionDuringCreation($delegator, $contains = 'non-callable delegator')
-    {
+    public function testInvalidDelegatorShouldRaiseExceptionDuringCreation(
+        $delegator,
+        $contains = 'non-callable delegator'
+    ) {
         $config = [
             'option' => 'OPTIONED',
         ];
