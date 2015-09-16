@@ -9,13 +9,17 @@
 
 namespace Zend\ServiceManager\Factory;
 
+use Interop\Container\ContainerInterface;
+
 /**
- * Interface for an abstract factory
+ * Interface for an abstract factory.
  *
- * An abstract factory extends the factory interface, but also has an additional "canCreateService" method,
- * that is called to check if the abstract factory can create an instance of the given type. You should limit
- * the count of abstract factory to a minimum to keep good performance. Starting from ServiceManager v3, remember
- * that you can also attach multiple names to the same factory, which reduce the need for abstract factories
+ * An abstract factory extends the factory interface, but also has an
+ * additional "canCreateService" method, which is called to check if the
+ * abstract factory can create an instance for the given serivce. You should
+ * limit the number of abstract factories to ensure good performance. Starting
+ * from ServiceManager v3, remember that you can also attach multiple names to
+ * the same factory, which reduces the need for abstract factories.
  */
 interface AbstractFactoryInterface extends FactoryInterface
 {
@@ -25,5 +29,5 @@ interface AbstractFactoryInterface extends FactoryInterface
      * @param  string $requestedName
      * @return bool
      */
-    public function canCreateServiceWithName($requestedName);
+    public function canCreateServiceWithName(ContainerInterface $container, $requestedName);
 }

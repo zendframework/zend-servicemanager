@@ -17,7 +17,7 @@ class SimpleAbstractFactory implements AbstractFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function canCreateServiceWithName($name)
+    public function canCreateServiceWithName(ContainerInterface $container, $name)
     {
         return true;
     }
