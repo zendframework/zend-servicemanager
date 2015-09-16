@@ -258,17 +258,17 @@ class ServiceManager implements ServiceLocatorInterface
         // instantiate them to avoid checks during service construction.
         if (isset($config['abstract_factories'])) {
             foreach ($config['abstract_factories'] as $abstractFactory) {
-                if (is_string($abstractFactory)) {
+                if (is_string($abstractFactory) && class_exists($abstractFactory)) {
                     $abstractFactory = new $abstractFactory();
                 }
 
-                if (is_callable($abstractFactory)) {
+                if ($abstractFactory instanceof AbstractFactoryInterface) {
                     $this->abstractFactories[] = $abstractFactory;
                     continue;
                 }
 
                 throw new InvalidArgumentException(sprintf(
-                    'An invalid abstract factory was registered. A callable or an instance of "%s" was expected, '
+                    'An invalid abstract factory was registered. An instance of "%s" was expected, '
                     . 'but "%s" was received',
                     AbstractFactoryInterface::class,
                     is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory)
@@ -278,7 +278,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         if (isset($config['initializers'])) {
             foreach ($config['initializers'] as $initializer) {
-                if (is_string($initializer)) {
+                if (is_string($initializer) && class_exists($initializer)) {
                     $initializer = new $initializer();
                 }
 
@@ -326,11 +326,16 @@ class ServiceManager implements ServiceLocatorInterface
     {
         $factory = isset($this->factories[$name]) ? $this->factories[$name] : null;
 
-        if (is_string($factory)) {
-            $this->factories[$name] = $factory = new $factory();
+        $lazyLoaded = false;
+        if (is_string($factory) && class_exists($factory)) {
+            $factory = new $factory();
+            $lazyLoaded = true;
         }
 
         if (is_callable($factory)) {
+            if ($lazyLoaded) {
+                $this->factories[$name] = $factory;
+            }
             return $factory;
         }
 
@@ -406,6 +411,9 @@ class ServiceManager implements ServiceLocatorInterface
      * @param  string     $resolvedName
      * @param  null|array $options
      * @return mixed
+     * @throws ServiceNotFoundException if unable to resolve the service.
+     * @throws ServiceNotCreatedException if an exception is raised when
+     *     creating a service.
      */
     private function doCreate($resolvedName, array $options = null)
     {
