@@ -12,7 +12,12 @@ namespace Zend\ServiceManager\Factory;
 use Interop\Container\ContainerInterface;
 
 /**
- * Delegator factory interface
+ * Delegator factory interface.
+ *
+ * Defines the capabilities required by a delegator factory. Delegator
+ * factories are used to either decorate a service instance, or to allow
+ * decorating the instantiation of a service instance (for instance, to
+ * provide optional dependencies via setters, etc.).
  */
 interface DelegatorFactoryInterface
 {

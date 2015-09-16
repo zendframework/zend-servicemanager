@@ -22,7 +22,19 @@ use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 
 /**
- * Service Manager
+ * Service Manager.
+ *
+ * Default implementation of the ServiceLocatorInterface, providing capabilities
+ * for object creation via:
+ *
+ * - factories
+ * - abstract factories
+ * - delegator factories
+ * - lazy service factories (generated proxies)
+ * - initializers (interface injection)
+ *
+ * It also provides the ability to inject specific service instances and to
+ * define aliases.
  */
 class ServiceManager implements ServiceLocatorInterface
 {
