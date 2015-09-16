@@ -15,10 +15,10 @@ v2 normalized service names as follows:
 - It lowercased the resulting string.
 
 This was done to help prevent typographical errors from creating configuration
-errors. Howerver, it also presented a large performance hit, and led to some
+errors. However, it also presented a large performance hit, and led to some
 unexpected behaviors.
 
-In v3, service names are case sensitive, and are not normalized in any way.
+**In v3, service names are case sensitive, and are not normalized in any way.**
 
 As such, you *must* refer to services using the same case in which they were
 registered.
@@ -152,6 +152,9 @@ return [
     ],
 ];
 ```
+
+Alternately, you can create a dedicated factory for `MyClass` that instantiates
+the correct class.
 
 ### Lazy Services
 
@@ -326,7 +329,7 @@ The new method `build()` acts as a factory method for configured services, and
 will *always* return a new instance, never a shared one.
 
 Additionally, it provides factory capabilities; you may pass an additional,
-optional option, `$options`, which should be an array of additional options a
+optional argument, `$options`, which should be an array of additional options a
 factory may use to create a new instance. This is primarily of interest when
 creating plugin managers (more on plugin managers below), which may pass that
 information on in order to create discrete plugin instances with specific state.
@@ -369,12 +372,12 @@ $container = new ServiceManager([
         'MyClass' => 'MyClass',
     ],
     'abstract_factories' => [
-        'AbstractFactoryThatAlwasyResolves',
+        'AbstractFactoryThatAlwaysResolves',
     ],
 ]);
 ```
 
-Assuming that `AbstractFactoryThatAlwasyResolves` will resolve any service
+Assuming that `AbstractFactoryThatAlwaysResolves` will resolve any service
 (don't ever do this!), the following behavior is expected:
 
 ```php
@@ -396,10 +399,10 @@ signatures for all factories have changed.
 ### Removed and Renamed Factory Interfaces
 
 - `Zend\ServiceManager\AbstractFactoryInterface` was *renamed* to
-  `Zend\Factory\AbstractFactoryInterface`.
-- `Zend\\ServiceManager\DelegatorFactoryInterface` was *renamed* to
+  `Zend\ServiceManager\Factory\AbstractFactoryInterface`.
+- `Zend\ServiceManager\DelegatorFactoryInterface` was *renamed* to
   `Zend\ServiceManager\Factory\DelegatorFactoryInterface`.
-- `Zend\\ServiceManager\FactoryInterface` was *renamed* to
+- `Zend\ServiceManager\FactoryInterface` was *renamed* to
   `Zend\ServiceManager\Factory\FactoryInterface`.
 
 ### AbstractFactoryInterface
@@ -618,6 +621,11 @@ means that all changes made to the `ServiceManager` for v3 also apply to the
 
 In addition, the following changes are also true for v3:
 
+- The constructor now accepts the following arguments, in the following order:
+  - The parent container instance; this is usually the application-level
+    `ServiceManager` instance.
+  - Optionally, an array of configuration for the plugin manager instance; this
+    should have the same format as for a `ServiceManager` instance.
 - `validatePlugin()` was renamed to `validate()` (now defined in
   `PluginManagerInterface`). The `AbstractPluginManager` provides
   a basic implementation (detailed below).
