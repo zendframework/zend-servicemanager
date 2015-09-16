@@ -170,7 +170,7 @@ implement `Zend\ServiceManager\Factory\AbstractFactoryInterface`:
 
 class MyAbstractFactory implements AbstractFactoryInterface
 {
-    public function canCreateServiceWithName(ContainerInterface $cotnainer, $requestedName)
+    public function canCreateServiceWithName(ContainerInterface $container, $requestedName)
     {
         return in_array('Traversable', class_implements($requestedName), true);
     }
