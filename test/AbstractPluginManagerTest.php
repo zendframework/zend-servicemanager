@@ -29,8 +29,8 @@ class AbstractPluginManagerTest extends TestCase
 
         $config = [
             'factories' => [
-                InvokableObject::class => $invokableFactory
-            ]
+                InvokableObject::class => $invokableFactory,
+            ],
         ];
 
         $container     = $this->getMock(ContainerInterface::class);
@@ -51,8 +51,8 @@ class AbstractPluginManagerTest extends TestCase
         $config = [
             'factories' => [
                 InvokableObject::class => new InvokableFactory(),
-                stdClass::class        => new InvokableFactory()
-            ]
+                stdClass::class        => new InvokableFactory(),
+            ],
         ];
 
         $container     = $this->getMock(ContainerInterface::class);
@@ -64,5 +64,54 @@ class AbstractPluginManagerTest extends TestCase
         // Assert it throws an exception for anything else
         $this->setExpectedException(InvalidServiceException::class);
         $pluginManager->get(stdClass::class);
+    }
+
+    public function testCachesInstanceByDefaultIfNoOptionsArePassed()
+    {
+        $config = [
+            'factories' => [
+                InvokableObject::class => new InvokableFactory(),
+            ],
+        ];
+
+        $container     = $this->getMock(ContainerInterface::class);
+        $pluginManager = new SimplePluginManager($container, $config);
+
+        $first  = $pluginManager->get(InvokableObject::class);
+        $second = $pluginManager->get(InvokableObject::class);
+        $this->assertInstanceOf(InvokableObject::class, $first);
+        $this->assertInstanceOf(InvokableObject::class, $second);
+        $this->assertSame($first, $second);
+    }
+
+    public function shareByDefaultSettings()
+    {
+        return [
+            'true'  => [true],
+            'false' => [false],
+        ];
+    }
+
+    /**
+     * @dataProvider shareByDefaultSettings
+     */
+    public function testReturnsDiscreteInstancesIfOptionsAreProvidedRegardlessOfShareByDefaultSetting($shareByDefault)
+    {
+        $config = [
+            'factories' => [
+                InvokableObject::class => new InvokableFactory(),
+            ],
+            'share_by_default' => $shareByDefault,
+        ];
+        $options = ['foo' => 'bar'];
+
+        $container     = $this->getMock(ContainerInterface::class);
+        $pluginManager = new SimplePluginManager($container, $config);
+
+        $first  = $pluginManager->get(InvokableObject::class, $options);
+        $second = $pluginManager->get(InvokableObject::class, $options);
+        $this->assertInstanceOf(InvokableObject::class, $first);
+        $this->assertInstanceOf(InvokableObject::class, $second);
+        $this->assertNotSame($first, $second);
     }
 }

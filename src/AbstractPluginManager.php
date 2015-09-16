@@ -45,9 +45,8 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      */
     public function get($name, array $options = null)
     {
-        $instance = $this->build($name, $options);
+        $instance = empty($options) ? parent::get($name) : $this->build($name, $options);
         $this->validate($instance);
-
         return $instance;
     }
 
