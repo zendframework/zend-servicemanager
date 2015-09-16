@@ -86,6 +86,11 @@ class ServiceManager implements ServiceLocatorInterface
     private $lazyServicesDelegator;
 
     /**
+     * @var string[]
+     */
+    private $resolvedAliases = [];
+
+    /**
      * A list of already loaded services (this act as a local cache)
      *
      * @var array
@@ -152,7 +157,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function get($name)
     {
-        $name = $this->resolveAlias($name);
+        $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
 
         // We start by checking if the service is cached (this is the fastest method).
         if (isset($this->services[$name])) {
@@ -175,7 +180,8 @@ class ServiceManager implements ServiceLocatorInterface
     public function build($name, array $options = null)
     {
         // We never cache when using "build"
-        return $this->doCreate($this->resolveAlias($name), $options);
+        $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+        return $this->doCreate($name, $options);
     }
 
     /**
@@ -183,7 +189,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function has($name, $checkAbstractFactories = false)
     {
-        $name  = $this->resolveAlias($name);
+        $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
         $found = isset($this->services[$name]) || isset($this->factories[$name]);
 
         if ($found || !$checkAbstractFactories) {
@@ -296,6 +302,8 @@ class ServiceManager implements ServiceLocatorInterface
                 ));
             }
         }
+
+        $this->resolveAliases();
     }
 
     /**
@@ -314,6 +322,16 @@ class ServiceManager implements ServiceLocatorInterface
         } while ($canBeResolved);
 
         return $name;
+    }
+
+    /**
+     * Resolve all aliases to their canonical service names.
+     */
+    private function resolveAliases()
+    {
+        foreach ($this->aliases as $alias => $service) {
+            $this->resolvedAliases[$alias] = $this->resolveAlias($alias);
+        }
     }
 
     /**
