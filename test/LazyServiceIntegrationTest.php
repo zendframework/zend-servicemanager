@@ -72,23 +72,25 @@ class LazyServiceIntegrationTest extends TestCase
         return new RegexIterator($rii, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
     }
 
-    public function assertProxyDirEmpty()
+    public function assertProxyDirEmpty($message = '')
     {
+        $message = $message ?: 'Expected empty proxy directory; found files';
         $count = 0;
         foreach ($this->listProxyFiles() as $file) {
-            $this->assertFail('Expected empty proxy directory; found files');
+            $this->assertFail($message);
         }
         $this->assertEquals(0, $count);
     }
 
-    public function assertProxyFileWritten()
+    public function assertProxyFileWritten($message = '')
     {
+        $message = $message ?: 'Expected ProxyManager to write at least one class file; none found';
         $count = 0;
         foreach ($this->listProxyFiles() as $file) {
             $count += 1;
             break;
         }
-        $this->assertNotEquals(0, $count);
+        $this->assertNotEquals(0, $count, $message);
     }
 
     /**
@@ -121,12 +123,27 @@ class LazyServiceIntegrationTest extends TestCase
         $this->assertProxyFileWritten();
 
         // Test we got a usable proxy
-        $this->assertInstanceOf(InvokableObject::class, $instance);
-        $this->assertContains('TestAssetProxy', get_class($instance));
+        $this->assertInstanceOf(
+            InvokableObject::class,
+            $instance,
+            'Service returned does not extend ' . InvokableObject::class
+        );
+        $this->assertContains(
+            'TestAssetProxy',
+            get_class($instance),
+            'Service returned does not contain expected namespace'
+        );
 
         // Test proxying works as expected
         $options = $instance->getOptions();
-        $this->assertInternalType('array', $options);
-        $this->assertEquals(['foo' => 'bar'], $options);
+        $this->assertInternalType(
+            'array',
+            $options,
+            sprintf(
+                'Expected an array of options; %s received',
+                (is_object($options) ? get_class($options) : gettype($options))
+            )
+        );
+        $this->assertEquals(['foo' => 'bar'], $options, 'Options returned do not match configuration');
     }
 }

@@ -47,6 +47,7 @@ class ServiceManagerTest extends TestCase
         ]);
 
         $this->assertTrue($serviceManager->has(DateTime::class));
+        // stdClass service is inlined in SimpleServiceManager
         $this->assertTrue($serviceManager->has(stdClass::class));
     }
 
@@ -94,7 +95,12 @@ class ServiceManagerTest extends TestCase
         ]);
 
         $instance = $serviceManager->get(stdClass::class);
-        $this->assertEquals($config['option'], $instance->option);
+        $this->assertTrue(isset($instance->option), 'Delegator-injected option was not found');
+        $this->assertEquals(
+            $config['option'],
+            $instance->option,
+            'Delegator-injected option does not match configuration'
+        );
         $this->assertEquals('bar', $instance->foo);
     }
 }

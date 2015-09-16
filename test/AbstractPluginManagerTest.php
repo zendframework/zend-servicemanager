@@ -156,7 +156,12 @@ class AbstractPluginManagerTest extends TestCase
         ]);
 
         $instance = $pluginManager->get(stdClass::class);
-        $this->assertEquals($config['option'], $instance->option);
+        $this->assertTrue(isset($instance->option), 'Delegator-injected option was not found');
+        $this->assertEquals(
+            $config['option'],
+            $instance->option,
+            'Delegator-injected option does not match configuration'
+        );
         $this->assertEquals('bar', $instance->foo);
     }
 }
