@@ -15,6 +15,7 @@ use stdClass;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
+use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimplePluginManager;
 
@@ -23,6 +24,14 @@ use ZendTest\ServiceManager\TestAsset\SimplePluginManager;
  */
 class AbstractPluginManagerTest extends TestCase
 {
+    use CommonServiceLocatorBehaviorsTrait;
+
+    public function createContainer(array $config = [])
+    {
+        $this->creationContext = new ServiceManager();
+        return new TestAsset\LenientPluginManager($this->creationContext, $config);
+    }
+
     public function testInjectCreationContextInFactories()
     {
         $invokableFactory = $this->getMock(FactoryInterface::class);
@@ -113,5 +122,41 @@ class AbstractPluginManagerTest extends TestCase
         $this->assertInstanceOf(InvokableObject::class, $first);
         $this->assertInstanceOf(InvokableObject::class, $second);
         $this->assertNotSame($first, $second);
+    }
+
+    /**
+     * Separate test from ServiceManager, as all factories go through the
+     * creation context; we need to configure the parent container, as
+     * the delegator factory will be receiving that.
+     */
+    public function testCanWrapCreationInDelegators()
+    {
+        $config = [
+            'option' => 'OPTIONED',
+        ];
+        $serviceManager = new ServiceManager([
+            'services'  => [
+                'config' => $config,
+            ],
+        ]);
+        $pluginManager = new TestAsset\LenientPluginManager($serviceManager, [
+            'factories' => [
+                stdClass::class => InvokableFactory::class,
+            ],
+            'delegators' => [
+                stdClass::class => [
+                    TestAsset\PreDelegator::class,
+                    function ($container, $name, $callback) {
+                        $instance = $callback();
+                        $instance->foo = 'bar';
+                        return $instance;
+                    },
+                ],
+            ],
+        ]);
+
+        $instance = $pluginManager->get(stdClass::class);
+        $this->assertEquals($config['option'], $instance->option);
+        $this->assertEquals('bar', $instance->foo);
     }
 }

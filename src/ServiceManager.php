@@ -82,7 +82,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * @var null|Proxy\LazyServiceFactory
      */
-    protected $lazyServicesDelegator;
+    private $lazyServicesDelegator;
 
     /**
      * A list of already loaded services (this act as a local cache)
@@ -355,7 +355,6 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function createDelegatorFromName($name, array $options = null)
     {
-        $delegatorsCount  = count($this->delegators[$name]);
         $creationCallback = function () use ($name, $options) {
             // Code is inlined for performance reason, instead of abstracting the creation
             $factory = $this->getFactory($name);
