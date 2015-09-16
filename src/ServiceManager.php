@@ -39,16 +39,23 @@ use Zend\ServiceManager\Initializer\InitializerInterface;
 class ServiceManager implements ServiceLocatorInterface
 {
     /**
-     * A list of factories (either as string name or callable)
-     *
-     * @var string[]|callable[]
-     */
-    protected $factories = [];
-
-    /**
      * @var AbstractFactoryInterface[]
      */
     protected $abstractFactories = [];
+
+    /**
+     * A list of aliases
+     *
+     * Should map one alias to a service name, or another alias (aliases are recursively resolved)
+     *
+     * @var string[]
+     */
+    protected $aliases = [];
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $creationContext;
 
     /**
      * @var string[]|DelegatorFactoryInterface[]
@@ -56,14 +63,11 @@ class ServiceManager implements ServiceLocatorInterface
     protected $delegators = [];
 
     /**
-     * @var array
+     * A list of factories (either as string name or callable)
+     *
+     * @var string[]|callable[]
      */
-    protected $lazyServices = [];
-
-    /**
-     * @var Proxy\LazyServiceFactory
-     */
-    protected $lazyServicesDelegator;
+    protected $factories = [];
 
     /**
      * @var InitializerInterface[]
@@ -71,13 +75,14 @@ class ServiceManager implements ServiceLocatorInterface
     protected $initializers = [];
 
     /**
-     * A list of aliases
-     *
-     * Should map one alias to a service name, or another alias (aliases are recursively resolved)
-     *
      * @var array
      */
-    protected $aliases = [];
+    protected $lazyServices = [];
+
+    /**
+     * @var null|Proxy\LazyServiceFactory
+     */
+    protected $lazyServicesDelegator;
 
     /**
      * A list of already loaded services (this act as a local cache)
@@ -87,14 +92,7 @@ class ServiceManager implements ServiceLocatorInterface
     protected $services = [];
 
     /**
-     * Should the services be shared by default?
-     *
-     * @var bool
-     */
-    protected $sharedByDefault = true;
-
-    /**
-     * Allow to activate/deactivate shared per service name
+     * Enable/disable shared instances by service name.
      *
      * Example configuration:
      *
@@ -103,14 +101,16 @@ class ServiceManager implements ServiceLocatorInterface
      *     MyOtherService::class => false // won't be shared, even if "sharedByDefault" is true
      * ]
      *
-     * @var array
+     * @var boolean[]
      */
     protected $shared = [];
 
     /**
-     * @var ContainerInterface
+     * Should the services be shared by default?
+     *
+     * @var bool
      */
-    protected $creationContext;
+    protected $sharedByDefault = true;
 
     /**
      * Constructor.
