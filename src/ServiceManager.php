@@ -11,6 +11,7 @@ namespace Zend\ServiceManager;
 
 use Exception;
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use ProxyManager\Configuration as ProxyConfiguration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
@@ -425,6 +426,8 @@ class ServiceManager implements ServiceLocatorInterface
             } else {
                 $object = $this->createDelegatorFromName($resolvedName, $options);
             }
+        } catch (ContainerException $exception) {
+            throw $exception;
         } catch (Exception $exception) {
             throw new ServiceNotCreatedException(sprintf(
                 'Service with name "%s" could not be created. Reason: %s',

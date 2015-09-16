@@ -10,6 +10,7 @@
 namespace ZendTest\ServiceManager;
 
 use DateTime;
+use Interop\Container\Exception\ContainerException;
 use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
@@ -504,7 +505,7 @@ trait CommonServiceLocatorBehaviorsTrait
     public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {
         $serviceManager = $this->createContainer();
-        $this->setExpectedException(ServiceNotCreatedException::class, 'invalid or missing factory');
+        $this->setExpectedException(ContainerException::class, 'invalid or missing factory');
         $serviceManager->get('Some\Unknown\Service');
     }
 
