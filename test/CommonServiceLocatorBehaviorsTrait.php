@@ -471,13 +471,22 @@ trait CommonServiceLocatorBehaviorsTrait
         ];
     }
 
+    public function invalidAbstractFactories()
+    {
+        $factories = $this->invalidFactories();
+        $factories['non-class-string'] = ['non-callable-string', 'valid class name'];
+        return $factories;
+    }
+
     /**
-     * @dataProvider invalidFactories
+     * @dataProvider invalidAbstractFactories
      * @covers \Zend\ServiceManager\ServiceManager::configure
      */
-    public function testPassingInvalidAbstractFactoryTypeViaConfigurationRaisesException($factory)
-    {
-        $this->setExpectedException(InvalidArgumentException::class, 'invalid abstract factory');
+    public function testPassingInvalidAbstractFactoryTypeViaConfigurationRaisesException(
+        $factory,
+        $contains = 'invalid abstract factory'
+    ) {
+        $this->setExpectedException(InvalidArgumentException::class, $contains);
         $serviceManager = $this->createContainer([
             'abstract_factories' => [
                 $factory,
@@ -502,13 +511,22 @@ trait CommonServiceLocatorBehaviorsTrait
         $this->assertEquals('bar', $instance->foo, '"foo" property was not properly injected');
     }
 
+    public function invalidInitializers()
+    {
+        $factories = $this->invalidFactories();
+        $factories['non-class-string'] = ['non-callable-string', 'valid function name or class name'];
+        return $factories;
+    }
+
     /**
-     * @dataProvider invalidFactories
+     * @dataProvider invalidInitializers
      * @covers \Zend\ServiceManager\ServiceManager::configure
      */
-    public function testPassingInvalidInitializerTypeViaConfigurationRaisesException($initializer)
-    {
-        $this->setExpectedException(InvalidArgumentException::class, 'invalid initializer');
+    public function testPassingInvalidInitializerTypeViaConfigurationRaisesException(
+        $initializer,
+        $contains = 'invalid initializer'
+    ) {
+        $this->setExpectedException(InvalidArgumentException::class, $contains);
         $serviceManager = $this->createContainer([
             'initializers' => [
                 $initializer,

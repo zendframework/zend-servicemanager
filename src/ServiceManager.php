@@ -498,6 +498,8 @@ class ServiceManager implements ServiceLocatorInterface
      * configuration present.
      *
      * @return Proxy\LazyServiceFactory
+     * @throws ServiceNotCreatedException when the lazy service class_map
+     *     configuration is missing
      */
     private function createLazyServiceDelegatorFactory()
     {
@@ -506,7 +508,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         if (! isset($this->lazyServices['class_map'])) {
-            throw new Exception\InvalidArgumentException('Missing "class_map" config key in "lazy_services"');
+            throw new ServiceNotCreatedException('Missing "class_map" config key in "lazy_services"');
         }
 
         $factoryConfig = new ProxyConfiguration();
