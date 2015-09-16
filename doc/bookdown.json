@@ -6,7 +6,8 @@
     {"Configuring the service manager": "book/configuring-the-service-manager.md"},
     {"Delegators": "book/delegators.md"},
     {"Lazy services": "book/lazy-services.md"},
-    {"Plugin managers": "book/plugin-managers.md"}
+    {"Plugin managers": "book/plugin-managers.md"},
+    {"Migration Guide": "book/migration.md"}
   ],
   "target": "./html"
 }
