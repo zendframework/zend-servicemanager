@@ -371,7 +371,7 @@ class ServiceManager implements ServiceLocatorInterface
 
             if (is_string($delegatorFactory) && ! class_exists($delegatorFactory)) {
                 throw new ServiceNotCreatedException(sprintf(
-                    'An invalid delegator was provided. A callable or an instance of "%s" as expected, '
+                    'An invalid delegator was provided. A callable or an instance of "%s" was expected, '
                     . 'but "%s" was received',
                     DelegatorFactoryInterface::class,
                     $delegatorFactory
@@ -384,7 +384,7 @@ class ServiceManager implements ServiceLocatorInterface
 
             if (! is_callable($delegatorFactory)) {
                 throw new ServiceNotCreatedException(sprintf(
-                    'An invalid delegator was provided. A callable or an instance of "%s" as expected, '
+                    'An invalid delegator was provided. A callable or an instance of "%s" was expected, '
                     . 'but "%s" was received',
                     DelegatorFactoryInterface::class,
                     is_object($delegatorFactory) ? get_class($delegatorFactory) : gettype($delegatorFactory)
