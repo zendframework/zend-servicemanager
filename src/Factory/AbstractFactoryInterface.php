@@ -24,8 +24,9 @@ use Interop\Container\ContainerInterface;
 interface AbstractFactoryInterface extends FactoryInterface
 {
     /**
-     * Can create the object?
+     * Can the factory create an instance for the service?
      *
+     * @param  ContainerInterface $container
      * @param  string $requestedName
      * @return bool
      */
