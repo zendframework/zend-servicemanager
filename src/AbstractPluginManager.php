@@ -13,7 +13,18 @@ use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 
 /**
- * Abstract plugin manager
+ * Abstract plugin manager.
+ *
+ * Abstract PluginManagerInterface implementation providing:
+ *
+ * - creation context support. The constructor accepts the parent container
+ *   instance, which is then used when creating instances.
+ * - plugin validation. Implementations may define the `$instanceOf` property
+ *   to indicate what class types constitute valid plugins, omitting the
+ *   requirement to define the `validate()` method.
+ *
+ * The implementation extends `ServiceManager`, thus providing the same set
+ * of capabilities as found in that implementation.
  */
 abstract class AbstractPluginManager extends ServiceManager implements PluginManagerInterface
 {
