@@ -366,8 +366,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         throw new ServiceNotFoundException(sprintf(
-            'An invalid or missing factory was given for creating service "%s". Did you make sure you added the service
-             into the service manager configuration?',
+            'Unable to resolve service "%s" to a factory; are you certain you provided it during configuration?',
             $name
         ));
     }

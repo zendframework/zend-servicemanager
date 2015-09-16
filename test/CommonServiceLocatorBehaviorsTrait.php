@@ -505,7 +505,7 @@ trait CommonServiceLocatorBehaviorsTrait
     public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {
         $serviceManager = $this->createContainer();
-        $this->setExpectedException(ContainerException::class, 'invalid or missing factory');
+        $this->setExpectedException(ContainerException::class, 'Unable to resolve');
         $serviceManager->get('Some\Unknown\Service');
     }
 
