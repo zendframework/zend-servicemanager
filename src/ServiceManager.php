@@ -274,11 +274,25 @@ class ServiceManager implements ServiceLocatorInterface
                     continue;
                 }
 
+                // Error condition; let's find out why.
+
+                // If we still have a string, we have a class name that does not resolve
+                if (is_string($abstractFactory)) {
+                    throw new InvalidArgumentException(sprintf(
+                        'An invalid abstract factory was registered; resolved to class "%s" '
+                        . 'which does not exist; please provide a valid class name resolving '
+                        . 'to an implementation of %s',
+                        $abstractFactory,
+                        AbstractFactoryInterface::class
+                    ));
+                }
+
+                // Otherwise, we have an invalid type.
                 throw new InvalidArgumentException(sprintf(
-                    'An invalid abstract factory was registered. An instance of "%s" was expected, '
+                    'An invalid abstract factory was registered. Expected an instance of "%s", '
                     . 'but "%s" was received',
                     AbstractFactoryInterface::class,
-                    is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory)
+                    (is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory))
                 ));
             }
         }
@@ -294,11 +308,25 @@ class ServiceManager implements ServiceLocatorInterface
                     continue;
                 }
 
+                // Error condition; let's find out why.
+
+                if (is_string($initializer)) {
+                    throw new InvalidArgumentException(sprintf(
+                        'An invalid initializer was registered; resolved to class or function "%s" '
+                        . 'which does not exist; please provide a valid function name or class '
+                        . 'name resolving to an implementation of %s',
+                        $initializer,
+                        InitializerInterface::class
+                    ));
+                }
+
+                // Otherwise, we have an invalid type.
                 throw new InvalidArgumentException(sprintf(
-                    'An invalid initializer was registered. A callable or an instance of "%s" was expected, but
-                    "%s" was received',
+                    'An invalid initializer was registered. Expected a callable, or an instance of '
+                    . '(or string class name resolving to) "%s", '
+                    . 'but "%s" was received',
                     InitializerInterface::class,
-                    is_object($initializer) ? get_class($initializer) : gettype($initializer)
+                    (is_object($initializer) ? get_class($initializer) : gettype($initializer))
                 ));
             }
         }
@@ -391,20 +419,21 @@ class ServiceManager implements ServiceLocatorInterface
                 $delegatorFactory = $this->createLazyServiceDelegatorFactory();
             }
 
-            if (is_string($delegatorFactory) && ! class_exists($delegatorFactory)) {
-                throw new ServiceNotCreatedException(sprintf(
-                    'An invalid delegator was provided. A callable or an instance of "%s" was expected, '
-                    . 'but "%s" was received',
-                    DelegatorFactoryInterface::class,
-                    $delegatorFactory
-                ));
-            }
-
-            if (is_string($delegatorFactory)) {
-                $delegatorFactory = $this->delegators[$name][$index] = new $delegatorFactory();
+            if (is_string($delegatorFactory) && class_exists($delegatorFactory)) {
+                $delegatorFactory = new $delegatorFactory();
             }
 
             if (! is_callable($delegatorFactory)) {
+                if (is_string($delegatorFactory)) {
+                    throw new ServiceNotCreatedException(sprintf(
+                        'An invalid delegator factory was registered; resolved to class or function "%s" '
+                        . 'which does not exist; please provide a valid function name or class name resolving '
+                        . 'to an implementation of %s',
+                        $delegatorFactory,
+                        DelegatorFactoryInterface::class
+                    ));
+                }
+
                 throw new ServiceNotCreatedException(sprintf(
                     'A non-callable delegator, "%s", was provided; expected a callable or '
                     . 'instance of "%s"',
@@ -412,6 +441,8 @@ class ServiceManager implements ServiceLocatorInterface
                     DelegatorFactoryInterface::class
                 ));
             }
+
+            $this->delegators[$name][$index] = $delegatorFactory;
 
             $creationCallback = function () use ($delegatorFactory, $name, $creationCallback, $options) {
                 return $delegatorFactory($this->creationContext, $name, $creationCallback, $options);
