@@ -143,7 +143,7 @@ class LazyServiceIntegrationTest extends TestCase
         $this->assertEquals(['foo' => 'bar'], $options, 'Options returned do not match configuration');
 
         $proxyAutoloadFunctions = $this->getRegisteredProxyAutoloadFunctions();
-        $this->assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader must be registered');
+        $this->assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
     }
 
     /**
@@ -217,7 +217,7 @@ class LazyServiceIntegrationTest extends TestCase
         $this->assertEquals(['foo' => 'bar'], $options, 'Options returned do not match configuration');
 
         $proxyAutoloadFunctions = $this->getRegisteredProxyAutoloadFunctions();
-        $this->assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader must be registered');
+        $this->assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
     }
 
     public function testOnlyOneProxyAutoloaderItsRegisteredOnSubsequentCalls()
@@ -254,7 +254,7 @@ class LazyServiceIntegrationTest extends TestCase
         );
 
         $proxyAutoloadFunctions = $this->getRegisteredProxyAutoloadFunctions();
-        $this->assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader must be registered');
+        $this->assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
     }
 
     public function testRaisesServiceNotFoundExceptionIfRequestedLazyServiceIsNotInClassMap()

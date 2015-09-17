@@ -91,7 +91,7 @@ final class LazyServiceFactoryTest extends TestCase
                     $result = $initializer($wrappedInstance, $this->getMock(LazyLoadingInterface::class));
 
                     $this->assertEquals('fooValue', $wrappedInstance, 'expected callback return value');
-                    $this->assertTrue($result, 'initializer must return true');
+                    $this->assertTrue($result, 'initializer should return true');
 
                     return $expectedService;
                 }
