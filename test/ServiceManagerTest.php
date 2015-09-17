@@ -103,4 +103,35 @@ class ServiceManagerTest extends TestCase
         );
         $this->assertEquals('bar', $instance->foo);
     }
+
+    public function cacheProvider()
+    {
+        return [
+            [true, true, true],
+            [true, false, false],
+            [false, false, false],
+            [false, true, true]
+        ];
+    }
+
+    /**
+     * @dataProvider cacheProvider
+     */
+    public function testCacheability($sharedByDefault, $serviceShared, $shouldBeSameInstance)
+    {
+        $serviceManager = new ServiceManager([
+            'shared_by_default' => $sharedByDefault,
+            'factories'         => [
+                stdClass::class => InvokableFactory::class,
+            ],
+            'shared' => [
+                stdClass::class => $serviceShared
+            ]
+        ]);
+
+        $a = $serviceManager->get(stdClass::class);
+        $b = $serviceManager->get(stdClass::class);
+
+        $this->assertEquals($shouldBeSameInstance, $a === $b);
+    }
 }
