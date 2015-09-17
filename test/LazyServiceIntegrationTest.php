@@ -79,7 +79,7 @@ class LazyServiceIntegrationTest extends TestCase
         $message = $message ?: 'Expected empty proxy directory; found files';
         $count = 0;
         foreach ($this->listProxyFiles() as $file) {
-            $this->assertFail($message);
+            $this->fail($message);
         }
         $this->assertEquals(0, $count);
     }
