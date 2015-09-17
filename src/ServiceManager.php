@@ -433,8 +433,7 @@ class ServiceManager implements ServiceLocatorInterface
                 }
 
                 throw new ServiceNotCreatedException(sprintf(
-                    'A non-callable delegator, "%s", was provided; expected a callable or '
-                    . 'instance of "%s"',
+                    'A non-callable delegator, "%s", was provided; expected a callable or instance of "%s"',
                     is_object($delegatorFactory) ? get_class($delegatorFactory) : gettype($delegatorFactory),
                     DelegatorFactoryInterface::class
                 ));
