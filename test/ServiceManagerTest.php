@@ -104,20 +104,22 @@ class ServiceManagerTest extends TestCase
         $this->assertEquals('bar', $instance->foo);
     }
 
-    public function cacheProvider()
+    public function shareProvider()
     {
+        // @codingStandardsIgnoreStart
         return [
-            [true, true, true],
-            [true, false, false],
-            [false, false, false],
-            [false, true, true]
+            [true,  true,  true],  // [shared by default, service is explicitly shared => should be shared]
+            [true,  false, false], // [shared by default, service is explicitly NOT shared => should NOT be shared]
+            [false, false, false], // [NOT shared by default, service is explicitly NOT shared => should NOT be shared]
+            [false, true,  true]   // [NOT shared by default, service is explicitly shared => should be shared]
         ];
+        // @codingStandardsIgnoreEnd
     }
 
     /**
-     * @dataProvider cacheProvider
+     * @dataProvider shareProvider
      */
-    public function testCacheability($sharedByDefault, $serviceShared, $shouldBeSameInstance)
+    public function testShareability($sharedByDefault, $serviceShared, $shouldBeSameInstance)
     {
         $serviceManager = new ServiceManager([
             'shared_by_default' => $sharedByDefault,
