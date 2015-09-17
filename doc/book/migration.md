@@ -721,5 +721,5 @@ container should never be composed by objects.
 The following classes have changes:
 
 - `Zend\ServiceManager\Proxy\LazyServiceFactory` is now marked `final`, and
-   extends `Zend\ServiceManager\Proxy\DelegatorFactoryInterface`. Its
+   implements `Zend\ServiceManager\Proxy\DelegatorFactoryInterface`. Its
    dependencies and capabilities remain the same.
