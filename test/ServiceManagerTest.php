@@ -106,12 +106,19 @@ class ServiceManagerTest extends TestCase
 
     public function shareProvider()
     {
+        $sharedByDefault          = true;
+        $serviceShared            = true;
+        $serviceDefined           = true;
+        $shouldReturnSameInstance = true;
+
         // @codingStandardsIgnoreStart
         return [
-            [true,  true,  true],  // [shared by default, service is explicitly shared => should be shared]
-            [true,  false, false], // [shared by default, service is explicitly NOT shared => should NOT be shared]
-            [false, false, false], // [NOT shared by default, service is explicitly NOT shared => should NOT be shared]
-            [false, true,  true]   // [NOT shared by default, service is explicitly shared => should be shared]
+            '[shared by default, service is explicitly shared => should be shared]'             => [$sharedByDefault,  $serviceShared,  $serviceDefined, $shouldReturnSameInstance],
+            '[shared by default, service is explicitly NOT shared => should NOT be shared]'     => [$sharedByDefault,  !$serviceShared, $serviceDefined, !$shouldReturnSameInstance],
+            '[NOT shared by default, service is explicitly NOT shared => should NOT be shared]' => [!$sharedByDefault, !$serviceShared, $serviceDefined, !$shouldReturnSameInstance],
+            '[NOT shared by default, service is explicitly shared => should be shared]'         => [!$sharedByDefault, $serviceShared,  $serviceDefined, $shouldReturnSameInstance],
+            '[shared by default, service is not defined => should be shared]'                   => [$sharedByDefault,  $serviceShared,  !$serviceDefined, $shouldReturnSameInstance],
+            '[NOT shared by default, service not defined => should NOT be shared]'              => [!$sharedByDefault,  !$serviceShared, !$serviceDefined, !$shouldReturnSameInstance],
         ];
         // @codingStandardsIgnoreEnd
     }
@@ -119,17 +126,22 @@ class ServiceManagerTest extends TestCase
     /**
      * @dataProvider shareProvider
      */
-    public function testShareability($sharedByDefault, $serviceShared, $shouldBeSameInstance)
+    public function testShareability($sharedByDefault, $serviceShared, $serviceDefined, $shouldBeSameInstance)
     {
-        $serviceManager = new ServiceManager([
+        $config = [
             'shared_by_default' => $sharedByDefault,
             'factories'         => [
                 stdClass::class => InvokableFactory::class,
-            ],
-            'shared' => [
-                stdClass::class => $serviceShared
             ]
-        ]);
+        ];
+
+        if ($serviceDefined) {
+            $config['shared'] = [
+                stdClass::class => $serviceShared
+            ];
+        }
+
+        $serviceManager = new ServiceManager($config);
 
         $a = $serviceManager->get(stdClass::class);
         $b = $serviceManager->get(stdClass::class);
