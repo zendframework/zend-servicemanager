@@ -15,6 +15,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RecursiveRegexIterator;
 use RegexIterator;
+use stdClass;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\InvokableFactory;
@@ -226,7 +227,7 @@ class LazyServiceIntegrationTest extends TestCase
             'lazy_services' => [
                 'class_map' => [
                     InvokableObject::class => InvokableObject::class,
-                    \stdClass::class => \stdClass::class,
+                    stdClass::class => stdClass::class,
                 ],
                 'proxies_namespace'  => 'TestAssetProxy',
             ],
@@ -235,7 +236,7 @@ class LazyServiceIntegrationTest extends TestCase
             ],
             'delegators' => [
                 InvokableObject::class => [LazyServiceFactory::class],
-                \stdClass::class => [LazyServiceFactory::class],
+                stdClass::class => [LazyServiceFactory::class],
             ],
         ];
 
@@ -246,11 +247,11 @@ class LazyServiceIntegrationTest extends TestCase
             $instance,
             'Service returned does not extend ' . InvokableObject::class
         );
-        $instance  = $container->build(\stdClass::class, ['foo' => 'bar']);
+        $instance  = $container->build(stdClass::class, ['foo' => 'bar']);
         $this->assertInstanceOf(
-            \stdClass::class,
+            stdClass::class,
             $instance,
-            'Service returned does not extend ' . \stdClass::class
+            'Service returned does not extend ' . stdClass::class
         );
 
         $proxyAutoloadFunctions = $this->getRegisteredProxyAutoloadFunctions();
