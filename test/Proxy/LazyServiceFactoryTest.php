@@ -22,7 +22,7 @@ use Zend\ServiceManager\Proxy\LazyServiceFactory;
 /**
  * @covers \Zend\ServiceManager\Proxy\LazyServiceFactory
  */
-final class LazyServiceFactoryTest extends TestCase
+class LazyServiceFactoryTest extends TestCase
 {
     /**
      * @var LazyServiceFactory
