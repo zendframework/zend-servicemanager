@@ -17,7 +17,7 @@ use Interop\Container\ContainerInterface;
  * A factory is an callable object that is able to create an object. It is
  * given the instance of the service locator, the requested name of the class
  * you want to create, and any additional options that could be used to
- * configure the isntance state.
+ * configure the instance state.
  */
 interface FactoryInterface
 {
