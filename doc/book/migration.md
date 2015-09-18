@@ -278,7 +278,7 @@ developers will interact. It has the following changes in v3:
 - `setAllowOverride()`/`getAllowOverride()`; since instances are now immutable,
   these no longer had any meaning.
 - `setShareByDefault()`/`shareByDefault()`; this can be passed during
-  instantation or via `withConfig()`.
+  instantiation or via `withConfig()`.
 - `setThrowExceptionInCreate()`/`getThrowExceptionInCreate()`; exceptions are
   *always* thrown when errors are encountered during service instance creation.
 - `setRetrieveFromPeeringManagerFirst()`/`retrieveFromPeeringManagerFirst()`;
@@ -382,7 +382,7 @@ Assuming that `AbstractFactoryThatAlwaysResolves` will resolve any service
 
 ```php
 $has = $container->has('MyClass');            // always true; factory is defined
-                                              // forthe service.
+                                              // for the service.
 $has = $container->has('AnotherClass');       // false; no factory is defined
                                               // for the service, and not
                                               // looking in abstract factories.

@@ -16,7 +16,7 @@ use Interop\Container\ContainerInterface;
  *
  * An abstract factory extends the factory interface, but also has an
  * additional "canCreateService" method, which is called to check if the
- * abstract factory can create an instance for the given serivce. You should
+ * abstract factory can create an instance for the given service. You should
  * limit the number of abstract factories to ensure good performance. Starting
  * from ServiceManager v3, remember that you can also attach multiple names to
  * the same factory, which reduces the need for abstract factories.
