@@ -494,7 +494,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $contains = 'invalid abstract factory'
     ) {
         $this->setExpectedException(InvalidArgumentException::class, $contains);
-        $serviceManager = $this->createContainer([
+        $this->createContainer([
             'abstract_factories' => [
                 $factory,
             ],
@@ -534,7 +534,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $contains = 'invalid initializer'
     ) {
         $this->setExpectedException(InvalidArgumentException::class, $contains);
-        $serviceManager = $this->createContainer([
+        $this->createContainer([
             'initializers' => [
                 $initializer,
             ],
@@ -567,9 +567,6 @@ trait CommonServiceLocatorBehaviorsTrait
         $delegator,
         $contains = 'non-callable delegator'
     ) {
-        $config = [
-            'option' => 'OPTIONED',
-        ];
         $serviceManager = $this->createContainer([
             'factories' => [
                 stdClass::class => InvokableFactory::class,
