@@ -420,7 +420,7 @@ var_dump($object1 === $object2); // prints "false"
 So far, we have covered examples where services are created through factories
 (or abstract factories). The factory is able to create the object itself.
 
-Occasionaly you may need to pass additional options that act as a "context".
+Occasionally you may need to pass additional options that act as a "context".
 For instance, we could have a `StringLengthValidator` service registered.
 However, this validator can have multiple options, such as `min` and `max`.
 Because this is dependant on the caller context (or might even be retrieved
