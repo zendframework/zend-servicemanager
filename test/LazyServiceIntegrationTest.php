@@ -22,7 +22,7 @@ use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 
 /**
- * @covers \Zend\ServiceManager\Proxy\LazyServiceFactory
+ * @covers \Zend\ServiceManager\ServiceManager
  */
 class LazyServiceIntegrationTest extends TestCase
 {
