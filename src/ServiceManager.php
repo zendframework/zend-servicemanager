@@ -275,74 +275,106 @@ class ServiceManager implements ServiceLocatorInterface
         // For abstract factories and initializers, we always directly
         // instantiate them to avoid checks during service construction.
         if (isset($config['abstract_factories'])) {
-            foreach ($config['abstract_factories'] as $abstractFactory) {
-                if (is_string($abstractFactory) && class_exists($abstractFactory)) {
-                    $abstractFactory = new $abstractFactory();
-                }
-
-                if ($abstractFactory instanceof AbstractFactoryInterface) {
-                    $this->abstractFactories[] = $abstractFactory;
-                    continue;
-                }
-
-                // Error condition; let's find out why.
-
-                // If we still have a string, we have a class name that does not resolve
-                if (is_string($abstractFactory)) {
-                    throw new InvalidArgumentException(sprintf(
-                        'An invalid abstract factory was registered; resolved to class "%s" '
-                        . 'which does not exist; please provide a valid class name resolving '
-                        . 'to an implementation of %s',
-                        $abstractFactory,
-                        AbstractFactoryInterface::class
-                    ));
-                }
-
-                // Otherwise, we have an invalid type.
-                throw new InvalidArgumentException(sprintf(
-                    'An invalid abstract factory was registered. Expected an instance of "%s", '
-                    . 'but "%s" was received',
-                    AbstractFactoryInterface::class,
-                    (is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory))
-                ));
-            }
+            $this->resolveAbstractFactories($config['abstract_factories']);
         }
 
         if (isset($config['initializers'])) {
-            foreach ($config['initializers'] as $initializer) {
-                if (is_string($initializer) && class_exists($initializer)) {
-                    $initializer = new $initializer();
-                }
-
-                if (is_callable($initializer)) {
-                    $this->initializers[] = $initializer;
-                    continue;
-                }
-
-                // Error condition; let's find out why.
-
-                if (is_string($initializer)) {
-                    throw new InvalidArgumentException(sprintf(
-                        'An invalid initializer was registered; resolved to class or function "%s" '
-                        . 'which does not exist; please provide a valid function name or class '
-                        . 'name resolving to an implementation of %s',
-                        $initializer,
-                        InitializerInterface::class
-                    ));
-                }
-
-                // Otherwise, we have an invalid type.
-                throw new InvalidArgumentException(sprintf(
-                    'An invalid initializer was registered. Expected a callable, or an instance of '
-                    . '(or string class name resolving to) "%s", '
-                    . 'but "%s" was received',
-                    InitializerInterface::class,
-                    (is_object($initializer) ? get_class($initializer) : gettype($initializer))
-                ));
-            }
+            $this->resolveInitializers($config['initializers']);
         }
 
         $this->resolveAliases();
+    }
+
+    /**
+     * Instantiate abstract factories for to avoid checks during service construction.
+     *
+     * @param string[]|AbstractFactoryInterface[] $abstractFactories
+     *
+     * @return void
+     */
+    private function resolveAbstractFactories(array $abstractFactories)
+    {
+        foreach ($abstractFactories as $abstractFactory) {
+            if (is_string($abstractFactory) && class_exists($abstractFactory)) {
+                $abstractFactory = new $abstractFactory();
+            }
+
+            if ($abstractFactory instanceof AbstractFactoryInterface) {
+                $this->abstractFactories[] = $abstractFactory;
+                continue;
+            }
+
+            // Error condition; let's find out why.
+
+            // If we still have a string, we have a class name that does not resolve
+            if (is_string($abstractFactory)) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'An invalid abstract factory was registered; resolved to class "%s" ' .
+                        'which does not exist; please provide a valid class name resolving ' .
+                        'to an implementation of %s',
+                        $abstractFactory,
+                        AbstractFactoryInterface::class
+                    )
+                );
+            }
+
+            // Otherwise, we have an invalid type.
+            throw new InvalidArgumentException(
+                sprintf(
+                    'An invalid abstract factory was registered. Expected an instance of "%s", ' .
+                    'but "%s" was received',
+                    AbstractFactoryInterface::class,
+                    (is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory))
+                )
+            );
+        }
+    }
+
+    /**
+     * Instantiate initializers for to avoid checks during service construction.
+     *
+     * @param string[]|callable[]|InitializerInterface[] $initializers
+     *
+     * @return void
+     */
+    private function resolveInitializers(array $initializers)
+    {
+        foreach ($initializers as $initializer) {
+            if (is_string($initializer) && class_exists($initializer)) {
+                $initializer = new $initializer();
+            }
+
+            if (is_callable($initializer)) {
+                $this->initializers[] = $initializer;
+                continue;
+            }
+
+            // Error condition; let's find out why.
+
+            if (is_string($initializer)) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'An invalid initializer was registered; resolved to class or function "%s" ' .
+                        'which does not exist; please provide a valid function name or class ' .
+                        'name resolving to an implementation of %s',
+                        $initializer,
+                        InitializerInterface::class
+                    )
+                );
+            }
+
+            // Otherwise, we have an invalid type.
+            throw new InvalidArgumentException(
+                sprintf(
+                    'An invalid initializer was registered. Expected a callable, or an instance of ' .
+                    '(or string class name resolving to) "%s", ' .
+                    'but "%s" was received',
+                    InitializerInterface::class,
+                    (is_object($initializer) ? get_class($initializer) : gettype($initializer))
+                )
+            );
+        }
     }
 
     /**
