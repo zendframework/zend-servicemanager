@@ -11,6 +11,8 @@ namespace ZendTest\ServiceManager;
 
 use DateTime;
 use Interop\Container\Exception\ContainerException;
+use Maks3w\PhpUnitMethodsTrait\Framework\TestCaseTrait;
+use PHPUnit_Framework_Assert as Assert;
 use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
@@ -19,6 +21,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
+use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\FailingAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
@@ -26,11 +29,18 @@ use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
 
 trait CommonServiceLocatorBehaviorsTrait
 {
+    use TestCaseTrait;
+
     /**
      * The creation context container; used in some mocks for comparisons; set during createContainer.
      */
     protected $creationContext;
 
+    /**
+     * @param array $config
+     *
+     * @return ServiceManager
+     */
     abstract public function createContainer(array $config = []);
 
     public function testIsSharedByDefault()
@@ -44,7 +54,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $object1 = $serviceManager->get(stdClass::class);
         $object2 = $serviceManager->get(stdClass::class);
 
-        $this->assertSame($object1, $object2);
+        Assert::assertSame($object1, $object2);
     }
 
     public function testCanDisableSharedByDefault()
@@ -59,7 +69,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $object1 = $serviceManager->get(stdClass::class);
         $object2 = $serviceManager->get(stdClass::class);
 
-        $this->assertNotSame($object1, $object2);
+        Assert::assertNotSame($object1, $object2);
     }
 
     public function testCanDisableSharedForSingleService()
@@ -76,7 +86,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $object1 = $serviceManager->get(stdClass::class);
         $object2 = $serviceManager->get(stdClass::class);
 
-        $this->assertNotSame($object1, $object2);
+        Assert::assertNotSame($object1, $object2);
     }
 
     public function testCanEnableSharedForSingleService()
@@ -94,7 +104,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $object1 = $serviceManager->get(stdClass::class);
         $object2 = $serviceManager->get(stdClass::class);
 
-        $this->assertSame($object1, $object2);
+        Assert::assertSame($object1, $object2);
     }
 
     public function testCanBuildObjectWithInvokableFactory()
@@ -107,8 +117,8 @@ trait CommonServiceLocatorBehaviorsTrait
 
         $object = $serviceManager->build(InvokableObject::class, ['foo' => 'bar']);
 
-        $this->assertInstanceOf(InvokableObject::class, $object);
-        $this->assertEquals(['foo' => 'bar'], $object->options);
+        Assert::assertInstanceOf(InvokableObject::class, $object);
+        Assert::assertEquals(['foo' => 'bar'], $object->options);
     }
 
     public function testCanCreateObjectWithClosureFactory()
@@ -116,14 +126,14 @@ trait CommonServiceLocatorBehaviorsTrait
         $serviceManager = $this->createContainer([
             'factories' => [
                 stdClass::class => function (ServiceLocatorInterface $serviceLocator, $className) {
-                    $this->assertEquals(stdClass::class, $className);
+                    Assert::assertEquals(stdClass::class, $className);
                     return new stdClass();
                 }
             ]
         ]);
 
         $object = $serviceManager->get(stdClass::class);
-        $this->assertInstanceOf(stdClass::class, $object);
+        Assert::assertInstanceOf(stdClass::class, $object);
     }
 
     public function testCanCreateServiceWithAbstractFactory()
@@ -151,9 +161,9 @@ trait CommonServiceLocatorBehaviorsTrait
 
         $object = $serviceManager->get('bar');
 
-        $this->assertInstanceOf(InvokableObject::class, $object);
-        $this->assertTrue($serviceManager->has('bar'));
-        $this->assertFalse($serviceManager->has('baz'));
+        Assert::assertInstanceOf(InvokableObject::class, $object);
+        Assert::assertTrue($serviceManager->has('bar'));
+        Assert::assertFalse($serviceManager->has('baz'));
     }
 
     public function testCanCheckServiceExistenceWithoutCheckingAbstractFactories()
@@ -164,8 +174,8 @@ trait CommonServiceLocatorBehaviorsTrait
             ]
         ]);
 
-        $this->assertTrue($serviceManager->has(stdClass::class));
-        $this->assertFalse($serviceManager->has(DateTime::class));
+        Assert::assertTrue($serviceManager->has(stdClass::class));
+        Assert::assertFalse($serviceManager->has(DateTime::class));
     }
 
     public function testCanCheckServiceExistenceWithCheckingAbstractFactories()
@@ -179,8 +189,8 @@ trait CommonServiceLocatorBehaviorsTrait
             ]
         ]);
 
-        $this->assertTrue($serviceManager->has(stdClass::class, true));
-        $this->assertTrue($serviceManager->has(DateTime::class, true));
+        Assert::assertTrue($serviceManager->has(stdClass::class, true));
+        Assert::assertTrue($serviceManager->has(DateTime::class, true));
     }
 
     public function testBuildNeverSharesInstances()
@@ -197,7 +207,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $object1 = $serviceManager->build(stdClass::class);
         $object2 = $serviceManager->build(stdClass::class, ['foo' => 'bar']);
 
-        $this->assertNotSame($object1, $object2);
+        Assert::assertNotSame($object1, $object2);
     }
 
     public function testInitializersAreRunAfterCreation()
@@ -213,9 +223,9 @@ trait CommonServiceLocatorBehaviorsTrait
             ]
         ]);
 
-        $initializer->expects($this->once())
+        $initializer->expects(TestCase::once())
                     ->method('__invoke')
-                    ->with($this->creationContext, $this->isInstanceOf(stdClass::class));
+                    ->with($this->creationContext, TestCase::isInstanceOf(stdClass::class));
 
         // We call it twice to make sure that the initializer is only called once
 
@@ -250,14 +260,14 @@ trait CommonServiceLocatorBehaviorsTrait
             ]
         ]);
 
-        $this->assertTrue($serviceManager->has(DateTime::class));
-        $this->assertFalse($serviceManager->has(stdClass::class));
+        Assert::assertTrue($serviceManager->has(DateTime::class));
+        Assert::assertFalse($serviceManager->has(stdClass::class));
 
-        $this->assertTrue($newServiceManager->has(DateTime::class));
-        $this->assertTrue($newServiceManager->has(stdClass::class));
+        Assert::assertTrue($newServiceManager->has(DateTime::class));
+        Assert::assertTrue($newServiceManager->has(stdClass::class));
 
         // Make sure the context has been updated for the new container
-        $this->assertAttributeSame($newServiceManager, 'creationContext', $newServiceManager);
+        Assert::assertAttributeSame($newServiceManager, 'creationContext', $newServiceManager);
     }
 
     public function testOverrideConfigWhenMerged()
@@ -277,8 +287,8 @@ trait CommonServiceLocatorBehaviorsTrait
             ]
         ]);
 
-        $firstFactory->expects($this->never())->method('__invoke');
-        $secondFactory->expects($this->once())->method('__invoke');
+        $firstFactory->expects(TestCase::never())->method('__invoke');
+        $secondFactory->expects(TestCase::once())->method('__invoke');
 
         $newServiceManager->get(DateTime::class);
     }
@@ -293,7 +303,7 @@ trait CommonServiceLocatorBehaviorsTrait
                 stdClass::class => InvokableFactory::class,
             ],
         ]);
-        $this->assertFalse($serviceManager->has('Some\Made\Up\Entry'));
+        Assert::assertFalse($serviceManager->has('Some\Made\Up\Entry'));
     }
 
     /**
@@ -306,7 +316,7 @@ trait CommonServiceLocatorBehaviorsTrait
                 stdClass::class => new stdClass,
             ],
         ]);
-        $this->assertTrue($serviceManager->has(stdClass::class));
+        Assert::assertTrue($serviceManager->has(stdClass::class));
     }
 
     /**
@@ -319,7 +329,7 @@ trait CommonServiceLocatorBehaviorsTrait
                 stdClass::class => InvokableFactory::class,
             ],
         ]);
-        $this->assertTrue($serviceManager->has(stdClass::class));
+        Assert::assertTrue($serviceManager->has(stdClass::class));
     }
 
     /**
@@ -336,7 +346,7 @@ trait CommonServiceLocatorBehaviorsTrait
             ],
         ]);
 
-        $this->assertFalse($serviceManager->has(DateTime::class));
+        Assert::assertFalse($serviceManager->has(DateTime::class));
     }
 
     public function abstractFactories()
@@ -359,7 +369,7 @@ trait CommonServiceLocatorBehaviorsTrait
             ],
         ]);
 
-        $this->assertSame($expected, $serviceManager->has(DateTime::class, true));
+        Assert::assertSame($expected, $serviceManager->has(DateTime::class, true));
     }
 
     /**
@@ -405,40 +415,40 @@ trait CommonServiceLocatorBehaviorsTrait
         ]);
 
         $dateTime = $serviceManager->get(DateTime::class);
-        $this->assertInstanceOf(DateTime::class, $dateTime, 'DateTime service did not resolve as expected');
+        Assert::assertInstanceOf(DateTime::class, $dateTime, 'DateTime service did not resolve as expected');
         $notShared = $serviceManager->get(DateTime::class);
-        $this->assertInstanceOf(DateTime::class, $notShared, 'DateTime service did not re-resolve as expected');
-        $this->assertNotSame(
+        Assert::assertInstanceOf(DateTime::class, $notShared, 'DateTime service did not re-resolve as expected');
+        Assert::assertNotSame(
             $dateTime,
             $notShared,
             'Expected unshared instances for DateTime service but received shared instances'
         );
 
         $config = $serviceManager->get('config');
-        $this->assertInternalType('array', $config, 'Config service did not resolve as expected');
-        $this->assertSame(
+        Assert::assertInternalType('array', $config, 'Config service did not resolve as expected');
+        Assert::assertSame(
             $config,
             $serviceManager->get('config'),
             'Config service resolved as unshared instead of shared'
         );
 
         $stdClass = $serviceManager->get(stdClass::class);
-        $this->assertInstanceOf(stdClass::class, $stdClass, 'stdClass service did not resolve as expected');
-        $this->assertSame(
+        Assert::assertInstanceOf(stdClass::class, $stdClass, 'stdClass service did not resolve as expected');
+        Assert::assertSame(
             $stdClass,
             $serviceManager->get(stdClass::class),
             'stdClass service should be shared, but resolved as unshared'
         );
-        $this->assertTrue(
+        Assert::assertTrue(
             isset($stdClass->foo),
             'Expected delegator to inject "foo" property in stdClass service, but it was not'
         );
-        $this->assertEquals('bar', $stdClass->foo, 'stdClass "foo" property was not injected correctly');
-        $this->assertTrue(
+        Assert::assertEquals('bar', $stdClass->foo, 'stdClass "foo" property was not injected correctly');
+        Assert::assertTrue(
             isset($stdClass->bar),
             'Expected initializer to inject "bar" property in stdClass service, but it was not'
         );
-        $this->assertEquals('baz', $stdClass->bar, 'stdClass "bar" property was not injected correctly');
+        Assert::assertEquals('baz', $stdClass->bar, 'stdClass "bar" property was not injected correctly');
     }
 
     /**
@@ -453,7 +463,7 @@ trait CommonServiceLocatorBehaviorsTrait
         ]);
 
         $dateTime = $serviceManager->get(DateTime::class);
-        $this->assertInstanceOf(DateTime::class, $dateTime);
+        Assert::assertInstanceOf(DateTime::class, $dateTime);
     }
 
     public function invalidFactories()
@@ -487,7 +497,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $contains = 'invalid abstract factory'
     ) {
         $this->setExpectedException(InvalidArgumentException::class, $contains);
-        $serviceManager = $this->createContainer([
+        $this->createContainer([
             'abstract_factories' => [
                 $factory,
             ],
@@ -506,9 +516,9 @@ trait CommonServiceLocatorBehaviorsTrait
         ]);
 
         $instance = $serviceManager->get(stdClass::class);
-        $this->assertInstanceOf(stdClass::class, $instance);
-        $this->assertTrue(isset($instance->foo), '"foo" property was not injected by initializer');
-        $this->assertEquals('bar', $instance->foo, '"foo" property was not properly injected');
+        Assert::assertInstanceOf(stdClass::class, $instance);
+        Assert::assertTrue(isset($instance->foo), '"foo" property was not injected by initializer');
+        Assert::assertEquals('bar', $instance->foo, '"foo" property was not properly injected');
     }
 
     public function invalidInitializers()
@@ -527,7 +537,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $contains = 'invalid initializer'
     ) {
         $this->setExpectedException(InvalidArgumentException::class, $contains);
-        $serviceManager = $this->createContainer([
+        $this->createContainer([
             'initializers' => [
                 $initializer,
             ],
@@ -560,9 +570,6 @@ trait CommonServiceLocatorBehaviorsTrait
         $delegator,
         $contains = 'non-callable delegator'
     ) {
-        $config = [
-            'option' => 'OPTIONED',
-        ];
         $serviceManager = $this->createContainer([
             'factories' => [
                 stdClass::class => InvokableFactory::class,
