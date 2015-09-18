@@ -103,4 +103,49 @@ class ServiceManagerTest extends TestCase
         );
         $this->assertEquals('bar', $instance->foo);
     }
+
+    public function shareProvider()
+    {
+        $sharedByDefault          = true;
+        $serviceShared            = true;
+        $serviceDefined           = true;
+        $shouldReturnSameInstance = true;
+
+        // @codingStandardsIgnoreStart
+        return [
+            '[shared by default, service is explicitly shared => should be shared]'             => [$sharedByDefault,  $serviceShared,  $serviceDefined, $shouldReturnSameInstance],
+            '[shared by default, service is explicitly NOT shared => should NOT be shared]'     => [$sharedByDefault,  !$serviceShared, $serviceDefined, !$shouldReturnSameInstance],
+            '[NOT shared by default, service is explicitly NOT shared => should NOT be shared]' => [!$sharedByDefault, !$serviceShared, $serviceDefined, !$shouldReturnSameInstance],
+            '[NOT shared by default, service is explicitly shared => should be shared]'         => [!$sharedByDefault, $serviceShared,  $serviceDefined, $shouldReturnSameInstance],
+            '[shared by default, service is not defined => should be shared]'                   => [$sharedByDefault,  $serviceShared,  !$serviceDefined, $shouldReturnSameInstance],
+            '[NOT shared by default, service not defined => should NOT be shared]'              => [!$sharedByDefault,  !$serviceShared, !$serviceDefined, !$shouldReturnSameInstance],
+        ];
+        // @codingStandardsIgnoreEnd
+    }
+
+    /**
+     * @dataProvider shareProvider
+     */
+    public function testShareability($sharedByDefault, $serviceShared, $serviceDefined, $shouldBeSameInstance)
+    {
+        $config = [
+            'shared_by_default' => $sharedByDefault,
+            'factories'         => [
+                stdClass::class => InvokableFactory::class,
+            ]
+        ];
+
+        if ($serviceDefined) {
+            $config['shared'] = [
+                stdClass::class => $serviceShared
+            ];
+        }
+
+        $serviceManager = new ServiceManager($config);
+
+        $a = $serviceManager->get(stdClass::class);
+        $b = $serviceManager->get(stdClass::class);
+
+        $this->assertEquals($shouldBeSameInstance, $a === $b);
+    }
 }
