@@ -10,6 +10,7 @@
 namespace Zend\ServiceManager;
 
 use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
 use Zend\ServiceManager\Exception;
 
 /**
@@ -27,6 +28,7 @@ interface ServiceLocatorInterface extends ContainerInterface
      *     factory could be found to create the instance.
      * @throws Exception\ServiceNotCreatedException If factory/delegator fails
      *     to create the instance.
+     * @throws ContainerException if any other error occurs
      */
     public function build($name, array $options = null);
 }
