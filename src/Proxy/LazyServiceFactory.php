@@ -47,7 +47,7 @@ final class LazyServiceFactory implements DelegatorFactoryInterface
     /**
      * {@inheritDoc}
      *
-     * @return object|\ProxyManager\Proxy\LazyLoadingInterface|\ProxyManager\Proxy\ValueHolderInterface
+     * @return \ProxyManager\Proxy\VirtualProxyInterface
      */
     public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null)
     {

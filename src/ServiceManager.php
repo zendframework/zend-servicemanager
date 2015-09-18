@@ -241,23 +241,34 @@ class ServiceManager implements ServiceLocatorInterface
      */
     protected function configure(array $config)
     {
-        $this->services        = (isset($config['services']) ? $config['services'] : []) + $this->services;
-        $this->factories       = (isset($config['factories']) ? $config['factories'] : []) + $this->factories;
-        $this->delegators      = array_merge_recursive($this->delegators, isset($config['delegators'])
-            ? $config['delegators']
-            : []);
-        $this->shared          = (isset($config['shared']) ? $config['shared'] : []) + $this->shared;
-        $this->aliases         = (isset($config['aliases']) ? $config['aliases'] : []) + $this->aliases;
-        $this->lazyServices    = array_merge_recursive($this->lazyServices, isset($config['lazy_services'])
-            ? $config['lazy_services']
-            : []);
-        $this->sharedByDefault = isset($config['shared_by_default'])
-            ? $config['shared_by_default']
-            : $this->sharedByDefault;
+        if (isset($config['services'])) {
+            $this->services = $config['services'] + $this->services;
+        }
+
+        if (isset($config['factories'])) {
+            $this->factories = $config['factories'] + $this->factories;
+        }
+
+        if (isset($config['delegators'])) {
+            $this->delegators = array_merge_recursive($this->delegators, $config['delegators']);
+        }
+
+        if (isset($config['shared'])) {
+            $this->shared = $config['shared'] + $this->shared;
+        }
+
+        if (isset($config['aliases'])) {
+            $this->aliases = $config['aliases'] + $this->aliases;
+        }
+
+        if (isset($config['shared_by_default'])) {
+            $this->sharedByDefault = $config['shared_by_default'];
+        }
 
         // If lazy service configuration was provided, reset the lazy services
         // delegator factory.
         if (isset($config['lazy_services']) && ! empty($config['lazy_services'])) {
+            $this->lazyServices          = array_merge_recursive($this->lazyServices, $config['lazy_services']);
             $this->lazyServicesDelegator = null;
         }
 
@@ -435,8 +446,7 @@ class ServiceManager implements ServiceLocatorInterface
                 }
 
                 throw new ServiceNotCreatedException(sprintf(
-                    'A non-callable delegator, "%s", was provided; expected a callable or '
-                    . 'instance of "%s"',
+                    'A non-callable delegator, "%s", was provided; expected a callable or instance of "%s"',
                     is_object($delegatorFactory) ? get_class($delegatorFactory) : gettype($delegatorFactory),
                     DelegatorFactoryInterface::class
                 ));
