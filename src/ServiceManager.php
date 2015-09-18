@@ -59,7 +59,7 @@ class ServiceManager implements ServiceLocatorInterface
     protected $creationContext;
 
     /**
-     * @var string[]|DelegatorFactoryInterface[]
+     * @var string[][]|DelegatorFactoryInterface[][]
      */
     protected $delegators = [];
 
