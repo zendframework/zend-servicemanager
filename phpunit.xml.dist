@@ -23,12 +23,5 @@
 
     <php>
         <ini name="date.timezone" value="UTC"/>
-
-        <!-- OB_ENABLED should be enabled for some tests to check if all
-             functionality works as expected. Such tests include those for
-             Zend\Soap and Zend\Session, which require that headers not be sent
-             in order to work. -->
-        <env name="TESTS_ZEND_OB_ENABLED" value="false" />
-
     </php>
 </phpunit>
