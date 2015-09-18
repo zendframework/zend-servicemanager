@@ -18,6 +18,7 @@
         "container-interop/container-interop": "~1.0"
     },
     "require-dev": {
+        "maks3w/phpunit-methods-trait": "^4.6",
         "phpunit/phpunit": "~4.6",
         "ocramius/proxy-manager": "~1.0",
         "squizlabs/php_codesniffer": "^2.0@dev"

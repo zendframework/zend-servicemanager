@@ -11,6 +11,7 @@ namespace ZendTest\ServiceManager;
 
 use DateTime;
 use Interop\Container\Exception\ContainerException;
+use Maks3w\PhpUnitMethodsTrait\Framework\TestCaseTrait;
 use PHPUnit_Framework_Assert as Assert;
 use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
@@ -28,6 +29,8 @@ use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
 
 trait CommonServiceLocatorBehaviorsTrait
 {
+    use TestCaseTrait;
+
     /**
      * The creation context container; used in some mocks for comparisons; set during createContainer.
      */
