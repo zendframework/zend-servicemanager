@@ -147,7 +147,7 @@ return [
     'aliases' => [
         'MyClass' => 'AnotherClass',
     ],
-    'invokables' => [
+    'factories' => [
         'AnotherClass' => InvokableFactory::class,
     ],
 ];
