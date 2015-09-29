@@ -212,6 +212,10 @@ class ServiceManager implements ServiceLocatorInterface
      * Valid top keys are:
      *
      * - services: service name => service instance pairs
+     * - invokables: service name => class name pairs for classes that do not
+     *   have required constructor arguments; internally, maps the class to an
+     *   InvokableFactory instance, and creates an alias if the service name
+     *   and class name do not match.
      * - factories: service name => factory pairs; factories may be any
      *   callable, string name resolving to an invokable class, or string name
      *   resolving to a FactoryInterface instance.
@@ -243,6 +247,21 @@ class ServiceManager implements ServiceLocatorInterface
     {
         if (isset($config['services'])) {
             $this->services = $config['services'] + $this->services;
+        }
+
+        if (isset($config['invokables']) && ! empty($config['invokables'])) {
+            $aliases   = $this->createAliasesForInvokables($config['invokables']);
+            $factories = $this->createFactoriesForInvokables($config['invokables']);
+
+            if (! empty($aliases)) {
+                $config['aliases'] = (isset($config['aliases']))
+                    ? array_merge($config['aliases'], $aliases)
+                    : $aliases;
+            }
+
+            $config['factories'] = (isset($config['factories']))
+                ? array_merge($config['factories'], $factories)
+                : $factories;
         }
 
         if (isset($config['factories'])) {
@@ -576,5 +595,51 @@ class ServiceManager implements ServiceLocatorInterface
         );
 
         return $this->lazyServicesDelegator;
+    }
+
+    /**
+     * Create aliases for invokable classes.
+     *
+     * If an invokable service name does not match the class it maps to, this
+     * creates an alias to the class (which will later be mapped as an
+     * invokable factory).
+     *
+     * @param array $invokables
+     * @return array
+     */
+    private function createAliasesForInvokables(array $invokables)
+    {
+        $aliases = [];
+        foreach ($invokables as $name => $class) {
+            if ($name === $class) {
+                continue;
+            }
+            $aliases[$name] = $class;
+        }
+        return $aliases;
+    }
+
+    /**
+     * Create invokable factories for invokable classes.
+     *
+     * If an invokable service name does not match the class it maps to, this
+     * creates an invokable factory entry for the class name; otherwise, it
+     * creates an invokable factory for the entry name.
+     *
+     * @param array $invokables
+     * @return array
+     */
+    private function createFactoriesForInvokables(array $invokables)
+    {
+        $factories = [];
+        foreach ($invokables as $name => $class) {
+            if ($name === $class) {
+                $factories[$name] = Factory\InvokableFactory::class;
+                continue;
+            }
+
+            $factories[$class] = Factory\InvokableFactory::class;
+        }
+        return $factories;
     }
 }

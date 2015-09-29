@@ -148,4 +148,35 @@ class ServiceManagerTest extends TestCase
 
         $this->assertEquals($shouldBeSameInstance, $a === $b);
     }
+
+    public function testMapsOneToOneInvokablesAsInvokableFactoriesInternally()
+    {
+        $config = [
+            'invokables' => [
+                InvokableObject::class => InvokableObject::class,
+            ],
+        ];
+
+        $serviceManager = new ServiceManager($config);
+        $this->assertAttributeSame([
+            InvokableObject::class => InvokableFactory::class,
+        ], 'factories', $serviceManager, 'Invokable object factory not found');
+    }
+
+    public function testMapsNonSymmetricInvokablesAsAliasPlusInvokableFactory()
+    {
+        $config = [
+            'invokables' => [
+                'Invokable' => InvokableObject::class,
+            ],
+        ];
+
+        $serviceManager = new ServiceManager($config);
+        $this->assertAttributeSame([
+            'Invokable' => InvokableObject::class,
+        ], 'aliases', $serviceManager, 'Alias not found for non-symmetric invokable');
+        $this->assertAttributeSame([
+            InvokableObject::class => InvokableFactory::class,
+        ], 'factories', $serviceManager, 'Factory not found for non-symmetric invokable target');
+    }
 }
