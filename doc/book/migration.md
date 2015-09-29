@@ -25,6 +25,14 @@ registered.
 
 ## Configuration
 
+A number of changes have been made to configuration of service and plugin
+managers:
+
+- Minor changes in configuration arrays may impact your usage.
+- `ConfigInterface` implementations and consumers will need updating.
+
+### Configuration arrays
+
 Configuration for v2 consisted of the following:
 
 ```php
@@ -77,7 +85,81 @@ In v3, the configuration remains the same, with the following additions:
 The main change is the addition of integrated lazy service configuration is now
 integrated.
 
-### Invokables
+### ConfigInterface
+
+The `ServiceManager` is now immutable, meaning that you cannot configure it
+after-the-fact. If your `ConfigInterface` implementation called on the various
+methods for injecting new services, such as:
+
+- `setService()`
+- `setInvokableClass()`
+- `setFactory()`
+- `addAbstractFactory()`
+- `addInitializer()`
+- `addDelegator()`
+
+then you will need to alter the logic to instead aggregate a full configuration
+specification. This can then be passed to the `ServiceManager` instance's
+`withConfig()` method, which does the following:
+
+- Creates a clone of the manager.
+- Merges the incoming configuration with the current configuration within the
+  clone.
+- Returns the clone.
+
+As such, your implementation should return the result of
+`$serviceManager->withConfig()`.
+
+As an example, consider this `HelperConfig` implementation from zend-i18n
+v2:
+
+```php
+class HelperConfig implements ConfigInterface
+{
+    protected $invokables = [
+        'currencyformat'  => 'Zend\I18n\View\Helper\CurrencyFormat',
+        'dateformat'      => 'Zend\I18n\View\Helper\DateFormat',
+        'numberformat'    => 'Zend\I18n\View\Helper\NumberFormat',
+        'plural'          => 'Zend\I18n\View\Helper\Plural',
+        'translate'       => 'Zend\I18n\View\Helper\Translate',
+        'translateplural' => 'Zend\I18n\View\Helper\TranslatePlural',
+    ];
+
+    public function configureServiceManager(ServiceManager $serviceManager)
+    {
+        foreach ($this->invokables as $name => $service) {
+            $serviceManager->setInvokableClass($name, $service);
+        }
+    }
+}
+```
+
+In version 3, this will become:
+
+```php
+use Interop\Container\ContainerInterface;
+
+class HelperConfig implements ConfigInterface
+{
+    protected $invokables = [
+        'currencyformat'  => 'Zend\I18n\View\Helper\CurrencyFormat',
+        'dateformat'      => 'Zend\I18n\View\Helper\DateFormat',
+        'numberformat'    => 'Zend\I18n\View\Helper\NumberFormat',
+        'plural'          => 'Zend\I18n\View\Helper\Plural',
+        'translate'       => 'Zend\I18n\View\Helper\Translate',
+        'translateplural' => 'Zend\I18n\View\Helper\TranslatePlural',
+    ];
+
+    public function configureServiceManager(ServiceManager $serviceManager)
+    {
+        return $serviceManager->withConfig([
+            'invokables' => $this->invokables,
+        ]);
+    }
+}
+```
+
+## Invokables
 
 *Invokables no longer exist,* at least, not identically to how they existed in
 ZF2.
@@ -135,7 +217,7 @@ if needed).
 > }
 > ```
 
-### Lazy Services
+## Lazy Services
 
 In v2, if you wanted to create a lazy service, you needed to take the following
 steps:
@@ -680,7 +762,6 @@ We may re-introduce it via a separate component in the future.
 The following interfaces, traits, and classes were *removed*:
 
 - `Zend\ServiceManager\Config`
-- `Zend\ServiceManager\ConfigInterface`
 - `Zend\ServiceManager\MutableCreationOptionsInterface`; this was previously
   used by the `AbstractPluginManager`, and is no longer required as we ship a
   separate `PluginManagerInterface`, and because the functionality is
@@ -697,8 +778,12 @@ too often abused under v2, and represent the antithesis of the purpose of the
 Service Manager component; dependencies should be directly injected, and the
 container should never be composed by objects.
 
-The following classes have changes:
+The following classes and interfaces have changes:
 
 - `Zend\ServiceManager\Proxy\LazyServiceFactory` is now marked `final`, and
    implements `Zend\ServiceManager\Proxy\DelegatorFactoryInterface`. Its
    dependencies and capabilities remain the same.
+- `Zend\ServiceManager\ConfigInterface` now is expected to *return* a
+  `ServiceManager` instance. This is because instances cannot be configured
+  in-situ; implementers will now need to call `withConfig()` and return the
+  instance returned by that method.
