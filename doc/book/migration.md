@@ -57,31 +57,10 @@ Configuration for v2 consisted of the following:
 ]
 ```
 
-In v3, the configuration remains roughly the same, with the following changes:
+In v3, the configuration remains the same, with the following additions:
 
 ```php
 [
-    'services' => [
-        // service name => instance pairs
-    ],
-    'aliases' => [
-        // alias => service name pairs
-    ],
-    'factories' => [
-        // service name => factory pairs
-    ],
-    'abstract_factories' => [
-        // abstract factories
-    ],
-    'initializers' => [
-        // initializers
-    ],
-    'delegators' => [
-        // service name => [ delegator factories ]
-    ],
-    'shared' => [
-        // service name => boolean
-    ],
     'lazy_services' => [
         // The class_map is required if using lazy services:
         'class_map' => [
@@ -92,69 +71,29 @@ In v3, the configuration remains roughly the same, with the following changes:
         'proxies_target_dir' => 'path in which to write generated proxy classes',
         'write_proxy_files'  => true, // boolean; false by default
     ],
-    'share_by_default' => boolean,
 ]
 ```
 
-The main changes are that invokables no longer exist, and that lazy service
-configuration is now integrated.
+The main change is the addition of integrated lazy service configuration is now
+integrated.
 
 ### Invokables
 
-*Invokables no longer exist.* As such, that key is no longer relevant. In each
-case, if the service name is also the name of the class, you can use the
-`InvokableFactory` and assign the service as a factory.
+*Invokables no longer exist,* at least, not identically to how they existed in
+ZF2.
 
-As an example, if you previously had the following configuration:
+Internally, `ServiceManager` now does the following for `invokables` entries:
 
-```php
-return [
-    'invokables' => [
-        'MyClass' => 'MyClass',
-    ],
-];
-```
+- If the name and value match, it creates a `factories` entry mapping the
+  service name to `Zend\ServiceManager\Factory\InvokableFactory`.
+- If the name and value *do not* match, it creates an `aliases` entry mapping the
+  service name to the class name, *and* a `factories` entry mapping the class
+  name to `Zend\ServiceManager\Factory\InvokableFactory`.
 
-You will now use the following:
-
-```php
-use Zend\ServiceManager\Factory\InvokableFactory;
-
-return [
-    'factories' => [
-        'MyClass' => InvokableFactory::class,
-    ],
-];
-```
-
-What if you were using a service name that differed from the class name?
-
-```php
-return [
-    'invokables' => [
-        'MyClass' => 'AnotherClass',
-    ],
-];
-```
-
-In this case, you will create two separate entries: an invokable factory for the
-actual class, and an alias to it:
-
-```php
-use Zend\ServiceManager\Factory\InvokableFactory;
-
-return [
-    'aliases' => [
-        'MyClass' => 'AnotherClass',
-    ],
-    'invokables' => [
-        'AnotherClass' => InvokableFactory::class,
-    ],
-];
-```
-
-Alternately, you can create a dedicated factory for `MyClass` that instantiates
-the correct class.
+This means that you can use your existing `invokables` configuration from
+version 2 in version 3. However, we recommend starting to update your
+configuration to remove `invokables` entries in favor of factories (and aliases,
+if needed).
 
 ### Lazy Services
 
