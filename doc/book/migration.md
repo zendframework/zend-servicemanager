@@ -95,6 +95,46 @@ version 2 in version 3. However, we recommend starting to update your
 configuration to remove `invokables` entries in favor of factories (and aliases,
 if needed).
 
+> #### Invokables and plugin managers
+>
+> If you are creating a plugin manager and in-lining invokables into the class
+> definition, you will need to make some changes.
+>
+> `$invokableClasses` will need to become `$factories` entries, and you will
+> potentially need to add `$aliases` entries.
+>
+> As an example, consider the following, from zend-math v2.x:
+>
+> ```php
+> class AdapterPluginManager extends AbstractPluginManager
+> {
+>     protected $invokableClasses = [
+>         'bcmath' => Adapter\Bcmath::class,
+>         'gmp'    => Adapter\Gmp::class,
+>     ];
+> }
+> ```
+>
+> Because we no longer define an `$invokableClasses` property, for v3.x, this
+> now becomes:
+>
+> ```php
+> use Zend\ServiceManager\Factory\InvokableFactory;
+>
+> class AdapterPluginManager extends AbstractPluginManager
+> {
+>     protected $aliases = [
+>         'bcmath' => Adapter\Bcmath::class,
+>         'gmp'    => Adapter\Gmp::class,
+>     ];
+>
+>     protected $factories = [
+>         Adapter\BcMath::class => InvokableFactory::class,
+>         Adapter\Gmp::class    => InvokableFactory::class,
+>     ];
+> }
+> ```
+
 ### Lazy Services
 
 In v2, if you wanted to create a lazy service, you needed to take the following
