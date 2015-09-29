@@ -159,6 +159,14 @@ class HelperConfig implements ConfigInterface
 }
 ```
 
+### Config class
+
+`Zend\ServiceManager\Config` has been updated to follow the changes to the
+`ConfigInterface` and `ServiceManager`. This essentially means that it removes
+the various getter methods, and that the `configureServiceManager()` method
+instead aggregates the relevant configuration from the configuration passed to
+the constructor to pass to `ServiceManager::withConfig()`.
+
 ## Invokables
 
 *Invokables no longer exist,* at least, not identically to how they existed in
@@ -761,7 +769,6 @@ We may re-introduce it via a separate component in the future.
 
 The following interfaces, traits, and classes were *removed*:
 
-- `Zend\ServiceManager\Config`
 - `Zend\ServiceManager\MutableCreationOptionsInterface`; this was previously
   used by the `AbstractPluginManager`, and is no longer required as we ship a
   separate `PluginManagerInterface`, and because the functionality is
@@ -787,3 +794,6 @@ The following classes and interfaces have changes:
   `ServiceManager` instance. This is because instances cannot be configured
   in-situ; implementers will now need to call `withConfig()` and return the
   instance returned by that method.
+- `Zend\ServiceManager\Config` was updated to follow the changes to
+  `ConfigInterface` and `ServiceManager`, and now returns a new
+  `ServiceManager` instance from `configureServiceManager()`.
