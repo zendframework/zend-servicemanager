@@ -9,21 +9,57 @@
 
 namespace Zend\ServiceManager;
 
+use Zend\Stdlib\ArrayUtils;
+
 class Config implements ConfigInterface
 {
     /**
+     * Allowed configuration keys
+     *
      * @var array
      */
-    protected $config = [];
+    protected $allowedKeys = [
+        'abstract_factories' => true,
+        'aliases'            => true,
+        'delegators'         => true,
+        'factories'          => true,
+        'initializers'       => true,
+        'invokables'         => true,
+        'lazy_services'      => true,
+        'services'           => true,
+        'shared'             => true,
+    ];
+
+    /**
+     * @var array
+     */
+    protected $config = [
+        'abstract_factories' => [],
+        'aliases'            => [],
+        'delegators'         => [],
+        'factories'          => [],
+        'initializers'       => [],
+        'invokables'         => [],
+        'lazy_services'      => [],
+        'services'           => [],
+        'shared'             => [],
+    ];
 
     /**
      * Constructor
      *
      * @param array $config
      */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
-        $this->config = $config;
+        // Only merge keys we're interested in
+        foreach (array_keys($config) as $key) {
+            if (! isset($this->allowedKeys[$key])) {
+                unset($config[$key]);
+            }
+        }
+
+        $this->config = ArrayUtils::merge($this->config, $config);
     }
 
     /**
@@ -34,53 +70,6 @@ class Config implements ConfigInterface
      */
     public function configureServiceManager(ServiceManager $serviceManager)
     {
-        $config            = [];
-        $abstractFactories = isset($this->config['abstract_factories']) ? $this->config['abstract_factories'] : [];
-        $aliases           = isset($this->config['aliases']) ? $this->config['aliases'] : [];
-        $delegators        = isset($this->config['delegators']) ? $this->config['delegators'] : [];
-        $factories         = isset($this->config['factories']) ? $this->config['factories'] : [];
-        $initializers      = isset($this->config['initializers']) ? $this->config['initializers'] : [];
-        $invokables        = isset($this->config['invokables']) ? $this->config['invokables'] : [];
-        $lazyServices      = isset($this->config['lazy_services']) ? $this->config['lazy_services'] : [];
-        $services          = isset($this->config['services']) ? $this->config['services'] : [];
-        $shared            = isset($this->config['shared']) ? $this->config['shared'] : [];
-
-        if (! empty($abstractFactories)) {
-            $config['abstract_factories'] = $abstractFactories;
-        }
-
-        if (! empty($aliases)) {
-            $config['aliases'] = $aliases;
-        }
-
-        if (! empty($delegators)) {
-            $config['delegators'] = $delegators;
-        }
-
-        if (! empty($factories)) {
-            $config['factories'] = $factories;
-        }
-
-        if (! empty($initializers)) {
-            $config['initializers'] = $initializers;
-        }
-
-        if (! empty($invokables)) {
-            $config['invokables'] = $invokables;
-        }
-
-        if (! empty($lazyServices)) {
-            $config['lazy_services'] = $lazyServices;
-        }
-
-        if (! empty($services)) {
-            $config['services'] = $services;
-        }
-
-        if (! empty($shared)) {
-            $config['shared'] = $shared;
-        }
-
-        return $serviceManager->withConfig($config);
+        return $serviceManager->withConfig($this->config);
     }
 }
