@@ -69,5 +69,20 @@ class ConfigTest extends TestCase
 
         $configuration = new Config($config);
         $this->assertEquals('CALLED', $configuration->configureServiceManager($services->reveal()));
+
+        return [
+            'array'  => $expected,
+            'config' => $configuration,
+        ];
+    }
+
+    /**
+     * @depends testPassesKnownServiceConfigKeysToServiceManagerWithConfigMethod
+     */
+    public function testToArrayReturnsConfiguration($dependencies)
+    {
+        $configuration  = $dependencies['array'];
+        $configInstance = $dependencies['config'];
+        $this->assertSame($configuration, $configInstance->toArray());
     }
 }

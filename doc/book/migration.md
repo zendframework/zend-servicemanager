@@ -159,6 +159,10 @@ class HelperConfig implements ConfigInterface
 }
 ```
 
+Additionally, we have **added** another method to `ConfigInterface`,
+`toArray()`. This should return an array in a format that can be passed to the
+`ServiceManager`'s constructor or `withConfig()` method.
+
 ### Config class
 
 `Zend\ServiceManager\Config` has been updated to follow the changes to the
