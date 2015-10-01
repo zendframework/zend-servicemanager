@@ -77,33 +77,6 @@ All notable changes to this project will be documented in this file, in reverse 
 
 - Integration with `Zend\Di` has been removed. It may be re-integrated later.
 
-- The `invokables` configuration key no longer exists. It has been replaced by a
-  built-in factory.
-
-  In versions 2.x:
-  
-  ```php
-  return [
-      'service_manager' => [
-          'invokables' => [
-              MyClass::class => MyClass:class,
-          ],
-      ],
-  ];
-  ```
-  
-  In ZF 3.x:
-  
-  ```php
-  return [
-      'service_manager' => [
-          'factories' => [
-              MyClass::class => 'Zend\ServiceManager\Factory\InvokableFactory',
-          ],
-      ],
-  ];
-  ```
-
 - `MutableCreationOptionsInterface` has been removed, as options can now be
   passed directly through factories.
 
@@ -138,11 +111,23 @@ changes, outlined in this section.
   ]);
   ```
 
+  `Config` and `ConfigInterface` still exist, however, but primarily for the
+  purposes of codifying and aggregating configuration to use.
+
 - The ServiceManager is now immutable. Once configured, it cannot be altered.
   You need to create a new service manager if you need to change the
   configuration. This ensures safer and more aggressive caching. A new method,
   `withConfig()`, allows you to create a new instance that merges the provided
   configuration.
+
+- `ConfigInterface` has two important changes:
+  - `configureServiceManager()` now **must** return a service manager instance.
+    Since the ServiceManager is now immutable, and the various methods for
+    injecting services are gone, the expectation is that this method will pass
+    configuration to `ServiceManager::withConfig()` and return the new instance.
+  - A new method, `toArray()`, was added, to allow pulling the configuration in
+    order to pass to a ServiceManager or plugin manager's constructor or
+    `withConfig()` method.
 
 - Interfaces for `FactoryInterface`, `DelegatorFactoryInterface` and
   `AbstractFactoryInterface` have changed. All are now directly invokable. This
@@ -227,6 +212,9 @@ changes, outlined in this section.
 - `PluginManager` now enforces the need for the main service locator in its
   constructor. In v2.x, people often forgot to set the parent locator, which led
   to bugs in factories trying to fetch dependencies from the parent locator.
+  Additionally, plugin managers now pull dependencies from the parent locator by
+  default; if you need to pull a peer plugin, your factories will now need to
+  pull the corresponding plugin manager first.
 
 - It's so fast now that your app will fly!
 
