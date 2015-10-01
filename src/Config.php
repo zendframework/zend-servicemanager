@@ -72,4 +72,12 @@ class Config implements ConfigInterface
     {
         return $serviceManager->withConfig($this->config);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray()
+    {
+        return $this->config;
+    }
 }
