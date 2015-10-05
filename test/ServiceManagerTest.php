@@ -179,4 +179,46 @@ class ServiceManagerTest extends TestCase
             InvokableObject::class => InvokableFactory::class,
         ], 'factories', $serviceManager, 'Factory not found for non-symmetric invokable target');
     }
+
+    /**
+     * @depends testMapsNonSymmetricInvokablesAsAliasPlusInvokableFactory
+     */
+    public function testSharedServicesReferencingInvokableAliasShouldBeHonored()
+    {
+        $config = [
+            'invokables' => [
+                'Invokable' => InvokableObject::class,
+            ],
+            'shared' => [
+                'Invokable' => false,
+            ],
+        ];
+
+        $serviceManager = new ServiceManager($config);
+        $instance1 = $serviceManager->get('Invokable');
+        $instance2 = $serviceManager->get('Invokable');
+
+        $this->assertNotSame($instance1, $instance2);
+    }
+
+    public function testSharedServicesReferencingAliasShouldBeHonored()
+    {
+        $config = [
+            'aliases' => [
+                'Invokable' => InvokableObject::class,
+            ],
+            'factories' => [
+                InvokableObject::class => InvokableFactory::class,
+            ],
+            'shared' => [
+                'Invokable' => false,
+            ],
+        ];
+
+        $serviceManager = new ServiceManager($config);
+        $instance1 = $serviceManager->get('Invokable');
+        $instance2 = $serviceManager->get('Invokable');
+
+        $this->assertNotSame($instance1, $instance2);
+    }
 }
