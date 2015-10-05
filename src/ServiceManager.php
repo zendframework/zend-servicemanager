@@ -157,18 +157,32 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function get($name)
     {
+        $requestedName = $name;
         $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
 
-        // We start by checking if the service is cached (this is the fastest method).
-        if (isset($this->services[$name])) {
-            return $this->services[$name];
+        // We start by checking if we have cached the requested service (this
+        // is the fastest method).
+        if (isset($this->services[$requestedName])) {
+            return $this->services[$requestedName];
         }
 
+        // At this point, we need to create the instance; we use the resolved
+        // name for that.
         $object = $this->doCreate($name);
 
-        if (($this->sharedByDefault && !isset($this->shared[$name]))
-            || (isset($this->shared[$name]) && $this->shared[$name])) {
+        // Cache it for later, if it is supposed to be shared.
+        if (($this->sharedByDefault && ! isset($this->shared[$name]))
+            || (isset($this->shared[$name]) && $this->shared[$name])
+        ) {
             $this->services[$name] = $object;
+        }
+
+        // Also do so for aliases; this allows sharing based on service name used.
+        if ($requestedName !== $name
+            && (($this->sharedByDefault && ! isset($this->shared[$requestedName]))
+                || (isset($this->shared[$requestedName]) && $this->shared[$requestedName]))
+        ) {
+            $this->services[$requestedName] = $object;
         }
 
         return $object;
