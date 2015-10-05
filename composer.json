@@ -14,7 +14,8 @@
     },
     "require": {
         "php": ">=5.5",
-        "container-interop/container-interop": "~1.0"
+        "container-interop/container-interop": "~1.0",
+        "athletic/athletic": "dev-master"
     },
     "require-dev": {
         "zendframework/zend-di": "~2.5",
@@ -36,7 +37,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "ZendTest\\ServiceManager\\": "test/"
+            "ZendTest\\ServiceManager\\": "test/",
+            "ZendBench\\ServiceManager\\": "benchmarks/"
         }
     }
 }
