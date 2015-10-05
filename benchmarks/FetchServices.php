@@ -18,7 +18,7 @@ class FetchServices extends AthleticEvent
     {
         $this->sm = new ServiceManager();
         // factories
-        for ($i = 0; $i < self::NUM_SERVICES; $i++) {
+        for ($i = 0; $i <= self::NUM_SERVICES; $i++) {
             $this->sm->setFactory("factory_$i", 'ZendTest\ServiceManager\TestAsset\FooFactory');
             $this->sm->setInvokableClass("invokable_$i", 'ZendTest\ServiceManager\TestAsset\Foo');
             $this->sm->setService("service_$i", new \ZendTest\ServiceManager\TestAsset\Foo);
@@ -36,7 +36,7 @@ class FetchServices extends AthleticEvent
      */
     public function fetchFactoryService()
     {
-        $result = $this->sm->get(sprintf("factory_%d", rand(0, self::NUM_SERVICES - 1)));
+        $result = $this->sm->get('factory_' . rand(0, self::NUM_SERVICES));
     }
 
     /**
@@ -46,7 +46,7 @@ class FetchServices extends AthleticEvent
      */
     public function fetchInvokableService()
     {
-        $result = $this->sm->get(sprintf("invokable_%d", rand(0, self::NUM_SERVICES - 1)));
+        $result = $this->sm->get('invokable_' . rand(0, self::NUM_SERVICES));
     }
 
     /**
@@ -56,7 +56,7 @@ class FetchServices extends AthleticEvent
      */
     public function fetchService()
     {
-        $result = $this->sm->get(sprintf("service_%d", rand(0, self::NUM_SERVICES - 1)));
+        $result = $this->sm->get('service_' . rand(0, self::NUM_SERVICES));
     }
 
     /**
@@ -66,7 +66,7 @@ class FetchServices extends AthleticEvent
      */
     public function fetchAliasService()
     {
-        $result = $this->sm->get(sprintf("alias_%d", rand(0, self::NUM_SERVICES - 1)));
+        $result = $this->sm->get('alias_' . rand(0, self::NUM_SERVICES));
     }
 
     /**
