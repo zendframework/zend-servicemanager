@@ -164,4 +164,52 @@ class AbstractPluginManagerTest extends TestCase
         );
         $this->assertEquals('bar', $instance->foo);
     }
+
+    public function testWithConfigProperlySetsCreationContextToOriginalCreationContext()
+    {
+        $config = [
+            'factories' => [
+                InvokableObject::class => new InvokableFactory(),
+            ],
+        ];
+
+        $services = new ServiceManager();
+        $plugins  = new SimplePluginManager($services);
+
+        $revised = $plugins->withConfig(['factories' => [
+            'foo' => function ($container, $name) {
+            },
+        ]]);
+
+        $this->assertAttributeSame($services, 'creationContext', $revised);
+    }
+
+    /**
+     * Overrides test from CommonServiceLocatorBehaviorsTrait
+     *
+     * Behavior of creation context differs for plugin managers.
+     */
+    public function testCanCreateNewLocatorWithMergedConfig()
+    {
+        $serviceManager = $this->createContainer([
+            'factories' => [
+                DateTime::class => InvokableFactory::class
+            ]
+        ]);
+
+        $newServiceManager = $serviceManager->withConfig([
+            'factories' => [
+                stdClass::class => InvokableFactory::class
+            ]
+        ]);
+
+        $this->assertTrue($serviceManager->has(DateTime::class));
+        $this->assertFalse($serviceManager->has(stdClass::class));
+
+        $this->assertTrue($newServiceManager->has(DateTime::class));
+        $this->assertTrue($newServiceManager->has(stdClass::class));
+
+        // Make sure the context has been updated for the new container
+        $this->assertAttributeSame($this->creationContext, 'creationContext', $newServiceManager);
+    }
 }
