@@ -147,7 +147,7 @@ class ServiceManager implements ServiceLocatorInterface
     public function withConfig(array $config)
     {
         $container                  = clone $this;
-        $container->creationContext = $container;
+        $container->creationContext = ($this === $this->creationContext) ? $container : $this->creationContext;
         $container->configure($config);
         return $container;
     }
