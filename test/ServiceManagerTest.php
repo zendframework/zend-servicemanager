@@ -221,4 +221,23 @@ class ServiceManagerTest extends TestCase
 
         $this->assertNotSame($instance1, $instance2);
     }
+
+    public function testAliasToAnExplicitServiceShouldWork()
+    {
+        $config = [
+            'aliases' => [
+                'Invokable' => InvokableObject::class,
+            ],
+            'services' => [
+                InvokableObject::class => new InvokableObject(),
+            ],
+        ];
+
+        $serviceManager = new ServiceManager($config);
+
+        $service = $serviceManager->get(InvokableObject::class);
+        $alias   = $serviceManager->get('Invokable');
+
+        $this->assertSame($service, $alias);
+    }
 }
