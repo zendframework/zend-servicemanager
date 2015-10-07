@@ -14,3 +14,15 @@ retrieving other objects.
 
 - File issues at https://github.com/zendframework/zend-servicemanager/issues
 - Documentation is at http://framework.zend.com/manual/current/en/index.html#zend-servicemanager
+
+## Benchmarks
+
+We provide scripts for benchmarking zend-servicemanager using the
+[Athletic](https://github.com/polyfractal/athletic) framework; these can be
+found in the `benchmarks/` directory.
+
+To execute the benchmarks you can run the following command:
+
+```bash
+$ vendor/bin/athletic -p benchmarks
+```

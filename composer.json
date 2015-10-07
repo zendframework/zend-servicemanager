@@ -20,7 +20,8 @@
     "require-dev": {
         "phpunit/phpunit": "~4.6",
         "ocramius/proxy-manager": "~1.0",
-        "squizlabs/php_codesniffer": "^2.0@dev"
+        "squizlabs/php_codesniffer": "^2.0@dev",
+        "athletic/athletic": "dev-master"
     },
     "suggest": {
         "ocramius/proxy-manager": "ProxyManager 1.* to handle lazy initialization of services"
@@ -35,7 +36,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "ZendTest\\ServiceManager\\": "test/"
+            "ZendTest\\ServiceManager\\": "test/",
+            "ZendBench\\ServiceManager\\": "benchmarks/"
         }
     }
 }
