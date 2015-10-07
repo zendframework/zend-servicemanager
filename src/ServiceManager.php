@@ -147,7 +147,7 @@ class ServiceManager implements ServiceLocatorInterface
     public function withConfig(array $config)
     {
         $container                  = clone $this;
-        $container->creationContext = $container;
+        $container->creationContext = ($this === $this->creationContext) ? $container : $this->creationContext;
         $container->configure($config);
         return $container;
     }
@@ -164,6 +164,16 @@ class ServiceManager implements ServiceLocatorInterface
         // is the fastest method).
         if (isset($this->services[$requestedName])) {
             return $this->services[$requestedName];
+        }
+
+        // Next, if the alias should be shared, and we have cached the resolved
+        // service, use it.
+        if ($requestedName !== $name
+            && (! isset($this->shared[$requestedName]) || $this->shared[$requestedName])
+            && isset($this->services[$name])
+        ) {
+            $this->services[$requestedName] = $this->services[$name];
+            return $this->services[$name];
         }
 
         // At this point, we need to create the instance; we use the resolved
