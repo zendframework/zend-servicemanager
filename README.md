@@ -17,7 +17,7 @@ retrieving other objects.
 
 ## Benchmarks
 
-We provide scripts for benchmarking zend-eventmanager using the
+We provide scripts for benchmarking zend-servicemanager using the
 [Athletic](https://github.com/polyfractal/athletic) framework; these can be
 found in the `benchmarks/` directory.
 
