@@ -7,7 +7,7 @@ use Zend\ServiceManager\ServiceManager;
 
 class FetchServices extends AthleticEvent
 {
-    const NUM_SERVICES = 50;
+    const NUM_SERVICES = 1000;
 
     /**
      * @var ServiceManager
@@ -35,7 +35,7 @@ class FetchServices extends AthleticEvent
     /**
      * Fetch the factory services
      *
-     * @iterations 1000
+     * @iterations 5000
      */
     public function fetchFactoryService()
     {
@@ -45,7 +45,7 @@ class FetchServices extends AthleticEvent
     /**
      * Fetch the invokable services
      *
-     * @iterations 1000
+     * @iterations 5000
      */
     public function fetchInvokableService()
     {
@@ -55,7 +55,7 @@ class FetchServices extends AthleticEvent
     /**
      * Fetch the services
      *
-     * @iterations 1000
+     * @iterations 5000
      */
     public function fetchService()
     {
@@ -65,7 +65,7 @@ class FetchServices extends AthleticEvent
     /**
      * Fetch the alias services
      *
-     * @iterations 1000
+     * @iterations 5000
      */
     public function fetchAliasService()
     {
@@ -75,7 +75,7 @@ class FetchServices extends AthleticEvent
     /**
      * Fetch the abstract factory services
      *
-     * @iterations 1000
+     * @iterations 5000
      */
     public function fetchAbstractFactoryService()
     {
