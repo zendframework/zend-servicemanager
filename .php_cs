@@ -1,5 +1,6 @@
 <?php
 $finder = Symfony\CS\Finder\DefaultFinder::create()
+    ->in('benchmarks')
     ->in('src')
     ->in('test')
     ->notPath('TestAsset')
