@@ -80,6 +80,6 @@ class FetchServices extends AthleticEvent
      */
     public function fetchAbstractFactoryService()
     {
-       $result = $this->sm->get('foo');
+        $result = $this->sm->get('foo');
     }
 }
