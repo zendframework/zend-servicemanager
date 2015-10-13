@@ -113,12 +113,15 @@ class ServiceManagerTest extends TestCase
 
         // @codingStandardsIgnoreStart
         return [
-            '[shared by default, service is explicitly shared => should be shared]'             => [$sharedByDefault,  $serviceShared,  $serviceDefined, $shouldReturnSameInstance],
-            '[shared by default, service is explicitly NOT shared => should NOT be shared]'     => [$sharedByDefault,  !$serviceShared, $serviceDefined, !$shouldReturnSameInstance],
-            '[NOT shared by default, service is explicitly NOT shared => should NOT be shared]' => [!$sharedByDefault, !$serviceShared, $serviceDefined, !$shouldReturnSameInstance],
-            '[NOT shared by default, service is explicitly shared => should be shared]'         => [!$sharedByDefault, $serviceShared,  $serviceDefined, $shouldReturnSameInstance],
-            '[shared by default, service is not defined => should be shared]'                   => [$sharedByDefault,  $serviceShared,  !$serviceDefined, $shouldReturnSameInstance],
-            '[NOT shared by default, service not defined => should NOT be shared]'              => [!$sharedByDefault,  !$serviceShared, !$serviceDefined, !$shouldReturnSameInstance],
+            // Description => [$sharedByDefault, $serviceShared, $serviceDefined, $expectedInstance]
+            'SharedByDefault: T, ServiceIsExplicitlyShared: T, ServiceIsDefined: T' => [ $sharedByDefault,  $serviceShared,  $serviceDefined,  $shouldReturnSameInstance],
+            'SharedByDefault: T, ServiceIsExplicitlyShared: T, ServiceIsDefined: F' => [ $sharedByDefault,  $serviceShared, !$serviceDefined,  $shouldReturnSameInstance],
+            'SharedByDefault: T, ServiceIsExplicitlyShared: F, ServiceIsDefined: T' => [ $sharedByDefault, !$serviceShared,  $serviceDefined, !$shouldReturnSameInstance],
+            'SharedByDefault: T, ServiceIsExplicitlyShared: F, ServiceIsDefined: F' => [ $sharedByDefault, !$serviceShared, !$serviceDefined,  $shouldReturnSameInstance],
+            'SharedByDefault: F, ServiceIsExplicitlyShared: T, ServiceIsDefined: T' => [!$sharedByDefault,  $serviceShared,  $serviceDefined,  $shouldReturnSameInstance],
+            'SharedByDefault: F, ServiceIsExplicitlyShared: T, ServiceIsDefined: F' => [!$sharedByDefault,  $serviceShared, !$serviceDefined, !$shouldReturnSameInstance],
+            'SharedByDefault: F, ServiceIsExplicitlyShared: F, ServiceIsDefined: T' => [!$sharedByDefault, !$serviceShared,  $serviceDefined, !$shouldReturnSameInstance],
+            'SharedByDefault: F, ServiceIsExplicitlyShared: F, ServiceIsDefined: F' => [!$sharedByDefault, !$serviceShared, !$serviceDefined, !$shouldReturnSameInstance],
         ];
         // @codingStandardsIgnoreEnd
     }
