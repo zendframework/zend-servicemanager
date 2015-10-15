@@ -321,12 +321,7 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
                 . ' factory or an instance of an AbstractFactoryInterface.'
             );
         }
-
-        if ($topOfStack) {
-            array_unshift($this->abstractFactories, $factory);
-        } else {
-            array_push($this->abstractFactories, $factory);
-        }
+        $topOfStack ? array_unshift($this->abstractFactories, $factory) : array_push($this->abstractFactories, $factory);
         return $this;
     }
 
@@ -371,11 +366,7 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
             }
         }
 
-        if ($topOfStack) {
-            array_unshift($this->initializers, $initializer);
-        } else {
-            array_push($this->initializers, $initializer);
-        }
+        $topOfStack ? array_unshift($this->initializers, $initializer) : array_push($this->initializers, $initializer);
         return $this;
     }
 
@@ -494,11 +485,7 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
     public function get($name, $usePeeringServiceManagers = true)
     {
         // inlined code from ServiceManager::canonicalizeName for performance
-        if (isset($this->canonicalNames[$name])) {
-            $cName = $this->canonicalNames[$name];
-        } else {
-            $cName = $this->canonicalizeName($name);
-        }
+        $cName = isset($this->canonicalNames[$name]) ? $this->canonicalNames[$name] : $this->canonicalizeName($name);
 
         $isAlias = false;
 
