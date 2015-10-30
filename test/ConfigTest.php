@@ -14,7 +14,7 @@ use Zend\ServiceManager\Config;
 use Zend\ServiceManager\ServiceManager;
 
 /**
- * @covers \Zend\ServiceManager\Config
+ * @covers Zend\ServiceManager\Config
  */
 class ConfigTest extends TestCase
 {
