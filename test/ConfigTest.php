@@ -13,6 +13,9 @@ use PHPUnit_Framework_TestCase as TestCase;
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\ServiceManager;
 
+/**
+ * @covers Zend\ServiceManager\Config
+ */
 class ConfigTest extends TestCase
 {
     public function testPassesKnownServiceConfigKeysToServiceManagerWithConfigMethod()
