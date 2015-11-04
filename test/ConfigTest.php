@@ -68,7 +68,7 @@ class ConfigTest extends TestCase
         ];
 
         $services = $this->prophesize(ServiceManager::class);
-        $services->withConfig($expected)->willReturn('CALLED');
+        $services->configure($expected)->willReturn('CALLED');
 
         $configuration = new Config($config);
         $this->assertEquals('CALLED', $configuration->configureServiceManager($services->reveal()));

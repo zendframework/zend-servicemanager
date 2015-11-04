@@ -12,7 +12,9 @@ namespace ZendTest\ServiceManager;
 use DateTime;
 use Interop\Container\Exception\ContainerException;
 use PHPUnit_Framework_TestCase as TestCase;
+use ReflectionProperty;
 use stdClass;
+use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\FactoryInterface;
@@ -224,7 +226,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $serviceManager->get(stdClass::class);
     }
 
-    public function testCanCreateNewLocatorWithMergedConfig()
+    public function testConfigureCanAddNewServices()
     {
         $serviceManager = $this->createContainer([
             'factories' => [
@@ -232,23 +234,22 @@ trait CommonServiceLocatorBehaviorsTrait
             ]
         ]);
 
-        $newServiceManager = $serviceManager->withConfig([
+        $this->assertTrue($serviceManager->has(DateTime::class));
+        $this->assertFalse($serviceManager->has(stdClass::class));
+
+        $newServiceManager = $serviceManager->configure([
             'factories' => [
                 stdClass::class => InvokableFactory::class
             ]
         ]);
 
-        $this->assertTrue($serviceManager->has(DateTime::class));
-        $this->assertFalse($serviceManager->has(stdClass::class));
+        $this->assertSame($serviceManager, $newServiceManager);
 
         $this->assertTrue($newServiceManager->has(DateTime::class));
         $this->assertTrue($newServiceManager->has(stdClass::class));
-
-        // Make sure the context has been updated for the new container
-        $this->assertAttributeSame($newServiceManager, 'creationContext', $newServiceManager);
     }
 
-    public function testOverrideConfigWhenMerged()
+    public function testConfigureCanOverridePreviousSettings()
     {
         $firstFactory  = $this->getMock(FactoryInterface::class);
         $secondFactory = $this->getMock(FactoryInterface::class);
@@ -259,11 +260,13 @@ trait CommonServiceLocatorBehaviorsTrait
             ]
         ]);
 
-        $newServiceManager = $serviceManager->withConfig([
+        $newServiceManager = $serviceManager->configure([
             'factories' => [
                 DateTime::class => $secondFactory
             ]
         ]);
+
+        $this->assertSame($serviceManager, $newServiceManager);
 
         $firstFactory->expects($this->never())->method('__invoke');
         $secondFactory->expects($this->once())->method('__invoke');
@@ -547,5 +550,219 @@ trait CommonServiceLocatorBehaviorsTrait
 
         $this->setExpectedException(ServiceNotCreatedException::class, $contains);
         $serviceManager->get(stdClass::class);
+    }
+
+    /**
+     * @group mutation
+     * @covers \Zend\ServiceManager\ServiceManager::setAlias
+     */
+    public function testCanInjectAliases()
+    {
+        $container = $this->createContainer([
+            'factories' => [
+                'foo' => function () {
+                    return new stdClass;
+                }
+            ],
+        ]);
+
+        $container->setAlias('bar', 'foo');
+
+        $foo = $container->get('foo');
+        $bar = $container->get('bar');
+        $this->assertInstanceOf(stdClass::class, $foo);
+        $this->assertInstanceOf(stdClass::class, $bar);
+        $this->assertSame($foo, $bar);
+    }
+
+    /**
+     * @group mutation
+     * @covers \Zend\ServiceManager\ServiceManager::setInvokableClass
+     */
+    public function testCanInjectInvokables()
+    {
+        $container = $this->createContainer();
+        $container->setInvokableClass('foo', stdClass::class);
+        $this->assertTrue($container->has('foo'));
+        $this->assertTrue($container->has(stdClass::class));
+        $foo = $container->get('foo');
+        $this->assertInstanceOf(stdClass::class, $foo);
+    }
+
+    /**
+     * @group mutation
+     * @covers \Zend\ServiceManager\ServiceManager::setFactory
+     */
+    public function testCanInjectFactories()
+    {
+        $instance  = new stdClass;
+        $container = $this->createContainer();
+
+        $container->setFactory('foo', function () use ($instance) {
+            return $instance;
+        });
+        $this->assertTrue($container->has('foo'));
+        $foo = $container->get('foo');
+        $this->assertSame($instance, $foo);
+    }
+
+    /**
+     * @group mutation
+     * @covers \Zend\ServiceManager\ServiceManager::mapLazyService
+     */
+    public function testCanMapLazyServices()
+    {
+        $container = $this->createContainer();
+        $container->mapLazyService('foo', __CLASS__);
+        $r = new ReflectionProperty($container, 'lazyServices');
+        $r->setAccessible(true);
+        $lazyServices = $r->getValue($container);
+        $this->assertArrayHasKey('class_map', $lazyServices);
+        $this->assertArrayHasKey('foo', $lazyServices['class_map']);
+        $this->assertEquals(__CLASS__, $lazyServices['class_map']['foo']);
+    }
+
+    /**
+     * @group mutation
+     * @covers \Zend\ServiceManager\ServiceManager::addAbstractFactory
+     */
+    public function testCanInjectAbstractFactories()
+    {
+        $container = $this->createContainer();
+        $container->addAbstractFactory(TestAsset\SimpleAbstractFactory::class);
+        // @todo Remove "true" flag once #49 is merged
+        $this->assertTrue($container->has(stdClass::class, true));
+        $instance = $container->get(stdClass::class);
+        $this->assertInstanceOf(stdClass::class, $instance);
+    }
+
+    /**
+     * @group mutation
+     * @covers \Zend\ServiceManager\ServiceManager::addDelegator
+     */
+    public function testCanInjectDelegators()
+    {
+        $container = $this->createContainer([
+            'factories' => [
+                'foo' => function () {
+                    return new stdClass;
+                }
+            ],
+        ]);
+        $container->addDelegator('foo', function ($container, $name, $callback) {
+            $instance = $callback();
+            $instance->name = $name;
+            return $instance;
+        });
+
+        $foo = $container->get('foo');
+        $this->assertInstanceOf(stdClass::class, $foo);
+        $this->assertAttributeEquals('foo', 'name', $foo);
+    }
+
+    /**
+     * @group mutation
+     * @covers \Zend\ServiceManager\ServiceManager::addInitializer
+     */
+    public function testCanInjectInitializers()
+    {
+        $container = $this->createContainer([
+            'factories' => [
+                'foo' => function () {
+                    return new stdClass;
+                }
+            ],
+        ]);
+        $container->addInitializer(function ($container, $instance) {
+            if (! $instance instanceof stdClass) {
+                return;
+            }
+            $instance->name = stdClass::class;
+            return $instance;
+        });
+
+        $foo = $container->get('foo');
+        $this->assertInstanceOf(stdClass::class, $foo);
+        $this->assertAttributeEquals(stdClass::class, 'name', $foo);
+    }
+
+    /**
+     * @group mutation
+     * @covers \Zend\ServiceManager\ServiceManager::setService
+     */
+    public function testCanInjectServices()
+    {
+        $container = $this->createContainer();
+        $container->setService('foo', $this);
+        $this->assertSame($this, $container->get('foo'));
+    }
+
+    /**
+     * @group mutation
+     * @covers \Zend\ServiceManager\ServiceManager::setShared
+     */
+    public function testCanInjectSharingRules()
+    {
+        $container = $this->createContainer([
+            'factories' => [
+                'foo' => function () {
+                    return new stdClass;
+                }
+            ],
+        ]);
+        $container->setShared('foo', false);
+        $first  = $container->get('foo');
+        $second = $container->get('foo');
+        $this->assertNotSame($first, $second);
+    }
+
+    public function methodsAffectedByOverrideSettings()
+    {
+        // @codingStandardsIgnoreStart
+        //  name                 => [ 'method to invoke',  [arguments for invocation]]
+        return [
+            'setAlias'           => ['setAlias',           ['foo', 'bar']],
+            'setInvokableClass'  => ['setInvokableClass',  ['foo', __CLASS__]],
+            'setFactory'         => ['setFactory',         ['foo', function () {}]],
+            'addAbstractFactory' => ['addAbstractFactory', [TestAsset\SimpleAbstractFactory::class]],
+            'addDelegator'       => ['addDelegator',       ['foo', TestAsset\PreDelegator::class]],
+            'addInitializer'     => ['addInitializer',     [function () {}]],
+            'setService'         => ['setService',         ['foo', $this]],
+            'setShared'          => ['setShared',          ['foo', false]],
+            'configure'          => ['configure',          [[]]],
+        ];
+        // @codingStandardsIgnoreEnd
+    }
+
+    /**
+     * @dataProvider methodsAffectedByOverrideSettings
+     * @group mutation
+     */
+    public function testConfiguringInstanceRaisesExceptionIfAllowOverrideIsFalse($method, $args)
+    {
+        $container = $this->createContainer();
+        $container->setAllowOverride(false);
+        $this->setExpectedException(ContainerModificationsNotAllowedException::class);
+        call_user_func_array([$container, $method], $args);
+    }
+
+    /**
+     * @group mutation
+     */
+    public function testAllowOverrideFlagIsTrueByDefault()
+    {
+        $container = $this->createContainer();
+        $this->assertTrue($container->getAllowOverride());
+        return $container;
+    }
+
+    /**
+     * @group mutation
+     * @depends testAllowOverrideFlagIsTrueByDefault
+     */
+    public function testAllowOverrideFlagIsMutable($container)
+    {
+        $container->setAllowOverride(false);
+        $this->assertFalse($container->getAllowOverride());
     }
 }
