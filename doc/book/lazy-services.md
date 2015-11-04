@@ -122,7 +122,7 @@ in the `lazy_services` key passed in the service manager configuration:
 [
     // map of service names and their relative class names - this
     // is required since the service manager cannot know the
-    // class name of defined services upfront
+    // class name of defined services up front
     'class_map' => [
         // 'foo' => 'MyApplication\Foo',
     ],
@@ -136,4 +136,11 @@ in the `lazy_services` key passed in the service manager configuration:
     // whether the generated proxy classes should be written to disk or generated on-the-fly
     'write_proxy_files' => false,
 ];
+```
+
+After you have an instance, you can map lazy service/class pairs using
+`mapLazyService()`:
+
+```php
+$container->mapLazyService('foo', \MyApplication\Foo::class);
 ```

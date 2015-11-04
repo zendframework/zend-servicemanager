@@ -66,6 +66,14 @@ All notable changes to this project will be documented in this file, in reverse 
   Of course, you can still override the `validate` method if your logic is more
   complex.
 
+- A new method, `configure()`, was added, allowing full configuration of the
+  `ServiceManager` instance at once. Each of the various configuration methods —
+  `setAlias()`, `setInvokableClass()`, etc. — now proxy to this method.
+
+- A new method, `mapLazyService($name, $class = null)`, was added, to allow
+  mapping a lazy service, and as an analog to the other various service
+  definition methods.
+
 ### Deprecated
 
 - Nothing
@@ -114,20 +122,12 @@ changes, outlined in this section.
   `Config` and `ConfigInterface` still exist, however, but primarily for the
   purposes of codifying and aggregating configuration to use.
 
-- The ServiceManager is now immutable. Once configured, it cannot be altered.
-  You need to create a new service manager if you need to change the
-  configuration. This ensures safer and more aggressive caching. A new method,
-  `withConfig()`, allows you to create a new instance that merges the provided
-  configuration.
-
 - `ConfigInterface` has two important changes:
-  - `configureServiceManager()` now **must** return a service manager instance.
-    Since the ServiceManager is now immutable, and the various methods for
-    injecting services are gone, the expectation is that this method will pass
-    configuration to `ServiceManager::withConfig()` and return the new instance.
+  - `configureServiceManager()` now **must** return the updated service manager
+    instance.
   - A new method, `toArray()`, was added, to allow pulling the configuration in
     order to pass to a ServiceManager or plugin manager's constructor or
-    `withConfig()` method.
+    `configure()` method.
 
 - Interfaces for `FactoryInterface`, `DelegatorFactoryInterface` and
   `AbstractFactoryInterface` have changed. All are now directly invokable. This

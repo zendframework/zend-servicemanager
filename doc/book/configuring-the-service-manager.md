@@ -484,14 +484,31 @@ This works because the `InvokableFactory` will automatically pass the options
 
 ## Altering a service manager's config
 
-The service manager is immutable. This means that once you have created a
-service manager instance, you cannot alter its configuration. This is done for
-performance reasons, as it allows us to more aggressively cache.
+Assuming that you have not called `$container->setAllowOverride(false)`, you can,
+at any time, configure the service manager with new services using any of the
+following methods:
 
-However, you may need to alter its configuration at runtime in order to add new
-factories. To do that, you can use the `withConfig()` method. This method creates a
-*new* service manager instance, which merges its own configuration with the new
-configuration you provide to it:
+- `configure()`, which accepts the same configuration array as the constructor.
+- `setAlias($alias, $target)`
+- `setInvokableClass($name, $class = null)`; if no `$class` is passed, the
+  assumption is that `$name` is the class name.
+- `setFactory($name, $factory)`, where `$factory` can be either a callable
+  factory or the name of a factory class to use.
+- `mapLazyService($name, $class = null)`, to map the service name `$name` to
+  `$class`; if the latter is not provided, `$name` is used for both sides of
+  the map.
+- `addAbstractFactory($factory)`, where `$factory` can be either a
+  `Zend\ServiceManager\Factory\AbstractFactoryInterface` instance or the name
+  of a class implementing the interface.
+- `addDelegator($name, $factory)`, where `$factory` can be either a callable
+  delegator factory, or the name of a delegator factory class to use.
+- `addInitializer($initializer)`, where `$initializer` can be either a callable
+  initializer, or the name of an initializer class to use.
+- `setService($name, $instance)`
+- `setShared($name, $shared)`, where `$shared` is a boolean flag indicating
+  whether or not the named service should be shared.
+
+As examples:
 
 ```php
 use Zend\ServiceManager\ServiceManager;
@@ -502,18 +519,47 @@ $serviceManager = new ServiceManager([
     ]
 ]);
 
-$newServiceManager = $serviceManager->withConfig([
+$serviceManager->configure([
     'factories' => [
         DateTime::class => InvokableFactory::class
     ]
 ]);
 
-var_dump($serviceManager->has(DateTime::class)); // prints false
 var_dump($newServiceManager->has(DateTime::class)); // prints true
+
+// Create an alias from 'Date' to 'DateTime'
+$serviceManager->setAlias('Date', DateTime::class);
+
+// Set a factory for the 'Time' service
+$serviceManager->setFactory('Time', function ($container) {
+    return $container->get(DateTime::class);
+});
+
+// Map a lazy service named 'localtime' to the class DateTime.
+$serviceManager->mapLazyService('localtime', DateTime::class);
+
+// Add an abstract factory
+$serviceManager->addAbstractFactory(new CustomAbstractFactory());
+
+// Add a delegator factory for the DateTime service
+$serviceManager->addDelegator(DateTime::class, function ($container, $name, $callback) {
+    $dateTime = $callback();
+    $dataTime->setTimezone(new DateTimezone('UTC'));
+    return $dateTime;
+});
+
+// Add an initializer
+// Note: don't do this. Use delegator factories instead.
+$serviceManager->addInitializer(function ($service, $instance) {
+    if (! $instance instanceof DateTime) {
+        return;
+    }
+    $instance->setTimezone(new DateTimezone('America/Chicago'));
+})
+
+// Explicitly map a service name to an instance.
+$serviceManager->setService('foo', new stdClass);
+
+// Mark the DateTime service as NOT being shared.
+$serviceManager->setShared(DateTime::class, false);
 ```
-
-As you can see from this example, the old service manager has been untouched,
-and therefor does not contain any factory set for the `DateTime` service.
-
-> When creating a new service manager through the `withConfig` method, **no
-> services** created with the old service manager are cloned.
