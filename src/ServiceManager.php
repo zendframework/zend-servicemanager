@@ -211,12 +211,12 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * {@inheritDoc}
      */
-    public function has($name, $checkAbstractFactories = false)
+    public function has($name)
     {
         $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
         $found = isset($this->services[$name]) || isset($this->factories[$name]);
 
-        if ($found || !$checkAbstractFactories) {
+        if ($found) {
             return $found;
         }
 
