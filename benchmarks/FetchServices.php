@@ -4,7 +4,6 @@ namespace ZendBench\ServiceManager;
 
 use Athletic\AthleticEvent;
 use Zend\ServiceManager\ServiceManager;
-use Zend\ServiceManager\Config;
 
 class FetchServices extends AthleticEvent
 {
@@ -30,7 +29,7 @@ class FetchServices extends AthleticEvent
 
     public function classSetUp()
     {
-        $this->sm = new ServiceManager(new Config($this->getConfig()));
+        $this->sm = new ServiceManager($this->getConfig());
     }
 
     /**
@@ -80,6 +79,6 @@ class FetchServices extends AthleticEvent
      */
     public function fetchAbstractFactoryService()
     {
-        $result = $this->sm->get('foo');
+       $result = $this->sm->get('foo');
     }
 }

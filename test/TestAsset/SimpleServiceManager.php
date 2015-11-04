@@ -7,13 +7,15 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace ZendTest\ServiceManager\TestAsset;
 
-use InvalidArgumentException as SplInvalidArgumentException;
+use stdClass;
+use Zend\ServiceManager\Factory\InvokableFactory;
+use Zend\ServiceManager\ServiceManager;
 
-/**
- * @inheritDoc
- */
-class InvalidArgumentException extends SplInvalidArgumentException implements ExceptionInterface
+class SimpleServiceManager extends ServiceManager
 {
+    protected $factories = [
+        stdClass::class => InvokableFactory::class
+    ];
 }

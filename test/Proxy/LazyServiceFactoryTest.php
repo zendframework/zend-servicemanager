@@ -9,79 +9,108 @@
 
 namespace ZendTest\ServiceManager\Proxy;
 
+use Interop\Container\ContainerInterface;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit_Framework_TestCase as TestCase;
+use ProxyManager\Factory\LazyLoadingValueHolderFactory;
+use ProxyManager\Proxy\LazyLoadingInterface;
+use ProxyManager\Proxy\VirtualProxyInterface;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 use Zend\ServiceManager\Proxy\LazyServiceFactory;
 
 /**
- * Tests for {@see \Zend\ServiceManager\Proxy\LazyServiceFactory}
- *
  * @covers \Zend\ServiceManager\Proxy\LazyServiceFactory
  */
-class LazyServiceFactoryTest extends \PHPUnit_Framework_TestCase
+class LazyServiceFactoryTest extends TestCase
 {
     /**
-     * @var \ProxyManager\Factory\LazyLoadingValueHolderFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var LazyServiceFactory
      */
-    protected $proxyFactory;
+    private $factory;
 
     /**
-     * @var \Zend\ServiceManager\ServiceLocatorInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var LazyLoadingValueHolderFactory|MockObject
      */
-    protected $locator;
+    private $proxyFactory;
 
     /**
      * {@inheritDoc}
      */
-    public function setUp()
+    protected function setUp()
     {
-        if (!interface_exists('ProxyManager\\Proxy\\ProxyInterface')) {
-            $this->markTestSkipped('Please install `ocramius/proxy-manager` to run these tests');
-        }
+        $this->proxyFactory = $this->getMock(LazyLoadingValueHolderFactory::class);
+        $servicesMap = [
+            'fooService' => 'FooClass',
+        ];
 
-        $this->locator      = $this->getMock('Zend\\ServiceManager\\ServiceLocatorInterface');
-        $this->proxyFactory = $this
-            ->getMockBuilder('ProxyManager\\Factory\\LazyLoadingValueHolderFactory')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->factory = new LazyServiceFactory($this->proxyFactory, $servicesMap);
     }
 
-    public function testCreateDelegatorWithRequestedName()
+    public function testImplementsDelegatorFactoryInterface()
     {
-        $instance = new \stdClass();
-        $callback = function () {};
-        $factory  = new LazyServiceFactory($this->proxyFactory, ['foo' => 'bar']);
+        $this->assertInstanceOf(DelegatorFactoryInterface::class, $this->factory);
+    }
 
-        $this
-            ->proxyFactory
-            ->expects($this->once())
+    public function testThrowExceptionWhenServiceNotExists()
+    {
+        $callback = $this->getMock('stdClass', ['callback']);
+        $callback->expects($this->never())
+            ->method('callback')
+        ;
+        $container = $this->createContainerMock();
+
+        $this->proxyFactory->expects($this->never())
             ->method('createProxy')
-            ->with('bar', $callback)
-            ->will($this->returnValue($instance));
+        ;
+        $this->setExpectedException(
+            ServiceNotFoundException::class,
+            'The requested service "not_exists" was not found in the provided services map'
+        );
 
-        $this->assertSame($instance, $factory->createDelegatorWithName($this->locator, 'baz', 'foo', $callback));
+        $this->factory->__invoke($container, 'not_exists', [$callback, 'callback']);
     }
 
-    public function testCreateDelegatorWithCanonicalName()
+    public function testCreates()
     {
-        $instance = new \stdClass();
-        $callback = function () {};
-        $factory  = new LazyServiceFactory($this->proxyFactory, ['foo' => 'bar']);
+        $callback = $this->getMock('stdClass', ['callback']);
+        $callback->expects($this->once())
+            ->method('callback')
+            ->willReturn('fooValue')
+        ;
+        $container = $this->createContainerMock();
+        $expectedService = $this->getMock(VirtualProxyInterface::class);
 
-        $this
-            ->proxyFactory
-            ->expects($this->once())
+        $this->proxyFactory->expects($this->once())
             ->method('createProxy')
-            ->with('bar', $callback)
-            ->will($this->returnValue($instance));
+            ->willReturnCallback(
+                function ($className, $initializer) use ($expectedService) {
+                    $this->assertEquals('FooClass', $className, 'class name not match');
 
-        $this->assertSame($instance, $factory->createDelegatorWithName($this->locator, 'foo', 'baz', $callback));
+                    $wrappedInstance = null;
+                    $result = $initializer($wrappedInstance, $this->getMock(LazyLoadingInterface::class));
+
+                    $this->assertEquals('fooValue', $wrappedInstance, 'expected callback return value');
+                    $this->assertTrue($result, 'initializer should return true');
+
+                    return $expectedService;
+                }
+            )
+        ;
+
+        $result = $this->factory->__invoke($container, 'fooService', [$callback, 'callback']);
+
+        $this->assertSame($expectedService, $result, 'service created not match the expected');
     }
 
-    public function testCannotCreateDelegatorWithNoMappedServiceClass()
+    /**
+     * @return ContainerInterface|MockObject
+     */
+    private function createContainerMock()
     {
-        $factory = new LazyServiceFactory($this->proxyFactory, []);
+        /** @var ContainerInterface|MockObject $container */
+        $container = $this->getMock(ContainerInterface::class);
 
-        $this->setExpectedException('Zend\\ServiceManager\\Exception\\InvalidServiceNameException');
-
-        $factory->createDelegatorWithName($this->locator, 'foo', 'baz', function () {});
+        return $container;
     }
 }
