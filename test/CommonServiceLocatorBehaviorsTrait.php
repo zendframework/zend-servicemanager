@@ -719,17 +719,22 @@ trait CommonServiceLocatorBehaviorsTrait
     public function methodsAffectedByOverrideSettings()
     {
         // @codingStandardsIgnoreStart
-        //  name                 => [ 'method to invoke',  [arguments for invocation]]
+        //  name                        => [ 'method to invoke',  [arguments for invocation]]
         return [
-            'setAlias'           => ['setAlias',           ['foo', 'bar']],
-            'setInvokableClass'  => ['setInvokableClass',  ['foo', __CLASS__]],
-            'setFactory'         => ['setFactory',         ['foo', function () {}]],
-            'addAbstractFactory' => ['addAbstractFactory', [TestAsset\SimpleAbstractFactory::class]],
-            'addDelegator'       => ['addDelegator',       ['foo', TestAsset\PreDelegator::class]],
-            'addInitializer'     => ['addInitializer',     [function () {}]],
-            'setService'         => ['setService',         ['foo', $this]],
-            'setShared'          => ['setShared',          ['foo', false]],
-            'configure'          => ['configure',          [[]]],
+            'setAlias'                  => ['setAlias',           ['foo', 'bar']],
+            'setInvokableClass'         => ['setInvokableClass',  ['foo', __CLASS__]],
+            'setFactory'                => ['setFactory',         ['foo', function () {}]],
+            'setService'                => ['setService',         ['foo', $this]],
+            'setShared'                 => ['setShared',          ['foo', false]],
+            'mapLazyService'            => ['mapLazyService',     ['foo', __CLASS__]],
+            'addDelegator'              => ['addDelegator',       ['foo', function () {}]],
+            'configure-alias'           => ['configure',          [['aliases'       => ['foo' => 'bar']]]],
+            'configure-invokable'       => ['configure',          [['invokables'    => ['foo' => 'foo']]]],
+            'configure-invokable-alias' => ['configure',          [['invokables'    => ['foo' => 'bar']]]],
+            'configure-factory'         => ['configure',          [['factories'     => ['foo' => function () {}]]]],
+            'configure-service'         => ['configure',          [['services'      => ['foo' => $this]]]],
+            'configure-shared'          => ['configure',          [['shared'        => ['foo' => false]]]],
+            'configure-lazy-service'    => ['configure',          [['lazy_services' => ['class_map' => ['foo' => __CLASS__]]]]],
         ];
         // @codingStandardsIgnoreEnd
     }
@@ -740,7 +745,7 @@ trait CommonServiceLocatorBehaviorsTrait
      */
     public function testConfiguringInstanceRaisesExceptionIfAllowOverrideIsFalse($method, $args)
     {
-        $container = $this->createContainer();
+        $container = $this->createContainer(['services' => ['foo' => $this]]);
         $container->setAllowOverride(false);
         $this->setExpectedException(ContainerModificationsNotAllowedException::class);
         call_user_func_array([$container, $method], $args);
@@ -749,20 +754,20 @@ trait CommonServiceLocatorBehaviorsTrait
     /**
      * @group mutation
      */
-    public function testAllowOverrideFlagIsTrueByDefault()
+    public function testAllowOverrideFlagIsFalseByDefault()
     {
         $container = $this->createContainer();
-        $this->assertTrue($container->getAllowOverride());
+        $this->assertFalse($container->getAllowOverride());
         return $container;
     }
 
     /**
      * @group mutation
-     * @depends testAllowOverrideFlagIsTrueByDefault
+     * @depends testAllowOverrideFlagIsFalseByDefault
      */
     public function testAllowOverrideFlagIsMutable($container)
     {
-        $container->setAllowOverride(false);
-        $this->assertFalse($container->getAllowOverride());
+        $container->setAllowOverride(true);
+        $this->assertTrue($container->getAllowOverride());
     }
 }
