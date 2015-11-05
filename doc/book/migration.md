@@ -311,6 +311,16 @@ return [
 ];
 ```
 
+Additionally, assuming you have configured lazy services initially with the
+proxy namespace, target directory, etc., you can map lazy services using the new
+method `mapLazyService($name, $class)`:
+
+```php
+$container->mapLazyService('MyClass', 'MyClass');
+// or, more simply:
+$container->mapLazyService('MyClass');
+```
+
 ## ServiceLocatorInterface Changes
 
 The `ServiceLocatorInterface` now extends the
@@ -332,69 +342,31 @@ service, and to allow using the provided `$options` when creating the instance.
 `Zend\ServiceManager\ServiceManager` remains the primary interface with which
 developers will interact. It has the following changes in v3:
 
-- It is now immutable.
-  - It accepts all configuration at instantiation.
-  - It removes all methods that would alter state.
-  - It adds a new method, `withConfig()`, for generating a new instance that
-    merges the provided configuration with previous definitions.
+- It adds a new method, `configure()`, which allows configuring all instance
+  generation capabilities (aliases, factories, abstract factories, etc.) at
+  once.
 - Peering capabilities were removed.
 - Exceptions are *always* thrown when service instance creation fails or
   produces an error; you can no longer disable this.
-- Configuration no longer requires a `Zend\ServiceManager\Config` instance; that
-  class has been removed.
+- Configuration no longer requires a `Zend\ServiceManager\Config` instance.
+  `Config` can be used, but is no needed.
 - It adds a new method, `build()`, for creating discrete service instances.
 
 ### Methods Removed
 
 *The following methods are removed* in v3:
 
-- `setAllowOverride()`/`getAllowOverride()`; since instances are now immutable,
-  these no longer had any meaning.
 - `setShareByDefault()`/`shareByDefault()`; this can be passed during
-  instantiation or via `withConfig()`.
+  instantiation or via `configure()`.
 - `setThrowExceptionInCreate()`/`getThrowExceptionInCreate()`; exceptions are
   *always* thrown when errors are encountered during service instance creation.
 - `setRetrieveFromPeeringManagerFirst()`/`retrieveFromPeeringManagerFirst()`;
   peering is no longer supported.
-- `setInvokableClass()`; invokable classes are no longer supported separately,
-  regardless.
-- `setFactory()`; pass factories during instantiation or via `withConfig()`.
-- `addAbstractFactory()`; provide abstract factories during instantiation or via
-  `withConfig()`.
-- `addDelegator()`; provide delegator factories during instantiation or via
-  `withConfig()`.
-- `addInitializer()`; pass initializers during instantiation or via
-  `withConfig()`.
-- `setService()`; provide concrete service instances during instantiation or via
-  `withConfig()`.
-- `setShared()`/`isShared()`; provide per-service sharing status at
-  instantiation or via `withConfig()`.
 
 ### Constructor
 
 The constructor now accepts an array of service configuration, not a
 `Zend\ServiceManager\Config` instance.
-
-### Immutability
-
-The Service Manager is now immutable. This allows us to perform aggressive
-caching, and prevents the need to check for state changes when new services are
-added.
-
-*Typically, you should pass all service configuration at instantiation.*
-
-If you need to change a Service Manager instance — for instance, to add more
-factories, delegators, etc. — the class provides a new method, `withConfig()`.
-This method will merge the configuration you provide with that found in the
-Service Manager instance in order to return a *new instance*:
-
-```php
-$updated = $container->withConfig([
-    'factories' => [
-        'MyClass' => InvokableFactory::class,
-    ],
-]);
-```
 
 ### Use `build()` for discrete instances
 
@@ -758,10 +730,8 @@ The following classes and interfaces have changes:
 - `Zend\ServiceManager\Proxy\LazyServiceFactory` is now marked `final`, and
    implements `Zend\ServiceManager\Proxy\DelegatorFactoryInterface`. Its
    dependencies and capabilities remain the same.
-- `Zend\ServiceManager\ConfigInterface` now is expected to *return* a
-  `ServiceManager` instance. This is because instances cannot be configured
-  in-situ; implementers will now need to call `withConfig()` and return the
-  instance returned by that method.
+- `Zend\ServiceManager\ConfigInterface` now is expected to *return* the modified
+  `ServiceManager` instance.
 - `Zend\ServiceManager\Config` was updated to follow the changes to
-  `ConfigInterface` and `ServiceManager`, and now returns a new
+  `ConfigInterface` and `ServiceManager`, and now returns the updated
   `ServiceManager` instance from `configureServiceManager()`.

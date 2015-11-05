@@ -15,6 +15,7 @@ use Interop\Container\Exception\ContainerException;
 use ProxyManager\Configuration as ProxyConfiguration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
+use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
@@ -52,6 +53,13 @@ class ServiceManager implements ServiceLocatorInterface
      * @var string[]
      */
     protected $aliases = [];
+
+    /**
+     * Whether or not changes may be made to this instance.
+     *
+     * @param bool
+     */
+    protected $allowOverride = false;
 
     /**
      * @var ContainerInterface
@@ -133,26 +141,6 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Create a new service locator that merges the provided configuration.
-     *
-     * Note that the original service locator is left untouched (as with PSR-7
-     * interfaces).
-     *
-     * See {@see \Zend\ServiceManager\ServiceManager::configure()} for details
-     * on what $config accepts.
-     *
-     * @param  array $config
-     * @return ContainerInterface
-     */
-    public function withConfig(array $config)
-    {
-        $container                  = clone $this;
-        $container->creationContext = ($this === $this->creationContext) ? $container : $this->creationContext;
-        $container->configure($config);
-        return $container;
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function get($name)
@@ -231,6 +219,26 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
+     * Indicate whether or not the instance is immutable.
+     *
+     * @param bool $flag
+     */
+    public function setAllowOverride($flag)
+    {
+        $this->allowOverride = (bool) $flag;
+    }
+
+    /**
+     * Retrieve the flag indicating immutability status.
+     *
+     * @return bool
+     */
+    public function getAllowOverride()
+    {
+        return $this->allowOverride;
+    }
+
+    /**
      * Configure the service manager
      *
      * Valid top keys are:
@@ -265,10 +273,15 @@ class ServiceManager implements ServiceLocatorInterface
      *   should be shared by default.
      *
      * @param  array $config
-     * @return void
+     * @return self
+     * @throws ContainerModificationsNotAllowedException if the allow
+     *     override flag has been toggled off, and a service instance
+     *     exists for a given service.
      */
-    protected function configure(array $config)
+    public function configure(array $config)
     {
+        $this->validateOverrides($config);
+
         if (isset($config['services'])) {
             $this->services = $config['services'] + $this->services;
         }
@@ -326,6 +339,109 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         $this->resolveAliases();
+
+        return $this;
+    }
+
+    /**
+     * Add an alias.
+     *
+     * @param string $alias
+     * @param string $target
+     */
+    public function setAlias($alias, $target)
+    {
+        $this->configure(['aliases' => [$alias => $target]]);
+    }
+
+    /**
+     * Add an invokable class mapping.
+     *
+     * @param string $name Service name
+     * @param null|string $class Class to which to map; if omitted, $name is
+     *     assumed.
+     */
+    public function setInvokableClass($name, $class = null)
+    {
+        $this->configure(['invokables' => [$name => $class ?: $name]]);
+    }
+
+    /**
+     * Specify a factory for a given service name.
+     *
+     * @param string $name Service name
+     * @param string|callable|Factory\FactoryInterface $factory Factory to which
+     *     to map.
+     */
+    public function setFactory($name, $factory)
+    {
+        $this->configure(['factories' => [$name => $factory]]);
+    }
+
+    /**
+     * Create a lazy service mapping to a class.
+     *
+     * @param string $name Service name to map
+     * @param null|string $class Class to which to map; if not provided, $name
+     *     will be used for the mapping.
+     */
+    public function mapLazyService($name, $class = null)
+    {
+        $this->configure(['lazy_services' => ['class_map' => [$name => $class ?: $name]]]);
+    }
+
+    /**
+     * Add an abstract factory for resolving services.
+     *
+     * @param string|Factory\AbstractFactoryInterface $name Service name
+     */
+    public function addAbstractFactory($factory)
+    {
+        $this->configure(['abstract_factories' => [$factory]]);
+    }
+
+    /**
+     * Add a delegator for a given service.
+     *
+     * @param string $name Service name
+     * @param string|callable|Factory\DelegatorFactoryInterface $factory Delegator
+     *     factory to assign.
+     */
+    public function addDelegator($name, $factory)
+    {
+        $this->configure(['delegators' => [$name => [$factory]]]);
+    }
+
+    /**
+     * Add an initializer.
+     *
+     * @param string|callable|Initalizer\InitializerInterface $initalizer
+     */
+    public function addInitializer($initializer)
+    {
+        $this->configure(['initializers' => [$initializer]]);
+    }
+
+    /**
+     * Map a service.
+     *
+     * @param string $name Service name
+     * @param array|object $service
+     */
+    public function setService($name, $service)
+    {
+        $this->configure(['services' => [$name => $service]]);
+    }
+
+    /**
+     * Add a service sharing rule.
+     *
+     * @param string $name Service name
+     * @param boolean $flag Whether or not the service should be shared.
+     */
+    public function setShared($name, $flag)
+    {
+        $this->configure(['shared' => [$name => (bool) $flag]]);
     }
 
     /**
@@ -665,5 +781,88 @@ class ServiceManager implements ServiceLocatorInterface
             $factories[$class] = Factory\InvokableFactory::class;
         }
         return $factories;
+    }
+
+    /**
+     * Determine if one or more services already exist in the container.
+     *
+     * If the allow override flag is true, this method does nothing.
+     *
+     * Otherwise, it checks against each of the following service types,
+     * if present, and validates that none are defining services that
+     * already exist; if they do, it raises an exception indicating
+     * modification is not allowed.
+     *
+     * @param array $config
+     * @throws ContainerModificationsNotAllowedException if any services
+     *     provided already have instances available.
+     */
+    private function validateOverrides(array $config)
+    {
+        if ($this->allowOverride) {
+            return;
+        }
+
+        if (isset($config['services'])) {
+            $this->validateOverrideSet(array_keys($config['services']), 'service');
+        }
+
+        if (isset($config['aliases'])) {
+            $this->validateOverrideSet(array_keys($config['aliases']), 'alias');
+        }
+
+        if (isset($config['invokables'])) {
+            $this->validateOverrideSet(array_keys($config['invokables']), 'invokable class');
+        }
+
+        if (isset($config['factories'])) {
+            $this->validateOverrideSet(array_keys($config['factories']), 'factory');
+        }
+
+        if (isset($config['delegators'])) {
+            $this->validateOverrideSet(array_keys($config['delegators']), 'delegator');
+        }
+
+        if (isset($config['shared'])) {
+            $this->validateOverrideSet(array_keys($config['shared']), 'sharing rule');
+        }
+
+        if (isset($config['lazy_services']['class_map'])) {
+            $this->validateOverrideSet(array_keys($config['lazy_services']['class_map']), 'lazy service');
+        }
+    }
+
+    /**
+     * Determine if one or more services already exist for a given type.
+     *
+     * Loops through the provided service names, checking if any have current
+     * service instances; if not, it returns, but otherwise, it raises an
+     * exception indicating modification is not allowed.
+     *
+     * @param string[] $services
+     * @param string $type Type of service being checked.
+     * @throws ContainerModificationsNotAllowedException if any services
+     *     provided already have instances available.
+     */
+    private function validateOverrideSet(array $services, $type)
+    {
+        $detected = [];
+        foreach ($services as $service) {
+            if (isset($this->services[$service])) {
+                $detected[] = $service;
+            }
+        }
+
+        if (empty($detected)) {
+            return;
+        }
+
+        throw new ContainerModificationsNotAllowedException(sprintf(
+            'An updated/new %s is not allowed, as the container does not allow '
+            . 'changes for services with existing instances; the following '
+            . 'already exist in the container: %s',
+            $type,
+            implode(', ', $detected)
+        ));
     }
 }

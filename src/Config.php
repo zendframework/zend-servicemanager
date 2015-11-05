@@ -66,11 +66,11 @@ class Config implements ConfigInterface
      * Configure service manager
      *
      * @param ServiceManager $serviceManager
-     * @return ServiceManager Returns a new instance with the merged configuration.
+     * @return ServiceManager Returns the updated service manager instance.
      */
     public function configureServiceManager(ServiceManager $serviceManager)
     {
-        return $serviceManager->withConfig($this->config);
+        return $serviceManager->configure($this->config);
     }
 
     /**
