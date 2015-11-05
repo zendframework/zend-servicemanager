@@ -156,19 +156,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $this->assertFalse($serviceManager->has('baz'));
     }
 
-    public function testCanCheckServiceExistenceWithoutCheckingAbstractFactories()
-    {
-        $serviceManager = $this->createContainer([
-            'factories' => [
-                stdClass::class => InvokableFactory::class
-            ]
-        ]);
-
-        $this->assertTrue($serviceManager->has(stdClass::class));
-        $this->assertFalse($serviceManager->has(DateTime::class));
-    }
-
-    public function testCanCheckServiceExistenceWithCheckingAbstractFactories()
+    public function testCheckingServiceExistenceWithChecksAgainstAbstractFactories()
     {
         $serviceManager = $this->createContainer([
             'factories' => [
@@ -179,8 +167,8 @@ trait CommonServiceLocatorBehaviorsTrait
             ]
         ]);
 
-        $this->assertTrue($serviceManager->has(stdClass::class, true));
-        $this->assertTrue($serviceManager->has(DateTime::class, true));
+        $this->assertTrue($serviceManager->has(stdClass::class));
+        $this->assertTrue($serviceManager->has(DateTime::class));
     }
 
     public function testBuildNeverSharesInstances()
@@ -322,23 +310,6 @@ trait CommonServiceLocatorBehaviorsTrait
         $this->assertTrue($serviceManager->has(stdClass::class));
     }
 
-    /**
-     * @group has
-     */
-    public function testHasDoesNotCheckAbstractFactoriesByDefault()
-    {
-        $serviceManager = $this->createContainer([
-            'factories' => [
-                stdClass::class => InvokableFactory::class,
-            ],
-            'abstract_factories' => [
-                new SimpleAbstractFactory(),
-            ],
-        ]);
-
-        $this->assertFalse($serviceManager->has(DateTime::class));
-    }
-
     public function abstractFactories()
     {
         return [
@@ -351,7 +322,7 @@ trait CommonServiceLocatorBehaviorsTrait
      * @group has
      * @dataProvider abstractFactories
      */
-    public function testHasCanCheckAbstractFactoriesWhenRequested($abstractFactory, $expected)
+    public function testHasChecksAgainstAbstractFactories($abstractFactory, $expected)
     {
         $serviceManager = $this->createContainer([
             'abstract_factories' => [
@@ -359,7 +330,7 @@ trait CommonServiceLocatorBehaviorsTrait
             ],
         ]);
 
-        $this->assertSame($expected, $serviceManager->has(DateTime::class, true));
+        $this->assertSame($expected, $serviceManager->has(DateTime::class));
     }
 
     /**

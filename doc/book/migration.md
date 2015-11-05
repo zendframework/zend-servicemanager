@@ -428,42 +428,6 @@ $alsoBetween = $container->build(Between::class, [
 The above two validators would be different instances, with their own
 configuration.
 
-### has() no longer checks abstract factories by default
-
-In v2, `has()` would also check abstract factories to see if any would match the
-service. Depending on the number of abstract factories present, this can be an
-expensive operation. As a result, in v3, we no longer check abstract factories
-*by default*.
-
-However, you *can* tell the Service Manager to check them by passing an optional
-second argument to the method; a boolean is expected, and a `true` value
-indicates that abstract factories should be checked:
-
-```php
-$container = new ServiceManager([
-    'factories' => [
-        'MyClass' => 'MyClass',
-    ],
-    'abstract_factories' => [
-        'AbstractFactoryThatAlwaysResolves',
-    ],
-]);
-```
-
-Assuming that `AbstractFactoryThatAlwaysResolves` will resolve any service
-(don't ever do this!), the following behavior is expected:
-
-```php
-$has = $container->has('MyClass');            // always true; factory is defined
-                                              // for the service.
-$has = $container->has('AnotherClass');       // false; no factory is defined
-                                              // for the service, and not
-                                              // looking in abstract factories.
-$has = $container->has('AnotherClass', true); // true; no factory is defined for
-                                              // the service, but we indicated
-                                              // we'd look in abstract factories.
-```
-
 ## Factories
 
 All factory interfaces were moved to a `Factory` subnamespace. Additionally, the
