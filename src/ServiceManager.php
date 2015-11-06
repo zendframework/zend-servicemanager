@@ -276,9 +276,10 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
         $cName = $this->canonicalizeName($name);
 
         if (!($factory instanceof FactoryInterface || is_string($factory) || is_callable($factory))) {
-            throw new Exception\InvalidArgumentException(
-                'Provided abstract factory must be the class name of an abstract factory or an instance of an AbstractFactoryInterface.'
-            );
+            throw new Exception\InvalidArgumentException(sprintf(
+                'Provided factory must be the class name of a factory, callable or an instance of "%s".',
+                FactoryInterface::class
+            ));
         }
 
         if ($this->has([$cName, $name], false)) {
