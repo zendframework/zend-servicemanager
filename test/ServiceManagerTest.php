@@ -1226,4 +1226,18 @@ class ServiceManagerTest extends TestCase
         $this->assertSame($expectedService, $peeredServiceManager->get('peered_service'));
         $this->assertSame($expectedService, $secondParentServiceManager->get('peered_service'));
     }
+
+    public function testFirstGet()
+    {
+        $manager = new \Zend\Filter\FilterPluginManager();
+        $this->assertInstanceOf(\Zend\Filter\Boolean::class, $manager->get(\Zend\Filter\Boolean::class));
+        $this->assertTrue($manager->has(\Zend\Filter\Boolean::class));
+    }
+
+    public function testFirstHas()
+    {
+        $manager = new \Zend\Filter\FilterPluginManager();
+        $this->assertTrue($manager->has(\Zend\Filter\Boolean::class));
+        $this->assertInstanceOf(\Zend\Filter\Boolean::class, $manager->get(\Zend\Filter\Boolean::class));
+    }
 }
