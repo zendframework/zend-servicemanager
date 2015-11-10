@@ -415,7 +415,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Add an initializer.
      *
-     * @param string|callable|Initalizer\InitializerInterface $initalizer
+     * @param string|callable|InitializerInterface $initalizer
      */
     public function addInitializer($initializer)
     {
