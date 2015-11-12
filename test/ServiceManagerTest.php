@@ -252,7 +252,7 @@ class ServiceManagerTest extends TestCase
                 DateTime::class => InvokableFactory::class
             ]
         ]);
-        
+
         $this->assertTrue($serviceManager->has(DateTime::class));
     }
 }
