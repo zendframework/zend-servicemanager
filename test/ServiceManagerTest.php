@@ -243,4 +243,16 @@ class ServiceManagerTest extends TestCase
 
         $this->assertSame($service, $alias);
     }
+
+    public function testWithConfigShouldConfigureService()
+    {
+        $serviceManager = new SimpleServiceManager();
+        $serviceManager->withConfig([
+            'factories' => [
+                DateTime::class => InvokableFactory::class
+            ]
+        ]);
+
+        $this->assertTrue($serviceManager->has(DateTime::class));
+    }
 }
