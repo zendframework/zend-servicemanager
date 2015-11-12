@@ -146,6 +146,7 @@ class ServiceManager implements ServiceLocatorInterface
      * See {@see \Zend\ServiceManager\ServiceManager::configure()} for details
      * on what $config accepts.
      * @param array $config
+     * @return self
      */
     public function withConfig(array $config = [])
     {
