@@ -112,9 +112,9 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
     protected $throwExceptionInCreate = true;
 
     /**
-     * @var array map of characters to be replaced through strtr
+     * @var array map of characters to be replaced through str_replace
      */
-    protected $canonicalNamesReplacements = ['-' => '', '_' => '', ' ' => '', '\\' => '', '/' => ''];
+    protected $canonicalNamesReplacements = ['-', '_', ' ', '\\', '/'];
 
     /**
      * @var ServiceLocatorInterface
@@ -908,8 +908,11 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
             return $this->canonicalNames[$name];
         }
 
-        // this is just for performance instead of using str_replace
-        return $this->canonicalNames[$name] = strtolower(strtr($name, $this->canonicalNamesReplacements));
+        /**
+         * this is just for performance instead of using strtr
+         * @see https://github.com/zendframework/zend-servicemanager/issues/57
+         */
+        return $this->canonicalNames[$name] = strtolower(str_replace($this->canonicalNamesReplacements, '', $name));
     }
 
     /**
