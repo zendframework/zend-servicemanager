@@ -168,6 +168,9 @@ changes, outlined in this section.
   enforced through the interface, that allows you to easily map multiple service
   names to the same factory.
 
+- The for `AbstractFactoryInterface` interface renames the method `canCreateServiceWithName()`
+  to `has()`, and merges the `$name` and `$requestedName` arguments.
+
 - Plugin managers will now receive the parent service locator instead of itself
   in factories. In version 2.x, you needed to call the method
   `getServiceLocator()` to retrieve the parent (application) service locator.

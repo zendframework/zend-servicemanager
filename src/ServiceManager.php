@@ -210,7 +210,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         // Check abstract factories
         foreach ($this->abstractFactories as $abstractFactory) {
-            if ($abstractFactory->canCreateServiceWithName($this, $name)) {
+            if ($abstractFactory->canCreate($this, $name)) {
                 return true;
             }
         }
@@ -590,7 +590,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         // Check abstract factories
         foreach ($this->abstractFactories as $abstractFactory) {
-            if ($abstractFactory->canCreateServiceWithName($this, $name)) {
+            if ($abstractFactory->canCreate($this, $name)) {
                 return $abstractFactory;
             }
         }

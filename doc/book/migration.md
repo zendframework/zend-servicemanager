@@ -449,20 +449,22 @@ The new signature is:
 interface AbstractFactoryInterface extends FactoryInterface
 {
     /**
-     * Can we create an instance for the given service name?
+     * Does the factory have a way to create an instance for the service?
      *
      * @param  ContainerInterface $container
      * @param  string $requestedName
      * @return bool
      */
-    public function canCreateServiceWithName(ContainerInterface $container, $requestedName);
+    public function has(ContainerInterface $container, $requestedName);
 }
 ```
 
 Note that it now *extends* the `FactoryInterface` (detailed below), and thus the
-factory logic has the same signature. Additionally, note that the
-`canCreateServiceWithName()` now receives only two arguments, the container and
-the requested service name.
+factory logic has the same signature.
+
+In v2, the abstract factory defined the method `canCreateServiceWithName()`; in
+v3, this is renamed to `has()`, and the method also now receives only two
+arguments, the container and the requested service name.
 
 ### DelegatorFactoryInterface
 
