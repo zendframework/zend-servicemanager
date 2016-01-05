@@ -87,89 +87,16 @@ integrated.
 
 ### ConfigInterface
 
-The `ServiceManager` is now immutable, meaning that you cannot configure it
-after-the-fact. If your `ConfigInterface` implementation called on the various
-methods for injecting new services, such as:
-
-- `setService()`
-- `setInvokableClass()`
-- `setFactory()`
-- `addAbstractFactory()`
-- `addInitializer()`
-- `addDelegator()`
-
-then you will need to alter the logic to instead aggregate a full configuration
-specification. This can then be passed to the `ServiceManager` instance's
-`withConfig()` method, which does the following:
-
-- Creates a clone of the manager.
-- Merges the incoming configuration with the current configuration within the
-  clone.
-- Returns the clone.
-
-As such, your implementation should return the result of
-`$serviceManager->withConfig()`.
-
-As an example, consider this `HelperConfig` implementation from zend-i18n
-v2:
-
-```php
-class HelperConfig implements ConfigInterface
-{
-    protected $invokables = [
-        'currencyformat'  => 'Zend\I18n\View\Helper\CurrencyFormat',
-        'dateformat'      => 'Zend\I18n\View\Helper\DateFormat',
-        'numberformat'    => 'Zend\I18n\View\Helper\NumberFormat',
-        'plural'          => 'Zend\I18n\View\Helper\Plural',
-        'translate'       => 'Zend\I18n\View\Helper\Translate',
-        'translateplural' => 'Zend\I18n\View\Helper\TranslatePlural',
-    ];
-
-    public function configureServiceManager(ServiceManager $serviceManager)
-    {
-        foreach ($this->invokables as $name => $service) {
-            $serviceManager->setInvokableClass($name, $service);
-        }
-    }
-}
-```
-
-In version 3, this will become:
-
-```php
-use Interop\Container\ContainerInterface;
-
-class HelperConfig implements ConfigInterface
-{
-    protected $invokables = [
-        'currencyformat'  => 'Zend\I18n\View\Helper\CurrencyFormat',
-        'dateformat'      => 'Zend\I18n\View\Helper\DateFormat',
-        'numberformat'    => 'Zend\I18n\View\Helper\NumberFormat',
-        'plural'          => 'Zend\I18n\View\Helper\Plural',
-        'translate'       => 'Zend\I18n\View\Helper\Translate',
-        'translateplural' => 'Zend\I18n\View\Helper\TranslatePlural',
-    ];
-
-    public function configureServiceManager(ServiceManager $serviceManager)
-    {
-        return $serviceManager->withConfig([
-            'invokables' => $this->invokables,
-        ]);
-    }
-}
-```
-
-Additionally, we have **added** another method to `ConfigInterface`,
-`toArray()`. This should return an array in a format that can be passed to the
-`ServiceManager`'s constructor or `withConfig()` method.
+The principal change to the `ConfigInterface` is the addition of the
+`toArray()` method. This method is intended to return a configuration array in
+the format listed above, for passing to either the constructor or the
+`withConfig()` method of the `ServiceManager`..
 
 ### Config class
 
 `Zend\ServiceManager\Config` has been updated to follow the changes to the
 `ConfigInterface` and `ServiceManager`. This essentially means that it removes
-the various getter methods, and that the `configureServiceManager()` method
-instead aggregates the relevant configuration from the configuration passed to
-the constructor to pass to `ServiceManager::withConfig()`.
+the various getter methods, and adds the `toArray()` method.
 
 ## Invokables
 
@@ -455,7 +382,7 @@ interface AbstractFactoryInterface extends FactoryInterface
      * @param  string $requestedName
      * @return bool
      */
-    public function has(ContainerInterface $container, $requestedName);
+    public function canCreate(ContainerInterface $container, $requestedName);
 }
 ```
 
@@ -463,7 +390,7 @@ Note that it now *extends* the `FactoryInterface` (detailed below), and thus the
 factory logic has the same signature.
 
 In v2, the abstract factory defined the method `canCreateServiceWithName()`; in
-v3, this is renamed to `has()`, and the method also now receives only two
+v3, this is renamed to `canCreate()`, and the method also now receives only two
 arguments, the container and the requested service name.
 
 ### DelegatorFactoryInterface
@@ -601,9 +528,9 @@ In version 3, we define the following:
 - `Zend\ServiceManager\PluginManagerInterface`, which provides the public API
   differences from the `ServiceLocatorInterface`.
 - `Zend\ServiceManager\AbstractPluginManager`, which gives the basic
-  capabilities for plugin managers. The class now has a *required* dependency on
-  the application-level service manager instance, which is passed to all
-  factories, abstract factories, etc.
+  capabilities for plugin managers. The class now has a (semi) *required*
+  dependency on the application-level service manager instance, which is passed
+  to all factories, abstract factories, etc. (More on this below.)
 
 ### PluginManagerInterface
 
@@ -622,7 +549,10 @@ extending `ServiceLocatorInterface` and adding one method:
 public function validate($instance);
 ```
 
-All plugin managers *must* implement this interface.
+All plugin managers *must* implement this interface. For backwards-compatibility
+purposes, `AbstractPluginManager` will check for the `validatePlugin()` method
+(defined as abstract in v2), and, on discovery, trigger an `E_USER_DEPRECATED`
+notice, followed by invocation of that method.
 
 ### AbstractPluginManager
 
@@ -630,7 +560,9 @@ As it did in version 2, `AbstractPluginManager` extends `ServiceManager`. **That
 means that all changes made to the `ServiceManager` for v3 also apply to the
 `AbstractPluginManager`.**
 
-In addition, the following changes are also true for v3:
+In addition, review the following changes.
+
+#### Constructor
 
 - The constructor now accepts the following arguments, in the following order:
   - The parent container instance; this is usually the application-level
@@ -642,11 +574,35 @@ In addition, the following changes are also true for v3:
   a basic implementation (detailed below).
 - The signature of `get()` changes (more below).
 
-`validate()` is defined as the following:
+For backwards compatibility purposes, the constructor *also* allows the
+following for the initial argument:
+
+- A `null` value. In this case, the plugin manager will use itself as the
+  creation context, *but also raise a deprecation notice indicating a
+  container should be passed instead.* You can pass the parent container
+  to the `setServiceLocator()` method to reset the creation context, but,
+  again, this raises a deprecation notice.
+- A `ConfigInterface` instance. In this case, the plugin manager will call
+  the config instance's `toArray()` method to cast it to an array, and use the
+  return value as the configuration to pass to the parent constructor. As with
+  the `null` value, the plugin manager will be set as its own creation context.
+
+#### Validation
+
+The `validate()` method is defined as follows:
 
 ```php
 public function validate($instance)
 {
+    if (method_exists($this, 'validatePlugin')) {
+        trigger_error(sprintf(
+            '%s::validatePlugin() has been deprecated as of 3.0; please define validate() instead',
+            get_class($this)
+        ), E_USER_DEPRECATED);
+        $this->validatePlugin($instance);
+        return;
+    }
+
     if (empty($this->instanceOf) || $instance instanceof $this->instanceOf) {
         return;
     }
@@ -660,13 +616,22 @@ public function validate($instance)
 }
 ```
 
-Most plugin manager instances can therefore define the `$instanceOf` property to
-indicate what plugin interface is considered valid for the plugin manager, and
-make no further changes to the abstract plugin manager:
+The two takeaways from this are:
+
+- If you are upgrading from v2, your code should continue to work, *but will
+  emit a deprecation notice*. The way to remove the deprecation notice is to
+  rename the `validatePlugin()` method to `validate()`, or to remove it and
+  define the `$instanceOf` property (if all you're doing is checking the
+  plugin against a single typehint).
+- Most plugin manager instances can simply define the `$instanceOf` property to
+  indicate what plugin interface is considered valid for the plugin manager, and
+  make no further changes to the abstract plugin manager:
 
 ```php
 protected $instanceOf = ValidatorInterface::class;
 ```
+
+#### get()
 
 The `get()` signature changes from:
 
@@ -682,6 +647,79 @@ public function get($name, array $options = null)
 
 Essentially: `$options` now *must* be an array if passed, and peering is no
 longer supported.
+
+#### Deprecated methods
+
+Finally, the following methods from v2's `ServiceLocatorAwareInterface` are
+retained (without implementing the interface), but marked as deprecated:
+
+- `setServiceLocator()`. This method exists as many tests and plugin manager
+  factories were using it to inject the parent locator (now called the creation
+  context). This method may still be used, and will now set the creation context
+  for the plugin manager, but also emit a deprecation warning.
+- `getServiceLocator()` is implemented in `ServiceManager` (from which
+  `AbstractPluginManager` inherits), but marked as deprecated.
+
+Regarding this latter point, `getServiceLocator()` exists to provide backwards
+compatibility *for existing plugin factories*. These factories typically pull
+dependencies from the parent/application container in order to initialize the
+plugin. In v2, this would look like:
+
+```php
+function ($plugins)
+{
+    $services = $plugins->getServiceLocator();
+
+    // pull dependencies from $services:
+    $foo = $services->get('Foo');
+    $bar = $services->get('Bar');
+
+    return new Plugin($foo, $bar);
+}
+```
+
+In v3, the initial argument to the factory is not the plugin manager instance,
+but the *creation context*, which is analogous to the parent locator in v2. In
+order to preserve existing behavior, we added the `getServiceLocator()` method
+to the `ServiceManager`. As such, the above will continue to work in v3.
+
+However, this method is marked as deprecated, and will emit an
+`E_USER_DEPRECATED` notice. To remove the notice, you will need to upgrade your
+code. The above example thus becomes:
+
+```php
+function ($services)
+{
+    // pull dependencies from $services:
+    $foo = $services->get('Foo');
+    $bar = $services->get('Bar');
+
+    return new Plugin($foo, $bar);
+}
+```
+
+If you *were* using the passed plugin manager and pulling other plugins, you
+will need to update your code to retrieve the plugin manager from the passed
+container. As an example, given this:
+
+```php
+function ($plugins)
+{
+    $anotherPlugin = $plugins->get('AnotherPlugin');
+    return new Plugin($anotherPlugin);
+}
+```
+
+You will need to rewrite it to:
+
+```php
+function ($services)
+{
+    $plugins = $services->get('PluginManager');
+    $anotherPlugin = $plugins->get('AnotherPlugin');
+    return new Plugin($anotherPlugin);
+}
+```
 
 ### Plugin Service Creation
 
