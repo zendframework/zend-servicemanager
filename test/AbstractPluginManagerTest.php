@@ -12,6 +12,8 @@ namespace ZendTest\ServiceManager;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
+use Zend\ServiceManager\ConfigInterface;
+use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
@@ -163,5 +165,113 @@ class AbstractPluginManagerTest extends TestCase
             'Delegator-injected option does not match configuration'
         );
         $this->assertEquals('bar', $instance->foo);
+    }
+
+    /**
+     * @group migration
+     */
+    public function testCanRetrieveParentContainerViaGetServiceLocatorWithDeprecationNotice()
+    {
+        $container = $this->createContainer();
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $this->assertSame($this->creationContext, $container->getServiceLocator());
+        restore_error_handler();
+    }
+
+    /**
+     * @group migration
+     */
+    public function testCallingSetServiceLocatorSetsCreationContextWithDeprecationNotice()
+    {
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager = new TestAsset\LenientPluginManager();
+        restore_error_handler();
+
+        $this->assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
+        $serviceManager = new ServiceManager();
+
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager->setServiceLocator($serviceManager);
+        restore_error_handler();
+
+        $this->assertAttributeSame($serviceManager, 'creationContext', $pluginManager);
+    }
+
+    /**
+     * @group migration
+     */
+    public function testPassingNoInitialConstructorArgumentSetsPluginManagerAsCreationContextWithDeprecationNotice()
+    {
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager = new TestAsset\LenientPluginManager();
+        restore_error_handler();
+        $this->assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
+    }
+
+    /**
+     * @group migration
+     */
+    public function testCanPassConfigInterfaceAsFirstConstructorArgumentWithDeprecationNotice()
+    {
+        $config = $this->prophesize(ConfigInterface::class);
+        $config->toArray()->willReturn([]);
+
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager = new TestAsset\LenientPluginManager($config->reveal());
+        restore_error_handler();
+
+        $this->assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
+    }
+
+    public function invalidConstructorArguments()
+    {
+        return [
+            'true'       => [true],
+            'false'      => [false],
+            'zero'       => [0],
+            'int'        => [1],
+            'zero-float' => [0.0],
+            'float'      => [1.1],
+            'string'     => ['invalid'],
+            'array'      => [['invokables' => []]],
+            'object'     => [(object) ['invokables' => []]],
+        ];
+    }
+
+    /**
+     * @group migration
+     * @dataProvider invalidConstructorArguments
+     */
+    public function testPassingNonContainerNonConfigNonNullFirstConstructorArgumentRaisesException($arg)
+    {
+        $this->setExpectedException(InvalidArgumentException::class);
+        new TestAsset\LenientPluginManager($arg);
+    }
+
+    /**
+     * @group migration
+     */
+    public function testPassingConfigInstanceAsFirstConstructorArgumentSkipsSecondArgumentWithDeprecationNotice()
+    {
+        $config = $this->prophesize(ConfigInterface::class);
+        $config->toArray()->willReturn(['services' => [__CLASS__ => $this]]);
+
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager = new TestAsset\LenientPluginManager($config->reveal(), ['services' => [__CLASS__ => []]]);
+        restore_error_handler();
+
+        $this->assertSame($this, $pluginManager->get(__CLASS__));
     }
 }

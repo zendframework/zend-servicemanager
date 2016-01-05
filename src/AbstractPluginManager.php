@@ -42,13 +42,47 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      * factories; for $config, {@see \Zend\ServiceManager\ServiceManager::configure()}
      * for details on its accepted structure.
      *
-     * @param ContainerInterface $parentLocator
-     * @param array              $config
+     * @param null|ConfigInterface|ContainerInterface $configInstanceOrParentLocator
+     * @param array $config
      */
-    public function __construct(ContainerInterface $parentLocator, array $config = [])
+    public function __construct($configInstanceOrParentLocator = null, array $config = [])
     {
+        if (null !== $configInstanceOrParentLocator
+            && ! $configInstanceOrParentLocator instanceof ConfigInterface
+            && ! $configInstanceOrParentLocator instanceof ContainerInterface
+        ) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                '%s expects a ConfigInterface or ContainerInterface instance as the first argument; received %s',
+                __CLASS__,
+                (is_object($configInstanceOrParentLocator)
+                    ? get_class($configInstanceOrParentLocator)
+                    : gettype($configInstanceOrParentLocator)
+                )
+            ));
+        }
+
+        if ($configInstanceOrParentLocator instanceof ConfigInterface) {
+            trigger_error(sprintf(
+                'Usage of %s as a constructor argument for %s is now deprecated',
+                ConfigInterface::class,
+                get_class($this)
+            ), E_USER_DEPRECATED);
+            $config = $configInstanceOrParentLocator->toArray();
+        }
+
         parent::__construct($config);
-        $this->creationContext = $parentLocator;
+
+        if (! $configInstanceOrParentLocator instanceof ContainerInterface) {
+            trigger_error(sprintf(
+                '%s now expects a %s instance representing the parent container; please update your code',
+                __METHOD__,
+                ContainerInterface::class
+            ), E_USER_DEPRECATED);
+        }
+
+        $this->creationContext = $configInstanceOrParentLocator instanceof ContainerInterface
+            ? $configInstanceOrParentLocator
+            : $this;
     }
 
     /**
@@ -82,5 +116,42 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
             $this->instanceOf,
             is_object($instance) ? get_class($instance) : gettype($instance)
         ));
+    }
+
+    /**
+     * Implemented for backwards compatibility only.
+     *
+     * Returns the creation context.
+     *
+     * @deprecated since 3.0.0. Factories using 3.0 should use the container
+     *     instance passed to the factory instead.
+     * @return ContainerInterface
+     */
+    public function getServiceLocator()
+    {
+        trigger_error(sprintf(
+            'Usage of %s is deprecated since v3.0.0; please use the container passed to the factory instead',
+            __METHOD__
+        ), E_USER_DEPRECATED);
+        return $this->creationContext;
+    }
+
+    /**
+     * Implemented for backwards compatibility only.
+     *
+     * Returns the creation context.
+     *
+     * @deprecated since 3.0.0. The creation context should be passed during
+     *     instantiation instead.
+     * @param ContainerInterface $container
+     * @return void
+     */
+    public function setServiceLocator(ContainerInterface $container)
+    {
+        trigger_error(sprintf(
+            'Usage of %s is deprecated since v3.0.0; please pass the container to the constructor instead',
+            __METHOD__
+        ), E_USER_DEPRECATED);
+        $this->creationContext = $container;
     }
 }
