@@ -15,6 +15,7 @@ use stdClass;
 use Zend\ServiceManager\ConfigInterface;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\InvalidServiceException;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
@@ -168,6 +169,18 @@ class AbstractPluginManagerTest extends TestCase
     }
 
     /**
+     * Overrides the method in the CommonServiceLocatorBehaviorsTrait, due to behavior differences.
+     *
+     * @covers \Zend\ServiceManager\AbstractPluginManager::get
+     */
+    public function testGetRaisesExceptionWhenNoFactoryIsResolved()
+    {
+        $pluginManager = $this->createContainer();
+        $this->setExpectedException(ServiceNotFoundException::class, get_class($pluginManager));
+        $pluginManager->get('Some\Unknown\Service');
+    }
+
+    /**
      * @group migration
      */
     public function testCanRetrieveParentContainerViaGetServiceLocatorWithDeprecationNotice()
@@ -273,5 +286,37 @@ class AbstractPluginManagerTest extends TestCase
         restore_error_handler();
 
         $this->assertSame($this, $pluginManager->get(__CLASS__));
+    }
+
+    /**
+     * @group migration
+     * @group autoinvokable
+     */
+    public function testAutoInvokableServicesAreNotKnownBeforeRetrieval()
+    {
+        $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
+        $this->assertFalse($pluginManager->has(TestAsset\InvokableObject::class));
+    }
+
+    /**
+     * @group migration
+     * @group autoinvokable
+     */
+    public function testSupportsRetrievingAutoInvokableServicesByDefault()
+    {
+        $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
+        $invokable = $pluginManager->get(TestAsset\InvokableObject::class);
+        $this->assertInstanceOf(TestAsset\InvokableObject::class, $invokable);
+    }
+
+    /**
+     * @group migration
+     * @group autoinvokable
+     */
+    public function testPluginManagersMayOptOutOfSupportingAutoInvokableServices()
+    {
+        $pluginManager = new TestAsset\NonAutoInvokablePluginManager(new ServiceManager());
+        $this->setExpectedException(ServiceNotFoundException::class, TestAsset\NonAutoInvokablePluginManager::class);
+        $pluginManager->get(TestAsset\InvokableObject::class);
     }
 }

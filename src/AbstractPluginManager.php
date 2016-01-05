@@ -29,6 +29,13 @@ use Zend\ServiceManager\Exception\InvalidServiceException;
 abstract class AbstractPluginManager extends ServiceManager implements PluginManagerInterface
 {
     /**
+     * Whether or not to auto-add a FQCN as an invokable if it exists.
+     *
+     * @var bool
+     */
+    protected $autoAddInvokableClass = true;
+
+    /**
      * An object type that the created instance must be instanced of
      *
      * @var null|string
@@ -91,11 +98,26 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      * @param string $name Service name of plugin to retrieve.
      * @param null|array $options Options to use when creating the instance.
      * @return mixed
+     * @throws Exception\ServiceNotFoundException if the manager does not have
+     *     a service definition for the instance, and the service is not
+     *     auto-invokable.
      * @throws InvalidServiceException if the plugin created is invalid for the
      *     plugin context.
      */
     public function get($name, array $options = null)
     {
+        if (! $this->has($name)) {
+            if (! $this->autoAddInvokableClass || ! class_exists($name)) {
+                throw new Exception\ServiceNotFoundException(sprintf(
+                    'A plugin by the name "%s" was not found in the plugin manager %s',
+                    $name,
+                    get_class($this)
+                ));
+            }
+
+            $this->setFactory($name, Factory\InvokableFactory::class);
+        }
+
         $instance = empty($options) ? parent::get($name) : $this->build($name, $options);
         $this->validate($instance);
         return $instance;
