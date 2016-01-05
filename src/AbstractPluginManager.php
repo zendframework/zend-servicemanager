@@ -145,24 +145,6 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      *
      * Returns the creation context.
      *
-     * @deprecated since 3.0.0. Factories using 3.0 should use the container
-     *     instance passed to the factory instead.
-     * @return ContainerInterface
-     */
-    public function getServiceLocator()
-    {
-        trigger_error(sprintf(
-            'Usage of %s is deprecated since v3.0.0; please use the container passed to the factory instead',
-            __METHOD__
-        ), E_USER_DEPRECATED);
-        return $this->creationContext;
-    }
-
-    /**
-     * Implemented for backwards compatibility only.
-     *
-     * Returns the creation context.
-     *
      * @deprecated since 3.0.0. The creation context should be passed during
      *     instantiation instead.
      * @param ContainerInterface $container

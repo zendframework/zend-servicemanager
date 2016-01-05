@@ -183,19 +183,6 @@ class AbstractPluginManagerTest extends TestCase
     /**
      * @group migration
      */
-    public function testCanRetrieveParentContainerViaGetServiceLocatorWithDeprecationNotice()
-    {
-        $container = $this->createContainer();
-        set_error_handler(function ($errno, $errstr) {
-            $this->assertEquals(E_USER_DEPRECATED, $errno);
-        }, E_USER_DEPRECATED);
-        $this->assertSame($this->creationContext, $container->getServiceLocator());
-        restore_error_handler();
-    }
-
-    /**
-     * @group migration
-     */
     public function testCallingSetServiceLocatorSetsCreationContextWithDeprecationNotice()
     {
         set_error_handler(function ($errno, $errstr) {
