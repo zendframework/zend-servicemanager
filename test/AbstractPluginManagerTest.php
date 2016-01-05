@@ -306,4 +306,31 @@ class AbstractPluginManagerTest extends TestCase
         $this->setExpectedException(ServiceNotFoundException::class, TestAsset\NonAutoInvokablePluginManager::class);
         $pluginManager->get(TestAsset\InvokableObject::class);
     }
+
+    /**
+     * @group migration
+     */
+    public function testValidateWillFallBackToValidatePluginWhenDefinedAndEmitDeprecationNotice()
+    {
+        $assertionCalled = false;
+        $instance = (object) [];
+        $assertion = function ($plugin) use ($instance, &$assertionCalled) {
+            $this->assertSame($instance, $plugin);
+            $assertionCalled = true;
+        };
+        $pluginManager = new TestAsset\V2ValidationPluginManager(new ServiceManager());
+        $pluginManager->assertion = $assertion;
+
+        $errorHandlerCalled = false;
+        set_error_handler(function ($errno, $errmsg) use (&$errorHandlerCalled) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+            $this->assertContains('3.0', $errmsg);
+            $errorHandlerCalled = true;
+        }, E_USER_DEPRECATED);
+        $pluginManager->validate($instance);
+        restore_error_handler();
+
+        $this->assertTrue($assertionCalled, 'Assertion was not called by validatePlugin!');
+        $this->assertTrue($errorHandlerCalled, 'Error handler was not triggered by validatePlugin!');
+    }
 }
