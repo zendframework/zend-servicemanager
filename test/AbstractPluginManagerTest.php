@@ -9,9 +9,11 @@
 
 namespace ZendTest\ServiceManager;
 
+use Interop\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionObject;
 use Zend\ServiceManager\Config;
+use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\RuntimeException;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\FooPluginManager;
@@ -282,5 +284,53 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
         } catch (RuntimeException $exception) {
             $this->assertTrue($pluginManager->has(__CLASS__));
         }
+    }
+
+    /**
+     * @group migration
+     */
+    public function testConstructorAllowsPassingContainerAsFirstArgument()
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+        $pluginManager = new FooPluginManager($container->reveal());
+        $this->assertSame($container->reveal(), $pluginManager->getServiceLocator());
+    }
+
+    /**
+     * @group migration
+     */
+    public function testConstructorAllowsPassingContainerAndConfigurationArrayAsArguments()
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+        $pluginManager = new FooPluginManager($container->reveal(), ['services' => [
+            __CLASS__ => $this,
+        ]]);
+        $this->assertSame($container->reveal(), $pluginManager->getServiceLocator());
+        $this->assertTrue($pluginManager->has(__CLASS__));
+    }
+
+    public function invalidConstructorArguments()
+    {
+        return [
+            'true'       => [true],
+            'false'      => [false],
+            'zero'       => [0],
+            'int'        => [1],
+            'zero-float' => [0.0],
+            'float'      => [1.1],
+            'string'     => ['invalid'],
+            'array'      => [['services' => [__CLASS__ => $this]]],
+            'object'     => [(object) ['services' => [__CLASS__ => $this]]],
+        ];
+    }
+
+    /**
+     * @group migration
+     * @dataProvider invalidConstructorArguments
+     */
+    public function testPassingArgumentsOtherThanNullConfigOrContainerAsFirstConstructorArgRaisesException($arg)
+    {
+        $this->setExpectedException(InvalidArgumentException::class);
+        new FooPluginManager($arg);
     }
 }
