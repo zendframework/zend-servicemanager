@@ -93,6 +93,28 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
     }
 
     /**
+     * Override configure() to validate service instances.
+     *
+     * If an instance passed in the `services` configuration is invalid for the
+     * plugin manager, this method will raise an InvalidServiceException.
+     *
+     * {@inheritDoc}
+     * @throws InvalidServiceException
+     */
+    public function configure(array $config)
+    {
+        if (isset($config['services'])) {
+            foreach ($config['services'] as $service) {
+                $this->validate($service);
+            }
+        }
+
+        parent::configure($config);
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @param string $name Service name of plugin to retrieve.

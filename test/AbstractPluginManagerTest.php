@@ -333,4 +333,20 @@ class AbstractPluginManagerTest extends TestCase
         $this->assertTrue($assertionCalled, 'Assertion was not called by validatePlugin!');
         $this->assertTrue($errorHandlerCalled, 'Error handler was not triggered by validatePlugin!');
     }
+
+    public function testSetServiceShouldRaiseExceptionForInvalidPlugin()
+    {
+        $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
+        $this->setExpectedException(InvalidServiceException::class);
+        $pluginManager->setService(stdClass::class, new stdClass());
+    }
+
+    public function testPassingServiceInstanceViaConfigureShouldRaiseExceptionForInvalidPlugin()
+    {
+        $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
+        $this->setExpectedException(InvalidServiceException::class);
+        $pluginManager->configure(['services' => [
+            stdClass::class => new stdClass(),
+        ]]);
+    }
 }
