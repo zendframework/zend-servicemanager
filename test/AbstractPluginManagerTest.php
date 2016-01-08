@@ -12,7 +12,10 @@ namespace ZendTest\ServiceManager;
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
+use Zend\ServiceManager\ConfigInterface;
+use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\InvalidServiceException;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
@@ -163,5 +166,187 @@ class AbstractPluginManagerTest extends TestCase
             'Delegator-injected option does not match configuration'
         );
         $this->assertEquals('bar', $instance->foo);
+    }
+
+    /**
+     * Overrides the method in the CommonServiceLocatorBehaviorsTrait, due to behavior differences.
+     *
+     * @covers \Zend\ServiceManager\AbstractPluginManager::get
+     */
+    public function testGetRaisesExceptionWhenNoFactoryIsResolved()
+    {
+        $pluginManager = $this->createContainer();
+        $this->setExpectedException(ServiceNotFoundException::class, get_class($pluginManager));
+        $pluginManager->get('Some\Unknown\Service');
+    }
+
+    /**
+     * @group migration
+     */
+    public function testCallingSetServiceLocatorSetsCreationContextWithDeprecationNotice()
+    {
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager = new TestAsset\LenientPluginManager();
+        restore_error_handler();
+
+        $this->assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
+        $serviceManager = new ServiceManager();
+
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager->setServiceLocator($serviceManager);
+        restore_error_handler();
+
+        $this->assertAttributeSame($serviceManager, 'creationContext', $pluginManager);
+    }
+
+    /**
+     * @group migration
+     */
+    public function testPassingNoInitialConstructorArgumentSetsPluginManagerAsCreationContextWithDeprecationNotice()
+    {
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager = new TestAsset\LenientPluginManager();
+        restore_error_handler();
+        $this->assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
+    }
+
+    /**
+     * @group migration
+     */
+    public function testCanPassConfigInterfaceAsFirstConstructorArgumentWithDeprecationNotice()
+    {
+        $config = $this->prophesize(ConfigInterface::class);
+        $config->toArray()->willReturn([]);
+
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager = new TestAsset\LenientPluginManager($config->reveal());
+        restore_error_handler();
+
+        $this->assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
+    }
+
+    public function invalidConstructorArguments()
+    {
+        return [
+            'true'       => [true],
+            'false'      => [false],
+            'zero'       => [0],
+            'int'        => [1],
+            'zero-float' => [0.0],
+            'float'      => [1.1],
+            'string'     => ['invalid'],
+            'array'      => [['invokables' => []]],
+            'object'     => [(object) ['invokables' => []]],
+        ];
+    }
+
+    /**
+     * @group migration
+     * @dataProvider invalidConstructorArguments
+     */
+    public function testPassingNonContainerNonConfigNonNullFirstConstructorArgumentRaisesException($arg)
+    {
+        $this->setExpectedException(InvalidArgumentException::class);
+        new TestAsset\LenientPluginManager($arg);
+    }
+
+    /**
+     * @group migration
+     */
+    public function testPassingConfigInstanceAsFirstConstructorArgumentSkipsSecondArgumentWithDeprecationNotice()
+    {
+        $config = $this->prophesize(ConfigInterface::class);
+        $config->toArray()->willReturn(['services' => [__CLASS__ => $this]]);
+
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager = new TestAsset\LenientPluginManager($config->reveal(), ['services' => [__CLASS__ => []]]);
+        restore_error_handler();
+
+        $this->assertSame($this, $pluginManager->get(__CLASS__));
+    }
+
+    /**
+     * @group migration
+     * @group autoinvokable
+     */
+    public function testAutoInvokableServicesAreNotKnownBeforeRetrieval()
+    {
+        $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
+        $this->assertFalse($pluginManager->has(TestAsset\InvokableObject::class));
+    }
+
+    /**
+     * @group migration
+     * @group autoinvokable
+     */
+    public function testSupportsRetrievingAutoInvokableServicesByDefault()
+    {
+        $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
+        $invokable = $pluginManager->get(TestAsset\InvokableObject::class);
+        $this->assertInstanceOf(TestAsset\InvokableObject::class, $invokable);
+    }
+
+    /**
+     * @group migration
+     * @group autoinvokable
+     */
+    public function testPluginManagersMayOptOutOfSupportingAutoInvokableServices()
+    {
+        $pluginManager = new TestAsset\NonAutoInvokablePluginManager(new ServiceManager());
+        $this->setExpectedException(ServiceNotFoundException::class, TestAsset\NonAutoInvokablePluginManager::class);
+        $pluginManager->get(TestAsset\InvokableObject::class);
+    }
+
+    /**
+     * @group migration
+     */
+    public function testValidateWillFallBackToValidatePluginWhenDefinedAndEmitDeprecationNotice()
+    {
+        $assertionCalled = false;
+        $instance = (object) [];
+        $assertion = function ($plugin) use ($instance, &$assertionCalled) {
+            $this->assertSame($instance, $plugin);
+            $assertionCalled = true;
+        };
+        $pluginManager = new TestAsset\V2ValidationPluginManager(new ServiceManager());
+        $pluginManager->assertion = $assertion;
+
+        $errorHandlerCalled = false;
+        set_error_handler(function ($errno, $errmsg) use (&$errorHandlerCalled) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+            $this->assertContains('3.0', $errmsg);
+            $errorHandlerCalled = true;
+        }, E_USER_DEPRECATED);
+        $pluginManager->validate($instance);
+        restore_error_handler();
+
+        $this->assertTrue($assertionCalled, 'Assertion was not called by validatePlugin!');
+        $this->assertTrue($errorHandlerCalled, 'Error handler was not triggered by validatePlugin!');
+    }
+
+    public function testSetServiceShouldRaiseExceptionForInvalidPlugin()
+    {
+        $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
+        $this->setExpectedException(InvalidServiceException::class);
+        $pluginManager->setService(stdClass::class, new stdClass());
+    }
+
+    public function testPassingServiceInstanceViaConfigureShouldRaiseExceptionForInvalidPlugin()
+    {
+        $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
+        $this->setExpectedException(InvalidServiceException::class);
+        $pluginManager->configure(['services' => [
+            stdClass::class => new stdClass(),
+        ]]);
     }
 }

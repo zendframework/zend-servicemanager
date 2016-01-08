@@ -770,4 +770,17 @@ trait CommonServiceLocatorBehaviorsTrait
         $container->setAllowOverride(true);
         $this->assertTrue($container->getAllowOverride());
     }
+
+    /**
+     * @group migration
+     */
+    public function testCanRetrieveParentContainerViaGetServiceLocatorWithDeprecationNotice()
+    {
+        $container = $this->createContainer();
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $this->assertSame($this->creationContext, $container->getServiceLocator());
+        restore_error_handler();
+    }
 }

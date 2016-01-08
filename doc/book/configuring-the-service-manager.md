@@ -170,7 +170,7 @@ implement `Zend\ServiceManager\Factory\AbstractFactoryInterface`:
 
 class MyAbstractFactory implements AbstractFactoryInterface
 {
-    public function canCreateServiceWithName(ContainerInterface $container, $requestedName)
+    public function canCreate(ContainerInterface $container, $requestedName)
     {
         return in_array('Traversable', class_implements($requestedName), true);
     }
@@ -198,14 +198,14 @@ Here is what will happen:
    `A::class` service.
 2. Because none is found, it will process each abstract factory, in the order
    in which they were registered.
-3. It will call the `canCreateServiceWithName()` method, passing the service
-   manager instance and the name of the requested object. The method can use
-   any logic whatsoever to determine if it can create the service (such as
-   checking its name, checking for a required dependency in the passed
-   container, checking if a class implements a given interface, etc.).
-4. If `canCreateServiceWithName` returns `true`, it will call the `__invoke`
-   method to create the object. Otherwise, it will continue iterating the
-   abstract factories, until one matches, or the queue is exhausted.
+3. It will call the `canCreate()` method, passing the service manager instance and
+   the name of the requested object. The method can use any logic whatsoever to
+   determine if it can create the service (such as checking its name, checking
+   for a required dependency in the passed container, checking if a class
+   implements a given interface, etc.).
+4. If `canCreate()` returns `true`, it will call the `__invoke` method to
+   create the object. Otherwise, it will continue iterating the abstract
+   factories, until one matches, or the queue is exhausted.
 
 ### Best practices
 

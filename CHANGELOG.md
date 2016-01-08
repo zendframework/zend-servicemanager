@@ -66,6 +66,10 @@ All notable changes to this project will be documented in this file, in reverse 
   Of course, you can still override the `validate` method if your logic is more
   complex.
 
+  To aid migration, `validate()` will check for a `validatePlugin()` method (which
+  was required in v2), and proxy to it if found, after emitting an
+  `E_USER_DEPRECATED` notice prompting you to rename the method.
+
 - A new method, `configure()`, was added, allowing full configuration of the
   `ServiceManager` instance at once. Each of the various configuration methods —
   `setAlias()`, `setInvokableClass()`, etc. — now proxy to this method.
@@ -168,6 +172,14 @@ changes, outlined in this section.
   enforced through the interface, that allows you to easily map multiple service
   names to the same factory.
 
+  To provide forwards compatibility, the original interfaces have been retained,
+  but extend the new interfaces (which are under new namespaces). You can implement
+  the new methods in your existing v2 factories in order to make them forwards
+  compatible with v3.
+
+- The for `AbstractFactoryInterface` interface renames the method `canCreateServiceWithName()`
+  to `canCreate()`, and merges the `$name` and `$requestedName` arguments.
+
 - Plugin managers will now receive the parent service locator instead of itself
   in factories. In version 2.x, you needed to call the method
   `getServiceLocator()` to retrieve the parent (application) service locator.
@@ -209,12 +221,20 @@ changes, outlined in this section.
   In practice, this should reduce code, as dependencies often come from the main
   service locator, and not the plugin manager itself.
 
+  To assist in migration, the method `getServiceLocator()` was added to `ServiceManager`
+  to ensure that existing factories continue to work; the method emits an `E_USER_DEPRECATED`
+  message to signal developers to update their factories.
+
 - `PluginManager` now enforces the need for the main service locator in its
   constructor. In v2.x, people often forgot to set the parent locator, which led
   to bugs in factories trying to fetch dependencies from the parent locator.
   Additionally, plugin managers now pull dependencies from the parent locator by
   default; if you need to pull a peer plugin, your factories will now need to
   pull the corresponding plugin manager first.
+
+  If you omit passing a service locator to the constructor, your plugin manager
+  will continue to work, but will emit a deprecation notice indicatin you
+  should update your initialization code.
 
 - It's so fast now that your app will fly!
 

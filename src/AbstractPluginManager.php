@@ -29,6 +29,13 @@ use Zend\ServiceManager\Exception\InvalidServiceException;
 abstract class AbstractPluginManager extends ServiceManager implements PluginManagerInterface
 {
     /**
+     * Whether or not to auto-add a FQCN as an invokable if it exists.
+     *
+     * @var bool
+     */
+    protected $autoAddInvokableClass = true;
+
+    /**
      * An object type that the created instance must be instanced of
      *
      * @var null|string
@@ -42,13 +49,69 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      * factories; for $config, {@see \Zend\ServiceManager\ServiceManager::configure()}
      * for details on its accepted structure.
      *
-     * @param ContainerInterface $parentLocator
-     * @param array              $config
+     * @param null|ConfigInterface|ContainerInterface $configInstanceOrParentLocator
+     * @param array $config
      */
-    public function __construct(ContainerInterface $parentLocator, array $config = [])
+    public function __construct($configInstanceOrParentLocator = null, array $config = [])
     {
+        if (null !== $configInstanceOrParentLocator
+            && ! $configInstanceOrParentLocator instanceof ConfigInterface
+            && ! $configInstanceOrParentLocator instanceof ContainerInterface
+        ) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                '%s expects a ConfigInterface or ContainerInterface instance as the first argument; received %s',
+                __CLASS__,
+                (is_object($configInstanceOrParentLocator)
+                    ? get_class($configInstanceOrParentLocator)
+                    : gettype($configInstanceOrParentLocator)
+                )
+            ));
+        }
+
+        if ($configInstanceOrParentLocator instanceof ConfigInterface) {
+            trigger_error(sprintf(
+                'Usage of %s as a constructor argument for %s is now deprecated',
+                ConfigInterface::class,
+                get_class($this)
+            ), E_USER_DEPRECATED);
+            $config = $configInstanceOrParentLocator->toArray();
+        }
+
         parent::__construct($config);
-        $this->creationContext = $parentLocator;
+
+        if (! $configInstanceOrParentLocator instanceof ContainerInterface) {
+            trigger_error(sprintf(
+                '%s now expects a %s instance representing the parent container; please update your code',
+                __METHOD__,
+                ContainerInterface::class
+            ), E_USER_DEPRECATED);
+        }
+
+        $this->creationContext = $configInstanceOrParentLocator instanceof ContainerInterface
+            ? $configInstanceOrParentLocator
+            : $this;
+    }
+
+    /**
+     * Override configure() to validate service instances.
+     *
+     * If an instance passed in the `services` configuration is invalid for the
+     * plugin manager, this method will raise an InvalidServiceException.
+     *
+     * {@inheritDoc}
+     * @throws InvalidServiceException
+     */
+    public function configure(array $config)
+    {
+        if (isset($config['services'])) {
+            foreach ($config['services'] as $service) {
+                $this->validate($service);
+            }
+        }
+
+        parent::configure($config);
+
+        return $this;
     }
 
     /**
@@ -57,11 +120,26 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      * @param string $name Service name of plugin to retrieve.
      * @param null|array $options Options to use when creating the instance.
      * @return mixed
+     * @throws Exception\ServiceNotFoundException if the manager does not have
+     *     a service definition for the instance, and the service is not
+     *     auto-invokable.
      * @throws InvalidServiceException if the plugin created is invalid for the
      *     plugin context.
      */
     public function get($name, array $options = null)
     {
+        if (! $this->has($name)) {
+            if (! $this->autoAddInvokableClass || ! class_exists($name)) {
+                throw new Exception\ServiceNotFoundException(sprintf(
+                    'A plugin by the name "%s" was not found in the plugin manager %s',
+                    $name,
+                    get_class($this)
+                ));
+            }
+
+            $this->setFactory($name, Factory\InvokableFactory::class);
+        }
+
         $instance = empty($options) ? parent::get($name) : $this->build($name, $options);
         $this->validate($instance);
         return $instance;
@@ -72,6 +150,15 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      */
     public function validate($instance)
     {
+        if (method_exists($this, 'validatePlugin')) {
+            trigger_error(sprintf(
+                '%s::validatePlugin() has been deprecated as of 3.0; please define validate() instead',
+                get_class($this)
+            ), E_USER_DEPRECATED);
+            $this->validatePlugin($instance);
+            return;
+        }
+
         if (empty($this->instanceOf) || $instance instanceof $this->instanceOf) {
             return;
         }
@@ -82,5 +169,24 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
             $this->instanceOf,
             is_object($instance) ? get_class($instance) : gettype($instance)
         ));
+    }
+
+    /**
+     * Implemented for backwards compatibility only.
+     *
+     * Returns the creation context.
+     *
+     * @deprecated since 3.0.0. The creation context should be passed during
+     *     instantiation instead.
+     * @param ContainerInterface $container
+     * @return void
+     */
+    public function setServiceLocator(ContainerInterface $container)
+    {
+        trigger_error(sprintf(
+            'Usage of %s is deprecated since v3.0.0; please pass the container to the constructor instead',
+            __METHOD__
+        ), E_USER_DEPRECATED);
+        $this->creationContext = $container;
     }
 }

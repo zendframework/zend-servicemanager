@@ -17,7 +17,7 @@ class FailingAbstractFactory implements AbstractFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function canCreateServiceWithName(ContainerInterface $container, $name)
+    public function canCreate(ContainerInterface $container, $name)
     {
         return false;
     }
