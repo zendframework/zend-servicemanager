@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [#60](https://github.com/zendframework/zend-servicemanager/pull/60) adds forward compatibility features for
+    `AbstractPluingManager` and introduces `InvokableFactory` to help forward migration to version 3.
 
 ### Deprecated
 
