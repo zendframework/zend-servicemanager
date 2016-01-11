@@ -44,24 +44,41 @@ final class InvokableFactory implements FactoryInterface
     /**
      * Create an instance of the named service.
      *
-     * If `$requestedName` is not provided, raises an exception; otherwise,
-     * proxies to the `__invoke()` method to create an instance of the
-     * requested class.
+     * First, it checks if `$canonicalName` resolves to a class, and, if so, uses
+     * that value to proxy to `__invoke()`.
+     *
+     * Next, if `$requestedName` is non-empty and resolves to a class, this
+     * method uses that value to proxy to `__invoke()`.
+     *
+     * Finally, if the above each fail, it raises an exception.
+     *
+     * The approach above is perfomed as version 2 has two distinct behaviors
+     * under which factories are invoked:
+     *
+     * - If an alias was used, $canonicalName is the resolved name, and
+     *   $requestedName is the service name requested;
+     * - Otherwise, $canonicalName is the normalized name, and $requestedName
+     *   is the original service name requested (typically a class name).
      *
      * @param ServiceLocatorInterface $serviceLocator
-     * @param null|string $canonicalName Ignored
+     * @param null|string $canonicalName
      * @param null|string $requestedName
      * @return object
      * @throws InvalidServiceNameException
      */
     public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
     {
-        if (! $requestedName) {
-            throw new InvalidServiceNameException(sprintf(
-                '%s requires that the requested name is provided on invocation; please update your tests or consuming container',
-                __CLASS__
-            ));
+        if (class_exists($canonicalName)) {
+            return $this($serviceLocator, $canonicalName);
         }
-        return $this($serviceLocator, $requestedName);
+
+        if (is_string($requestedName) && class_exists($requestedName)) {
+            return $this($serviceLocator, $requestedName);
+        }
+
+        throw new InvalidServiceNameException(sprintf(
+            '%s requires that the requested name is provided on invocation; please update your tests or consuming container',
+            __CLASS__
+        ));
     }
 }
