@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 2.7.1 - 2016-01-11
+
+### Added
+
+- [#61](https://github.com/zendframework/zend-servicemanager/pull/61) adds
+  `Zend\ServiceManager\Exception\InvalidServiceException` for forwards
+  compatibility with v3.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- [#61](https://github.com/zendframework/zend-servicemanager/pull/61) updates
+  the `InvokableFactory` to throw `InvalidServiceException` instead of
+  `InvalidServiceNameException`, for forwards compatibility with v3.
+- [#61](https://github.com/zendframework/zend-servicemanager/pull/61) fixes
+  the behavior of `InvokableFactory` when invoked after resolving an alias.
+
 ## 2.7.0 - 2016-01-11
 
 ### Added
