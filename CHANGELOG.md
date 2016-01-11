@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## v3.0.0 - 2016-01-11
+## 3.0.0 - 2016-01-11
 
 First stable release of version 3 of zend-servicemanager.
 
