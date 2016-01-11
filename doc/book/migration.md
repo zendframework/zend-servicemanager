@@ -90,7 +90,7 @@ integrated.
 The principal change to the `ConfigInterface` is the addition of the
 `toArray()` method. This method is intended to return a configuration array in
 the format listed above, for passing to either the constructor or the
-`withConfig()` method of the `ServiceManager`..
+`configure()` method of the `ServiceManager`..
 
 ### Config class
 
