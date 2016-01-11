@@ -6,7 +6,7 @@ use Interop\Container\ContainerInterface;
 
 class AbstractFactoryFoo implements AbstractFactoryInterface
 {
-    public function canCreateServiceWithName(ContainerInterface $container, $requestedName)
+    public function canCreate(ContainerInterface $container, $requestedName)
     {
         return ($requestedName === 'foo');
     }
