@@ -2,11 +2,14 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 2.7.2 - TBD
+## 2.7.2 - 2016-01-11
 
 ### Added
 
-- Nothing.
+- [#63](https://github.com/zendframework/zend-servicemanager/pull/63) adds a
+  constructor to `InvokableFactory`. In v2, this allows plugin managers to pass
+  construction options to the factory to use during instantiation of the
+  requested service class, emulating the behavior of `build()` in v3.
 
 ### Deprecated
 
