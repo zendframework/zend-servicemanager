@@ -29,6 +29,39 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 final class InvokableFactory implements FactoryInterface
 {
     /**
+     * Options to pass to the constructor (when used in v2), if any.
+     *
+     * @param null|array
+     */
+    private $creationOptions;
+
+    /**
+     * @param null|array|Traversable $creationOptions
+     * @throws InvalidServiceException if $creationOptions cannot be coerced to
+     *     an array.
+     */
+    public function __construct($creationOptions = null)
+    {
+        if (null === $creationOptions) {
+            return;
+        }
+
+        if ($creationOptions instanceof Traversable) {
+            $creationOptions = iterator_to_array($creationOptions);
+        }
+
+        if (! is_array($creationOptions)) {
+            throw new InvalidServiceException(sprintf(
+                '%s cannot use non-array, non-traversable creation options; received %s',
+                __CLASS__,
+                (is_object($creationOptions) ? get_class($creationOptions) : gettype($creationOptions))
+            ));
+        }
+
+        $this->creationOptions = $creationOptions;
+    }
+
+    /**
      * Create an instance of the requested class name.
      *
      * @param ContainerInterface $container
@@ -70,11 +103,11 @@ final class InvokableFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
     {
         if (class_exists($canonicalName)) {
-            return $this($serviceLocator, $canonicalName);
+            return $this($serviceLocator, $canonicalName, $this->creationOptions);
         }
 
         if (is_string($requestedName) && class_exists($requestedName)) {
-            return $this($serviceLocator, $requestedName);
+            return $this($serviceLocator, $requestedName, $this->creationOptions);
         }
 
         throw new InvalidServiceException(sprintf(
