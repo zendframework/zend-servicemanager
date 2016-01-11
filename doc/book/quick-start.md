@@ -63,5 +63,5 @@ You can use the `build()` method to retrieve discrete instances for a service:
 $object1 = $serviceManager->build(stdClass::class);
 $object2 = $serviceManager->build(stdClass::class);
 
-var_dump($object1 === $object2); // prints "true"
+var_dump($object1 === $object2); // prints "false"
 ```
