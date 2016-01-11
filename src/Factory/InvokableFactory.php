@@ -52,13 +52,14 @@ final class InvokableFactory implements FactoryInterface
      *
      * Finally, if the above each fail, it raises an exception.
      *
-     * The approach above is perfomed as version 2 has two distinct behaviors
+     * The approach above is performed as version 2 has two distinct behaviors
      * under which factories are invoked:
      *
      * - If an alias was used, $canonicalName is the resolved name, and
-     *   $requestedName is the service name requested;
+     *   $requestedName is the service name requested, in which case $canonicalName
+     *   is likely the qualified class name;
      * - Otherwise, $canonicalName is the normalized name, and $requestedName
-     *   is the original service name requested (typically a class name).
+     *   is the original service name requested (typically the qualified class name).
      *
      * @param ServiceLocatorInterface $serviceLocator
      * @param null|string $canonicalName
