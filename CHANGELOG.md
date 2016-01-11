@@ -24,6 +24,9 @@ All notable changes to this project will be documented in this file, in reverse 
   the exception hierarchy to inherit from the container-interop exceptions.
   This ensures that all exceptions thrown by the component follow the
   recommendations of that project.
+- [#52](https://github.com/zendframework/zend-servicemanager/pull/52) fixes
+  the exception message thrown by `ServiceManager::setFactory()` to remove
+  references to abstract factories.
 
 ## 2.6.0 - 2015-07-23
 
