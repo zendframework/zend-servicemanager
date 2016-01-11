@@ -10,7 +10,7 @@
 namespace Zend\ServiceManager\Factory;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Exception\InvalidServiceNameException;
+use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -64,7 +64,7 @@ final class InvokableFactory implements FactoryInterface
      * @param null|string $canonicalName
      * @param null|string $requestedName
      * @return object
-     * @throws InvalidServiceNameException
+     * @throws InvalidServiceException
      */
     public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
     {
@@ -76,7 +76,7 @@ final class InvokableFactory implements FactoryInterface
             return $this($serviceLocator, $requestedName);
         }
 
-        throw new InvalidServiceNameException(sprintf(
+        throw new InvalidServiceException(sprintf(
             '%s requires that the requested name is provided on invocation; please update your tests or consuming container',
             __CLASS__
         ));

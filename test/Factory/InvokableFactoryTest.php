@@ -11,7 +11,7 @@ namespace ZendTest\ServiceManager\Factory;
 
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
-use Zend\ServiceManager\Exception\InvalidServiceNameException;
+use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
@@ -57,7 +57,7 @@ class InvokableFactoryTest extends TestCase
         $container = new ServiceManager();
         $factory   = new InvokableFactory();
 
-        $this->setExpectedException(InvalidServiceNameException::class);
+        $this->setExpectedException(InvalidServiceException::class);
         $object = $factory->createService($container, 'invokableobject', 'invokableobject');
     }
 }
