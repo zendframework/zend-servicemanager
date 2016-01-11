@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## v3.0.0 - TBD
+## v3.0.0 - 2016-01-11
+
+First stable release of version 3 of zend-servicemanager.
+
+Documentation is now available at http://zend-servicemanager.rtfd.org
 
 ### Added
 
