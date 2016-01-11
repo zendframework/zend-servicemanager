@@ -2,12 +2,13 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 2.6.1 - TBD
+## 2.7.0 - TBD
 
 ### Added
 
-- [#60](https://github.com/zendframework/zend-servicemanager/pull/60) adds forward compatibility features for
-    `AbstractPluingManager` and introduces `InvokableFactory` to help forward migration to version 3.
+- [#60](https://github.com/zendframework/zend-servicemanager/pull/60) adds
+  forward compatibility features for `AbstractPluingManager` and introduces
+  `InvokableFactory` to help forward migration to version 3.
 
 ### Deprecated
 
@@ -19,7 +20,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#46](https://github.com/zendframework/zend-servicemanager/pull/46) updates
+  the exception hierarchy to inherit from the container-interop exceptions.
+  This ensures that all exceptions thrown by the component follow the
+  recommendations of that project.
 
 ## 2.6.0 - 2015-07-23
 
