@@ -11,7 +11,9 @@ namespace ZendTest\ServiceManager\Factory;
 
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
+use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Factory\InvokableFactory;
+use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 
 /**
@@ -19,7 +21,7 @@ use ZendTest\ServiceManager\TestAsset\InvokableObject;
  */
 class InvokableFactoryTest extends TestCase
 {
-    public function testCanCreateObject()
+    public function testCanCreateObjectWhenInvokedUsingProvidedOptions()
     {
         $container = $this->getMock(ContainerInterface::class);
         $factory   = new InvokableFactory();
@@ -28,5 +30,34 @@ class InvokableFactoryTest extends TestCase
 
         $this->assertInstanceOf(InvokableObject::class, $object);
         $this->assertEquals(['foo' => 'bar'], $object->options);
+    }
+
+    public function testCanCreateObjectViaCreateServiceWhenCanonicalNameIsNormalizedNameAndRequestedNameIsQualified()
+    {
+        $container = new ServiceManager();
+        $factory   = new InvokableFactory();
+
+        $object = $factory->createService($container, 'invokableobject', InvokableObject::class);
+
+        $this->assertInstanceOf(InvokableObject::class, $object);
+    }
+
+    public function testCanCreateObjectViaCreateServiceWhenCanonicalNameIsQualified()
+    {
+        $container = new ServiceManager();
+        $factory   = new InvokableFactory();
+
+        $object = $factory->createService($container, InvokableObject::class, 'invokableobject');
+
+        $this->assertInstanceOf(InvokableObject::class, $object);
+    }
+
+    public function testRaisesExceptionIfNeitherCanonicalNorRequestedNameAreQualified()
+    {
+        $container = new ServiceManager();
+        $factory   = new InvokableFactory();
+
+        $this->setExpectedException(InvalidServiceException::class);
+        $object = $factory->createService($container, 'invokableobject', 'invokableobject');
     }
 }
