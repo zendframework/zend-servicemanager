@@ -10,303 +10,227 @@
 namespace ZendTest\ServiceManager;
 
 use Interop\Container\ContainerInterface;
-use ReflectionClass;
-use ReflectionObject;
-use Zend\ServiceManager\Config;
+use PHPUnit_Framework_TestCase as TestCase;
+use stdClass;
+use Zend\ServiceManager\ConfigInterface;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
-use Zend\ServiceManager\Exception\RuntimeException;
+use Zend\ServiceManager\Exception\InvalidServiceException;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\Factory\FactoryInterface;
+use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
-use ZendTest\ServiceManager\TestAsset\FooPluginManager;
-use ZendTest\ServiceManager\TestAsset\MockSelfReturningDelegatorFactory;
+use ZendTest\ServiceManager\TestAsset\InvokableObject;
+use ZendTest\ServiceManager\TestAsset\SimplePluginManager;
 
-class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers \Zend\ServiceManager\AbstractPluginManager
+ */
+class AbstractPluginManagerTest extends TestCase
 {
-    /**
-     * @var ServiceManager
-     */
-    protected $serviceManager;
+    use CommonServiceLocatorBehaviorsTrait;
 
-    /**
-     * @var FooPluginManager
-     */
-    protected $pluginManager;
-
-    public function setup()
+    public function createContainer(array $config = [])
     {
-        $this->serviceManager = new ServiceManager();
-        $this->pluginManager = new FooPluginManager(new Config([
+        $this->creationContext = new ServiceManager();
+        return new TestAsset\LenientPluginManager($this->creationContext, $config);
+    }
+
+    public function testInjectCreationContextInFactories()
+    {
+        $invokableFactory = $this->getMock(FactoryInterface::class);
+
+        $config = [
             'factories' => [
-                'Foo' => 'ZendTest\ServiceManager\TestAsset\FooFactory',
+                InvokableObject::class => $invokableFactory,
             ],
-            'shared' => [
-                'Foo' => false,
-            ],
-        ]));
+        ];
+
+        $container     = $this->getMock(ContainerInterface::class);
+        $pluginManager = new SimplePluginManager($container, $config);
+
+        $invokableFactory->expects($this->once())
+                         ->method('__invoke')
+                         ->with($container, InvokableObject::class)
+                         ->will($this->returnValue(new InvokableObject()));
+
+        $object = $pluginManager->get(InvokableObject::class);
+
+        $this->assertInstanceOf(InvokableObject::class, $object);
     }
 
-    public function testSetMultipleCreationOptions()
+    public function testValidateInstance()
     {
-        $pluginManager = new FooPluginManager(new Config([
+        $config = [
             'factories' => [
-                'Foo' => 'ZendTest\ServiceManager\TestAsset\FooFactory'
+                InvokableObject::class => new InvokableFactory(),
+                stdClass::class        => new InvokableFactory(),
             ],
-            'shared' => [
-                'Foo' => false
-            ]
-        ]));
+        ];
 
-        $refl         = new ReflectionClass($pluginManager);
-        $reflProperty = $refl->getProperty('factories');
-        $reflProperty->setAccessible(true);
+        $container     = $this->getMock(ContainerInterface::class);
+        $pluginManager = new SimplePluginManager($container, $config);
 
-        $value = $reflProperty->getValue($pluginManager);
-        $this->assertInternalType('string', $value['foo']);
+        // Assert no exception is triggered because the plugin manager validate ObjectWithOptions
+        $pluginManager->get(InvokableObject::class);
 
-        $pluginManager->get('Foo', ['key1' => 'value1']);
+        // Assert it throws an exception for anything else
+        $this->setExpectedException(InvalidServiceException::class);
+        $pluginManager->get(stdClass::class);
+    }
 
-        $value = $reflProperty->getValue($pluginManager);
-        $this->assertInstanceOf('ZendTest\ServiceManager\TestAsset\FooFactory', $value['foo']);
-        $this->assertEquals(['key1' => 'value1'], $value['foo']->getCreationOptions());
+    public function testCachesInstanceByDefaultIfNoOptionsArePassed()
+    {
+        $config = [
+            'factories' => [
+                InvokableObject::class => new InvokableFactory(),
+            ],
+        ];
 
-        $pluginManager->get('Foo', ['key2' => 'value2']);
+        $container     = $this->getMock(ContainerInterface::class);
+        $pluginManager = new SimplePluginManager($container, $config);
 
-        $value = $reflProperty->getValue($pluginManager);
-        $this->assertInstanceOf('ZendTest\ServiceManager\TestAsset\FooFactory', $value['foo']);
-        $this->assertEquals(['key2' => 'value2'], $value['foo']->getCreationOptions());
+        $first  = $pluginManager->get(InvokableObject::class);
+        $second = $pluginManager->get(InvokableObject::class);
+        $this->assertInstanceOf(InvokableObject::class, $first);
+        $this->assertInstanceOf(InvokableObject::class, $second);
+        $this->assertSame($first, $second);
+    }
+
+    public function shareByDefaultSettings()
+    {
+        return [
+            'true'  => [true],
+            'false' => [false],
+        ];
     }
 
     /**
-     * @group issue-4208
+     * @dataProvider shareByDefaultSettings
      */
-    public function testGetFaultyRegisteredInvokableThrowsException()
+    public function testReturnsDiscreteInstancesIfOptionsAreProvidedRegardlessOfShareByDefaultSetting($shareByDefault)
     {
-        $this->setExpectedException('Zend\ServiceManager\Exception\ServiceNotFoundException');
+        $config = [
+            'factories' => [
+                InvokableObject::class => new InvokableFactory(),
+            ],
+            'share_by_default' => $shareByDefault,
+        ];
+        $options = ['foo' => 'bar'];
 
-        $pluginManager = new FooPluginManager();
-        $pluginManager->setInvokableClass('helloWorld', 'IDoNotExist');
-        $pluginManager->get('helloWorld');
-    }
+        $container     = $this->getMock(ContainerInterface::class);
+        $pluginManager = new SimplePluginManager($container, $config);
 
-    public function testAbstractFactoryWithMutableCreationOptions()
-    {
-        $creationOptions = ['key1' => 'value1'];
-        $mock = 'ZendTest\ServiceManager\TestAsset\AbstractFactoryWithMutableCreationOptions';
-        $abstractFactory = $this->getMock($mock, ['setCreationOptions']);
-        $abstractFactory->expects($this->once())
-            ->method('setCreationOptions')
-            ->with($creationOptions);
-
-        $this->pluginManager->addAbstractFactory($abstractFactory);
-        $instance = $this->pluginManager->get('classnoexists', $creationOptions);
-        $this->assertInternalType('object', $instance);
-    }
-
-    public function testMutableMethodNeverCalledWithoutCreationOptions()
-    {
-        $mock = 'ZendTest\ServiceManager\TestAsset\CallableWithMutableCreationOptions';
-        $callable = $this->getMock($mock, ['setCreationOptions']);
-        $callable->expects($this->never())
-            ->method('setCreationOptions');
-
-        $ref = new ReflectionObject($this->pluginManager);
-
-        $method = $ref->getMethod('createServiceViaCallback');
-        $method->setAccessible(true);
-        $method->invoke($this->pluginManager, $callable, 'foo', 'bar');
-    }
-
-    public function testCallableObjectWithMutableCreationOptions()
-    {
-        $creationOptions = ['key1' => 'value1'];
-        $mock = 'ZendTest\ServiceManager\TestAsset\CallableWithMutableCreationOptions';
-        $callable = $this->getMock($mock, ['setCreationOptions']);
-        $callable->expects($this->once())
-            ->method('setCreationOptions')
-            ->with($creationOptions);
-
-        $ref = new ReflectionObject($this->pluginManager);
-
-        $property = $ref->getProperty('creationOptions');
-        $property->setAccessible(true);
-        $property->setValue($this->pluginManager, $creationOptions);
-
-        $method = $ref->getMethod('createServiceViaCallback');
-        $method->setAccessible(true);
-        $method->invoke($this->pluginManager, $callable, 'foo', 'bar');
-    }
-
-    public function testValidatePluginIsCalledWithDelegatorFactoryIfItsAService()
-    {
-        $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
-        $delegatorFactory = $this->getMock('Zend\\ServiceManager\\DelegatorFactoryInterface');
-
-        $pluginManager->setService('delegator-factory', $delegatorFactory);
-        $pluginManager->addDelegator('foo-service', 'delegator-factory');
-
-        $pluginManager->expects($this->once())
-            ->method('validatePlugin')
-            ->with($delegatorFactory);
-
-        $pluginManager->create('foo-service');
-    }
-
-    public function testSingleDelegatorUsage()
-    {
-        $delegatorFactory = $this->getMock('Zend\\ServiceManager\\DelegatorFactoryInterface');
-        /* @var $pluginManager \Zend\ServiceManager\AbstractPluginManager|\PHPUnit_Framework_MockObject_MockObject */
-        $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
-        $realService = $this->getMock('stdClass', [], [], 'RealService');
-        $delegator = $this->getMock('stdClass', [], [], 'Delegator');
-
-        $delegatorFactory
-            ->expects($this->once())
-            ->method('createDelegatorWithName')
-            ->with(
-                $pluginManager,
-                'fooservice',
-                'foo-service',
-                $this->callback(function ($callback) use ($realService) {
-                    if (!is_callable($callback)) {
-                        return false;
-                    }
-
-                    return call_user_func($callback) === $realService;
-                })
-            )
-            ->will($this->returnValue($delegator));
-
-        $pluginManager->setFactory('foo-service', function () use ($realService) {
-            return $realService;
-        });
-        $pluginManager->addDelegator('foo-service', $delegatorFactory);
-
-        $pluginManager->expects($this->once())
-            ->method('validatePlugin')
-            ->with($delegator);
-
-        $this->assertSame($delegator, $pluginManager->get('foo-service'));
-    }
-
-    public function testMultipleDelegatorsUsage()
-    {
-        /* @var $pluginManager \Zend\ServiceManager\AbstractPluginManager|\PHPUnit_Framework_MockObject_MockObject */
-        $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
-
-        $fooDelegator = new MockSelfReturningDelegatorFactory();
-        $barDelegator = new MockSelfReturningDelegatorFactory();
-
-        $pluginManager->addDelegator('foo-service', $fooDelegator);
-        $pluginManager->addDelegator('foo-service', $barDelegator);
-        $pluginManager->setInvokableClass('foo-service', 'stdClass');
-
-        $pluginManager->expects($this->once())
-            ->method('validatePlugin')
-            ->with($barDelegator);
-
-        $this->assertSame($barDelegator, $pluginManager->get('foo-service'));
-        $this->assertCount(1, $barDelegator->instances);
-        $this->assertCount(1, $fooDelegator->instances);
-        $this->assertInstanceOf('stdClass', array_shift($fooDelegator->instances));
-        $this->assertSame($fooDelegator, array_shift($barDelegator->instances));
+        $first  = $pluginManager->get(InvokableObject::class, $options);
+        $second = $pluginManager->get(InvokableObject::class, $options);
+        $this->assertInstanceOf(InvokableObject::class, $first);
+        $this->assertInstanceOf(InvokableObject::class, $second);
+        $this->assertNotSame($first, $second);
     }
 
     /**
-     * @group 6833
+     * Separate test from ServiceManager, as all factories go through the
+     * creation context; we need to configure the parent container, as
+     * the delegator factory will be receiving that.
      */
-    public function testCanCheckInvalidServiceManagerIsUsed()
+    public function testCanWrapCreationInDelegators()
     {
-        $sm = new ServiceManager();
-        $sm->setService('bar', new \stdClass());
+        $config = [
+            'option' => 'OPTIONED',
+        ];
+        $serviceManager = new ServiceManager([
+            'services'  => [
+                'config' => $config,
+            ],
+        ]);
+        $pluginManager = new TestAsset\LenientPluginManager($serviceManager, [
+            'factories' => [
+                stdClass::class => InvokableFactory::class,
+            ],
+            'delegators' => [
+                stdClass::class => [
+                    TestAsset\PreDelegator::class,
+                    function ($container, $name, $callback) {
+                        $instance = $callback();
+                        $instance->foo = 'bar';
+                        return $instance;
+                    },
+                ],
+            ],
+        ]);
 
-        /** @var \Zend\ServiceManager\AbstractPluginManager $pluginManager */
-        $pluginManager = new FooPluginManager();
-        $pluginManager->setServiceLocator($sm);
-
-        $this->setExpectedException('Zend\ServiceManager\Exception\ServiceLocatorUsageException');
-
-        $pluginManager->get('bar');
-
-        $this->fail('A Zend\ServiceManager\Exception\ServiceNotCreatedException is expected');
+        $instance = $pluginManager->get(stdClass::class);
+        $this->assertTrue(isset($instance->option), 'Delegator-injected option was not found');
+        $this->assertEquals(
+            $config['option'],
+            $instance->option,
+            'Delegator-injected option does not match configuration'
+        );
+        $this->assertEquals('bar', $instance->foo);
     }
 
     /**
-     * @group 6833
+     * Overrides the method in the CommonServiceLocatorBehaviorsTrait, due to behavior differences.
+     *
+     * @covers \Zend\ServiceManager\AbstractPluginManager::get
      */
-    public function testWillRethrowOnNonValidatedPlugin()
+    public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {
-        $sm = new ServiceManager();
-
-        $sm->setInvokableClass('stdClass', 'stdClass');
-
-        /** @var \Zend\ServiceManager\AbstractPluginManager|\PHPUnit_Framework_MockObject_MockObject $pluginManager */
-        $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
-
-        $pluginManager
-            ->expects($this->once())
-            ->method('validatePlugin')
-            ->with($this->isInstanceOf('stdClass'))
-            ->will($this->throwException(new RuntimeException()));
-
-        $pluginManager->setServiceLocator($sm);
-
-        $this->setExpectedException('Zend\ServiceManager\Exception\ServiceLocatorUsageException');
-
-        $pluginManager->get('stdClass');
-    }
-
-    /**
-     * @group 6833
-     */
-    public function testWillResetAutoInvokableServiceIfNotValid()
-    {
-        /** @var \Zend\ServiceManager\AbstractPluginManager|\PHPUnit_Framework_MockObject_MockObject $pluginManager */
-        $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
-
-        $pluginManager
-            ->expects($this->any())
-            ->method('validatePlugin')
-            ->will($this->throwException(new RuntimeException()));
-
-        $pluginManager->setInvokableClass(__CLASS__, __CLASS__);
-
-        try {
-            $pluginManager->get('stdClass');
-
-            $this->fail('Expected the plugin manager to throw a RuntimeException, none thrown');
-        } catch (RuntimeException $exception) {
-            $this->assertFalse($pluginManager->has('stdClass'));
-        }
-
-        try {
-            $pluginManager->get(__CLASS__);
-
-            $this->fail('Expected the plugin manager to throw a RuntimeException, none thrown');
-        } catch (RuntimeException $exception) {
-            $this->assertTrue($pluginManager->has(__CLASS__));
-        }
+        $pluginManager = $this->createContainer();
+        $this->setExpectedException(ServiceNotFoundException::class, get_class($pluginManager));
+        $pluginManager->get('Some\Unknown\Service');
     }
 
     /**
      * @group migration
      */
-    public function testConstructorAllowsPassingContainerAsFirstArgument()
+    public function testCallingSetServiceLocatorSetsCreationContextWithDeprecationNotice()
     {
-        $container = $this->prophesize(ContainerInterface::class);
-        $pluginManager = new FooPluginManager($container->reveal());
-        $this->assertSame($container->reveal(), $pluginManager->getServiceLocator());
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager = new TestAsset\LenientPluginManager();
+        restore_error_handler();
+
+        $this->assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
+        $serviceManager = new ServiceManager();
+
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager->setServiceLocator($serviceManager);
+        restore_error_handler();
+
+        $this->assertAttributeSame($serviceManager, 'creationContext', $pluginManager);
     }
 
     /**
      * @group migration
      */
-    public function testConstructorAllowsPassingContainerAndConfigurationArrayAsArguments()
+    public function testPassingNoInitialConstructorArgumentSetsPluginManagerAsCreationContextWithDeprecationNotice()
     {
-        $container = $this->prophesize(ContainerInterface::class);
-        $pluginManager = new FooPluginManager($container->reveal(), ['services' => [
-            __CLASS__ => $this,
-        ]]);
-        $this->assertSame($container->reveal(), $pluginManager->getServiceLocator());
-        $this->assertTrue($pluginManager->has(__CLASS__));
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager = new TestAsset\LenientPluginManager();
+        restore_error_handler();
+        $this->assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
+    }
+
+    /**
+     * @group migration
+     */
+    public function testCanPassConfigInterfaceAsFirstConstructorArgumentWithDeprecationNotice()
+    {
+        $config = $this->prophesize(ConfigInterface::class);
+        $config->toArray()->willReturn([]);
+
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager = new TestAsset\LenientPluginManager($config->reveal());
+        restore_error_handler();
+
+        $this->assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
     }
 
     public function invalidConstructorArguments()
@@ -319,8 +243,8 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
             'zero-float' => [0.0],
             'float'      => [1.1],
             'string'     => ['invalid'],
-            'array'      => [['services' => [__CLASS__ => $this]]],
-            'object'     => [(object) ['services' => [__CLASS__ => $this]]],
+            'array'      => [['invokables' => []]],
+            'object'     => [(object) ['invokables' => []]],
         ];
     }
 
@@ -328,9 +252,101 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
      * @group migration
      * @dataProvider invalidConstructorArguments
      */
-    public function testPassingArgumentsOtherThanNullConfigOrContainerAsFirstConstructorArgRaisesException($arg)
+    public function testPassingNonContainerNonConfigNonNullFirstConstructorArgumentRaisesException($arg)
     {
         $this->setExpectedException(InvalidArgumentException::class);
-        new FooPluginManager($arg);
+        new TestAsset\LenientPluginManager($arg);
+    }
+
+    /**
+     * @group migration
+     */
+    public function testPassingConfigInstanceAsFirstConstructorArgumentSkipsSecondArgumentWithDeprecationNotice()
+    {
+        $config = $this->prophesize(ConfigInterface::class);
+        $config->toArray()->willReturn(['services' => [__CLASS__ => $this]]);
+
+        set_error_handler(function ($errno, $errstr) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+        }, E_USER_DEPRECATED);
+        $pluginManager = new TestAsset\LenientPluginManager($config->reveal(), ['services' => [__CLASS__ => []]]);
+        restore_error_handler();
+
+        $this->assertSame($this, $pluginManager->get(__CLASS__));
+    }
+
+    /**
+     * @group migration
+     * @group autoinvokable
+     */
+    public function testAutoInvokableServicesAreNotKnownBeforeRetrieval()
+    {
+        $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
+        $this->assertFalse($pluginManager->has(TestAsset\InvokableObject::class));
+    }
+
+    /**
+     * @group migration
+     * @group autoinvokable
+     */
+    public function testSupportsRetrievingAutoInvokableServicesByDefault()
+    {
+        $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
+        $invokable = $pluginManager->get(TestAsset\InvokableObject::class);
+        $this->assertInstanceOf(TestAsset\InvokableObject::class, $invokable);
+    }
+
+    /**
+     * @group migration
+     * @group autoinvokable
+     */
+    public function testPluginManagersMayOptOutOfSupportingAutoInvokableServices()
+    {
+        $pluginManager = new TestAsset\NonAutoInvokablePluginManager(new ServiceManager());
+        $this->setExpectedException(ServiceNotFoundException::class, TestAsset\NonAutoInvokablePluginManager::class);
+        $pluginManager->get(TestAsset\InvokableObject::class);
+    }
+
+    /**
+     * @group migration
+     */
+    public function testValidateWillFallBackToValidatePluginWhenDefinedAndEmitDeprecationNotice()
+    {
+        $assertionCalled = false;
+        $instance = (object) [];
+        $assertion = function ($plugin) use ($instance, &$assertionCalled) {
+            $this->assertSame($instance, $plugin);
+            $assertionCalled = true;
+        };
+        $pluginManager = new TestAsset\V2ValidationPluginManager(new ServiceManager());
+        $pluginManager->assertion = $assertion;
+
+        $errorHandlerCalled = false;
+        set_error_handler(function ($errno, $errmsg) use (&$errorHandlerCalled) {
+            $this->assertEquals(E_USER_DEPRECATED, $errno);
+            $this->assertContains('3.0', $errmsg);
+            $errorHandlerCalled = true;
+        }, E_USER_DEPRECATED);
+        $pluginManager->validate($instance);
+        restore_error_handler();
+
+        $this->assertTrue($assertionCalled, 'Assertion was not called by validatePlugin!');
+        $this->assertTrue($errorHandlerCalled, 'Error handler was not triggered by validatePlugin!');
+    }
+
+    public function testSetServiceShouldRaiseExceptionForInvalidPlugin()
+    {
+        $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
+        $this->setExpectedException(InvalidServiceException::class);
+        $pluginManager->setService(stdClass::class, new stdClass());
+    }
+
+    public function testPassingServiceInstanceViaConfigureShouldRaiseExceptionForInvalidPlugin()
+    {
+        $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
+        $this->setExpectedException(InvalidServiceException::class);
+        $pluginManager->configure(['services' => [
+            stdClass::class => new stdClass(),
+        ]]);
     }
 }

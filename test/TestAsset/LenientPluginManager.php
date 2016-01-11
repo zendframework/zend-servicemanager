@@ -7,13 +7,17 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace ZendTest\ServiceManager\TestAsset;
 
-use InvalidArgumentException as SplInvalidArgumentException;
+use Zend\ServiceManager\AbstractPluginManager;
 
-/**
- * @inheritDoc
- */
-class InvalidArgumentException extends SplInvalidArgumentException implements ExceptionInterface
+class LenientPluginManager extends AbstractPluginManager
 {
+    /**
+     * Allow anything to be considered valid.
+     */
+    public function validate($instance)
+    {
+        return;
+    }
 }

@@ -7,13 +7,14 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace ZendTest\ServiceManager\TestAsset;
 
-use InvalidArgumentException as SplInvalidArgumentException;
-
-/**
- * @inheritDoc
- */
-class InvalidArgumentException extends SplInvalidArgumentException implements ExceptionInterface
+class FactoryObject
 {
+    public $dependency;
+
+    public function __construct($dependency)
+    {
+        $this->dependency = $dependency;
+    }
 }

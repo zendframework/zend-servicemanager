@@ -9,25 +9,26 @@
 
 namespace Zend\ServiceManager;
 
+use Interop\Container\ContainerInterface;
+use Interop\Container\Exception\ContainerException;
+use Zend\ServiceManager\Exception;
+
 /**
- * Service locator interface
+ * Interface for service locator
  */
-interface ServiceLocatorInterface
+interface ServiceLocatorInterface extends ContainerInterface
 {
     /**
-     * Retrieve a registered instance
+     * Build a service by its name, using optional options (such services are NEVER cached).
      *
-     * @param  string  $name
-     * @throws Exception\ServiceNotFoundException
-     * @return object|array
+     * @param  string $name
+     * @param  null|array  $options
+     * @return mixed
+     * @throws Exception\ServiceNotFoundException If no factory/abstract
+     *     factory could be found to create the instance.
+     * @throws Exception\ServiceNotCreatedException If factory/delegator fails
+     *     to create the instance.
+     * @throws ContainerException if any other error occurs
      */
-    public function get($name);
-
-    /**
-     * Check for a registered instance
-     *
-     * @param  string|array  $name
-     * @return bool
-     */
-    public function has($name);
+    public function build($name, array $options = null);
 }

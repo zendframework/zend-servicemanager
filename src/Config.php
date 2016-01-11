@@ -9,158 +9,75 @@
 
 namespace Zend\ServiceManager;
 
+use Zend\Stdlib\ArrayUtils;
+
 class Config implements ConfigInterface
 {
     /**
+     * Allowed configuration keys
+     *
      * @var array
      */
-    protected $config = [];
+    protected $allowedKeys = [
+        'abstract_factories' => true,
+        'aliases'            => true,
+        'delegators'         => true,
+        'factories'          => true,
+        'initializers'       => true,
+        'invokables'         => true,
+        'lazy_services'      => true,
+        'services'           => true,
+        'shared'             => true,
+    ];
+
+    /**
+     * @var array
+     */
+    protected $config = [
+        'abstract_factories' => [],
+        'aliases'            => [],
+        'delegators'         => [],
+        'factories'          => [],
+        'initializers'       => [],
+        'invokables'         => [],
+        'lazy_services'      => [],
+        'services'           => [],
+        'shared'             => [],
+    ];
 
     /**
      * Constructor
      *
      * @param array $config
      */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
-        $this->config = $config;
-    }
+        // Only merge keys we're interested in
+        foreach (array_keys($config) as $key) {
+            if (! isset($this->allowedKeys[$key])) {
+                unset($config[$key]);
+            }
+        }
 
-    /**
-     * Get allow override
-     *
-     * @return null|bool
-     */
-    public function getAllowOverride()
-    {
-        return (isset($this->config['allow_override'])) ? $this->config['allow_override'] : null;
-    }
-
-    /**
-     * Get factories
-     *
-     * @return array
-     */
-    public function getFactories()
-    {
-        return (isset($this->config['factories'])) ? $this->config['factories'] : [];
-    }
-
-    /**
-     * Get abstract factories
-     *
-     * @return array
-     */
-    public function getAbstractFactories()
-    {
-        return (isset($this->config['abstract_factories'])) ? $this->config['abstract_factories'] : [];
-    }
-
-    /**
-     * Get invokables
-     *
-     * @return array
-     */
-    public function getInvokables()
-    {
-        return (isset($this->config['invokables'])) ? $this->config['invokables'] : [];
-    }
-
-    /**
-     * Get services
-     *
-     * @return array
-     */
-    public function getServices()
-    {
-        return (isset($this->config['services'])) ? $this->config['services'] : [];
-    }
-
-    /**
-     * Get aliases
-     *
-     * @return array
-     */
-    public function getAliases()
-    {
-        return (isset($this->config['aliases'])) ? $this->config['aliases'] : [];
-    }
-
-    /**
-     * Get initializers
-     *
-     * @return array
-     */
-    public function getInitializers()
-    {
-        return (isset($this->config['initializers'])) ? $this->config['initializers'] : [];
-    }
-
-    /**
-     * Get shared
-     *
-     * @return array
-     */
-    public function getShared()
-    {
-        return (isset($this->config['shared'])) ? $this->config['shared'] : [];
-    }
-
-    /**
-     * Get the delegator services map, with keys being the services acting as delegates,
-     * and values being the delegator factories names
-     *
-     * @return array
-     */
-    public function getDelegators()
-    {
-        return (isset($this->config['delegators'])) ? $this->config['delegators'] : [];
+        $this->config = ArrayUtils::merge($this->config, $config);
     }
 
     /**
      * Configure service manager
      *
      * @param ServiceManager $serviceManager
-     * @return void
+     * @return ServiceManager Returns the updated service manager instance.
      */
     public function configureServiceManager(ServiceManager $serviceManager)
     {
-        if (($allowOverride = $this->getAllowOverride()) !== null) {
-            $serviceManager->setAllowOverride($allowOverride);
-        }
+        return $serviceManager->configure($this->config);
+    }
 
-        foreach ($this->getFactories() as $name => $factory) {
-            $serviceManager->setFactory($name, $factory);
-        }
-
-        foreach ($this->getAbstractFactories() as $factory) {
-            $serviceManager->addAbstractFactory($factory);
-        }
-
-        foreach ($this->getInvokables() as $name => $invokable) {
-            $serviceManager->setInvokableClass($name, $invokable);
-        }
-
-        foreach ($this->getServices() as $name => $service) {
-            $serviceManager->setService($name, $service);
-        }
-
-        foreach ($this->getAliases() as $alias => $nameOrAlias) {
-            $serviceManager->setAlias($alias, $nameOrAlias);
-        }
-
-        foreach ($this->getInitializers() as $initializer) {
-            $serviceManager->addInitializer($initializer);
-        }
-
-        foreach ($this->getShared() as $name => $isShared) {
-            $serviceManager->setShared($name, $isShared);
-        }
-
-        foreach ($this->getDelegators() as $originalServiceName => $delegators) {
-            foreach ($delegators as $delegator) {
-                $serviceManager->addDelegator($originalServiceName, $delegator);
-            }
-        }
+    /**
+     * @inheritdoc
+     */
+    public function toArray()
+    {
+        return $this->config;
     }
 }
