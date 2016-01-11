@@ -60,4 +60,15 @@ class InvokableFactoryTest extends TestCase
         $this->setExpectedException(InvalidServiceException::class);
         $object = $factory->createService($container, 'invokableobject', 'invokableobject');
     }
+
+    public function testCreateServiceCanCreateObjectWithCreationOptionsProvidedToConstructor()
+    {
+        $container = new ServiceManager();
+        $factory   = new InvokableFactory(['foo' => 'bar']);
+
+        $object = $factory->createService($container, InvokableObject::class);
+
+        $this->assertInstanceOf(InvokableObject::class, $object);
+        $this->assertEquals(['foo' => 'bar'], $object->options);
+    }
 }
