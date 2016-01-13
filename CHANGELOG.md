@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 2.7.3 - TBD
+## 2.7.3 - 2016-01-13
 
 ### Added
 
@@ -18,7 +18,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#69](https://github.com/zendframework/zend-servicemanager/pull/69) fixes the
+  way aliases are resolved to ensure that the original alias target, without
+  canonicalization is passed to factories and abstract factories, ensuring that
+  features such as the `InvokableFactory` implementation can work.
 
 ## 2.7.2 - 2016-01-11
 
