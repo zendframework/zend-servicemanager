@@ -1226,4 +1226,14 @@ class ServiceManagerTest extends TestCase
         $this->assertSame($expectedService, $peeredServiceManager->get('peered_service'));
         $this->assertSame($expectedService, $secondParentServiceManager->get('peered_service'));
     }
+
+    public function testCanGetServiceUsingAliasAndBuildByInvokableFactory()
+    {
+        $this->serviceManager->setAlias('foo', 'ZendTest\ServiceManager\TestAsset\InvokableObject');
+        $this->serviceManager->setFactory('ZendTest\ServiceManager\TestAsset\InvokableObject', 'Zend\ServiceManager\Factory\InvokableFactory');
+
+        $result = $this->serviceManager->get('foo');
+
+        $this->assertInstanceOf('ZendTest\ServiceManager\TestAsset\InvokableObject', 'foo');
+    }
 }
