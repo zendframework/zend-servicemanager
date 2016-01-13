@@ -12,8 +12,10 @@ namespace ZendTest\ServiceManager;
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Di\Di;
 use Zend\Mvc\Service\DiFactory;
+use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\Di\DiAbstractServiceFactory;
 use Zend\ServiceManager\Exception;
+use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\Config;
 use ZendTest\ServiceManager\TestAsset\FooCounterAbstractFactory;
@@ -248,9 +250,21 @@ class ServiceManagerTest extends TestCase
      */
     public function testGetAbstractFactoryWithAlias()
     {
-        $this->serviceManager->addAbstractFactory('ZendTest\ServiceManager\TestAsset\FooAbstractFactory');
-        $this->serviceManager->setAlias('foo', 'ZendTest\ServiceManager\TestAsset\FooAbstractFactory');
-        $this->assertInstanceOf('ZendTest\ServiceManager\TestAsset\Foo', $this->serviceManager->get('foo'));
+        $expected = new TestAsset\Foo;
+        $abstractFactory = $this->prophesize(AbstractFactoryInterface::class);
+        $abstractFactory->canCreateServiceWithName(
+            $this->serviceManager,
+            'foo',
+            'Foo'
+        )->willReturn(true);
+        $abstractFactory->createServiceWithName(
+            $this->serviceManager,
+            'foo',
+            'Foo'
+        )->willReturn($expected);
+        $this->serviceManager->addAbstractFactory($abstractFactory->reveal());
+        $this->serviceManager->setAlias('bar', 'Foo');
+        $this->assertSame($expected, $this->serviceManager->get('bar'));
     }
 
     /**
@@ -938,8 +952,6 @@ class ServiceManagerTest extends TestCase
      */
     public function testSetCircularAliasReferenceThrowsException()
     {
-        $this->setExpectedException('Zend\ServiceManager\Exception\CircularReferenceException');
-
         // Only affects service managers that allow overwriting definitions
         $this->serviceManager->setAllowOverride(true);
         $this->serviceManager->setInvokableClass('foo-service', 'stdClass');
@@ -948,6 +960,7 @@ class ServiceManagerTest extends TestCase
         $this->serviceManager->setAlias('baz-alias', 'bar-alias');
 
         // This will now cause a cyclic reference and should throw an exception
+        $this->setExpectedException('Zend\ServiceManager\Exception\CircularReferenceException');
         $this->serviceManager->setAlias('foo-alias', 'bar-alias');
     }
 
@@ -1225,5 +1238,15 @@ class ServiceManagerTest extends TestCase
         $this->assertSame($expectedService, $this->serviceManager->get('peered_service'));
         $this->assertSame($expectedService, $peeredServiceManager->get('peered_service'));
         $this->assertSame($expectedService, $secondParentServiceManager->get('peered_service'));
+    }
+
+    public function testCanGetServiceUsingAliasAndBuildByInvokableFactory()
+    {
+        $this->serviceManager->setAlias('foo', TestAsset\InvokableObject::class);
+        $this->serviceManager->setFactory(TestAsset\InvokableObject::class, InvokableFactory::class);
+
+        $result = $this->serviceManager->get('foo');
+
+        $this->assertInstanceOf(TestAsset\InvokableObject::class, $result);
     }
 }
