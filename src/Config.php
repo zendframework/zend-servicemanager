@@ -9,27 +9,8 @@
 
 namespace Zend\ServiceManager;
 
-use Zend\Stdlib\ArrayUtils;
-
 class Config implements ConfigInterface
 {
-    /**
-     * Allowed configuration keys
-     *
-     * @var array
-     */
-    protected $allowedKeys = [
-        'abstract_factories' => true,
-        'aliases'            => true,
-        'delegators'         => true,
-        'factories'          => true,
-        'initializers'       => true,
-        'invokables'         => true,
-        'lazy_services'      => true,
-        'services'           => true,
-        'shared'             => true,
-    ];
-
     /**
      * @var array
      */
@@ -46,27 +27,20 @@ class Config implements ConfigInterface
     ];
 
     /**
-     * Constructor
-     *
      * @param array $config
      */
     public function __construct(array $config = [])
     {
         // Only merge keys we're interested in
-        foreach (array_keys($config) as $key) {
-            if (! isset($this->allowedKeys[$key])) {
-                unset($config[$key]);
+        foreach (array_keys($this->config) as $requiredKey) {
+            if (isset($config[$requiredKey])) {
+                $this->config[$requiredKey] = $config[$requiredKey];
             }
         }
-
-        $this->config = ArrayUtils::merge($this->config, $config);
     }
 
     /**
-     * Configure service manager
-     *
-     * @param ServiceManager $serviceManager
-     * @return ServiceManager Returns the updated service manager instance.
+     * @inheritdoc
      */
     public function configureServiceManager(ServiceManager $serviceManager)
     {
