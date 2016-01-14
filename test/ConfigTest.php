@@ -18,6 +18,44 @@ use Zend\ServiceManager\ServiceManager;
  */
 class ConfigTest extends TestCase
 {
+    public function testMergeArrays()
+    {
+        $config = [
+            'invokables' => [
+                'foo' => TestAsset\InvokableObject::class,
+            ],
+            'delegators' => [
+                'foo' => [
+                    TestAsset\PreDelegator::class,
+                ]
+            ],
+            'factories' => [
+                'service' => TestAsset\FactoryObject::class,
+            ],
+        ];
+
+        $configuration = new TestAsset\ExtendedConfig($config);
+        $result = $configuration->toArray();
+
+        $expected = [
+            'invokables' => [
+                'foo' => TestAsset\InvokableObject::class,
+                TestAsset\InvokableObject::class => TestAsset\InvokableObject::class,
+            ],
+            'delegators' => [
+                'foo' => [
+                    TestAsset\InvokableObject::class,
+                    TestAsset\PreDelegator::class,
+                ],
+            ],
+            'factories' => [
+                'service' => TestAsset\FactoryObject::class,
+            ],
+        ];
+
+        $this->assertEquals($expected, $result);
+    }
+
     public function testPassesKnownServiceConfigKeysToServiceManagerWithConfigMethod()
     {
         $expected = [
