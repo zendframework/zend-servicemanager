@@ -50,15 +50,12 @@ class Config implements ConfigInterface
     public function __construct(array $config = [])
     {
         // Only merge keys we're interested in
-        foreach (array_keys($this->allowedKeys) as $requiredKey) {
-            if ($this->isValidValue($config, $requiredKey)) {
-                if ($this->isValidValue($this->config, $requiredKey)) {
-                    $this->config[$requiredKey] = $this->merge($this->config[$requiredKey], $config[$requiredKey]);
-                } else {
-                    $this->config[$requiredKey] = $config[$requiredKey];
-                }
+        foreach (array_keys($config) as $key) {
+            if (! isset($this->allowedKeys[$key])) {
+                unset($config[$key]);
             }
         }
+        $this->config = $this->merge($this->config, $config);
     }
 
     /**
@@ -75,17 +72,6 @@ class Config implements ConfigInterface
     public function toArray()
     {
         return $this->config;
-    }
-
-    /**
-     * @param array $array
-     * @param string $key
-     *
-     * @return bool
-     */
-    private function isValidValue(array $array, $key)
-    {
-        return isset($array[$key]) && is_array($array[$key]);
     }
 
     /**
