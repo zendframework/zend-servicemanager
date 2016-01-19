@@ -12,6 +12,21 @@ namespace Zend\ServiceManager;
 use Zend\Stdlib\ArrayUtils\MergeRemoveKey;
 use Zend\Stdlib\ArrayUtils\MergeReplaceKeyInterface;
 
+/**
+ * Object for defining configuration and configuring an existing service manager instance.
+ *
+ * In order to provide configuration merging capabilities, this class implements
+ * the same functionality as `Zend\Stdlib\ArrayUtils::merge()`. That routine
+ * allows developers to specifically shape how values are merged:
+ *
+ * - A value which is an instance of `MergeRemoveKey` indicates the value should
+ *   be removed during merge.
+ * - A value that is an instance of `MergeReplaceKeyInterface` indicates that the
+ *   value it contains should be used to replace any previous versions.
+ *
+ * These features are advanced, and not typically used. If you wish to use them,
+ * you will need to require the zend-stdlib package in your application.
+ */
 class Config implements ConfigInterface
 {
     /**
