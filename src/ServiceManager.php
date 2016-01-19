@@ -477,7 +477,7 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
             }
 
             $stack[$cName] = $cName;
-            $cName = $this->aliases[$cName];
+            $cName = $this->aliases[$this->canonicalizeName($cName)];
         }
 
         return $cName;

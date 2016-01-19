@@ -248,6 +248,17 @@ class ServiceManagerTest extends TestCase
     /**
      * @covers Zend\ServiceManager\ServiceManager::get
      */
+    public function testGetWithAliasofAliasWithCanonicalizedName()
+    {
+        $this->serviceManager->setService('Foo', 'Bar');
+        $this->serviceManager->setAlias('Baz', 'Foo');
+        $this->serviceManager->setAlias('Qux', 'Baz');
+        $this->assertEquals('Bar', $this->serviceManager->get('Qux'));
+    }
+
+    /**
+     * @covers Zend\ServiceManager\ServiceManager::get
+     */
     public function testGetAbstractFactoryWithAlias()
     {
         $expected = new TestAsset\Foo;
