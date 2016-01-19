@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 2.7.4 - TBD
+## 2.7.4 - 2015-01-19
 
 ### Added
 
@@ -18,7 +18,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#71](https://github.com/zendframework/zend-servicemanager/pull/71) fixes an edge case
+  with alias usage, whereby an alias of an alias was not being resolved to the
+  final service name.
 
 ## 2.7.3 - 2016-01-13
 
