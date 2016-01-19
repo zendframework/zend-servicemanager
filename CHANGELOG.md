@@ -32,7 +32,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Removed
 
-- Nothing.
+- [#68](https://github.com/zendframework/zend-servicemanager/pull/68) removes
+  the dependency on zend-stdlib by inlining the `ArrayUtils::merge()` routine
+  as a private method of `Zend\ServiceManager\Config`.
 
 ### Fixed
 

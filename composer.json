@@ -24,7 +24,8 @@
         "athletic/athletic": "dev-master"
     },
     "suggest": {
-        "ocramius/proxy-manager": "ProxyManager 1.* to handle lazy initialization of services"
+        "ocramius/proxy-manager": "ProxyManager 1.* to handle lazy initialization of services",
+        "zendframework/zend-stdlib": "zend-stdlib ^2.5 if you wish to use the MergeReplaceKey or MergeRemoveKey features in Config instances"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
