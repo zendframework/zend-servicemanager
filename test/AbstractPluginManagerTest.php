@@ -16,6 +16,7 @@ use Zend\ServiceManager\ConfigInterface;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
@@ -348,5 +349,18 @@ class AbstractPluginManagerTest extends TestCase
         $pluginManager->configure(['services' => [
             stdClass::class => new stdClass(),
         ]]);
+    }
+
+    public function testAbstractFactoryGetsCreationContext()
+    {
+        $serviceManager = new ServiceManager();
+        $pluginManager = new TestAsset\SimplePluginManager($serviceManager);
+        $abstractFactory = $this->prophesize(AbstractFactoryInterface::class);
+        $abstractFactory->canCreate($serviceManager, 'foo')
+            ->willReturn(true);
+        $abstractFactory->__invoke($serviceManager, 'foo', null)
+            ->willReturn(new InvokableObject());
+        $pluginManager->addAbstractFactory($abstractFactory->reveal());
+        $this->assertInstanceOf(InvokableObject::class, $pluginManager->get('foo'));
     }
 }
