@@ -351,6 +351,10 @@ class AbstractPluginManagerTest extends TestCase
         ]]);
     }
 
+    /**
+     * @group 79
+     * @group 78
+     */
     public function testAbstractFactoryGetsCreationContext()
     {
         $serviceManager = new ServiceManager();
