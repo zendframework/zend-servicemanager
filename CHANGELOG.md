@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [#64](https://github.com/zendframework/zend-servicemanager/pull/64) performance optimizations
+  when dealing with alias resolution during service manager instantiation
 
 ### Deprecated
 
