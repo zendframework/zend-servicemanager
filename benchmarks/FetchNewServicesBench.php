@@ -179,4 +179,30 @@ class FetchNewServicesBench
 
         $sm->build('recursiveFactoryAlias2');
     }
+
+    /**
+     * @Revs(1000)
+     * @Iterations(10)
+     * @Warmup(2)
+     */
+    public function benchFetchAbstractFactoryFoo()
+    {
+        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        $sm = clone $this->sm;
+
+        $sm->get('foo');
+    }
+
+    /**
+     * @Revs(1000)
+     * @Iterations(10)
+     * @Warmup(2)
+     */
+    public function benchBuildAbstractFactoryFoo()
+    {
+        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        $sm = clone $this->sm;
+
+        $sm->build('foo');
+    }
 }
