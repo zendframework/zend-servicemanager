@@ -44,7 +44,7 @@ class FetchNewServicesBench
      */
     public function benchFetchFactory1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->get('factory1');
@@ -57,7 +57,7 @@ class FetchNewServicesBench
      */
     public function benchBuildFactory1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->build('factory1');
@@ -70,7 +70,7 @@ class FetchNewServicesBench
      */
     public function benchFetchInvokable1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->get('invokable1');
@@ -83,7 +83,7 @@ class FetchNewServicesBench
      */
     public function benchBuildInvokable1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->build('invokable1');
@@ -96,7 +96,7 @@ class FetchNewServicesBench
      */
     public function benchFetchService1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->get('service1');
@@ -109,7 +109,7 @@ class FetchNewServicesBench
      */
     public function benchFetchFactoryAlias1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->build('factoryAlias1');
@@ -122,7 +122,7 @@ class FetchNewServicesBench
      */
     public function benchBuildFactoryAlias1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->build('factoryAlias1');
@@ -135,7 +135,7 @@ class FetchNewServicesBench
      */
     public function benchFetchRecursiveFactoryAlias1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->build('recursiveFactoryAlias1');
@@ -148,7 +148,7 @@ class FetchNewServicesBench
      */
     public function benchBuildRecursiveFactoryAlias1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->build('recursiveFactoryAlias1');
@@ -161,7 +161,7 @@ class FetchNewServicesBench
      */
     public function benchFetchRecursiveFactoryAlias2()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->build('recursiveFactoryAlias2');
@@ -174,7 +174,7 @@ class FetchNewServicesBench
      */
     public function benchBuildRecursiveFactoryAlias2()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->build('recursiveFactoryAlias2');
@@ -187,7 +187,7 @@ class FetchNewServicesBench
      */
     public function benchFetchAbstractFactoryFoo()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->get('foo');
@@ -200,7 +200,7 @@ class FetchNewServicesBench
      */
     public function benchBuildAbstractFactoryFoo()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->build('foo');

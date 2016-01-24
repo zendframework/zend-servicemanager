@@ -54,7 +54,7 @@ class FetchCachedServicesBench
      */
     public function benchFetchFactory1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->get('factory1');
@@ -67,7 +67,7 @@ class FetchCachedServicesBench
      */
     public function benchFetchInvokable1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->get('invokable1');
@@ -80,7 +80,7 @@ class FetchCachedServicesBench
      */
     public function benchFetchService1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->get('service1');
@@ -93,7 +93,7 @@ class FetchCachedServicesBench
      */
     public function benchFetchAlias1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->get('alias1');
@@ -106,7 +106,7 @@ class FetchCachedServicesBench
      */
     public function benchFetchRecursiveAlias1()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->get('recursiveAlias1');
@@ -119,7 +119,7 @@ class FetchCachedServicesBench
      */
     public function benchFetchRecursiveAlias2()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->get('recursiveAlias2');
@@ -132,7 +132,7 @@ class FetchCachedServicesBench
      */
     public function benchFetchAbstractFactoryService()
     {
-        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
         $sm->get('foo');
