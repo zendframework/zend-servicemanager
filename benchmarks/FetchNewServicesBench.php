@@ -7,6 +7,11 @@ use PhpBench\Benchmark\Metadata\Annotations\Revs;
 use PhpBench\Benchmark\Metadata\Annotations\Warmup;
 use Zend\ServiceManager\ServiceManager;
 
+/**
+ * @Revs(1000)
+ * @Iterations(10)
+ * @Warmup(2)
+ */
 class FetchNewServicesBench
 {
     /**
@@ -37,11 +42,6 @@ class FetchNewServicesBench
         ]);
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchFetchFactory1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -50,11 +50,6 @@ class FetchNewServicesBench
         $sm->get('factory1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchBuildFactory1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -63,11 +58,6 @@ class FetchNewServicesBench
         $sm->build('factory1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchFetchInvokable1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -76,11 +66,6 @@ class FetchNewServicesBench
         $sm->get('invokable1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchBuildInvokable1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -89,11 +74,6 @@ class FetchNewServicesBench
         $sm->build('invokable1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchFetchService1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -102,11 +82,6 @@ class FetchNewServicesBench
         $sm->get('service1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchFetchFactoryAlias1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -115,11 +90,6 @@ class FetchNewServicesBench
         $sm->build('factoryAlias1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchBuildFactoryAlias1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -128,11 +98,6 @@ class FetchNewServicesBench
         $sm->build('factoryAlias1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchFetchRecursiveFactoryAlias1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -141,11 +106,6 @@ class FetchNewServicesBench
         $sm->build('recursiveFactoryAlias1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchBuildRecursiveFactoryAlias1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -154,11 +114,6 @@ class FetchNewServicesBench
         $sm->build('recursiveFactoryAlias1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchFetchRecursiveFactoryAlias2()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -167,11 +122,6 @@ class FetchNewServicesBench
         $sm->build('recursiveFactoryAlias2');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchBuildRecursiveFactoryAlias2()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -180,11 +130,6 @@ class FetchNewServicesBench
         $sm->build('recursiveFactoryAlias2');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchFetchAbstractFactoryFoo()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -193,11 +138,6 @@ class FetchNewServicesBench
         $sm->get('foo');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(10)
-     * @Warmup(2)
-     */
     public function benchBuildAbstractFactoryFoo()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
