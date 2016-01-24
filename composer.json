@@ -21,7 +21,7 @@
         "phpunit/phpunit": "~4.6",
         "ocramius/proxy-manager": "~1.0",
         "squizlabs/php_codesniffer": "^2.0@dev",
-        "athletic/athletic": "dev-master"
+        "phpbench/phpbench": "^0.10.0"
     },
     "suggest": {
         "ocramius/proxy-manager": "ProxyManager 1.* to handle lazy initialization of services",

@@ -20,11 +20,12 @@ All notable changes to this project will be documented in this file, in reverse 
 
 - Nothing.
 
-## 3.0.2 - TBD
+## 3.0.2 - 2015-01-24
 
 ### Added
 
-- Nothing.
+- [#64](https://github.com/zendframework/zend-servicemanager/pull/64) performance optimizations
+  when dealing with alias resolution during service manager instantiation
 
 ### Deprecated
 
@@ -36,7 +37,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#62](https://github.com/zendframework/zend-servicemanager/pull/62)
+  [#64](https://github.com/zendframework/zend-servicemanager/pull/64) corrected benchmark assets signature
 
 ## 3.0.1 - 2016-01-19
 
