@@ -24,5 +24,5 @@ found in the `benchmarks/` directory.
 To execute the benchmarks you can run the following command:
 
 ```bash
-$ vendor/bin/phpbench --report=aggregate
+$ vendor/bin/phpbench run --report=aggregate
 ```
