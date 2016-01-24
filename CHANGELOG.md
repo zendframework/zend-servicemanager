@@ -44,6 +44,8 @@ All notable changes to this project will be documented in this file, in reverse 
 - [#78](https://github.com/zendframework/zend-servicemanager/issues/78)
   [#79](https://github.com/zendframework/zend-servicemanager/pull/79) creation context was not being correctly passed
   to abstract factories when using plugin managers
+- [#82](https://github.com/zendframework/zend-servicemanager/pull/82) corrected migration guide in the DocBlock of
+  the `InitializerInterface`
 
 ## 3.0.1 - 2016-01-19
 
