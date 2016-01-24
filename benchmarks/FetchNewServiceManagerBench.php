@@ -4,20 +4,30 @@ namespace ZendBench\ServiceManager;
 
 use PhpBench\Benchmark\Metadata\Annotations\Iterations;
 use PhpBench\Benchmark\Metadata\Annotations\Revs;
+use PhpBench\Benchmark\Metadata\Annotations\Warmup;
 use Zend\ServiceManager\ServiceManager;
 
-/**
- * @BeforeMethods({"initConfig"})
- */
-class FetchServiceManagerBench
+class FetchNewServiceManagerBench
 {
     const NUM_SERVICES = 1000;
 
+    /**
+     * @var array
+     */
     private $config = [];
 
-    public function initConfig()
+    public function __construct()
     {
-        $config  = [];
+        $config = [
+            'factories'          => [],
+            'invokables'         => [],
+            'services'           => [],
+            'aliases'            => [],
+            'abstract_factories' => [
+                BenchAsset\AbstractFactoryFoo::class,
+            ],
+        ];
+
         $service = new \stdClass();
 
         for ($i = 0; $i <= self::NUM_SERVICES; $i++) {
@@ -26,18 +36,16 @@ class FetchServiceManagerBench
             $config['services']["service_$i"]     = $service;
             $config['aliases']["alias_$i"]        = "service_$i";
         }
-
-        $config['abstract_factories'] = [ BenchAsset\AbstractFactoryFoo::class ];
-
         $this->config = $config;
     }
 
     /**
-     * @Revs(1000)
+     * @Revs(100)
      * @Iterations(20)
+     * @Warmup(2)
      */
     public function benchFetchServiceManagerCreation()
     {
-        $result = new ServiceManager($this->config);
+        new ServiceManager($this->config);
     }
 }
