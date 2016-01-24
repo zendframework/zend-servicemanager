@@ -564,30 +564,18 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Recursively resolve an alias name to a service name
-     *
-     * @param  string $alias
-     * @return string
-     */
-    private function resolveAlias($alias)
-    {
-        $name = $alias;
-
-        do {
-            $canBeResolved = isset($this->aliases[$name]);
-            $name          = $canBeResolved ? $this->aliases[$name] : $name;
-        } while ($canBeResolved);
-
-        return $name;
-    }
-
-    /**
      * Resolve all aliases to their canonical service names.
      */
     private function resolveAliases(array $aliases)
     {
         foreach ($aliases as $alias => $service) {
-            $this->resolvedAliases[$alias] = $this->resolveAlias($alias);
+            $name = $alias;
+
+            while (isset($this->aliases[$name])) {
+                $name = $this->aliases[$name];
+            }
+
+            $this->resolvedAliases[$alias] = $name;
         }
     }
 
