@@ -19,7 +19,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#62](https://github.com/zendframework/zend-servicemanager/pull/62)
+  [#64](https://github.com/zendframework/zend-servicemanager/pull/64) corrected benchmark assets signature
 
 ## 3.0.1 - 2016-01-19
 
