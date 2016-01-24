@@ -7,6 +7,11 @@ use PhpBench\Benchmark\Metadata\Annotations\Revs;
 use PhpBench\Benchmark\Metadata\Annotations\Warmup;
 use Zend\ServiceManager\ServiceManager;
 
+/**
+ * @Revs(100)
+ * @Iterations(20)
+ * @Warmup(2)
+ */
 class FetchNewServiceManagerBench
 {
     const NUM_SERVICES = 1000;
@@ -39,11 +44,6 @@ class FetchNewServiceManagerBench
         $this->config = $config;
     }
 
-    /**
-     * @Revs(100)
-     * @Iterations(20)
-     * @Warmup(2)
-     */
     public function benchFetchServiceManagerCreation()
     {
         new ServiceManager($this->config);

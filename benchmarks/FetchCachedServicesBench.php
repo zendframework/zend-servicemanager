@@ -7,6 +7,11 @@ use PhpBench\Benchmark\Metadata\Annotations\Revs;
 use PhpBench\Benchmark\Metadata\Annotations\Warmup;
 use Zend\ServiceManager\ServiceManager;
 
+/**
+ * @Revs(1000)
+ * @Iterations(20)
+ * @Warmup(2)
+ */
 class FetchCachedServicesBench
 {
     /**
@@ -45,13 +50,6 @@ class FetchCachedServicesBench
         $this->sm->get('recursiveAlias2');
     }
 
-    /**
-     * Fetch the factory services
-     *
-     * @Revs(1000)
-     * @Iterations(20)
-     * @Warmup(2)
-     */
     public function benchFetchFactory1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -60,11 +58,6 @@ class FetchCachedServicesBench
         $sm->get('factory1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(20)
-     * @Warmup(2)
-     */
     public function benchFetchInvokable1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -73,11 +66,6 @@ class FetchCachedServicesBench
         $sm->get('invokable1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(20)
-     * @Warmup(2)
-     */
     public function benchFetchService1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -86,11 +74,6 @@ class FetchCachedServicesBench
         $sm->get('service1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(20)
-     * @Warmup(2)
-     */
     public function benchFetchAlias1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -99,11 +82,6 @@ class FetchCachedServicesBench
         $sm->get('alias1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(20)
-     * @Warmup(2)
-     */
     public function benchFetchRecursiveAlias1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -112,11 +90,6 @@ class FetchCachedServicesBench
         $sm->get('recursiveAlias1');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(20)
-     * @Warmup(2)
-     */
     public function benchFetchRecursiveAlias2()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
@@ -125,11 +98,6 @@ class FetchCachedServicesBench
         $sm->get('recursiveAlias2');
     }
 
-    /**
-     * @Revs(1000)
-     * @Iterations(20)
-     * @Warmup(2)
-     */
     public function benchFetchAbstractFactoryService()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
