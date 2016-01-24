@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [#64](https://github.com/zendframework/zend-servicemanager/pull/64) performance optimizations
+  when dealing with alias resolution during service manager instantiation
 
 ### Deprecated
 
@@ -39,6 +40,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 - [#62](https://github.com/zendframework/zend-servicemanager/pull/62)
   [#64](https://github.com/zendframework/zend-servicemanager/pull/64) corrected benchmark assets signature
+- [#72](https://github.com/zendframework/zend-servicemanager/pull/72) corrected link to the Proxy Pattern Wikipedia
+  page in the documentation
 
 ## 3.0.1 - 2016-01-19
 
