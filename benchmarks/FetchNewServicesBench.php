@@ -27,9 +27,12 @@ class FetchNewServicesBench
                 'service1' => new \stdClass(),
             ],
             'aliases' => [
-                'alias1'          => 'service1',
-                'recursiveAlias1' => 'alias1',
-                'recursiveAlias2' => 'recursiveAlias1',
+                'factoryAlias1'          => 'factory1',
+                'recursiveFactoryAlias1' => 'factoryAlias1',
+                'recursiveFactoryAlias2' => 'recursiveFactoryAlias1',
+            ],
+            'abstract_factories' => [
+                BenchAsset\AbstractFactoryFoo::class
             ],
         ]);
     }
@@ -84,5 +87,96 @@ class FetchNewServicesBench
         $sm = clone $this->sm;
 
         $sm->build('invokable1');
+    }
+
+    /**
+     * @Revs(1000)
+     * @Iterations(10)
+     * @Warmup(2)
+     */
+    public function benchFetchService1()
+    {
+        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        $sm = clone $this->sm;
+
+        $sm->get('service1');
+    }
+
+    /**
+     * @Revs(1000)
+     * @Iterations(10)
+     * @Warmup(2)
+     */
+    public function benchFetchFactoryAlias1()
+    {
+        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        $sm = clone $this->sm;
+
+        $sm->build('factoryAlias1');
+    }
+
+    /**
+     * @Revs(1000)
+     * @Iterations(10)
+     * @Warmup(2)
+     */
+    public function benchBuildFactoryAlias1()
+    {
+        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        $sm = clone $this->sm;
+
+        $sm->build('factoryAlias1');
+    }
+
+    /**
+     * @Revs(1000)
+     * @Iterations(10)
+     * @Warmup(2)
+     */
+    public function benchFetchRecursiveFactoryAlias1()
+    {
+        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        $sm = clone $this->sm;
+
+        $sm->build('recursiveFactoryAlias1');
+    }
+
+    /**
+     * @Revs(1000)
+     * @Iterations(10)
+     * @Warmup(2)
+     */
+    public function benchBuildRecursiveFactoryAlias1()
+    {
+        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        $sm = clone $this->sm;
+
+        $sm->build('recursiveFactoryAlias1');
+    }
+
+    /**
+     * @Revs(1000)
+     * @Iterations(10)
+     * @Warmup(2)
+     */
+    public function benchFetchRecursiveFactoryAlias2()
+    {
+        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        $sm = clone $this->sm;
+
+        $sm->build('recursiveFactoryAlias2');
+    }
+
+    /**
+     * @Revs(1000)
+     * @Iterations(10)
+     * @Warmup(2)
+     */
+    public function benchBuildRecursiveFactoryAlias2()
+    {
+        // @todo workaround until phpbench provides initialization around each loop, excluded from measurement
+        $sm = clone $this->sm;
+
+        $sm->build('recursiveFactoryAlias2');
     }
 }
