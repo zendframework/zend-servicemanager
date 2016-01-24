@@ -2,42 +2,47 @@
 
 namespace ZendBench\ServiceManager;
 
-use Athletic\AthleticEvent;
+use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
+use PhpBench\Benchmark\Metadata\Annotations\Iterations;
+use PhpBench\Benchmark\Metadata\Annotations\Revs;
 use Zend\ServiceManager\ServiceManager;
 
-class FetchServices extends AthleticEvent
+/**
+ * @BeforeMethods({"initServiceManager"})
+ */
+class FetchServicesBench
 {
     const NUM_SERVICES = 1000;
 
     /**
      * @var ServiceManager
      */
-    protected $sm;
+    private $sm;
 
-    protected function getConfig()
+    public function initServiceManager()
     {
-        $config = [];
+        $config  = [];
+        $service = new \stdClass();
+
         for ($i = 0; $i <= self::NUM_SERVICES; $i++) {
             $config['factories']["factory_$i"]    = BenchAsset\FactoryFoo::class;
             $config['invokables']["invokable_$i"] = BenchAsset\Foo::class;
-            $config['services']["service_$i"]     = $this;
+            $config['services']["service_$i"]     = $service;
             $config['aliases']["alias_$i"]        = "service_$i";
         }
-        $config['abstract_factories'] = [ BenchAsset\AbstractFactoryFoo::class ];
-        return $config;
-    }
 
-    public function classSetUp()
-    {
-        $this->sm = new ServiceManager($this->getConfig());
+        $config['abstract_factories'] = [ BenchAsset\AbstractFactoryFoo::class ];
+
+        $this->sm = new ServiceManager($config);
     }
 
     /**
      * Fetch the factory services
      *
-     * @iterations 5000
+     * @Revs(1000)
+     * @Iterations(20)
      */
-    public function fetchFactoryService()
+    public function benchFetchFactoryService()
     {
         $result = $this->sm->get('factory_' . rand(0, self::NUM_SERVICES));
     }
@@ -45,9 +50,10 @@ class FetchServices extends AthleticEvent
     /**
      * Fetch the invokable services
      *
-     * @iterations 5000
+     * @Revs(1000)
+     * @Iterations(20)
      */
-    public function fetchInvokableService()
+    public function benchFetchInvokableService()
     {
         $result = $this->sm->get('invokable_' . rand(0, self::NUM_SERVICES));
     }
@@ -55,9 +61,10 @@ class FetchServices extends AthleticEvent
     /**
      * Fetch the services
      *
-     * @iterations 5000
+     * @Revs(1000)
+     * @Iterations(20)
      */
-    public function fetchService()
+    public function benchFetchService()
     {
         $result = $this->sm->get('service_' . rand(0, self::NUM_SERVICES));
     }
@@ -65,9 +72,10 @@ class FetchServices extends AthleticEvent
     /**
      * Fetch the alias services
      *
-     * @iterations 5000
+     * @Revs(1000)
+     * @Iterations(20)
      */
-    public function fetchAliasService()
+    public function benchFetchAliasService()
     {
         $result = $this->sm->get('alias_' . rand(0, self::NUM_SERVICES));
     }
@@ -75,9 +83,10 @@ class FetchServices extends AthleticEvent
     /**
      * Fetch the abstract factory services
      *
-     * @iterations 5000
+     * @Revs(1000)
+     * @Iterations(20)
      */
-    public function fetchAbstractFactoryService()
+    public function benchFetchAbstractFactoryService()
     {
        $result = $this->sm->get('foo');
     }
