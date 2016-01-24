@@ -18,11 +18,11 @@ retrieving other objects.
 ## Benchmarks
 
 We provide scripts for benchmarking zend-servicemanager using the
-[Athletic](https://github.com/polyfractal/athletic) framework; these can be
+[PHPBench](https://github.com/phpbench/phpbench) framework; these can be
 found in the `benchmarks/` directory.
 
 To execute the benchmarks you can run the following command:
 
 ```bash
-$ vendor/bin/athletic -p benchmarks
+$ vendor/bin/phpbench --report=aggregate
 ```
