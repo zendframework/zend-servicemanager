@@ -41,6 +41,9 @@ All notable changes to this project will be documented in this file, in reverse 
   [#64](https://github.com/zendframework/zend-servicemanager/pull/64) corrected benchmark assets signature
 - [#72](https://github.com/zendframework/zend-servicemanager/pull/72) corrected link to the Proxy Pattern Wikipedia
   page in the documentation
+- [#78](https://github.com/zendframework/zend-servicemanager/issues/78)
+  [#79](https://github.com/zendframework/zend-servicemanager/pull/79) creation context was not being correctly passed
+  to abstract factories when using plugin managers
 
 ## 3.0.1 - 2016-01-19
 
