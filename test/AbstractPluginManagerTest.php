@@ -374,5 +374,4 @@ class AbstractPluginManagerTest extends TestCase
         $pluginManager = new V2v3PluginManager(new ServiceManager());
         $this->assertInstanceOf(InvokableObject::class, $pluginManager->get('foo'));
     }
-
 }
