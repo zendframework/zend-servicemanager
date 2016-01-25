@@ -15,7 +15,8 @@
     },
     "require": {
         "php": "^5.5 || ^7.0",
-        "container-interop/container-interop": "~1.0"
+        "container-interop/container-interop": "~1.0",
+        "zendframework/zend-stdlib": "~2.5"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.6",
