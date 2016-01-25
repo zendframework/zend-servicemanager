@@ -1160,6 +1160,8 @@ To prepare this for version 3, we need to do the following:
 Doing so, we get the following result:
 
 ```php
+namespace MyNamespace;
+
 use RuntimeException;
 use Zend\ServiceManager\AbstractPluginManager;
 use Zend\ServiceManager\Factory\InvokableFactory;
@@ -1176,8 +1178,11 @@ class ObserverPluginManager extends AbstractPluginManager
     ];
 
     protected $factories = [
-        MailObserver::class => InvokableFactory::class,
+        MailObserver::class       => InvokableFactory::class,
         LogObserver::class => InvokableFactory::class,
+        // Legacy (v2) due to alias resolution
+        'mynamespacemailobserver' => InvokableFactory::class,
+        'mynamespacelogobserver'  => InvokableFactory::class,
     ];
 
     public function validate($instance)
@@ -1209,6 +1214,8 @@ Things to note about the above:
 - The aliases point to the fully qualified class name (FQCN) for the service
   being generated, and these are mapped to `InvokableFactory` instances. This
   means you can also fetch your plugins by their FQCN.
+- There are also factory entries for the canonicalized FQCN of each factory,
+  which will be used in v2.
 
 The above will now work in both version 2 and version 3.
 
@@ -1219,6 +1226,7 @@ After you migrate to version 3, you can clean up your plugin manager:
   type, and has no other logic, you can remove that implementation as well, as
   the `AbstractPluginManager` already takes care of that when `$instanceOf` is
   defined!
+- Remove the canonicalized FQCN entry for each factory
 
 Performing these steps on the above, we get:
 
