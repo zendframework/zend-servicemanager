@@ -20,7 +20,9 @@ class V2v3PluginManager extends AbstractPluginManager
     ];
 
     protected $factories = [
-        InvokableObject::class => InvokableFactory::class
+        InvokableObject::class                           => InvokableFactory::class,
+        // Legacy (v2) due to alias resolution
+        'zendtestservicemanagertestassetinvokableobject' => InvokableFactory::class,
     ];
 
     protected $instanceOf = InvokableObject::class;
