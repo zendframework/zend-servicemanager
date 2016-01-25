@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 - Nothing.
 
-## 3.0.2 - 2015-01-24
+## 3.0.2 - 2016-01-24
 
 ### Added
 
