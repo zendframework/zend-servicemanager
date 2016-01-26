@@ -16,6 +16,7 @@ use ReflectionProperty;
 use stdClass;
 use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
+use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\FactoryInterface;
@@ -790,14 +791,14 @@ trait CommonServiceLocatorBehaviorsTrait
      */
     public function testCrashesOnCyclicAliases()
     {
+        $this->setExpectedException(InvalidServiceException::class);
+
         $serviceManager = $this->createContainer([
             'aliases' => [
                 'a' => 'b',
                 'b' => 'a',
             ],
         ]);
-
-        $this->setExpectedException(ServiceNotFoundException::class);
 
         $serviceManager->get('b');
     }
