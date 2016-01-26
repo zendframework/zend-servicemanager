@@ -88,7 +88,7 @@ closure. This leads to more readable code. For instance:
 
 class MyObjectFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $container, $requestedName)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $dependency = $container->get(stdClass::class);
         return new MyObject($dependency);
@@ -123,7 +123,7 @@ For instance, if two services share the same creation pattern, you could attach 
 
 class MyObjectFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $container, $requestedName)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $dependency = $container->get(stdClass::class);
         return new $requestedName($dependency);
@@ -175,7 +175,7 @@ class MyAbstractFactory implements AbstractFactoryInterface
         return in_array('Traversable', class_implements($requestedName), true);
     }
     
-    public function __invoke(ContainerInterface $container, $requestedName)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         return $requestedName();
     }
@@ -292,7 +292,7 @@ Alternately, you can create a class that implements
 
 class MyInitializer implements InitializerInterface
 {
-    public function __invoke(ServiceLocatorInterface $serviceLocator, $instance)
+    public function __invoke(ContainerInterface $container, $instance)
     {
         if (! $instance instanceof EventManagerAwareInterface) {
             return;
