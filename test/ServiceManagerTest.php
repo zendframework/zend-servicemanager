@@ -12,7 +12,6 @@ namespace ZendTest\ServiceManager;
 use DateTime;
 use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
