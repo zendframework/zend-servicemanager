@@ -22,6 +22,7 @@ use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimplePluginManager;
+use ZendTest\ServiceManager\TestAsset\V2v3PluginManager;
 
 /**
  * @covers \Zend\ServiceManager\AbstractPluginManager
@@ -365,6 +366,12 @@ class AbstractPluginManagerTest extends TestCase
         $abstractFactory->__invoke($serviceManager, 'foo', null)
             ->willReturn(new InvokableObject());
         $pluginManager->addAbstractFactory($abstractFactory->reveal());
+        $this->assertInstanceOf(InvokableObject::class, $pluginManager->get('foo'));
+    }
+
+    public function testV2v3PluginManager()
+    {
+        $pluginManager = new V2v3PluginManager(new ServiceManager());
         $this->assertInstanceOf(InvokableObject::class, $pluginManager->get('foo'));
     }
 }
