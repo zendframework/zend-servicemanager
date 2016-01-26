@@ -33,7 +33,7 @@ class CyclicAliasException extends InvalidArgumentException
         }
 
         return new self(sprintf(
-            "A cycle was detected within the provided aliases:\n\n%s"
+            "Cycles were detected within the provided aliases:\n\n%s"
             . "\n\nThe cycle was detected in the following alias map:\n\n%s",
             self::printCycles(self::deDuplicateDetectedCycles($detectedCycles)),
             self::printReferencesMap($aliases)

@@ -90,7 +90,7 @@ class CyclicAliasExceptionTest extends TestCase
                     'b' => 'a',
                     'a' => 'b',
                 ],
-                'A cycle was detected within the provided aliases:
+                'Cycles were detected within the provided aliases:
 
 [
 "b" => "a" => "b"
@@ -109,7 +109,7 @@ The cycle was detected in the following alias map:
                     'c' => 'b',
                     'a' => 'c',
                 ],
-                'A cycle was detected within the provided aliases:
+                'Cycles were detected within the provided aliases:
 
 [
 "b" => "a" => "c" => "b"
@@ -129,7 +129,7 @@ The cycle was detected in the following alias map:
                     'a' => 'b',
                     'd' => 'c',
                 ],
-                'A cycle was detected within the provided aliases:
+                'Cycles were detected within the provided aliases:
 
 [
 "b" => "a" => "b"
@@ -149,7 +149,7 @@ The cycle was detected in the following alias map:
                     'a' => 'b',
                     'c' => 'a',
                 ],
-                'A cycle was detected within the provided aliases:
+                'Cycles were detected within the provided aliases:
 
 [
 "b" => "a" => "b"
