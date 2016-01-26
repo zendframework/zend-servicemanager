@@ -17,6 +17,7 @@ use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
+use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
@@ -569,15 +570,16 @@ class ServiceManager implements ServiceLocatorInterface
     private function resolveAliases(array $aliases)
     {
         foreach ($aliases as $alias => $service) {
-            // avoiding infinite loops by removing already resolved aliases
-            $currentAliases = $this->aliases;
-            $name           = $alias;
+            $visited = [];
+            $name    = $alias;
 
-            while (isset($currentAliases[$name])) {
-                $oldName = $name;
-                $name    = $currentAliases[$name];
+            while (isset($this->aliases[$name])) {
+                if (isset($visited[$name])) {
+                    throw new InvalidServiceException('YADDA');
+                }
 
-                unset($currentAliases[$oldName]);
+                $visited[$name] = true;
+                $name           = $this->aliases[$name];
             }
 
             $this->resolvedAliases[$alias] = $name;
