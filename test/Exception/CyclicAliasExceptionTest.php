@@ -94,7 +94,6 @@ class CyclicAliasExceptionTest extends TestCase
 
 [
 "b" => "a" => "b"
-"a" => "b" => "a"
 ]
 
 The cycle was detected in the following alias map:
@@ -114,8 +113,6 @@ The cycle was detected in the following alias map:
 
 [
 "b" => "a" => "c" => "b"
-"c" => "b" => "a" => "c"
-"a" => "c" => "b" => "a"
 ]
 
 The cycle was detected in the following alias map:
@@ -136,7 +133,6 @@ The cycle was detected in the following alias map:
 
 [
 "b" => "a" => "b"
-"a" => "b" => "a"
 ]
 
 The cycle was detected in the following alias map:
@@ -157,7 +153,6 @@ The cycle was detected in the following alias map:
 
 [
 "b" => "a" => "b"
-"a" => "b" => "a"
 "c" => "a" => "b" => "c"
 ]
 
