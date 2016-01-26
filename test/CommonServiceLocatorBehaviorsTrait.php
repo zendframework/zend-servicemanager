@@ -17,6 +17,7 @@ use stdClass;
 use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -782,5 +783,22 @@ trait CommonServiceLocatorBehaviorsTrait
         }, E_USER_DEPRECATED);
         $this->assertSame($this->creationContext, $container->getServiceLocator());
         restore_error_handler();
+    }
+
+    /**
+     * @group zendframework/zend-servicemanager#83
+     */
+    public function testCrashesOnCyclicAliases()
+    {
+        $serviceManager = $this->createContainer([
+            'aliases' => [
+                'a' => 'b',
+                'b' => 'a',
+            ],
+        ]);
+
+        $this->setExpectedException(ServiceNotFoundException::class);
+
+        $serviceManager->get('b');
     }
 }

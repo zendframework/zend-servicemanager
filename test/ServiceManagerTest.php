@@ -237,18 +237,4 @@ class ServiceManagerTest extends TestCase
 
         $this->assertSame($service, $alias);
     }
-
-    public function testCrashesOnCyclicAliases()
-    {
-        $serviceManager = new ServiceManager([
-            'aliases' => [
-                'a' => 'b',
-                'b' => 'a',
-            ],
-        ]);
-
-        $this->setExpectedException(ServiceNotFoundException::class);
-
-        $serviceManager->get('b');
-    }
 }
