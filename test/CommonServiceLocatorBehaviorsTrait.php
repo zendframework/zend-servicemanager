@@ -15,6 +15,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 use ReflectionProperty;
 use stdClass;
 use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
+use Zend\ServiceManager\Exception\CyclicAliasException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
@@ -791,15 +792,13 @@ trait CommonServiceLocatorBehaviorsTrait
      */
     public function testCrashesOnCyclicAliases()
     {
-        $this->setExpectedException(InvalidServiceException::class);
+        $this->setExpectedException(CyclicAliasException::class);
 
-        $serviceManager = $this->createContainer([
+        $this->createContainer([
             'aliases' => [
                 'a' => 'b',
                 'b' => 'a',
             ],
         ]);
-
-        $serviceManager->get('b');
     }
 }

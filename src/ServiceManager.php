@@ -16,6 +16,7 @@ use ProxyManager\Configuration as ProxyConfiguration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
+use Zend\ServiceManager\Exception\CyclicAliasException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
@@ -575,7 +576,7 @@ class ServiceManager implements ServiceLocatorInterface
 
             while (isset($this->aliases[$name])) {
                 if (isset($visited[$name])) {
-                    throw new InvalidServiceException('YADDA');
+                    throw CyclicAliasException::fromAliasesMap($aliases);
                 }
 
                 $visited[$name] = true;
