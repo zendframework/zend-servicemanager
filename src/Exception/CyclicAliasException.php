@@ -35,7 +35,7 @@ class CyclicAliasException extends InvalidArgumentException
         return new self(sprintf(
             "A cycle was detected within the provided aliases:\n\n%s"
             . "\n\nThe cycle was detected in the following alias map:\n\n%s",
-            self::printCycles($detectedCycles),
+            self::printCycles(self::deDuplicateDetectedCycles($detectedCycles)),
             self::printReferencesMap($aliases)
         ));
     }
@@ -111,5 +111,29 @@ class CyclicAliasException extends InvalidArgumentException
                 $fullCycle
             )
         );
+    }
+
+    /**
+     * @param bool[][] $detectedCycles
+     *
+     * @return bool[][] de-duplicated
+     */
+    private static function deDuplicateDetectedCycles(array $detectedCycles)
+    {
+        $detectedCyclesByHash = [];
+
+        foreach ($detectedCycles as $detectedCycle) {
+            $cycleAliases = array_keys($detectedCycle);
+
+            sort($cycleAliases);
+
+            $hash = serialize(array_values($cycleAliases));
+
+            $detectedCyclesByHash[$hash] = isset($detectedCyclesByHash[$hash])
+                ? $detectedCyclesByHash[$hash]
+                : $detectedCycle;
+        }
+
+        return array_values($detectedCyclesByHash);
     }
 }
