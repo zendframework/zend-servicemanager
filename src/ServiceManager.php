@@ -569,10 +569,15 @@ class ServiceManager implements ServiceLocatorInterface
     private function resolveAliases(array $aliases)
     {
         foreach ($aliases as $alias => $service) {
-            $name = $alias;
+            // avoiding infinite loops by removing already resolved aliases
+            $currentAliases = $this->aliases;
+            $name           = $alias;
 
-            while (isset($this->aliases[$name])) {
-                $name = $this->aliases[$name];
+            while (isset($currentAliases[$name])) {
+                $oldName = $name;
+                $name    = $currentAliases[$name];
+
+                unset($currentAliases[$oldName]);
             }
 
             $this->resolvedAliases[$alias] = $name;
