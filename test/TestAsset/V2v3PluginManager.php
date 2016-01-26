@@ -27,6 +27,10 @@ class V2v3PluginManager extends AbstractPluginManager
 
     protected $instanceOf = InvokableObject::class;
 
+    protected $shareByDefault = false;
+
+    protected $sharedByDefault = false;
+
 
     public function validate($plugin)
     {
@@ -46,6 +50,10 @@ class V2v3PluginManager extends AbstractPluginManager
      */
     public function validatePlugin($plugin)
     {
-        $this->validate($plugin);
+        try {
+            $this->validate($plugin);
+        } catch (InvalidServiceException $e) {
+            throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }
