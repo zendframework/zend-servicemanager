@@ -15,8 +15,12 @@ use ReflectionObject;
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\RuntimeException;
+use Zend\ServiceManager\Factory\InvokableFactory;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\MutableCreationOptionsInterface;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\FooPluginManager;
+use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\MockSelfReturningDelegatorFactory;
 
 class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
@@ -332,5 +336,20 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(InvalidArgumentException::class);
         new FooPluginManager($arg);
+    }
+
+    public function testInvokableFactoryHasMutableOptions()
+    {
+        $pluginManager = new FooPluginManager($this->serviceManager);
+        $pluginManager->setAlias('foo', InvokableObject::class);
+        $pluginManager->setFactory(InvokableObject::class, InvokableFactory::class);
+
+        $options = ['option' => 'a'];
+        $object = $pluginManager->get('foo', $options);
+        $this->assertEquals($options, $object->getOptions());
+
+        $options = ['option' => 'b'];
+        $object = $pluginManager->get('foo', $options);
+        $this->assertEquals($options, $object->getOptions());
     }
 }

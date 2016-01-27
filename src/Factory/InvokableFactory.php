@@ -12,6 +12,7 @@ namespace Zend\ServiceManager\Factory;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\MutableCreationOptionsInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -26,7 +27,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  * service manager, and can also be used in v2 code for forwards compatibility
  * with v3.
  */
-final class InvokableFactory implements FactoryInterface
+final class InvokableFactory implements FactoryInterface, MutableCreationOptionsInterface
 {
     /**
      * Options to pass to the constructor (when used in v2), if any.
@@ -46,19 +47,7 @@ final class InvokableFactory implements FactoryInterface
             return;
         }
 
-        if ($creationOptions instanceof Traversable) {
-            $creationOptions = iterator_to_array($creationOptions);
-        }
-
-        if (! is_array($creationOptions)) {
-            throw new InvalidServiceException(sprintf(
-                '%s cannot use non-array, non-traversable creation options; received %s',
-                __CLASS__,
-                (is_object($creationOptions) ? get_class($creationOptions) : gettype($creationOptions))
-            ));
-        }
-
-        $this->creationOptions = $creationOptions;
+        $this->setCreationOptions($creationOptions);
     }
 
     /**
@@ -114,5 +103,25 @@ final class InvokableFactory implements FactoryInterface
             '%s requires that the requested name is provided on invocation; please update your tests or consuming container',
             __CLASS__
         ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setCreationOptions(array $creationOptions)
+    {
+        if ($creationOptions instanceof Traversable) {
+            $creationOptions = iterator_to_array($creationOptions);
+        }
+
+        if (! is_array($creationOptions)) {
+            throw new InvalidServiceException(sprintf(
+                '%s cannot use non-array, non-traversable creation options; received %s',
+                __CLASS__,
+                (is_object($creationOptions) ? get_class($creationOptions) : gettype($creationOptions))
+            ));
+        }
+
+        $this->creationOptions = $creationOptions;
     }
 }
