@@ -12,7 +12,6 @@ namespace Zend\ServiceManager\Factory;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\MutableCreationOptionsInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -27,7 +26,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  * service manager, and can also be used in v2 code for forwards compatibility
  * with v3.
  */
-final class InvokableFactory implements FactoryInterface, MutableCreationOptionsInterface
+final class InvokableFactory implements FactoryInterface
 {
     /**
      * Options to pass to the constructor (when used in v2), if any.
