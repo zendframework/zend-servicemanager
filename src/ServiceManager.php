@@ -342,6 +342,9 @@ class ServiceManager implements ServiceLocatorInterface
 
         if (isset($config['aliases'])) {
             $this->aliases = $config['aliases'] + $this->aliases;
+        }
+
+        if (! empty($this->aliases)) {
             $this->resolveAliases($this->aliases);
         }
 
