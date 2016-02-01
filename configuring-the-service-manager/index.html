@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <link rel="shortcut icon" href="../img/favicon.ico">
+
+    <title>Configuring the service manager - zend-servicemanager</title>
+
+    <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.018/css/hack.min.css">
+    <link href="//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700,700italic&subset=latin-ext,latin" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic,700&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    <link href="../css/base.css" rel="stylesheet">
+    <link href="../css/zf.css" rel="stylesheet">
+    <link href="../css/prism-zf.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
+    <script>
+    WebFont.load({
+        google: {
+            families: ['Open Sans', 'PT Sans']
+        }
+    });
+    </script>
+
+    
+</head>
+
+<body>
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+            <span class="navbar-brand">
+              <a href="http://framework.zend.com"><img src="../img/zf-logo-mark.png" height="28" alt="Zend Framework" /></a>
+              <a href="..">zend-servicemanager</a>
+            </span>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../quick-start/">Quick Start</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown active">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reference <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li class="active">
+    <a href="./">Configuring the service manager</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../delegators/">Delegators</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../lazy-services/">Lazy services</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../plugin-managers/">Plugin managers</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../migration/">Migration Guide</a>
+                    </li>
+                
+                
+                </ul>
+            
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                
+                    <li >
+                        <a rel="prev" href="../quick-start/">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="next" href="../delegators/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a href="https://github.com/zendframework/zend-servicemanager">
+                            
+                                <i class="fa fa-github"></i>
+                            
+                            GitHub
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <!-- content:begin -->
+    <div class="container">
+        
+        <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#configuring-the-service-manager">Configuring the service manager</a></li>
+        
+            <li><a href="#factories">Factories</a></li>
+        
+            <li><a href="#abstract-factories">Abstract factories</a></li>
+        
+            <li><a href="#aliases">Aliases</a></li>
+        
+            <li><a href="#initializers">Initializers</a></li>
+        
+            <li><a href="#shared">Shared</a></li>
+        
+            <li><a href="#passing-config-to-a-factorydelegator">Passing config to a factory/delegator</a></li>
+        
+            <li><a href="#altering-a-service-managers-config">Altering a service manager's config</a></li>
+        
+    
+    </ul>
+</div></div>
+        <div class="col-md-9" role="main">
+
+<ol class="breadcrumb" role="navigation" aria-label="breadcrumbs navigation">
+  <li><a href="..">Docs</a> &raquo;</li>
+  
+    
+      
+        <li>Reference &raquo;</li>
+      
+    
+  
+  <li class="active">Configuring the service manager</li>
+</ol>
+
+<nav class="hidden-lg">
+  <ul class="pager">
+    <li class="previous">
+      <a rel="prev" href="../quick-start/"><i class="fa fa-arrow-left"></i> Previous</a>
+    </li>
+    <li class="next">
+      <a rel="next" href="../delegators/">Next <i class="fa fa-arrow-right"></i></a>
+    </li>
+  </ul>
+</nav>
+
+<h1 id="configuring-the-service-manager">Configuring the service manager</h1>
+<p>The Service Manager component can be configured by passing an associative array to the component's
+constructor. The following keys are:</p>
+<ul>
+<li><code>services</code>: associative array that maps a key to a service instance.</li>
+<li><code>factories</code>: associative array that map a key to a factory name, or any callable.</li>
+<li><code>abstract_factories</code>: a list of abstract factories classes. An abstract
+  factory is a factory that can potentially create any object, based on some
+  criterias.</li>
+<li><code>delegators</code>: TODO (delegators are described in their own section).</li>
+<li><code>aliases</code>: associative array that map a key to a service key (or another alias).</li>
+<li><code>initializers</code>: a list of callable or initializers that are run whenever a service has been created.</li>
+<li><code>shared</code>: associative array that map a service name to a boolean, in order to
+  indicate the service manager if it should cache or not a service created
+  through the <code>get</code> method, independant of the <code>shared_by_default</code> setting.</li>
+<li><code>lazy_services</code>: configuration for the lazy service proxy manager, and a class
+  map of service:class pairs that will act as lazy services; see the
+  <a href="../lazy-services/">lazy services documentation</a> for more details.</li>
+<li><code>shared_by_default</code>: boolean that indicates whether services created through
+  the <code>get</code> method should be cached. This is true by default.</li>
+</ul>
+<p>Here is an example of how you could configure a service manager:</p>
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\ServiceManager;
+
+$serviceManager = new ServiceManager([
+    'services'           =&gt; [],
+    'factories'          =&gt; [],
+    'abstract_factories' =&gt; [],
+    'delegators'         =&gt; [],
+    'shared'             =&gt; [],
+    'shared_by_default'  =&gt; true
+]);</code></pre>
+
+
+<h2 id="factories">Factories</h2>
+<p>A factory is any callable or any class that implements the interface
+<code>Zend\ServiceManager\Factory\FactoryInterface</code>.</p>
+<p>Service manager components provide a default factory that can be used to create
+objects that do not have any dependencies:</p>
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableFactory;
+use Zend\ServiceManager\ServiceManager;
+use stdClass;
+
+$serviceManager = new ServiceManager([
+    'factories' =&gt; [
+        stdClass::class =&gt; InvokableFactory::class
+    ]
+]);</code></pre>
+
+
+<blockquote>
+<p>This mechanism replaces the <code>invokables</code> key that was used in Zend Framework 2.</p>
+</blockquote>
+<p>As said before, a factory can also be a callable, to create more complex objects:</p>
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\InvokableFactory;
+use Zend\ServiceManager\ServiceManager;
+use stdClass;
+
+$serviceManager = new ServiceManager([
+    'factories' =&gt; [
+        stdClass::class =&gt; InvokableFactory::class,
+        MyObject::class =&gt; function(ContainerInterface $container, $requestedName) {
+            $dependency = $container-&gt;get(stdClass::class);
+            return new MyObject($dependency);
+        },
+    ],
+]);</code></pre>
+
+
+<p>Each factory always receive a <code>ContainerInterface</code> argument (this is the base
+interface that the <code>ServiceManager</code> implements), as well as the requested name
+as the second argument. In this case, the <code>$requestedName</code> is <code>MyObject</code>.</p>
+<p>Alternatively, the above code can be replaced by a factory class instead of a
+closure. This leads to more readable code. For instance:</p>
+<pre class="codehilite"><code class="language-php">// In MyObjectFactory.php file
+
+class MyObjectFactory implements FactoryInterface
+{
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        $dependency = $container-&gt;get(stdClass::class);
+        return new MyObject($dependency);
+    }
+}
+
+// When creating the service manager:
+$serviceManager = new ServiceManager([
+    'factories' =&gt; [
+        stdClass::class =&gt; InvokableFactory::class,
+        MyObject::class =&gt; MyObjectFactory::class
+    ]
+]);</code></pre>
+
+
+<blockquote>
+<p>For performance reasons, factories objects are not created until requested.
+In the above example, this means that the <code>MyObjectFactory</code> object won't be
+created until <code>MyObject</code> is requested.</p>
+</blockquote>
+<h3 id="mapping-multiple-service-to-the-same-factory">Mapping multiple service to the same factory</h3>
+<p>Unlike version 2 implementations of the component, in the version 3
+implementation, the <code>$requestedName</code> is guaranteed to be passed as the second
+parameter of a factory. This is useful when you need to create multiple
+services that are created exactly the same way, hence reducing the number of
+needed factories.</p>
+<p>For instance, if two services share the same creation pattern, you could attach the same factory:</p>
+<pre class="codehilite"><code class="language-php">// In MyObjectFactory.php file
+
+class MyObjectFactory implements FactoryInterface
+{
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        $dependency = $container-&gt;get(stdClass::class);
+        return new $requestedName($dependency);
+    }
+}
+
+// When creating the service manager:
+$serviceManager = new ServiceManager([
+    'factories' =&gt; [
+        MyObjectA::class =&gt; MyObjectFactory::class,
+        MyObjectB::class =&gt; MyObjectFactory::class
+    ]
+]);</code></pre>
+
+
+<p>This pattern can often replace abstract factories, and is more performant:</p>
+<ul>
+<li>Lookups for services do not need to query abstract factories; the service is
+  mapped explicitly.</li>
+<li>Once the factory is loaded for any object, it stays in memory for any other
+  service using the same factory.</li>
+</ul>
+<p>Using factories is recommended in most cases where abstract factories were used
+in version 2.</p>
+<p>This feature <em>can</em> be abused, however: for instance, if you have dozens of
+services that share the same creation, but which do not share any common
+functionality, we recommend to create separate factories.</p>
+<h2 id="abstract-factories">Abstract factories</h2>
+<p>An abstract factory is a specialized factory that can be used to create any
+service, if it has the capability to do so. An abstract factory is often useful
+when you do not know in advance the name of the service (e.g. if the service
+name is generated dynamically at runtime), but know that the services share a
+common creation pattern.</p>
+<p>An abstract factory must be registered inside the service manager, and is
+checked if no factory can create an object. Each abstract factory must
+implement <code>Zend\ServiceManager\Factory\AbstractFactoryInterface</code>:</p>
+<pre class="codehilite"><code class="language-php">// In MyAbstractFactory.php:
+
+class MyAbstractFactory implements AbstractFactoryInterface
+{
+    public function canCreate(ContainerInterface $container, $requestedName)
+    {
+        return in_array('Traversable', class_implements($requestedName), true);
+    }
+
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        return $requestedName();
+    }
+}
+
+// When creating the service manager:
+$serviceManager = new ServiceManager([
+    'abstract_factories' =&gt; [
+        new MyAbstractFactory() // You could also pass a class name: MyAbstractFactory::class
+    ]
+]);
+
+// When fetching an object:
+$object = $serviceManager-&gt;get(A::class);</code></pre>
+
+
+<p>Here is what will happen:</p>
+<ol>
+<li>The service manager will check if it contains a factory mapped to the
+   <code>A::class</code> service.</li>
+<li>Because none is found, it will process each abstract factory, in the order
+   in which they were registered.</li>
+<li>It will call the <code>canCreate()</code> method, passing the service manager instance and
+   the name of the requested object. The method can use any logic whatsoever to
+   determine if it can create the service (such as checking its name, checking
+   for a required dependency in the passed container, checking if a class
+   implements a given interface, etc.).</li>
+<li>If <code>canCreate()</code> returns <code>true</code>, it will call the <code>__invoke</code> method to
+   create the object. Otherwise, it will continue iterating the abstract
+   factories, until one matches, or the queue is exhausted.</li>
+</ol>
+<h3 id="best-practices">Best practices</h3>
+<p>While convenient, we recommend you to limit the number of abstract factories.
+Because the service manager needs to iterate through all registered abstract
+factories to resolve services, it can be costly when multiple abstract
+factories are present.</p>
+<p>Often, mapping the same factory to multiple services can solve the issue more
+efficiently (as described in the <code>Factories</code> section).</p>
+<h2 id="aliases">Aliases</h2>
+<p>An <em>alias</em> provides an alternative name for a registered service.</p>
+<p>An alias can also be mapped to another alias (it will be resolved recursively).
+For instance:</p>
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableFactory;
+use Zend\ServiceManager\ServiceManager;
+use stdClass;
+
+$serviceManager = new ServiceManager([
+    'factories' =&gt; [
+        stdClass::class =&gt; InvokableFactory::class
+    ],
+
+    'aliases' =&gt; [
+        'A' =&gt; stdClass::class,
+        'B' =&gt; 'A'
+    ]
+]);
+
+$object = $serviceManager-&gt;get('B');</code></pre>
+
+
+<p>In this example, asking <code>B</code> will be resolved to <code>A</code>, which will be itself
+resolved to <code>stdClass::class</code>, which will finally be constructed using the
+provided factory.</p>
+<h3 id="best-practices_1">Best practices</h3>
+<p>We recommend you minimal use of aliases, and instead using the <code>::class</code>
+language construct to map using a FQCN (Fully-Qualified-Class-Name). This
+provides both better discoverability within your code, and allows simpler
+refactoring, as most modern IDEs can refactor class names specified using the
+<code>::class</code> keyword.</p>
+<h2 id="initializers">Initializers</h2>
+<p>An initializer is any callable or any class that implements the interface
+<code>Zend\ServiceManager\Initializer\InitializerInterface</code>. Initializers are
+executed for each service the first time they are created, and can be used to
+inject additional dependencies.</p>
+<p>For instance, if we'd want to automatically inject the dependency
+<code>EventManager::class</code> in all objects that implement the interface
+<code>EventManagerAwareInterface</code>, we could create the following initializer:</p>
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+use stdClass;
+use Zend\ServiceManager\ServiceManager;
+
+$serviceManager = new ServiceManager([
+    'initializers' =&gt; [
+        function(ContainerInterface $container, $instance) {
+            if (! $instance instanceof EventManagerAwareInterface) {
+                return;
+            }
+            $instance-&gt;setEventManager($container-&gt;get(EventManager::class));
+        }
+    ]
+]);</code></pre>
+
+
+<p>Alternately, you can create a class that implements
+<code>Zend\ServiceManager\Initializer\InitializerInterface</code>, and pass it to the
+<code>initializers</code> array:</p>
+<pre class="codehilite"><code class="language-php">// In MyInitializer.php
+
+class MyInitializer implements InitializerInterface
+{
+    public function __invoke(ContainerInterface $container, $instance)
+    {
+        if (! $instance instanceof EventManagerAwareInterface) {
+            return;
+        }
+        $instance-&gt;setEventManager($container-&gt;get(EventManager::class));
+    }
+}
+
+// When creating the service manager:
+
+use Interop\Container\ContainerInterface;
+use stdClass;
+use Zend\ServiceManager\ServiceManager;
+
+$serviceManager = new ServiceManager([
+    'initializers' =&gt; [
+        new MyInitializer() // You could also use MyInitializer::class
+    ]
+]);</code></pre>
+
+
+<blockquote>
+<p>Note that initializers are automatically created when the service manager is
+initialized, even if you pass a class name.</p>
+</blockquote>
+<h3 id="best-practices_2">Best practices</h3>
+<p>While convenient, initializer usage is also problematic. They are provided
+primarily for backwards compatibility, but we highly discourage their usage.</p>
+<p>The primary issues with initializers are:</p>
+<ul>
+<li>They lead to fragile code. Because the dependency is not injected directly in
+  the constructor, it means that the object may be in an "incomplete state". If
+  for any reason the initializer is not run (if it was not correctly registered
+  for instance), bugs ranging from the subtle to fatal can be introduced.</li>
+</ul>
+<p>Instead, we encourage you to inject all necessary dependencies via
+  the constructor, using factories. If some dependencies use setter or interface
+  injection, use delegator factories.</p>
+<p>If a given service has too many dependencies, then it may be a sign that you
+  need to split this service into smaller, more focused services.</p>
+<ul>
+<li>They are slow: an initializer is run for EVERY instance you create through
+  the service manager. If you have ten initializers or more, this can quickly
+  add up!</li>
+</ul>
+<h2 id="shared">Shared</h2>
+<p>By default, a service created is shared. This means that calling the <code>get()</code>
+method twice for a given service will return exactly the same service. This is
+typically what you want, as it can saves a lot of memory and increase
+performance:</p>
+<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
+    'factories' =&gt; [
+        stdClass::class =&gt; InvokableFactory::class
+    ]
+]);
+
+$object1 = $serviceManager-&gt;get(stdClass::class);
+$object2 = $serviceManager-&gt;get(stdClass::class);
+
+var_dump($object1 === $object2); // prints &quot;true&quot;</code></pre>
+
+
+<p>However, occasionally you may require discrete instances of a service. To
+enable this, you can use the <code>shared</code> key, providing a boolean false value for
+your service, as shown below:</p>
+<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
+    'factories' =&gt; [
+        stdClass::class =&gt; InvokableFactory::class
+    ],
+    'shared' =&gt; [
+        stdClass::class =&gt; false
+    ]
+]);
+
+$object1 = $serviceManager-&gt;get(stdClass::class);
+$object2 = $serviceManager-&gt;get(stdClass::class);
+
+var_dump($object1 === $object2); // prints &quot;false&quot;</code></pre>
+
+
+<p>Alternately, you can use the <code>build()</code> method instead of the <code>get()</code> method.
+The <code>build()</code> method works exactly the same as the <code>get</code> method, but never
+caches the service created, nor uses a previously cached instance for the
+service.</p>
+<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
+    'factories' =&gt; [
+        stdClass::class =&gt; InvokableFactory::class
+    ]
+]);
+
+$object1 = $serviceManager-&gt;build(stdClass::class);
+$object2 = $serviceManager-&gt;build(stdClass::class);
+
+var_dump($object1 === $object2); // prints &quot;false&quot;</code></pre>
+
+
+<p>Finally, you could also decide to disable caching by default (even when calling
+the <code>get()</code> method), by setting the <code>shared_by_default</code> option to false:</p>
+<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
+    'factories' =&gt; [
+        stdClass::class =&gt; InvokableFactory::class
+    ],
+    'shared_by_default' =&gt; false,
+]);
+
+$object1 = $serviceManager-&gt;get(stdClass::class);
+$object2 = $serviceManager-&gt;get(stdClass::class);
+
+var_dump($object1 === $object2); // prints &quot;false&quot;</code></pre>
+
+
+<h2 id="passing-config-to-a-factorydelegator">Passing config to a factory/delegator</h2>
+<p>So far, we have covered examples where services are created through factories
+(or abstract factories). The factory is able to create the object itself.</p>
+<p>Occasionally you may need to pass additional options that act as a "context".
+For instance, we could have a <code>StringLengthValidator</code> service registered.
+However, this validator can have multiple options, such as <code>min</code> and <code>max</code>.
+Because this is dependant on the caller context (or might even be retrieved
+from a database, for instance), the factory cannot know what options to give
+when constructing the validator.</p>
+<p>To solve this issue, the service manager offers a <code>build()</code> method. It works
+similarly to the <code>get()</code> method, with two main differences:</p>
+<ul>
+<li>Services created with the <code>build()</code> method are <strong>never cached</strong>, nor pulled
+  from previously cached instances for that service.</li>
+<li><code>build()</code> accepts an optional secondary parameter, an array of options.</li>
+</ul>
+<p>Those options are transferred to all factories, abstract factories, and delegators.
+For instance:</p>
+<pre class="codehilite"><code class="language-php">// In StringLengthValidatorFactory.php
+
+class StringLengthValidatorFactory implements FactoryInterface
+{
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = [])
+    {
+        return new StringLengthValidator($options);
+    }
+}
+
+// When creating the service manager:
+$serviceManager = new ServiceManager([
+    'factories' =&gt; [
+        StringLengthValidator::class =&gt; StringLengthValidatorFactory::class
+    ]
+]);
+
+// When creating the objects:
+
+$validator1 = $serviceManager-&gt;build(StringLengthValidator::class, ['min' =&gt; 5]);
+$validator2 = $serviceManager-&gt;build(StringLengthValidator::class, ['min' =&gt; 15]);</code></pre>
+
+
+<p>In our previous example, because the <code>StringLengthValidator</code> does not have any
+other dependencies other than the <code>$options</code>, we could remove the factory, and
+simply map it to the built-in <code>InvokableFactory</code> factory:</p>
+<pre class="codehilite"><code class="language-php">// When creating the service manager:
+$serviceManager = new ServiceManager([
+    'factories' =&gt; [
+        StringLengthValidator::class =&gt; InvokableFactory::class
+    ]
+]);
+
+// When creating the objects:
+
+$validator1 = $serviceManager-&gt;build(StringLengthValidator::class, ['min' =&gt; 5]);
+$validator2 = $serviceManager-&gt;build(StringLengthValidator::class, ['min' =&gt; 15]);</code></pre>
+
+
+<p>This works because the <code>InvokableFactory</code> will automatically pass the options
+(if any) to the constructor of the created object.</p>
+<h2 id="altering-a-service-managers-config">Altering a service manager's config</h2>
+<p>Assuming that you have not called <code>$container-&gt;setAllowOverride(false)</code>, you can,
+at any time, configure the service manager with new services using any of the
+following methods:</p>
+<ul>
+<li><code>configure()</code>, which accepts the same configuration array as the constructor.</li>
+<li><code>setAlias($alias, $target)</code></li>
+<li><code>setInvokableClass($name, $class = null)</code>; if no <code>$class</code> is passed, the
+  assumption is that <code>$name</code> is the class name.</li>
+<li><code>setFactory($name, $factory)</code>, where <code>$factory</code> can be either a callable
+  factory or the name of a factory class to use.</li>
+<li><code>mapLazyService($name, $class = null)</code>, to map the service name <code>$name</code> to
+  <code>$class</code>; if the latter is not provided, <code>$name</code> is used for both sides of
+  the map.</li>
+<li><code>addAbstractFactory($factory)</code>, where <code>$factory</code> can be either a
+  <code>Zend\ServiceManager\Factory\AbstractFactoryInterface</code> instance or the name
+  of a class implementing the interface.</li>
+<li><code>addDelegator($name, $factory)</code>, where <code>$factory</code> can be either a callable
+  delegator factory, or the name of a delegator factory class to use.</li>
+<li><code>addInitializer($initializer)</code>, where <code>$initializer</code> can be either a callable
+  initializer, or the name of an initializer class to use.</li>
+<li><code>setService($name, $instance)</code></li>
+<li><code>setShared($name, $shared)</code>, where <code>$shared</code> is a boolean flag indicating
+  whether or not the named service should be shared.</li>
+</ul>
+<p>As examples:</p>
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\ServiceManager;
+
+$serviceManager = new ServiceManager([
+    'factories' =&gt; [
+        stdClass::class =&gt; InvokableFactory::class;
+    ]
+]);
+
+$serviceManager-&gt;configure([
+    'factories' =&gt; [
+        DateTime::class =&gt; InvokableFactory::class
+    ]
+]);
+
+var_dump($newServiceManager-&gt;has(DateTime::class)); // prints true
+
+// Create an alias from 'Date' to 'DateTime'
+$serviceManager-&gt;setAlias('Date', DateTime::class);
+
+// Set a factory for the 'Time' service
+$serviceManager-&gt;setFactory('Time', function ($container) {
+    return $container-&gt;get(DateTime::class);
+});
+
+// Map a lazy service named 'localtime' to the class DateTime.
+$serviceManager-&gt;mapLazyService('localtime', DateTime::class);
+
+// Add an abstract factory
+$serviceManager-&gt;addAbstractFactory(new CustomAbstractFactory());
+
+// Add a delegator factory for the DateTime service
+$serviceManager-&gt;addDelegator(DateTime::class, function ($container, $name, $callback) {
+    $dateTime = $callback();
+    $dataTime-&gt;setTimezone(new DateTimezone('UTC'));
+    return $dateTime;
+});
+
+// Add an initializer
+// Note: don't do this. Use delegator factories instead.
+$serviceManager-&gt;addInitializer(function ($service, $instance) {
+    if (! $instance instanceof DateTime) {
+        return;
+    }
+    $instance-&gt;setTimezone(new DateTimezone('America/Chicago'));
+})
+
+// Explicitly map a service name to an instance.
+$serviceManager-&gt;setService('foo', new stdClass);
+
+// Mark the DateTime service as NOT being shared.
+$serviceManager-&gt;setShared(DateTime::class, false);</code></pre>
+
+<hr />
+
+<nav>
+  <ul class="pager">
+    <li class="previous">
+      <a rel="prev" href="../quick-start/"><i class="fa fa-arrow-left"></i> Previous</a>
+    </li>
+    <li class="next">
+      <a rel="next" href="../delegators/">Next <i class="fa fa-arrow-right"></i></a>
+    </li>
+  </ul>
+</nav></div>
+        
+    </div>
+    <!-- content:end -->
+
+    <footer class="col-md-12 text-center">
+        <hr>
+        <p>
+        <small>Copyright (c) 2016 <a href="http://www.zend.com/">Zend Technologies USA Inc.</a><br></small>
+        </p>
+        <p><small><a href="http://framework.zend.com">Learn more about Zend Framework</a></small></p>
+    </footer>
+
+    <script src="../js/jquery-1.10.2.min.js"></script>
+    <script src="../js/bootstrap-3.0.3.min.js"></script>
+    <script src="../js/prism-zf.js"></script>
+
+    <script>var base_url = '..';</script>
+    <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
+    <script src="../js/base.js"></script>
+
+    <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        From here you can search these documents. Enter your search terms below.
+                    </p>
+                    <form role="form">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                        </div>
+                    </form>
+                    <div id="mkdocs-search-results"></div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </body>
+
+</html>
