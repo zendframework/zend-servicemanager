@@ -39,7 +39,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#90](https://github.com/zendframework/zend-servicemanager/pull/90) fixes
+  several examples in the configuration chapter of the documentation, ensuring
+  that the signatures are correct.
 
 ## 3.0.2 - 2016-01-24
 
