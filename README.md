@@ -12,8 +12,8 @@ component. The Service Locator is a service/object locator, tasked with
 retrieving other objects.
 
 - File issues at https://github.com/zendframework/zend-servicemanager/issues
-- [Online documentation](https://zend-servicemanager.rtfd.org)
-- [Documentation source files](doc/)
+- [Online documentation](https://zendframework.github.io/zend-servicemanager)
+- [Documentation source files](doc/book/)
 
 ## Benchmarks
 
