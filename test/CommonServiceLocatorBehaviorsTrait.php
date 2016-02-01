@@ -11,16 +11,16 @@ namespace ZendTest\ServiceManager;
 
 use DateTime;
 use Interop\Container\Exception\ContainerException;
-use PHPUnit_Framework_TestCase as TestCase;
 use ReflectionProperty;
 use stdClass;
 use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
+use Zend\ServiceManager\Exception\CyclicAliasException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\FactoryInterface;
+use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\Factory\InvokableFactory;
 use ZendTest\ServiceManager\TestAsset\FailingAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
@@ -782,5 +782,20 @@ trait CommonServiceLocatorBehaviorsTrait
         }, E_USER_DEPRECATED);
         $this->assertSame($this->creationContext, $container->getServiceLocator());
         restore_error_handler();
+    }
+
+    /**
+     * @group zendframework/zend-servicemanager#83
+     */
+    public function testCrashesOnCyclicAliases()
+    {
+        $this->setExpectedException(CyclicAliasException::class);
+
+        $this->createContainer([
+            'aliases' => [
+                'a' => 'b',
+                'b' => 'a',
+            ],
+        ]);
     }
 }

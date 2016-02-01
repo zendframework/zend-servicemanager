@@ -16,11 +16,12 @@ use ProxyManager\Configuration as ProxyConfiguration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
+use Zend\ServiceManager\Exception\CyclicAliasException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 
 /**
@@ -569,10 +570,16 @@ class ServiceManager implements ServiceLocatorInterface
     private function resolveAliases(array $aliases)
     {
         foreach ($aliases as $alias => $service) {
-            $name = $alias;
+            $visited = [];
+            $name    = $alias;
 
             while (isset($this->aliases[$name])) {
-                $name = $this->aliases[$name];
+                if (isset($visited[$name])) {
+                    throw CyclicAliasException::fromAliasesMap($aliases);
+                }
+
+                $visited[$name] = true;
+                $name           = $this->aliases[$name];
             }
 
             $this->resolvedAliases[$alias] = $name;

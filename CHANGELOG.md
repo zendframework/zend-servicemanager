@@ -6,8 +6,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#64](https://github.com/zendframework/zend-servicemanager/pull/64) performance optimizations
-  when dealing with alias resolution during service manager instantiation
+- Nothing.
 
 ### Deprecated
 
@@ -25,7 +24,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [#89](https://github.com/zendframework/zend-servicemanager/pull/89) adds
+  cyclic alias detection to the `ServiceManager`; it now raises a
+  `Zend\ServiceManager\Exception\CyclicAliasException` when one is detected,
+  detailing the cycle detected.
 
 ### Deprecated
 
