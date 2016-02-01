@@ -13,6 +13,8 @@ use Zend\ServiceManager\AbstractPluginManager;
 
 class FooPluginManager extends AbstractPluginManager
 {
+    protected $shareByDefault = false;
+
     /**
      * {@inheritDoc}
      */
