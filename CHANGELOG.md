@@ -24,6 +24,10 @@ All notable changes to this project will be documented in this file, in reverse 
 - [#90](https://github.com/zendframework/zend-servicemanager/pull/90) fixes
   several examples in the configuration chapter of the documentation, ensuring
   that the signatures are correct.
+- [#92](https://github.com/zendframework/zend-servicemanager/pull/92) ensures
+  that alias resolution is skipped during configuration if no aliases are
+  present, and forward-ports the test from [#81](https://github.com/zendframework/zend-servicemanager/pull/81)
+  to validate v2/v3 compatibility for plugin managers.
 
 ## 3.0.2 - 2016-01-24
 
