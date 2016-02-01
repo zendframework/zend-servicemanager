@@ -1,0 +1,15 @@
+docs_dir: doc/book
+site_dir: doc/html
+pages:
+    - index.md
+    - 'Quick Start': quick-start.md
+    - Reference:
+      - 'Configuring the service manager': configuring-the-service-manager.md
+      - Delegators: delegators.md
+      - 'Lazy services': lazy-services.md
+      - 'Plugin managers': plugin-managers.md
+    - 'Migration Guide': migration.md
+site_name: zend-servicemanager
+site_description: 'zend-servicemanager: factory-driven dependency injection container'
+repo_url: 'https://github.com/zendframework/zend-servicemanager'
+copyright: 'Copyright (c) 2016 <a href="http://www.zend.com/">Zend Technologies USA Inc.</a>'
