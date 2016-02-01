@@ -3,7 +3,7 @@
 `Zend\ServiceManager` can use [delegator factories](delegators.md) to generate
 "lazy" references to your services.
 
-Lazy services are [proxies](http://en.wikipedia.org/wiki/Proxypattern) that
+Lazy services are [proxies](http://en.wikipedia.org/wiki/Proxy_pattern) that
 get lazily instantiated, and keep a reference to the real instance of
 the proxied service.
 

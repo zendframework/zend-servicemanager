@@ -16,11 +16,12 @@ use ProxyManager\Configuration as ProxyConfiguration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
+use Zend\ServiceManager\Exception\CyclicAliasException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 
 /**
@@ -127,6 +128,13 @@ class ServiceManager implements ServiceLocatorInterface
     protected $sharedByDefault = true;
 
     /**
+     * Service manager was already configured?
+     *
+     * @var bool
+     */
+    protected $configured = false;
+
+    /**
      * Constructor.
      *
      * See {@see \Zend\ServiceManager\ServiceManager::configure()} for details
@@ -164,13 +172,14 @@ class ServiceManager implements ServiceLocatorInterface
     public function get($name)
     {
         $requestedName = $name;
-        $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
 
         // We start by checking if we have cached the requested service (this
         // is the fastest method).
         if (isset($this->services[$requestedName])) {
             return $this->services[$requestedName];
         }
+
+        $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
 
         // Next, if the alias should be shared, and we have cached the resolved
         // service, use it.
@@ -210,7 +219,7 @@ class ServiceManager implements ServiceLocatorInterface
     public function build($name, array $options = null)
     {
         // We never cache when using "build"
-        $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+        $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
         return $this->doCreate($name, $options);
     }
 
@@ -228,7 +237,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         // Check abstract factories
         foreach ($this->abstractFactories as $abstractFactory) {
-            if ($abstractFactory->canCreate($this, $name)) {
+            if ($abstractFactory->canCreate($this->creationContext, $name)) {
                 return true;
             }
         }
@@ -333,6 +342,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         if (isset($config['aliases'])) {
             $this->aliases = $config['aliases'] + $this->aliases;
+            $this->resolveAliases($this->aliases);
         }
 
         if (isset($config['shared_by_default'])) {
@@ -356,7 +366,7 @@ class ServiceManager implements ServiceLocatorInterface
             $this->resolveInitializers($config['initializers']);
         }
 
-        $this->resolveAliases();
+        $this->configured = true;
 
         return $this;
     }
@@ -411,7 +421,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Add an abstract factory for resolving services.
      *
-     * @param string|Factory\AbstractFactoryInterface $name Service name
+     * @param string|Factory\AbstractFactoryInterface $factory Service name
      */
     public function addAbstractFactory($factory)
     {
@@ -433,7 +443,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Add an initializer.
      *
-     * @param string|callable|InitializerInterface $initalizer
+     * @param string|callable|InitializerInterface $initializer
      */
     public function addInitializer($initializer)
     {
@@ -555,30 +565,24 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Recursively resolve an alias name to a service name
-     *
-     * @param  string $alias
-     * @return string
-     */
-    private function resolveAlias($alias)
-    {
-        $name = $alias;
-
-        do {
-            $canBeResolved = isset($this->aliases[$name]);
-            $name          = $canBeResolved ? $this->aliases[$name] : $name;
-        } while ($canBeResolved);
-
-        return $name;
-    }
-
-    /**
      * Resolve all aliases to their canonical service names.
      */
-    private function resolveAliases()
+    private function resolveAliases(array $aliases)
     {
-        foreach ($this->aliases as $alias => $service) {
-            $this->resolvedAliases[$alias] = $this->resolveAlias($alias);
+        foreach ($aliases as $alias => $service) {
+            $visited = [];
+            $name    = $alias;
+
+            while (isset($this->aliases[$name])) {
+                if (isset($visited[$name])) {
+                    throw CyclicAliasException::fromAliasesMap($aliases);
+                }
+
+                $visited[$name] = true;
+                $name           = $this->aliases[$name];
+            }
+
+            $this->resolvedAliases[$alias] = $name;
         }
     }
 
@@ -608,7 +612,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         // Check abstract factories
         foreach ($this->abstractFactories as $abstractFactory) {
-            if ($abstractFactory->canCreate($this, $name)) {
+            if ($abstractFactory->canCreate($this->creationContext, $name)) {
                 return $abstractFactory;
             }
         }
@@ -804,7 +808,8 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Determine if one or more services already exist in the container.
      *
-     * If the allow override flag is true, this method does nothing.
+     * If the allow override flag is true or it's first time configured,
+     * this method does nothing.
      *
      * Otherwise, it checks against each of the following service types,
      * if present, and validates that none are defining services that
@@ -817,7 +822,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function validateOverrides(array $config)
     {
-        if ($this->allowOverride) {
+        if ($this->allowOverride || !$this->configured) {
             return;
         }
 

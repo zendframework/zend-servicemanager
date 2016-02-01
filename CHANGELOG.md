@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 3.0.2 - TBD
+## 3.0.3 - TBD
 
 ### Added
 
@@ -19,6 +19,33 @@ All notable changes to this project will be documented in this file, in reverse 
 ### Fixed
 
 - Nothing.
+
+## 3.0.2 - 2016-01-24
+
+### Added
+
+- [#64](https://github.com/zendframework/zend-servicemanager/pull/64) performance optimizations
+  when dealing with alias resolution during service manager instantiation
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- [#62](https://github.com/zendframework/zend-servicemanager/pull/62)
+  [#64](https://github.com/zendframework/zend-servicemanager/pull/64) corrected benchmark assets signature
+- [#72](https://github.com/zendframework/zend-servicemanager/pull/72) corrected link to the Proxy Pattern Wikipedia
+  page in the documentation
+- [#78](https://github.com/zendframework/zend-servicemanager/issues/78)
+  [#79](https://github.com/zendframework/zend-servicemanager/pull/79) creation context was not being correctly passed
+  to abstract factories when using plugin managers
+- [#82](https://github.com/zendframework/zend-servicemanager/pull/82) corrected migration guide in the DocBlock of
+  the `InitializerInterface`
 
 ## 3.0.1 - 2016-01-19
 
