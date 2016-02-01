@@ -20,7 +20,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#91](https://github.com/zendframework/zend-servicemanager/pull/91) updates
+  the `InvokableFactory` to add the `setCreationOptions()` method, allowing
+  the `InvokableFactory` to accept `$options` when triggered.
 
 ## 2.7.4 - 2015-01-19
 
