@@ -6,7 +6,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [#89](https://github.com/zendframework/zend-servicemanager/pull/89) adds
+  cyclic alias detection to the `ServiceManager`; it now raises a
+  `Zend\ServiceManager\Exception\CyclicAliasException` when one is detected,
+  detailing the cycle detected.
 
 ### Deprecated
 

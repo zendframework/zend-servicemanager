@@ -12,17 +12,10 @@ namespace ZendTest\ServiceManager;
 use DateTime;
 use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
-use Zend\ServiceManager\Exception\InvalidArgumentException;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\Initializer\InitializerInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
-use ZendTest\ServiceManager\TestAsset\FailingAbstractFactory;
-use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
-use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
 
 /**
