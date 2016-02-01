@@ -10,6 +10,9 @@ All notable changes to this project will be documented in this file, in reverse 
   cyclic alias detection to the `ServiceManager`; it now raises a
   `Zend\ServiceManager\Exception\CyclicAliasException` when one is detected,
   detailing the cycle detected.
+- [#95](https://github.com/zendframework/zend-servicemanager/pull/95) adds
+  GitHub Pages publication automation, and moves the documentation to
+  https://zendframework.github.io/zend-servicemanager/
 
 ### Deprecated
 
