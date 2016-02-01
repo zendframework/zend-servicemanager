@@ -6,7 +6,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [#81](https://github.com/zendframework/zend-servicemanager/pull/81) adds a
+  test covering forwards-compatibility features for plugin manager
+  implementations.
 
 ### Deprecated
 
