@@ -17,7 +17,9 @@ use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\RuntimeException;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\FooPluginManager;
+use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\MockSelfReturningDelegatorFactory;
+use ZendTest\ServiceManager\TestAsset\V2v3PluginManager;
 
 class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -332,5 +334,11 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(InvalidArgumentException::class);
         new FooPluginManager($arg);
+    }
+
+    public function testV2v3PluginManager()
+    {
+        $pluginManager = new V2v3PluginManager(new ServiceManager());
+        $this->assertInstanceOf(InvokableObject::class, $pluginManager->get('foo'));
     }
 }
