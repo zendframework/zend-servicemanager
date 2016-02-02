@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file, in reverse 
 - [#81](https://github.com/zendframework/zend-servicemanager/pull/81) adds a
   test covering forwards-compatibility features for plugin manager
   implementations.
+- [#96](https://github.com/zendframework/zend-servicemanager/pull/96) adds
+  `Zend\ServiceManager\Test\CommonPluginManagerTrait`, which allows you to test
+  that your plugin manager is forwards compatible with v3.
 
 ### Deprecated
 
