@@ -7,7 +7,7 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager;
+namespace Zend\ServiceManager\Test;
 
 use ReflectionClass;
 use ReflectionProperty;
@@ -22,12 +22,12 @@ use Zend\ServiceManager\Exception\InvalidServiceException;
  */
 trait CommonPluginManagerTrait
 {
-    public function testInstanceOfIsSet()
+    public function testInstanceOfMatches()
     {
         $manager = $this->getPluginManager();
         $reflection = new ReflectionProperty($manager, 'instanceOf');
         $reflection->setAccessible(true);
-        $this->assertNotNull($reflection->getValue($manager), 'instanceOf property not set');
+        $this->assertEquals($this->getInstanceOf(), $reflection->getValue($manager), 'instanceOf does not match');
     }
 
     public function testShareByDefaultAndSharedByDefault()
@@ -107,4 +107,10 @@ trait CommonPluginManagerTrait
      * @return mixed
      */
     abstract protected function getV2InvalidPluginException();
+
+    /**
+     * Returns the value the instanceOf property has been set to
+     * @return string
+     */
+    abstract protected function getInstanceOf();
 }

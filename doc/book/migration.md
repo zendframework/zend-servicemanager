@@ -1240,11 +1240,12 @@ instance of your plugin manager and override  `getV2InvalidPluginException()`
 to return the classname of the exception your `validatePlugin()` method throws:
 
 ```php
+use MyNamespace\ObserverInterface;
 use MyNamespace\ObserverPluginManager;
 use MyNamespace\Exception\RuntimeException;
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\ServiceManager\ServiceManager;
-use ZendTest\ServiceManager\TestAsset\V2v3PluginManager;
+use Zend\ServiceManager\Test\CommonPluginManagerTrait;
 
 class MigrationTest extends TestCase
 {
@@ -1259,6 +1260,11 @@ class MigrationTest extends TestCase
     {
         return RuntimeException::class;
     }
+
+    protected function getInstanceOf()
+    {
+        return ObserverInterface::class;
+    }
 }
 ```
 
@@ -1269,17 +1275,6 @@ This will check that:
 - That requesting an invalid plugin throws the right exception
 - That all your aliases resolve
 
-Note that you will need to include ServiceManager's test directory in the `autoload-dev` section of your `compoer.json`
-for this test to work:
-
-```
-    "autoload-dev": {
-        "psr-4": {
-            "MyNamespaceTest\ObserverPluginManager\\": "test/",
-            "ZendTest\\ServiceManager\\": "vendor/zendframework/zend-servicemanager/test/"
-        }
-    }
-```
 
 ### Post migration
 
