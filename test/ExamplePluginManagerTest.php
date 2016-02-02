@@ -11,6 +11,8 @@ namespace ZendTest\ServiceManager;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\ServiceManager\ServiceManager;
+use Zend\ServiceManager\Test\CommonPluginManagerTrait;
+use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\V2v3PluginManager;
 
 /**
@@ -28,5 +30,10 @@ class ExamplePluginManagerTest extends TestCase
     protected function getV2InvalidPluginException()
     {
         return \RuntimeException::class;
+    }
+
+    protected function getInstanceOf()
+    {
+        return InvokableObject::class;
     }
 }
