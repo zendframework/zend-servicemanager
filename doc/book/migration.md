@@ -1158,7 +1158,7 @@ To prepare this for version 3, we need to do the following:
   `factories` and `aliases`.
 - We need to implement a `validate()` method.
 - We need to update the `validatePlugin()` method to proxy to `validate()`.
-- We need to add a `$sharedByDefault` property (if `$shareByDefault` is present)
+- We need to add a `$sharedByDefault` property (if `$shareByDefault` is present).
 
 Doing so, we get the following result:
 
@@ -1227,17 +1227,19 @@ Things to note about the above:
   being generated, and these are mapped to `InvokableFactory` instances. This
   means you can also fetch your plugins by their FQCN.
 - There are also factory entries for the canonicalized FQCN of each factory,
-  which will be used in v2.
+  which will be used in v2. (Canonicalization in v2 strips non-alphanumeric
+  characters, and casts to lowercase.)
 - `validatePlugin()` continues to throw the old exception
 
 The above will now work in both version 2 and version 3.
 
 ### Migration testing
 
-To test your changes, create a new `MigrationTest` case that uses the
-`CommonPluginManagerTrait`. Override the `getPluginManager()` to return an
-instance of your plugin manager and override  `getV2InvalidPluginException()`
-to return the classname of the exception your `validatePlugin()` method throws:
+To test your changes, create a new `MigrationTest` case that uses
+`Zend\ServiceManager\Test\CommonPluginManagerTrait`. Override
+`getPluginManager()` to return an instance of your plugin manager, and override
+`getV2InvalidPluginException()` to return the classname of the exception your
+`validatePlugin()` method throws:
 
 ```php
 use MyNamespace\ObserverInterface;
@@ -1270,10 +1272,10 @@ class MigrationTest extends TestCase
 
 This will check that:
 
-- You have set the `$instanceOf` property
-- `$shareByDefault` and `$sharedByDefault` match, if present
-- That requesting an invalid plugin throws the right exception
-- That all your aliases resolve
+- You have set the `$instanceOf` property.
+- `$shareByDefault` and `$sharedByDefault` match, if present.
+- That requesting an invalid plugin throws the right exception.
+- That all your aliases resolve.
 
 
 ### Post migration
