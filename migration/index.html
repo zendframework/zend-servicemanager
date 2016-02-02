@@ -1211,6 +1211,8 @@ class ObserverPluginManager extends AbstractPluginManager
         'log' =&gt; LogObserver::class,
     ];
 
+    protected $shareByDefault = false;
+
     public function validatePlugin($instance)
     {
         if (! $plugin instanceof ObserverInterface) {
@@ -1230,10 +1232,14 @@ class ObserverPluginManager extends AbstractPluginManager
   <code>factories</code> and <code>aliases</code>.</li>
 <li>We need to implement a <code>validate()</code> method.</li>
 <li>We need to update the <code>validatePlugin()</code> method to proxy to <code>validate()</code>.</li>
+<li>We need to add a <code>$sharedByDefault</code> property (if <code>$shareByDefault</code> is present).</li>
 </ul>
 <p>Doing so, we get the following result:</p>
-<pre class="codehilite"><code class="language-php">use RuntimeException;
+<pre class="codehilite"><code class="language-php">namespace MyNamespace;
+
+use RuntimeException;
 use Zend\ServiceManager\AbstractPluginManager;
+use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
 class ObserverPluginManager extends AbstractPluginManager
@@ -1248,14 +1254,21 @@ class ObserverPluginManager extends AbstractPluginManager
     ];
 
     protected $factories = [
-        MailObserver::class =&gt; InvokableFactory::class,
+        MailObserver::class       =&gt; InvokableFactory::class,
         LogObserver::class =&gt; InvokableFactory::class,
+        // Legacy (v2) due to alias resolution
+        'mynamespacemailobserver' =&gt; InvokableFactory::class,
+        'mynamespacelogobserver'  =&gt; InvokableFactory::class,
     ];
+
+    protected $shareByDefault = false;
+
+    protected $sharedByDefault = false;
 
     public function validate($instance)
     {
         if (! $plugin instanceof $this-&gt;instanceOf) {
-            throw new RuntimeException(sprintf(
+            throw new InvalidServiceException(sprintf(
                 'Invalid plugin &quot;%s&quot; created; not an instance of %s',
                 get_class($instance),
                 $this-&gt;instanceOf
@@ -1265,7 +1278,11 @@ class ObserverPluginManager extends AbstractPluginManager
 
     public function validatePlugin($instance)
     {
-        $this-&gt;validate($instance);
+        try {
+            $this-&gt;validate($instance);
+        } catch (InvalidServiceException $e) {
+            throw new RuntimeException($e-&gt;getMessage(), $e-&gt;getCode(), $e);
+        }
     }
 }</code></pre>
 
@@ -1281,8 +1298,54 @@ class ObserverPluginManager extends AbstractPluginManager
 <li>The aliases point to the fully qualified class name (FQCN) for the service
   being generated, and these are mapped to <code>InvokableFactory</code> instances. This
   means you can also fetch your plugins by their FQCN.</li>
+<li>There are also factory entries for the canonicalized FQCN of each factory,
+  which will be used in v2. (Canonicalization in v2 strips non-alphanumeric
+  characters, and casts to lowercase.)</li>
+<li><code>validatePlugin()</code> continues to throw the old exception</li>
 </ul>
 <p>The above will now work in both version 2 and version 3.</p>
+<h3 id="migration-testing">Migration testing</h3>
+<p>To test your changes, create a new <code>MigrationTest</code> case that uses
+<code>Zend\ServiceManager\Test\CommonPluginManagerTrait</code>. Override
+<code>getPluginManager()</code> to return an instance of your plugin manager, and override
+<code>getV2InvalidPluginException()</code> to return the classname of the exception your
+<code>validatePlugin()</code> method throws:</p>
+<pre class="codehilite"><code class="language-php">use MyNamespace\ObserverInterface;
+use MyNamespace\ObserverPluginManager;
+use MyNamespace\Exception\RuntimeException;
+use PHPUnit_Framework_TestCase as TestCase;
+use Zend\ServiceManager\ServiceManager;
+use Zend\ServiceManager\Test\CommonPluginManagerTrait;
+
+class MigrationTest extends TestCase
+{
+    use CommonPluginManagerTrait;
+
+    protected function getPluginManager()
+    {
+        return new ObserverPluginManager(new ServiceManager());
+    }
+
+    protected function getV2InvalidPluginException()
+    {
+        return RuntimeException::class;
+    }
+
+    protected function getInstanceOf()
+    {
+        return ObserverInterface::class;
+    }
+}</code></pre>
+
+
+<p>This will check that:</p>
+<ul>
+<li>You have set the <code>$instanceOf</code> property.</li>
+<li><code>$shareByDefault</code> and <code>$sharedByDefault</code> match, if present.</li>
+<li>That requesting an invalid plugin throws the right exception.</li>
+<li>That all your aliases resolve.</li>
+</ul>
+<h3 id="post-migration">Post migration</h3>
 <p>After you migrate to version 3, you can clean up your plugin manager:</p>
 <ul>
 <li>Remove the <code>validatePlugin()</code> method.</li>
@@ -1290,6 +1353,7 @@ class ObserverPluginManager extends AbstractPluginManager
   type, and has no other logic, you can remove that implementation as well, as
   the <code>AbstractPluginManager</code> already takes care of that when <code>$instanceOf</code> is
   defined!</li>
+<li>Remove the canonicalized FQCN entry for each factory</li>
 </ul>
 <p>Performing these steps on the above, we get:</p>
 <pre class="codehilite"><code class="language-php">use Zend\ServiceManager\AbstractPluginManager;
