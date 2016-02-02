@@ -31,6 +31,9 @@ All notable changes to this project will be documented in this file, in reverse 
 - [#95](https://github.com/zendframework/zend-servicemanager/pull/95) adds
   GitHub Pages publication automation, and moves the documentation to
   https://zendframework.github.io/zend-servicemanager/
+- [#93](https://github.com/zendframework/zend-servicemanager/pull/93) adds
+  `Zend\ServiceManager\Test\CommonPluginManagerTrait`, which can be used to
+  validate that a plugin manager instance is ready for version 3.
 
 ### Deprecated
 
