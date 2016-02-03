@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <link rel="shortcut icon" href="../img/favicon.ico">
+
+    <title>Delegators - zend-servicemanager</title>
+
+    <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.018/css/hack.min.css">
+    <link href="//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700,700italic&subset=latin-ext,latin" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic,700&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    <link href="../css/base.css" rel="stylesheet">
+    <link href="../css/zf.css" rel="stylesheet">
+    <link href="../css/prism-zf.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
+    <script>
+    WebFont.load({
+        google: {
+            families: ['Open Sans', 'PT Sans']
+        }
+    });
+    </script>
+
+    
+</head>
+
+<body>
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+            <span class="navbar-brand">
+              <a href="http://framework.zend.com"><img src="../img/zf-logo-mark.png" height="28" alt="Zend Framework" /></a>
+              <a href="..">zend-servicemanager</a>
+            </span>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../quick-start/">Quick Start</a>
+                    </li>
+                
+                
+                
+                    <li class="dropdown active">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reference <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                        
+                            
+<li >
+    <a href="../configuring-the-service-manager/">Configuring the service manager</a>
+</li>
+
+                        
+                            
+<li class="active">
+    <a href="./">Delegators</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../lazy-services/">Lazy services</a>
+</li>
+
+                        
+                            
+<li >
+    <a href="../plugin-managers/">Plugin managers</a>
+</li>
+
+                        
+                        </ul>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../migration/">Migration Guide</a>
+                    </li>
+                
+                
+                </ul>
+            
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                
+                    <li >
+                        <a rel="prev" href="../configuring-the-service-manager/">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="next" href="../lazy-services/">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a href="https://github.com/zendframework/zend-servicemanager">
+                            
+                                <i class="fa fa-github"></i>
+                            
+                            GitHub
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <!-- content:begin -->
+    <div class="container">
+        
+        <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#delegators">Delegators</a></li>
+        
+            <li><a href="#delegator-factory-signature">Delegator factory signature</a></li>
+        
+            <li><a href="#a-delegator-factory-use-case">A Delegator factory use case</a></li>
+        
+    
+    </ul>
+</div></div>
+        <div class="col-md-9" role="main">
+
+<ol class="breadcrumb" role="navigation" aria-label="breadcrumbs navigation">
+  <li><a href="..">Docs</a> &raquo;</li>
+  
+    
+      
+        <li>Reference &raquo;</li>
+      
+    
+  
+  <li class="active">Delegators</li>
+</ol>
+
+<nav class="hidden-lg">
+  <ul class="pager">
+    <li class="previous">
+      <a rel="prev" href="../configuring-the-service-manager/"><i class="fa fa-arrow-left"></i> Previous</a>
+    </li>
+    <li class="next">
+      <a rel="next" href="../lazy-services/">Next <i class="fa fa-arrow-right"></i></a>
+    </li>
+  </ul>
+</nav>
+
+<h1 id="delegators">Delegators</h1>
+<p><code>Zend\ServiceManager</code> can instantiate <a href="http://en.wikipedia.org/wiki/Delegation_pattern">delegators</a>
+of requested services, decorating them as specified in a delegate factory
+implementing the <a href="https://github.com/zendframework/zend-servicemanager/tree/master/src/Factory/DelegatorFactoryInterface.php">delegator factory interface</a>.</p>
+<p>The delegate pattern is useful in cases when you want to wrap a real service in
+a <a href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator</a>, or generally
+intercept actions being performed on the delegate in an
+<a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">AOP</a> fashioned way.</p>
+<h2 id="delegator-factory-signature">Delegator factory signature</h2>
+<p>A delegator factory has the following signature:</p>
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+
+public function __invoke(
+    ContainerInterface $container,
+    $name,
+    callable $callback,
+    array $options = null
+);</code></pre>
+
+
+<p>The parameters passed to the delegator factory are the following:</p>
+<ul>
+<li><code>$container</code> is the service locator that is used while creating the delegator
+  for the requested service.</li>
+<li><code>$name</code> is the name of the service being requested.</li>
+<li><code>$callback</code> is a</li>
+<li><a href="http://www.php.net/manual/en/language.types.callable.php">callable</a> that is
+  responsible for instantiating the delegated service (the real service instance).</li>
+<li><code>$options</code> is an array of options to use when creating the instance; these are
+  typically used only during <code>build()</code> operations.</li>
+</ul>
+<h2 id="a-delegator-factory-use-case">A Delegator factory use case</h2>
+<p>A typical use case for delegators is to handle logic before or after a method is
+called.</p>
+<p>In the following example, an event is being triggered before <code>Buzzer::buzz()</code> is
+called and some output text is prepended.</p>
+<p>The delegated object <code>Buzzer</code> (original object) is defined as following:</p>
+<pre class="codehilite"><code class="language-php">class Buzzer
+{
+    public function buzz()
+    {
+        return 'Buzz!';
+    }
+}</code></pre>
+
+
+<p>The delegator class <code>BuzzerDelegator</code> has the following structure:</p>
+<pre class="codehilite"><code class="language-php">use Zend\EventManager\EventManagerInterface;
+
+class BuzzerDelegator extends Buzzer
+{
+    protected $realBuzzer;
+    protected $eventManager;
+
+    public function __construct(Buzzer $realBuzzer, EventManagerInterface $eventManager)
+    {
+        $this-&gt;realBuzzer   = $realBuzzer;
+        $this-&gt;eventManager = $eventManager;
+    }
+
+    public function buzz()
+    {
+        $this-&gt;eventManager-&gt;trigger('buzz', $this);
+
+        return $this-&gt;realBuzzer-&gt;buzz();
+    }
+}</code></pre>
+
+
+<p>To use the <code>BuzzerDelegator</code>, you can run the following code:</p>
+<pre class="codehilite"><code class="language-php">$wrappedBuzzer = new Buzzer();
+$eventManager  = new Zend\EventManager\EventManager();
+
+$eventManager-&gt;attach('buzz', function () { echo &quot;Stare at the art!\n&quot;; });
+
+$buzzer = new BuzzerDelegator($wrappedBuzzer, $eventManager);
+
+echo $buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;</code></pre>
+
+
+<p>This logic is fairly simple as long as you have access to the instantiation
+logic of the <code>$wrappedBuzzer</code> object.</p>
+<p>You may not always be able to define how <code>$wrappedBuzzer</code> is created, since a
+factory for it may be defined by some code to which you don't have access, or
+which you cannot modify without introducing further complexity.</p>
+<p>Delegator factories solve this specific problem by allowing you to wrap,
+decorate or modify any existing service.</p>
+<p>A simple delegator factory for the <code>buzzer</code> service can be implemented as
+following:</p>
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
+
+class BuzzerDelegatorFactory implements DelegatorFactoryInterface
+{
+    public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null)
+    {
+        $realBuzzer   = call_user_func($callback);
+        $eventManager = $serviceLocator-&gt;get('EventManager');
+
+        $eventManager-&gt;attach('buzz', function () { echo &quot;Stare at the art!\n&quot;; });
+
+        return new BuzzerDelegator($realBuzzer, $eventManager);
+    }
+}</code></pre>
+
+
+<p>You can then instruct the service manager to handle the service <code>buzzer</code> as a
+delegate:</p>
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableClass;
+use Zend\ServiceManager\ServiceManager;
+
+$serviceManager = new Zend\ServiceManager\ServiceManager([
+    'factories' =&gt; [
+        Buzzer::class =&gt; InvokableClass::class,
+    ],
+    'delegators' =&gt; [
+        Buzzer::class =&gt; [
+            BuzzerDelegatorFactory::class,
+        ],
+    ],
+]);
+
+// now, when fetching Buzzer, we get a BuzzerDelegator instead
+$buzzer = $serviceManager-&gt;get(Buzzer::class);
+
+$buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;</code></pre>
+
+
+<p>You can specify multiple delegators for a service. Each will add one decorator
+around the instantiation logic of that particular service.</p>
+<p>This latter point is the primary use case for delegators: <em>decorating the
+instantiation logic for a service</em>.</p>
+
+<hr />
+
+<nav>
+  <ul class="pager">
+    <li class="previous">
+      <a rel="prev" href="../configuring-the-service-manager/"><i class="fa fa-arrow-left"></i> Previous</a>
+    </li>
+    <li class="next">
+      <a rel="next" href="../lazy-services/">Next <i class="fa fa-arrow-right"></i></a>
+    </li>
+  </ul>
+</nav></div>
+        
+    </div>
+    <!-- content:end -->
+
+    <footer class="col-md-12 text-center">
+        <hr>
+        <p>
+        <small>Copyright (c) 2016 <a href="http://www.zend.com/">Zend Technologies USA Inc.</a><br></small>
+        </p>
+        <p><small><a href="http://framework.zend.com">Learn more about Zend Framework</a></small></p>
+    </footer>
+
+    <script src="../js/jquery-1.10.2.min.js"></script>
+    <script src="../js/bootstrap-3.0.3.min.js"></script>
+    <script src="../js/prism-zf.js"></script>
+
+    <script>var base_url = '..';</script>
+    <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
+    <script src="../js/base.js"></script>
+
+    <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        From here you can search these documents. Enter your search terms below.
+                    </p>
+                    <form role="form">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                        </div>
+                    </form>
+                    <div id="mkdocs-search-results"></div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </body>
+
+</html>
