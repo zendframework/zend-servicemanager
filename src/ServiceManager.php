@@ -14,7 +14,9 @@ use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use ProxyManager\Configuration as ProxyConfiguration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
+use ProxyManager\FileLocator\FileLocator;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
+use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
 use Zend\ServiceManager\Exception\CyclicAliasException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
@@ -750,6 +752,10 @@ class ServiceManager implements ServiceLocatorInterface
 
         if (! isset($this->lazyServices['write_proxy_files']) || ! $this->lazyServices['write_proxy_files']) {
             $factoryConfig->setGeneratorStrategy(new EvaluatingGeneratorStrategy());
+        } else {
+            $factoryConfig->setGeneratorStrategy(new FileWriterGeneratorStrategy(
+                new FileLocator($factoryConfig->getProxiesTargetDir())
+            ));
         }
 
         spl_autoload_register($factoryConfig->getProxyAutoloader());
