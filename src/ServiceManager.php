@@ -490,7 +490,8 @@ class ServiceManager implements ServiceLocatorInterface
             }
 
             if ($abstractFactory instanceof AbstractFactoryInterface) {
-                $this->abstractFactories[] = $abstractFactory;
+                $abstractFactoryClassName = get_class($abstractFactory);
+                $this->abstractFactories[$abstractFactoryClassName] = $abstractFactory;
                 continue;
             }
 
