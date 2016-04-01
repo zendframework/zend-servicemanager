@@ -150,7 +150,7 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      */
     public function validate($instance)
     {
-        if($instance === null){
+        if ($instance === null) {
             return;
         }
         if (method_exists($this, 'validatePlugin')) {
