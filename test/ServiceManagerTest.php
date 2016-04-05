@@ -236,4 +236,29 @@ class ServiceManagerTest extends TestCase
 
         $this->assertSame($service, $alias);
     }
+
+    /**
+     * @depends testAliasToAnExplicitServiceShouldWork
+     */
+    public function testSetAliasShouldWorkWithRecursiveAlias()
+    {
+        $config = [
+            'aliases' => [
+                'Alias' => 'TailInvokable',
+            ],
+            'services' => [
+                InvokableObject::class => new InvokableObject(),
+            ],
+        ];
+        $serviceManager = new ServiceManager($config);
+        $serviceManager->setAlias('HeadAlias', 'Alias');
+        $serviceManager->setAlias('TailInvokable', InvokableObject::class);
+
+        $service   = $serviceManager->get(InvokableObject::class);
+        $alias     = $serviceManager->get('Alias');
+        $headAlias = $serviceManager->get('HeadAlias');
+
+        $this->assertSame($service, $alias);
+        $this->assertSame($service, $headAlias);
+    }
 }
