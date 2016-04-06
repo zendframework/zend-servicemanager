@@ -324,7 +324,6 @@ class ServiceManager implements ServiceLocatorInterface
                     ? array_merge($config['aliases'], $aliases)
                     : $aliases;
             }
-
             $config['factories'] = (isset($config['factories']))
                 ? array_merge($config['factories'], $factories)
                 : $factories;
@@ -343,10 +342,18 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         if (isset($config['aliases'])) {
-            $this->aliases = $config['aliases'] + $this->aliases;
-        }
-
-        if (! empty($this->aliases)) {
+            if ($this->configured) {
+                $intersect = $this->mergeIntoArray($this->aliases, $config['aliases']);
+                if ($intersect) {
+                    $this->resolveAliases($this->aliases);
+                } else {
+                    $this->resolveAliases($config['aliases'], true);
+                }
+            } else {
+                $this->aliases = $config['aliases'] + $this->aliases;
+                $this->resolveAliases($this->aliases);
+            }
+        } elseif (! $this->configured && ! empty($this->aliases)) {
             $this->resolveAliases($this->aliases);
         }
 
@@ -374,6 +381,35 @@ class ServiceManager implements ServiceLocatorInterface
         $this->configured = true;
 
         return $this;
+    }
+
+    /**
+     * Merge source into destination.
+     * This method has good performance:
+     *  - at empty destination
+     *  - at adding few elements into array
+     *  - at checking arrays keys intersection
+     *
+     * Provide only present intersect
+     *
+     * @param array $destination
+     * @param array $source
+     * @return boolean
+     */
+    private function mergeIntoArray(array &$destination, array &$source)
+    {
+        if (empty($destination)) {
+            $destination = $source;
+            return false;
+        }
+        $intersect = false;
+        foreach ($source as $name => $target) {
+            if (isset($destination[$name])) {
+                $intersect = true;
+            }
+            $destination[$name] = $target;
+        }
+        return $intersect;
     }
 
     /**
@@ -570,9 +606,12 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Resolve all aliases to their canonical service names.
+     * Resolve aliases to their canonical service names.
+     *
+     * @param array $aliases
+     * @param boolean $onlyNewAliases
      */
-    private function resolveAliases(array $aliases)
+    private function resolveAliases(array $aliases, $onlyNewAliases = false)
     {
         foreach ($aliases as $alias => $service) {
             $visited = [];
@@ -588,6 +627,16 @@ class ServiceManager implements ServiceLocatorInterface
             }
 
             $this->resolvedAliases[$alias] = $name;
+        }
+
+        // Check and replace new aliases as targets in exists aliases.
+
+        if ($onlyNewAliases) {
+            foreach ($this->resolvedAliases as $name => $target) {
+                if (isset($aliases[$target])) {
+                    $this->resolvedAliases[$name] = $this->resolvedAliases[$target];
+                }
+            }
         }
     }
 
