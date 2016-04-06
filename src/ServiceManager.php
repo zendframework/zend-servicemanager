@@ -420,6 +420,16 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
+     * Specify a factories for a given service names.
+     *
+     * @param array $nameFactoryPairs
+     */
+    public function setFactories(array $nameFactoryPairs)
+    {
+        $this->configure(['factories' => $nameFactoryPairs]);
+    }
+
+    /**
      * Create a lazy service mapping to a class.
      *
      * @param string $name Service name to map
