@@ -848,6 +848,20 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
     }
 
     /**
+     * @param  array $aliasNamePairs
+     * @return ServiceManager
+     * @throws Exception\ServiceNotFoundException
+     * @throws Exception\InvalidServiceNameException
+     */
+    public function setAliases($aliasNamePairs)
+    {
+        foreach ($aliasNamePairs as $alias => $nameOrAlias) {
+            $this->setAlias($alias, $nameOrAlias);
+        }
+        return $this;
+    }
+
+    /**
      * Determine if we have an alias
      *
      * @param  string $alias
