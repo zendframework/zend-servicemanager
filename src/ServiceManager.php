@@ -303,6 +303,22 @@ class ServiceManager implements ServiceLocatorInterface, ContainerInterface
     }
 
     /**
+     * Set factories
+     *
+     * @param  array $nameFactoryPairs
+     * @return ServiceManager
+     * @throws Exception\InvalidArgumentException
+     * @throws Exception\InvalidServiceNameException
+     */
+    public function setFactories($nameFactoryPairs)
+    {
+        foreach ($nameFactoryPairs as $name => $factory) {
+            $this->setFactory($name, $factory);
+        }
+        return $this;
+    }
+
+    /**
      * Add abstract factory
      *
      * @param  AbstractFactoryInterface|string $factory
