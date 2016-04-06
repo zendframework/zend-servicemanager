@@ -322,6 +322,7 @@ class ServiceManager implements ServiceLocatorInterface
                     ? array_merge($config['aliases'], $aliases)
                     : $aliases;
             }
+
             $config['factories'] = (isset($config['factories']))
                 ? array_merge($config['factories'], $factories)
                 : $factories;
