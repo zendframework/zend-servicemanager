@@ -386,6 +386,16 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
+     * Add multiple aliases.
+     *
+     * @param array $aliasTargetPairs
+     */
+    public function setAliases(array $aliasTargetPairs)
+    {
+        $this->configure(['aliases' => $aliasTargetPairs]);
+    }
+
+    /**
      * Add an invokable class mapping.
      *
      * @param string $name Service name
