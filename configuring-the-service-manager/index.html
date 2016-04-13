@@ -686,7 +686,7 @@ $serviceManager-&gt;addAbstractFactory(new CustomAbstractFactory());
 // Add a delegator factory for the DateTime service
 $serviceManager-&gt;addDelegator(DateTime::class, function ($container, $name, $callback) {
     $dateTime = $callback();
-    $dataTime-&gt;setTimezone(new DateTimezone('UTC'));
+    $dateTime-&gt;setTimezone(new DateTimezone('UTC'));
     return $dateTime;
 });
 
