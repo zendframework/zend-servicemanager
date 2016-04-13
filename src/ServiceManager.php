@@ -386,6 +386,16 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
+     * Add multiple aliases.
+     *
+     * @param array $aliasTargetPairs
+     */
+    public function setAliases(array $aliasTargetPairs)
+    {
+        $this->configure(['aliases' => $aliasTargetPairs]);
+    }
+
+    /**
      * Add an invokable class mapping.
      *
      * @param string $name Service name
@@ -407,6 +417,16 @@ class ServiceManager implements ServiceLocatorInterface
     public function setFactory($name, $factory)
     {
         $this->configure(['factories' => [$name => $factory]]);
+    }
+
+    /**
+     * Specify a factories for a given service names.
+     *
+     * @param array $nameFactoryPairs
+     */
+    public function setFactories(array $nameFactoryPairs)
+    {
+        $this->configure(['factories' => $nameFactoryPairs]);
     }
 
     /**

@@ -236,4 +236,39 @@ class ServiceManagerTest extends TestCase
 
         $this->assertSame($service, $alias);
     }
+
+    public function testSetAliases()
+    {
+        $config = [
+            'factories' => [
+                'baz' => InvokableFactory::class,
+            ],
+        ];
+        $serviceManager = new ServiceManager($config);
+        $serviceManager->setAliases([
+            'foo' => 'bar',
+            'bar' => 'baz',
+        ]);
+
+        $hasFoo = $serviceManager->has('foo');
+        $this->assertTrue($hasFoo);
+
+        $hasBar = $serviceManager->has('bar');
+        $this->assertTrue($hasBar);
+    }
+
+    public function testSetFactories()
+    {
+        $serviceManager = new ServiceManager([]);
+        $serviceManager->setFactories([
+            'foo' => InvokableFactory::class,
+            'bar' => InvokableFactory::class,
+        ]);
+
+        $hasFoo = $serviceManager->has('foo');
+        $this->assertTrue($hasFoo);
+
+        $hasBar = $serviceManager->has('bar');
+        $this->assertTrue($hasBar);
+    }
 }
