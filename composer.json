@@ -40,5 +40,8 @@
             "ZendTest\\ServiceManager\\": "test/",
             "ZendBench\\ServiceManager\\": "benchmarks/"
         }
+    },
+    "provide": {
+        "container-interop/container-interop-implementation": "^1.1"
     }
 }
