@@ -400,21 +400,21 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * @param array $source
+     * @param array $newAliases
      *
      * @return bool whether any of the aliases got replaced
      */
-    private function mergeNewAliasesIntoOriginalOnes(array $source)
+    private function mergeNewAliasesIntoOriginalOnes(array $newAliases)
     {
         if (empty($this->aliases)) {
-            $this->aliases = $source;
+            $this->aliases = $newAliases;
 
             return false;
         }
 
         $intersect = false;
 
-        foreach ($source as $name => $target) {
+        foreach ($newAliases as $name => $target) {
             if (isset($this->aliases[$name])) {
                 $intersect = true;
             }
