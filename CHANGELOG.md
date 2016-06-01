@@ -11,9 +11,12 @@ All notable changes to this project will be documented in this file, in reverse 
   `zendframework/zend-servicemanager`.
 - [#103](https://github.com/zendframework/zend-servicemanager/pull/103) Disallowing
   test failures when running tests against PHP `7.0.*`.
-- [#103](https://github.com/zendframework/zend-servicemanager/pull/103) Improved performance
+- [#113](https://github.com/zendframework/zend-servicemanager/pull/113) Improved performance
   when dealing with registering aliases and factories via `ServiceManager#setFactory()` and
   `ServiceManager#setAlias()`
+- [#120](https://github.com/zendframework/zend-servicemanager/pull/120) The
+  `zendframework/zend-servicemanager` component now provides a
+  `container-interop/container-interop-implementation` implementation
 
 ### Deprecated
 
