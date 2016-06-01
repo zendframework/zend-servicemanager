@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 3.1.0 - TBD
+## 3.1.0 - 2016-06-01
 
 ### Added
 
@@ -18,7 +18,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#97](https://github.com/zendframework/zend-servicemanager/pull/97) Typo corrections
+  in the delegator factories documentation
 
 ## 3.0.4 - TBD
 
