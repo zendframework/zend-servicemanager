@@ -15,7 +15,7 @@ use Zend\ServiceManager\ServiceManager;
 class SetNewServicesBench
 {
     const NUM_SERVICES = 100;
-    
+
     /**
      * @var ServiceManager
      */
@@ -23,18 +23,17 @@ class SetNewServicesBench
 
     public function __construct()
     {
-        
         $config = [
-            'factories' => [
-                'factory1'  => BenchAsset\FactoryFoo::class,
+            'factories'          => [
+                'factory1' => BenchAsset\FactoryFoo::class,
             ],
-            'invokables' => [
+            'invokables'         => [
                 'invokable1' => BenchAsset\Foo::class,
             ],
-            'services' => [
+            'services'           => [
                 'service1' => new \stdClass(),
             ],
-            'aliases' => [
+            'aliases'            => [
                 'factoryAlias1'          => 'factory1',
                 'recursiveFactoryAlias1' => 'factoryAlias1',
                 'recursiveFactoryAlias2' => 'recursiveFactoryAlias1',
@@ -43,13 +42,12 @@ class SetNewServicesBench
                 BenchAsset\AbstractFactoryFoo::class
             ],
         ];
-        
-        $service = new \stdClass();
+
         for ($i = 0; $i <= self::NUM_SERVICES; $i++) {
-            $config['factories']["factory_$i"]    = BenchAsset\FactoryFoo::class;
-            $config['aliases']["alias_$i"]        = "service_$i";
+            $config['factories']["factory_$i"] = BenchAsset\FactoryFoo::class;
+            $config['aliases']["alias_$i"]     = "service_$i";
         }
-        
+
         $this->sm = new ServiceManager($config);
     }
 
