@@ -389,7 +389,7 @@ class ServiceManager implements ServiceLocatorInterface
             return;
         }
 
-        if ($this->mergeIntoArray($this->aliases, $aliases)) {
+        if ($this->mergeNewAliasesIntoOriginalOnes($aliases)) {
             $this->resolveAliases($this->aliases);
 
             return;
@@ -400,31 +400,28 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Merge source into destination.
-     * This method has good performance:
-     *  - at empty destination
-     *  - at adding few elements into array
-     *  - at checking arrays keys intersection
-     *
-     * Provide only present intersect
-     *
-     * @param array $destination
      * @param array $source
-     * @return boolean
+     *
+     * @return bool whether any of the aliases got replaced
      */
-    private function mergeIntoArray(array &$destination, array &$source)
+    private function mergeNewAliasesIntoOriginalOnes(array $source)
     {
-        if (empty($destination)) {
-            $destination = $source;
+        if (empty($this->aliases)) {
+            $this->aliases = $source;
+
             return false;
         }
+
         $intersect = false;
+
         foreach ($source as $name => $target) {
-            if (isset($destination[$name])) {
+            if (isset($this->aliases[$name])) {
                 $intersect = true;
             }
-            $destination[$name] = $target;
+
+            $this->aliases[$name] = $target;
         }
+
         return $intersect;
     }
 
