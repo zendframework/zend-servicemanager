@@ -389,7 +389,11 @@ class ServiceManager implements ServiceLocatorInterface
             return;
         }
 
-        if ($this->mergeNewAliasesIntoOriginalOnes($aliases)) {
+        // Performance optimization. If there are no collisions, then we don't need to recompute loops
+        $intersecting  = $this->aliases && \array_intersect_key($this->aliases, $aliases);
+        $this->aliases = $this->aliases ? \array_merge($this->aliases, $aliases) : $aliases;
+
+        if ($intersecting) {
             $this->resolveAliases($this->aliases);
 
             return;
@@ -397,32 +401,6 @@ class ServiceManager implements ServiceLocatorInterface
 
         $this->resolveAliases($aliases);
         $this->resolveNewAliasesWithPreviouslyResolvedAliases($aliases);
-    }
-
-    /**
-     * @param array $newAliases
-     *
-     * @return bool whether any of the aliases got replaced
-     */
-    private function mergeNewAliasesIntoOriginalOnes(array $newAliases)
-    {
-        if (empty($this->aliases)) {
-            $this->aliases = $newAliases;
-
-            return false;
-        }
-
-        $intersect = false;
-
-        foreach ($newAliases as $name => $target) {
-            if (isset($this->aliases[$name])) {
-                $intersect = true;
-            }
-
-            $this->aliases[$name] = $target;
-        }
-
-        return $intersect;
     }
 
     /**
