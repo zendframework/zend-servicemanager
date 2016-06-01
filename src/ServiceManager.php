@@ -343,10 +343,8 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         if (isset($config['aliases'])) {
-            $this->aliases = $config['aliases'] + $this->aliases;
-        }
-
-        if (! empty($this->aliases)) {
+            $this->configureAliases($config['aliases']);
+        } elseif (! $this->configured && ! empty($this->aliases)) {
             $this->resolveAliases($this->aliases);
         }
 
@@ -374,6 +372,35 @@ class ServiceManager implements ServiceLocatorInterface
         $this->configured = true;
 
         return $this;
+    }
+
+    /**
+     * @param string[] $aliases
+     *
+     * @return void
+     */
+    private function configureAliases(array $aliases)
+    {
+        if (! $this->configured) {
+            $this->aliases = $aliases + $this->aliases;
+
+            $this->resolveAliases($this->aliases);
+
+            return;
+        }
+
+        // Performance optimization. If there are no collisions, then we don't need to recompute loops
+        $intersecting  = $this->aliases && \array_intersect_key($this->aliases, $aliases);
+        $this->aliases = $this->aliases ? \array_merge($this->aliases, $aliases) : $aliases;
+
+        if ($intersecting) {
+            $this->resolveAliases($this->aliases);
+
+            return;
+        }
+
+        $this->resolveAliases($aliases);
+        $this->resolveNewAliasesWithPreviouslyResolvedAliases($aliases);
     }
 
     /**
@@ -570,7 +597,11 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Resolve all aliases to their canonical service names.
+     * Resolve aliases to their canonical service names.
+     *
+     * @param string[] $aliases
+     *
+     * @returns void
      */
     private function resolveAliases(array $aliases)
     {
@@ -588,6 +619,23 @@ class ServiceManager implements ServiceLocatorInterface
             }
 
             $this->resolvedAliases[$alias] = $name;
+        }
+    }
+
+    /**
+     * Rewrites the map of aliases by resolving the given $aliases with the existing resolved ones.
+     * This is mostly done for performance reasons.
+     *
+     * @param string[] $aliases
+     *
+     * @return void
+     */
+    private function resolveNewAliasesWithPreviouslyResolvedAliases(array $aliases)
+    {
+        foreach ($this->resolvedAliases as $name => $target) {
+            if (isset($aliases[$target])) {
+                $this->resolvedAliases[$name] = $this->resolvedAliases[$target];
+            }
         }
     }
 
