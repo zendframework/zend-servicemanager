@@ -19,7 +19,9 @@ All notable changes to this project will be documented in this file, in reverse 
 ### Fixed
 
 - [#97](https://github.com/zendframework/zend-servicemanager/pull/97) Typo corrections
-  in the delegator factories documentation
+  in the delegator factories documentation.
+- [#98](https://github.com/zendframework/zend-servicemanager/pull/98) Using coveralls ^1.0
+  for tracking test code coverage changes.
 
 ## 3.0.4 - TBD
 
