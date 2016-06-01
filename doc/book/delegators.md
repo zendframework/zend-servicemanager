@@ -29,8 +29,7 @@ The parameters passed to the delegator factory are the following:
 - `$container` is the service locator that is used while creating the delegator
   for the requested service.
 - `$name` is the name of the service being requested.
-- `$callback` is a
-- [callable](http://www.php.net/manual/en/language.types.callable.php) that is
+- `$callback` is a [callable](http://www.php.net/manual/en/language.types.callable.php) that is
   responsible for instantiating the delegated service (the real service instance).
 - `$options` is an array of options to use when creating the instance; these are
   typically used only during `build()` operations.

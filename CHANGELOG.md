@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 3.1.0 - 2016-06-01
+
+### Added
+
+- [#103](https://github.com/zendframework/zend-servicemanager/pull/103) Allowing
+  installation of `ocramius/proxy-manager` `^2.0` together with
+  `zendframework/zend-servicemanager`.
+- [#103](https://github.com/zendframework/zend-servicemanager/pull/103) Disallowing
+  test failures when running tests against PHP `7.0.*`.
+- [#113](https://github.com/zendframework/zend-servicemanager/pull/113) Improved performance
+  when dealing with registering aliases and factories via `ServiceManager#setFactory()` and
+  `ServiceManager#setAlias()`
+- [#120](https://github.com/zendframework/zend-servicemanager/pull/120) The
+  `zendframework/zend-servicemanager` component now provides a
+  `container-interop/container-interop-implementation` implementation
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- [#97](https://github.com/zendframework/zend-servicemanager/pull/97) Typo corrections
+  in the delegator factories documentation.
+- [#98](https://github.com/zendframework/zend-servicemanager/pull/98) Using coveralls ^1.0
+  for tracking test code coverage changes.
+
 ## 3.0.4 - TBD
 
 ### Added
