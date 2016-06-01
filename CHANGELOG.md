@@ -6,7 +6,11 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [#103](https://github.com/zendframework/zend-servicemanager/pull/103) Allowing
+  installation of `ocramius/proxy-manager` `^2.0` together with
+  `zendframework/zend-servicemanager`.
+- [#103](https://github.com/zendframework/zend-servicemanager/pull/103) Disallowing
+  test failures when running tests against PHP `7.0.*`.
 
 ### Deprecated
 
