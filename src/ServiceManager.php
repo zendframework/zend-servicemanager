@@ -343,17 +343,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         if (isset($config['aliases'])) {
-            if ($this->configured) {
-                $intersect = $this->mergeIntoArray($this->aliases, $config['aliases']);
-                if ($intersect) {
-                    $this->resolveAliases($this->aliases);
-                } else {
-                    $this->resolveAliases($config['aliases'], true);
-                }
-            } else {
-                $this->aliases = $config['aliases'] + $this->aliases;
-                $this->resolveAliases($this->aliases);
-            }
+            $this->configureAliases($config['aliases']);
         } elseif (! $this->configured && ! empty($this->aliases)) {
             $this->resolveAliases($this->aliases);
         }
@@ -382,6 +372,31 @@ class ServiceManager implements ServiceLocatorInterface
         $this->configured = true;
 
         return $this;
+    }
+
+    /**
+     * @param string[] $aliases
+     *
+     * @return void
+     */
+    private function configureAliases(array $aliases)
+    {
+        if (! $this->configured) {
+            $this->aliases = $aliases + $this->aliases;
+
+            $this->resolveAliases($this->aliases);
+
+            return;
+        }
+
+        if ($this->mergeIntoArray($this->aliases, $aliases)) {
+            $this->resolveAliases($this->aliases);
+
+            return;
+        }
+
+        $this->resolveAliases($aliases);
+        $this->resolveNewAliasesWithPreviouslyResolvedAliases($aliases);
     }
 
     /**
@@ -609,10 +624,11 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Resolve aliases to their canonical service names.
      *
-     * @param array $aliases
-     * @param boolean $onlyNewAliases
+     * @param string[] $aliases
+     *
+     * @returns void
      */
-    private function resolveAliases(array $aliases, $onlyNewAliases = false)
+    private function resolveAliases(array $aliases)
     {
         foreach ($aliases as $alias => $service) {
             $visited = [];
@@ -629,14 +645,21 @@ class ServiceManager implements ServiceLocatorInterface
 
             $this->resolvedAliases[$alias] = $name;
         }
+    }
 
-        // Check and replace new aliases as targets in exists aliases.
-
-        if ($onlyNewAliases) {
-            foreach ($this->resolvedAliases as $name => $target) {
-                if (isset($aliases[$target])) {
-                    $this->resolvedAliases[$name] = $this->resolvedAliases[$target];
-                }
+    /**
+     * Rewrites the map of aliases by resolving the given $aliases with the existing resolved ones.
+     * This is mostly done for performance reasons.
+     *
+     * @param string[] $aliases
+     *
+     * @return void
+     */
+    private function resolveNewAliasesWithPreviouslyResolvedAliases(array $aliases)
+    {
+        foreach ($this->resolvedAliases as $name => $target) {
+            if (isset($aliases[$target])) {
+                $this->resolvedAliases[$name] = $this->resolvedAliases[$target];
             }
         }
     }
