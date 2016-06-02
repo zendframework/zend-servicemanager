@@ -21,6 +21,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use ZendTest\ServiceManager\TestAsset\CallOnlyOnceAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
@@ -137,6 +138,22 @@ trait CommonServiceLocatorBehaviorsTrait
         ]);
 
         $serviceManager->get(DateTime::class);
+    }
+
+    public function testCallOnlyOnceWithMultipleIdenticalAbstractFactory()
+    {
+        CallOnlyOnceAbstractFactory::setCallTimes(0);
+
+        $serviceManager = $this->createContainer([
+            'abstract_factories' => [
+                new CallOnlyOnceAbstractFactory(),
+                new CallOnlyOnceAbstractFactory(),
+            ]
+        ]);
+        $serviceManager->addAbstractFactory(CallOnlyOnceAbstractFactory::class);
+        $serviceManager->has(stdClass::class);
+
+        $this->assertEquals(1, CallOnlyOnceAbstractFactory::getCallTimes());
     }
 
     public function testCanCreateServiceWithAlias()
