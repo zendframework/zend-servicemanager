@@ -11,6 +11,7 @@ namespace Zend\ServiceManager;
 
 use Interop\Container\ContainerInterface;
 use Exception as BaseException;
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 /**
  * ServiceManager implementation for managing plugins
@@ -319,12 +320,14 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
         }
 
         // duck-type MutableCreationOptionsInterface for forward compatibility
-        if (isset($factory) && method_exists($factory, 'setCreationOptions')) {
-            if (is_array($this->creationOptions)) {
-                $factory->setCreationOptions($this->creationOptions);
-            } else {
-                $factory->setCreationOptions([]);
-            }
+        if (isset($factory)
+            && method_exists($factory, 'setCreationOptions')
+            && is_array($this->creationOptions)
+            && !empty($this->creationOptions)
+        ) {
+            $factory->setCreationOptions($this->creationOptions);
+        } elseif ($factory instanceof InvokableFactory) {
+            $factory->setCreationOptions([]);
         }
 
         return parent::createServiceViaCallback($callable, $cName, $rName);
