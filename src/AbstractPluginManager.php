@@ -319,12 +319,12 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
         }
 
         // duck-type MutableCreationOptionsInterface for forward compatibility
-        if (isset($factory)
-            && method_exists($factory, 'setCreationOptions')
-            && is_array($this->creationOptions)
-            && !empty($this->creationOptions)
-        ) {
-            $factory->setCreationOptions($this->creationOptions);
+        if (isset($factory) && method_exists($factory, 'setCreationOptions')) {
+            if (is_array($this->creationOptions)) {
+                $factory->setCreationOptions($this->creationOptions);
+            } else {
+                $factory->setCreationOptions([]);
+            }
         }
 
         return parent::createServiceViaCallback($callable, $cName, $rName);
