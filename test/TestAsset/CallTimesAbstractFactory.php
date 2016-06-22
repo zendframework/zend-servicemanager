@@ -12,7 +12,7 @@ namespace ZendTest\ServiceManager\TestAsset;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
-class CallOnlyOnceAbstractFactory implements AbstractFactoryInterface
+class CallTimesAbstractFactory implements AbstractFactoryInterface
 {
     protected static $callTimes = 0;
 

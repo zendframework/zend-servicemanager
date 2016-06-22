@@ -135,6 +135,13 @@ class ServiceManager implements ServiceLocatorInterface
     protected $configured = false;
 
     /**
+     * Cached abstract factories from string.
+     *
+     * @var array
+     */
+    private $cachedAbstractFactories = [];
+
+    /**
      * Constructor.
      *
      * See {@see \Zend\ServiceManager\ServiceManager::configure()} for details
@@ -486,12 +493,17 @@ class ServiceManager implements ServiceLocatorInterface
     {
         foreach ($abstractFactories as $abstractFactory) {
             if (is_string($abstractFactory) && class_exists($abstractFactory)) {
-                $abstractFactory = new $abstractFactory();
+                //Cached string
+                if (!isset($this->cachedAbstractFactories[$abstractFactory])) {
+                    $this->cachedAbstractFactories[$abstractFactory] = new $abstractFactory();
+                }
+
+                $abstractFactory = $this->cachedAbstractFactories[$abstractFactory];
             }
 
             if ($abstractFactory instanceof AbstractFactoryInterface) {
-                $abstractFactoryClassName = get_class($abstractFactory);
-                $this->abstractFactories[$abstractFactoryClassName] = $abstractFactory;
+                $abstractFactoryObjHash = spl_object_hash($abstractFactory);
+                $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
                 continue;
             }
 
