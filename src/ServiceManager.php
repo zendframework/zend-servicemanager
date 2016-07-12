@@ -24,7 +24,7 @@ use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
-use Zend\ServiceManager\Initializer\InitializerInterface;
+use Zend\ServiceManager\Initializer\InitializerInterface as InitializerInitializerInterface;
 
 /**
  * Service Manager.
@@ -82,7 +82,7 @@ class ServiceManager implements ServiceLocatorInterface
     protected $factories = [];
 
     /**
-     * @var InitializerInterface[]
+     * @var InitializerInitializerInterface[]
      */
     protected $initializers = [];
 
@@ -475,7 +475,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Add an initializer.
      *
-     * @param string|callable|InitializerInterface $initializer
+     * @param string|callable|InitializerInitializerInterface $initializer
      */
     public function addInitializer($initializer)
     {
@@ -553,7 +553,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Instantiate initializers for to avoid checks during service construction.
      *
-     * @param string[]|callable[]|InitializerInterface[] $initializers
+     * @param string[]|callable[]|InitializerInitializerInterface[] $initializers
      *
      * @return void
      */
@@ -578,7 +578,7 @@ class ServiceManager implements ServiceLocatorInterface
                         'which does not exist; please provide a valid function name or class ' .
                         'name resolving to an implementation of %s',
                         $initializer,
-                        InitializerInterface::class
+                        InitializerInitializerInterface::class
                     )
                 );
             }
@@ -589,7 +589,7 @@ class ServiceManager implements ServiceLocatorInterface
                     'An invalid initializer was registered. Expected a callable, or an instance of ' .
                     '(or string class name resolving to) "%s", ' .
                     'but "%s" was received',
-                    InitializerInterface::class,
+                    InitializerInitializerInterface::class,
                     (is_object($initializer) ? get_class($initializer) : gettype($initializer))
                 )
             );
