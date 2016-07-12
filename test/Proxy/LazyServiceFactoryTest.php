@@ -39,7 +39,8 @@ class LazyServiceFactoryTest extends TestCase
      */
     protected function setUp()
     {
-        $this->proxyFactory = $this->getMock(LazyLoadingValueHolderFactory::class);
+        $this->proxyFactory = $this->getMockBuilder(LazyLoadingValueHolderFactory::class)
+            ->getMock();
         $servicesMap = [
             'fooService' => 'FooClass',
         ];
@@ -54,10 +55,12 @@ class LazyServiceFactoryTest extends TestCase
 
     public function testThrowExceptionWhenServiceNotExists()
     {
-        $callback = $this->getMock('stdClass', ['callback']);
+        $callback = $this->getMockBuilder('stdClass')
+            ->setMethods(['callback'])
+            ->getMock();
         $callback->expects($this->never())
-            ->method('callback')
-        ;
+            ->method('callback');
+
         $container = $this->createContainerMock();
 
         $this->proxyFactory->expects($this->never())
@@ -73,13 +76,16 @@ class LazyServiceFactoryTest extends TestCase
 
     public function testCreates()
     {
-        $callback = $this->getMock('stdClass', ['callback']);
+        $callback = $this->getMockBuilder('stdClass')
+            ->setMethods(['callback'])
+            ->getMock();
         $callback->expects($this->once())
             ->method('callback')
             ->willReturn('fooValue')
         ;
         $container = $this->createContainerMock();
-        $expectedService = $this->getMock(VirtualProxyInterface::class);
+        $expectedService = $this->getMockBuilder(VirtualProxyInterface::class)
+            ->getMock();
 
         $this->proxyFactory->expects($this->once())
             ->method('createProxy')
@@ -88,7 +94,10 @@ class LazyServiceFactoryTest extends TestCase
                     $this->assertEquals('FooClass', $className, 'class name not match');
 
                     $wrappedInstance = null;
-                    $result = $initializer($wrappedInstance, $this->getMock(LazyLoadingInterface::class));
+                    $result = $initializer(
+                        $wrappedInstance,
+                        $this->getMockBuilder(LazyLoadingInterface::class)->getMock()
+                    );
 
                     $this->assertEquals('fooValue', $wrappedInstance, 'expected callback return value');
                     $this->assertTrue($result, 'initializer should return true');
@@ -109,7 +118,8 @@ class LazyServiceFactoryTest extends TestCase
     private function createContainerMock()
     {
         /** @var ContainerInterface|MockObject $container */
-        $container = $this->getMock(ContainerInterface::class);
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
 
         return $container;
     }

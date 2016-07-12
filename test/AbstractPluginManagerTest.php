@@ -39,7 +39,8 @@ class AbstractPluginManagerTest extends TestCase
 
     public function testInjectCreationContextInFactories()
     {
-        $invokableFactory = $this->getMock(FactoryInterface::class);
+        $invokableFactory = $this->getMockBuilder(FactoryInterface::class)
+            ->getMock();
 
         $config = [
             'factories' => [
@@ -47,7 +48,8 @@ class AbstractPluginManagerTest extends TestCase
             ],
         ];
 
-        $container     = $this->getMock(ContainerInterface::class);
+        $container     = $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
         $pluginManager = new SimplePluginManager($container, $config);
 
         $invokableFactory->expects($this->once())
@@ -69,7 +71,8 @@ class AbstractPluginManagerTest extends TestCase
             ],
         ];
 
-        $container     = $this->getMock(ContainerInterface::class);
+        $container     = $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
         $pluginManager = new SimplePluginManager($container, $config);
 
         // Assert no exception is triggered because the plugin manager validate ObjectWithOptions
@@ -88,7 +91,8 @@ class AbstractPluginManagerTest extends TestCase
             ],
         ];
 
-        $container     = $this->getMock(ContainerInterface::class);
+        $container     = $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
         $pluginManager = new SimplePluginManager($container, $config);
 
         $first  = $pluginManager->get(InvokableObject::class);
@@ -119,7 +123,8 @@ class AbstractPluginManagerTest extends TestCase
         ];
         $options = ['foo' => 'bar'];
 
-        $container     = $this->getMock(ContainerInterface::class);
+        $container     = $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
         $pluginManager = new SimplePluginManager($container, $config);
 
         $first  = $pluginManager->get(InvokableObject::class, $options);
