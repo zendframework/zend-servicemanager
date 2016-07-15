@@ -22,9 +22,6 @@ use Zend\ServiceManager\Exception\CyclicAliasException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
-use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
-use Zend\ServiceManager\Initializer\InitializerInterface;
 
 /**
  * Service Manager.
@@ -44,7 +41,7 @@ use Zend\ServiceManager\Initializer\InitializerInterface;
 class ServiceManager implements ServiceLocatorInterface
 {
     /**
-     * @var AbstractFactoryInterface[]
+     * @var Factory\AbstractFactoryInterface[]
      */
     protected $abstractFactories = [];
 
@@ -70,7 +67,7 @@ class ServiceManager implements ServiceLocatorInterface
     protected $creationContext;
 
     /**
-     * @var string[][]|DelegatorFactoryInterface[][]
+     * @var string[][]|Factory\DelegatorFactoryInterface[][]
      */
     protected $delegators = [];
 
@@ -82,7 +79,7 @@ class ServiceManager implements ServiceLocatorInterface
     protected $factories = [];
 
     /**
-     * @var InitializerInterface[]
+     * @var Initializer\InitializerInterface[]
      */
     protected $initializers = [];
 
@@ -475,7 +472,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Add an initializer.
      *
-     * @param string|callable|InitializerInterface $initializer
+     * @param string|callable|Initializer\InitializerInterface $initializer
      */
     public function addInitializer($initializer)
     {
@@ -507,7 +504,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Instantiate abstract factories for to avoid checks during service construction.
      *
-     * @param string[]|AbstractFactoryInterface[] $abstractFactories
+     * @param string[]|Factory\AbstractFactoryInterface[] $abstractFactories
      *
      * @return void
      */
@@ -518,7 +515,7 @@ class ServiceManager implements ServiceLocatorInterface
                 $abstractFactory = new $abstractFactory();
             }
 
-            if ($abstractFactory instanceof AbstractFactoryInterface) {
+            if ($abstractFactory instanceof Factory\AbstractFactoryInterface) {
                 $this->abstractFactories[] = $abstractFactory;
                 continue;
             }
@@ -553,7 +550,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Instantiate initializers for to avoid checks during service construction.
      *
-     * @param string[]|callable[]|InitializerInterface[] $initializers
+     * @param string[]|callable[]|Initializer\InitializerInterface[] $initializers
      *
      * @return void
      */
@@ -578,7 +575,7 @@ class ServiceManager implements ServiceLocatorInterface
                         'which does not exist; please provide a valid function name or class ' .
                         'name resolving to an implementation of %s',
                         $initializer,
-                        InitializerInterface::class
+                        Initializer\InitializerInterface::class
                     )
                 );
             }
@@ -589,7 +586,7 @@ class ServiceManager implements ServiceLocatorInterface
                     'An invalid initializer was registered. Expected a callable, or an instance of ' .
                     '(or string class name resolving to) "%s", ' .
                     'but "%s" was received',
-                    InitializerInterface::class,
+                    Initializer\InitializerInterface::class,
                     (is_object($initializer) ? get_class($initializer) : gettype($initializer))
                 )
             );
