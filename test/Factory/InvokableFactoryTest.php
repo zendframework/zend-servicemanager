@@ -21,7 +21,8 @@ class InvokableFactoryTest extends TestCase
 {
     public function testCanCreateObject()
     {
-        $container = $this->getMock(ContainerInterface::class);
+        $container = $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
         $factory   = new InvokableFactory();
 
         $object = $factory($container, InvokableObject::class, ['foo' => 'bar']);
