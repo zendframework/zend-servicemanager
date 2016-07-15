@@ -22,9 +22,6 @@ use Zend\ServiceManager\Exception\CyclicAliasException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
-use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
-use Zend\ServiceManager\Initializer;
 
 /**
  * Service Manager.
@@ -44,7 +41,7 @@ use Zend\ServiceManager\Initializer;
 class ServiceManager implements ServiceLocatorInterface
 {
     /**
-     * @var AbstractFactoryInterface[]
+     * @var Factory\AbstractFactoryInterface[]
      */
     protected $abstractFactories = [];
 
@@ -70,7 +67,7 @@ class ServiceManager implements ServiceLocatorInterface
     protected $creationContext;
 
     /**
-     * @var string[][]|DelegatorFactoryInterface[][]
+     * @var string[][]|Factory\DelegatorFactoryInterface[][]
      */
     protected $delegators = [];
 
@@ -507,7 +504,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Instantiate abstract factories for to avoid checks during service construction.
      *
-     * @param string[]|AbstractFactoryInterface[] $abstractFactories
+     * @param string[]|Factory\AbstractFactoryInterface[] $abstractFactories
      *
      * @return void
      */
@@ -518,7 +515,7 @@ class ServiceManager implements ServiceLocatorInterface
                 $abstractFactory = new $abstractFactory();
             }
 
-            if ($abstractFactory instanceof AbstractFactoryInterface) {
+            if ($abstractFactory instanceof Factory\AbstractFactoryInterface) {
                 $this->abstractFactories[] = $abstractFactory;
                 continue;
             }
