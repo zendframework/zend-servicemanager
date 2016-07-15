@@ -276,7 +276,7 @@ developers will interact. It has the following changes in v3:
 - Exceptions are *always* thrown when service instance creation fails or
   produces an error; you can no longer disable this.
 - Configuration no longer requires a `Zend\ServiceManager\Config` instance.
-  `Config` can be used, but is no needed.
+  `Config` can be used, but is not needed.
 - It adds a new method, `build()`, for creating discrete service instances.
 
 ### Methods Removed
