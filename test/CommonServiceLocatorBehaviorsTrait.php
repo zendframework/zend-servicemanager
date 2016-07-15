@@ -192,7 +192,8 @@ trait CommonServiceLocatorBehaviorsTrait
 
     public function testInitializersAreRunAfterCreation()
     {
-        $initializer = $this->getMock(InitializerInterface::class);
+        $initializer = $this->getMockBuilder(InitializerInterface::class)
+            ->getMock();
 
         $serviceManager = $this->createContainer([
             'factories' => [
@@ -251,8 +252,10 @@ trait CommonServiceLocatorBehaviorsTrait
 
     public function testConfigureCanOverridePreviousSettings()
     {
-        $firstFactory  = $this->getMock(FactoryInterface::class);
-        $secondFactory = $this->getMock(FactoryInterface::class);
+        $firstFactory  = $this->getMockBuilder(FactoryInterface::class)
+            ->getMock();
+        $secondFactory = $this->getMockBuilder(FactoryInterface::class)
+            ->getMock();
 
         $serviceManager = $this->createContainer([
             'factories' => [
