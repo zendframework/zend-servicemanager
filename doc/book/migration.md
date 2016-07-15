@@ -1141,7 +1141,7 @@ class ObserverPluginManager extends AbstractPluginManager
 
     public function validatePlugin($instance)
     {
-        if (! $plugin instanceof ObserverInterface) {
+        if (! $instance instanceof ObserverInterface) {
             throw new RuntimeException(sprintf(
                 'Invalid plugin "%s" created; not an instance of %s',
                 get_class($instance),
@@ -1195,7 +1195,7 @@ class ObserverPluginManager extends AbstractPluginManager
 
     public function validate($instance)
     {
-        if (! $plugin instanceof $this->instanceOf) {
+        if (! $instance instanceof $this->instanceOf) {
             throw new InvalidServiceException(sprintf(
                 'Invalid plugin "%s" created; not an instance of %s',
                 get_class($instance),
