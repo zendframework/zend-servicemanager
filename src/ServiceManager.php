@@ -183,7 +183,8 @@ class ServiceManager implements ServiceLocatorInterface
         // Next, if the alias should be shared, and we have cached the resolved
         // service, use it.
         if ($requestedName !== $name
-            && (! isset($this->shared[$requestedName]) || $this->shared[$requestedName])
+            && (($this->sharedByDefault && ! isset($this->shared[$requestedName])) 
+                || (isset($this->shared[$requestedName]) && $this->shared[$requestedName]))
             && isset($this->services[$name])
         ) {
             $this->services[$requestedName] = $this->services[$name];
