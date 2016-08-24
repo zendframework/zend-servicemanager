@@ -9,7 +9,6 @@
 
 namespace ZendTest\ServiceManager\AbstractFactory;
 
-
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Proxy\LazyServiceFactory;
@@ -22,7 +21,7 @@ use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
 {
 
-    function testCanCreateShortCircuits()
+    public function testCanCreateShortCircuits()
     {
         $abstractFactory = new ConfigAbstractFactory();
         $serviceManager = new ServiceManager();
@@ -30,7 +29,7 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
         self::assertFalse($abstractFactory->canCreate($serviceManager, 'MarcoSucks'));
     }
 
-    function testCanCreate()
+    public function testCanCreate()
     {
         $abstractFactory = new ConfigAbstractFactory();
         $serviceManager = new ServiceManager();
@@ -47,7 +46,7 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
         self::assertFalse($abstractFactory->canCreate($serviceManager, ServiceManager::class));
     }
 
-    function testInvokeWithInvokableClass()
+    public function testInvokeWithInvokableClass()
     {
         $abstractFactory = new ConfigAbstractFactory();
         $serviceManager = new ServiceManager();
@@ -63,7 +62,7 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
         self::assertInstanceOf(InvokableObject::class, $abstractFactory($serviceManager, InvokableObject::class));
     }
 
-    function testInvokeWithSimpleArguments()
+    public function testInvokeWithSimpleArguments()
     {
         $abstractFactory = new ConfigAbstractFactory();
         $serviceManager = new ServiceManager();
@@ -88,7 +87,7 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    function testInvokeWithComplexArguments()
+    public function testInvokeWithComplexArguments()
     {
         $abstractFactory = new ConfigAbstractFactory();
         $serviceManager = new ServiceManager();
