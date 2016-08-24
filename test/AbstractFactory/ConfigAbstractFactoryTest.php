@@ -21,12 +21,31 @@ use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testCanCreateShortCircuits()
+    public function testCanCreateReturnsFalseIfDependencyNotArrays()
     {
         $abstractFactory = new ConfigAbstractFactory();
         $serviceManager = new ServiceManager();
+        $serviceManager->setService(
+            'config',
+            [
+                ConfigAbstractFactory::class => 'Blancmange',
+            ]
+        );
 
-        self::assertFalse($abstractFactory->canCreate($serviceManager, 'OcramiusSucks'));
+        self::assertFalse($abstractFactory->canCreate($serviceManager, InvokableObject::class));
+
+        $serviceManager->setAllowOverride(true);g
+        $serviceManager->setService(
+            'config',
+            [
+                ConfigAbstractFactory::class => [
+                    InvokableObject::class => 42,
+                ]
+            ]
+        );
+
+        self::assertFalse($abstractFactory->canCreate($serviceManager, InvokableObject::class));
+
     }
 
     public function testCanCreate()
