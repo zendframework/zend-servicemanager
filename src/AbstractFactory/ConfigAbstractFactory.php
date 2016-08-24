@@ -11,15 +11,13 @@ namespace Zend\ServiceManager\AbstractFactory;
 
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
-class ConfigAbstractFactory implements AbstractFactoryInterface
+final class ConfigAbstractFactory implements AbstractFactoryInterface
 {
 
     /**
-     * Can the factory create an instance for the service?
+     * Factory can create the service if there is a key for it in the config
      *
-     * @param  \Interop\Container\ContainerInterface $container
-     * @param  string $requestedName
-     * @return bool
+     * {@inheritdoc}
      */
     public function canCreate(\Interop\Container\ContainerInterface $container, $requestedName)
     {
@@ -33,16 +31,7 @@ class ConfigAbstractFactory implements AbstractFactoryInterface
     }
 
     /**
-     * Create an object
-     *
-     * @param  \Interop\Container\ContainerInterface $container
-     * @param  string $requestedName
-     * @param  null|array $options
-     * @return object
-     * @throws \Zend\ServiceManager\Exception\ServiceNotFoundException if unable to resolve the service.
-     * @throws \Zend\ServiceManager\Exception\ServiceNotCreatedException if an exception is raised when
-     *     creating a service.
-     * @throws \Interop\Container\Exception\ContainerException if any other error occurs
+     * {@inheritDoc}
      */
     public function __invoke(\Interop\Container\ContainerInterface $container, $requestedName, array $options = null)
     {
