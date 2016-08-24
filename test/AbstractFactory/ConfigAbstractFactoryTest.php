@@ -26,7 +26,7 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
         $abstractFactory = new ConfigAbstractFactory();
         $serviceManager = new ServiceManager();
 
-        self::assertFalse($abstractFactory->canCreate($serviceManager, 'MarcoSucks'));
+        self::assertFalse($abstractFactory->canCreate($serviceManager, 'OcramiusSucks'));
     }
 
     public function testCanCreate()
