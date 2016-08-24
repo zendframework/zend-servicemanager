@@ -9,7 +9,6 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-
 use Zend\ServiceManager\Proxy\LazyServiceFactory;
 
 class ComplexDependencyObject
