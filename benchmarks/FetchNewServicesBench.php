@@ -35,7 +35,7 @@ class FetchNewServicesBench
                     ConfigAbstractFactory::class => [
                         BenchAsset\Bar::class => [],
                     ],
-                ],g
+                ],
             ],
             'aliases' => [
                 'factoryAlias1'          => 'factory1',
