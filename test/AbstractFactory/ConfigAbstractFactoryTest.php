@@ -34,7 +34,7 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertFalse($abstractFactory->canCreate($serviceManager, InvokableObject::class));
 
-        $serviceManager->setAllowOverride(true);g
+        $serviceManager->setAllowOverride(true);
         $serviceManager->setService(
             'config',
             [
