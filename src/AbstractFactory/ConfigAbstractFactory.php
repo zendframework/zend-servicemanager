@@ -27,7 +27,9 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
         $config = $container->get('config');
         $dependencies = $config[self::class];
 
-        return array_key_exists($requestedName, $dependencies);
+        return is_array($dependencies) && array_key_exists($requestedName, $dependencies) && is_array(
+            $dependencies[$requestedName]
+        );
     }
 
     /**
@@ -37,16 +39,7 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
     {
         $config = $container->get('config');
         $dependencies = $config[self::class][$requestedName];
-
-        // class has no dependencies, just create it and return
-        if (empty($dependencies)) {
-            return new $requestedName();
-        }
-
-        $arguments = [];
-        foreach ($dependencies as $dependency) {
-            $arguments[] = $container->get($dependency);
-        }
+        $arguments = array_map([$container, 'get'], $dependencies);
 
         return new $requestedName(...$arguments);
     }
