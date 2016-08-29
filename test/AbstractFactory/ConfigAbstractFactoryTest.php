@@ -11,6 +11,7 @@ namespace ZendTest\ServiceManager\AbstractFactory;
 
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Proxy\LazyServiceFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\ComplexDependencyObject;
@@ -43,7 +44,22 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         );
+        self::assertFalse($abstractFactory->canCreate($serviceManager, InvokableObject::class));
 
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService(
+            'config',
+            [
+                ConfigAbstractFactory::class => [
+                    InvokableObject::class => [
+                        'Jabba',
+                        'Gandalf',
+                        'Blofeld',
+                        42
+                    ],
+                ]
+            ]
+        );
         self::assertFalse($abstractFactory->canCreate($serviceManager, InvokableObject::class));
 
     }
@@ -144,5 +160,110 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
             ComplexDependencyObject::class,
             $abstractFactory($serviceManager, ComplexDependencyObject::class)
         );
+    }
+
+    public function testExceptsWhenConfigNotSet()
+    {
+        $abstractFactory = new ConfigAbstractFactory();
+        $serviceManager = new ServiceManager();
+        self::expectException(ServiceNotCreatedException::class);
+        self::expectExceptionMessage('Cannot find a config array in the container');
+
+        $abstractFactory($serviceManager, 'Dirk_Gently');
+    }
+
+    public function testExceptsWhenConfigKeyNotSet()
+    {
+        $abstractFactory = new ConfigAbstractFactory();
+        $serviceManager = new ServiceManager();
+        $serviceManager->setService('config', []);
+        self::expectException(ServiceNotCreatedException::class);
+        self::expectExceptionMessage('Cannot find a `' . ConfigAbstractFactory::class . '` key in the config array');
+
+        $abstractFactory($serviceManager, 'Dirk_Gently');
+    }
+
+    public function testExceptsWhenConfigIsNotArray()
+    {
+        $abstractFactory = new ConfigAbstractFactory();
+        $serviceManager = new ServiceManager();
+        $serviceManager->setService('config', 'Holistic');
+        self::expectException(ServiceNotCreatedException::class);
+        self::expectExceptionMessage('Config must be an array');
+
+        $abstractFactory($serviceManager, 'Dirk_Gently');
+    }
+
+    public function testExceptsWhenServiceConfigIsNotArray()
+    {
+        $abstractFactory = new ConfigAbstractFactory();
+        $serviceManager = new ServiceManager();
+        $serviceManager->setService(
+            'config',
+            [
+                ConfigAbstractFactory::class => 'Detective_Agency'
+            ]
+        );
+        self::expectException(ServiceNotCreatedException::class);
+        self::expectExceptionMessage('Dependencies config must exist and be an array of strings');
+
+        $abstractFactory($serviceManager, 'Dirk_Gently');
+    }
+
+    public function testExceptsWhenServiceConfigDoesNotExist()
+    {
+        $abstractFactory = new ConfigAbstractFactory();
+        $serviceManager = new ServiceManager();
+        $serviceManager->setService(
+            'config',
+            [
+                ConfigAbstractFactory::class => [],
+            ]
+        );
+        self::expectException(ServiceNotCreatedException::class);
+        self::expectExceptionMessage('Dependencies config must exist and be an array of strings');
+
+        $abstractFactory($serviceManager, 'Dirk_Gently');
+    }
+
+    public function testExceptsWhenServiceConfigForRequestedNameIsNotArray()
+    {
+        $abstractFactory = new ConfigAbstractFactory();
+        $serviceManager = new ServiceManager();
+        $serviceManager->setService(
+            'config',
+            [
+                ConfigAbstractFactory::class => [
+                    'DirkGently' => 'Holistic',
+                ],
+            ]
+        );
+        self::expectException(ServiceNotCreatedException::class);
+        self::expectExceptionMessage('Dependencies config must exist and be an array of strings');
+
+        $abstractFactory($serviceManager, 'Dirk_Gently');
+    }
+
+    public function testExceptsWhenServiceConfigForRequestedNameIsNotArrayOfStrings()
+    {
+        $abstractFactory = new ConfigAbstractFactory();
+        $serviceManager = new ServiceManager();
+        $serviceManager->setService(
+            'config',
+            [
+                ConfigAbstractFactory::class => [
+                    'DirkGently' => [
+                        'Holistic',
+                        'Detective',
+                        'Agency',
+                        42
+                    ],
+                ],
+            ]
+        );
+        self::expectException(ServiceNotCreatedException::class);
+        self::expectExceptionMessage('Dependencies config must exist and be an array of strings');
+
+        $abstractFactory($serviceManager, 'Dirk_Gently');
     }
 }
