@@ -17,6 +17,7 @@ use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\ComplexDependencyObject;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
+use ZendTest\ServiceManager\TestAsset\SecondComplexDependencyObject;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
 class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
@@ -106,10 +107,8 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
             [
                 ConfigAbstractFactory::class => [
                     InvokableObject::class => [],
-                    FailingFactory::class => [],
                     SimpleDependencyObject::class => [
                         InvokableObject::class,
-                        FailingFactory::class,
                     ],
                 ]
             ]
@@ -127,30 +126,20 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
         $abstractFactory = new ConfigAbstractFactory();
         $serviceManager = new ServiceManager();
         $serviceManager->setService(
-            LazyLoadingValueHolderFactory::class . '.config',
-            [
-                'Proxies' => 'Suck',
-            ]
-        );
-        $serviceManager->setService(
             'config',
             [
                 ConfigAbstractFactory::class => [
                     InvokableObject::class => [],
-                    FailingFactory::class => [],
                     SimpleDependencyObject::class => [
                         InvokableObject::class,
-                        FailingFactory::class,
                     ],
-                    LazyLoadingValueHolderFactory::class => [],
                     ComplexDependencyObject::class => [
                         SimpleDependencyObject::class,
-                        LazyServiceFactory::class,
+                        SecondComplexDependencyObject::class,
                     ],
-                    LazyServiceFactory::class => [
-                        LazyLoadingValueHolderFactory::class,
-                        LazyLoadingValueHolderFactory::class . '.config',
-                    ],
+                   SecondComplexDependencyObject::class => [
+                       InvokableObject::class,
+                   ],
                 ]
             ]
         );

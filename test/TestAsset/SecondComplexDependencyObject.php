@@ -9,11 +9,9 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-class ComplexDependencyObject
+class SecondComplexDependencyObject
 {
-    public function __construct(
-        SimpleDependencyObject $simpleDependencyObject,
-        SecondComplexDependencyObject $secondComplexDependencyObject
-    ) {
+    public function __construct(InvokableObject $invokableObject)
+    {
     }
 }

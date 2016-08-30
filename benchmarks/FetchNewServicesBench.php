@@ -156,6 +156,14 @@ class FetchNewServicesBench
     public function benchFetchConfigAbstractFactoryBar()
     {
         $sm = clone $this->sm;
+
+        $sm->get(BenchAsset\Bar::class);
+    }
+
+    public function benchBuildConfigAbstractFactoryBar()
+    {
+        $sm = clone $this->sm;
+
         $sm->get(BenchAsset\Bar::class);
     }
 }

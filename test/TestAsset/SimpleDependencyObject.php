@@ -11,7 +11,7 @@ namespace ZendTest\ServiceManager\TestAsset;
 
 class SimpleDependencyObject
 {
-    public function __construct(InvokableObject $invokableObject, FailingFactory $failingFactory)
+    public function __construct(InvokableObject $invokableObject)
     {
     }
 }
