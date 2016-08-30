@@ -164,6 +164,6 @@ class FetchNewServicesBench
     {
         $sm = clone $this->sm;
 
-        $sm->get(BenchAsset\Bar::class);
+        $sm->build(BenchAsset\Bar::class);
     }
 }
