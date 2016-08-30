@@ -191,7 +191,7 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
             ]
         );
         self::expectException(ServiceNotCreatedException::class);
-        self::expectExceptionMessage('Dependencies config must exist and be an array of strings');
+        self::expectExceptionMessage('Dependencies config must exist and be an array');
 
         $abstractFactory($serviceManager, 'Dirk_Gently');
     }
@@ -207,7 +207,7 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
             ]
         );
         self::expectException(ServiceNotCreatedException::class);
-        self::expectExceptionMessage('Dependencies config must exist and be an array of strings');
+        self::expectExceptionMessage('Dependencies config must exist and be an array');
 
         $abstractFactory($serviceManager, 'Dirk_Gently');
     }
@@ -225,7 +225,7 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
             ]
         );
         self::expectException(ServiceNotCreatedException::class);
-        self::expectExceptionMessage('Dependencies config must exist and be an array of strings');
+        self::expectExceptionMessage('Dependencies config must exist and be an array');
 
         $abstractFactory($serviceManager, 'Dirk_Gently');
     }
@@ -248,8 +248,10 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
             ]
         );
         self::expectException(ServiceNotCreatedException::class);
-        self::expectExceptionMessage('Dependencies config must exist and be an array of strings');
+        self::expectExceptionMessage(
+            'Service message must be an array of strings, ["string","string","string","integer"] given'
+        );
 
-        $abstractFactory($serviceManager, 'Dirk_Gently');
+        $abstractFactory($serviceManager, 'DirkGently');
     }
 }

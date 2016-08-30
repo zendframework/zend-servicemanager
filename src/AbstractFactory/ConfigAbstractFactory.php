@@ -55,12 +55,17 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
         if (!is_array($dependencies)
             || !array_key_exists($requestedName, $dependencies)
             || !is_array($dependencies[$requestedName])
-            || $dependencies[$requestedName] !== array_values(array_map('strval', $dependencies[$requestedName]))
         ) {
-            throw new ServiceNotCreatedException('Dependencies config must exist and be an array of strings');
+            throw new ServiceNotCreatedException('Dependencies config must exist and be an array');
         }
 
         $serviceDependencies = $dependencies[$requestedName];
+
+        if ($serviceDependencies !== array_values(array_map('strval', $serviceDependencies))) {
+            $problem = json_encode(array_map('gettype', $serviceDependencies));
+            throw new ServiceNotCreatedException('Service message must be an array of strings, ' . $problem . ' given');
+        }
+
         $arguments = array_map([$container, 'get'], $serviceDependencies);
 
         return new $requestedName(...$arguments);
