@@ -24,15 +24,14 @@ env:
 matrix:
   fast_finish: true
   include:
-    - php: 5.5
-      env:
-        - EXECUTE_CS_CHECK=true
     - php: 5.6
       env:
         - EXECUTE_TEST_COVERALLS=true
         - DEPLOY_DOCS="$(if [[ $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then echo -n 'true' ; else echo -n 'false' ; fi)"
         - PATH="$HOME/.local/bin:$PATH"
     - php: 7
+      env:
+        - EXECUTE_CS_CHECK=true
     - php: hhvm 
   allow_failures:
     - php: hhvm
