@@ -9,13 +9,10 @@
 
 namespace ZendTest\ServiceManager\AbstractFactory;
 
-use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Proxy\LazyServiceFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\ComplexDependencyObject;
-use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SecondComplexDependencyObject;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
@@ -137,9 +134,9 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
                         SimpleDependencyObject::class,
                         SecondComplexDependencyObject::class,
                     ],
-                   SecondComplexDependencyObject::class => [
-                       InvokableObject::class,
-                   ],
+                    SecondComplexDependencyObject::class => [
+                        InvokableObject::class,
+                    ],
                 ]
             ]
         );
