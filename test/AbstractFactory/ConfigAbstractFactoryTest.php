@@ -59,7 +59,6 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
             ]
         );
         self::assertTrue($abstractFactory->canCreate($serviceManager, InvokableObject::class));
-
     }
 
     public function testCanCreate()
