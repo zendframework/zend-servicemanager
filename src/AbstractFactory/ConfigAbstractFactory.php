@@ -28,17 +28,7 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
         $config = $container->get('config');
         $dependencies = $config[self::class];
 
-        // config must be array, and have a key for the requested name that's value is also an array
-        if (!is_array($dependencies)
-            || !array_key_exists($requestedName, $dependencies)
-            || !is_array($dependencies[$requestedName])
-        ) {
-            return false;
-        }
-
-        // we can only create this service if the config is an array of strings
-        return $dependencies[$requestedName] === array_values(array_map('strval', $dependencies[$requestedName]));
-
+        return is_array($dependencies) && array_key_exists($requestedName, $dependencies);
     }
 
     /**

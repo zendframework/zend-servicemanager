@@ -20,7 +20,7 @@ use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testCanCreateReturnsFalseIfDependencyNotArrays()
+    public function testCanCreateReturnsTrueIfDependencyNotArrays()
     {
         $abstractFactory = new ConfigAbstractFactory();
         $serviceManager = new ServiceManager();
@@ -42,7 +42,7 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         );
-        self::assertFalse($abstractFactory->canCreate($serviceManager, InvokableObject::class));
+        self::assertTrue($abstractFactory->canCreate($serviceManager, InvokableObject::class));
 
         $serviceManager->setAllowOverride(true);
         $serviceManager->setService(
@@ -58,7 +58,7 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         );
-        self::assertFalse($abstractFactory->canCreate($serviceManager, InvokableObject::class));
+        self::assertTrue($abstractFactory->canCreate($serviceManager, InvokableObject::class));
 
     }
 
