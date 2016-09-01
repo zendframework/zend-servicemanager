@@ -6,7 +6,11 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [#146](https://github.com/zendframework/zend-servicemanager/pull/146) adds
+  `Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory`, which enables a
+  configuration-based approach to providing class dependencies when all
+  dependencies are services known to the `ServiceManager`. Please see
+  [the documentation](doc/book/config-abstract-factory.md) for details.
 
 ### Deprecated
 
