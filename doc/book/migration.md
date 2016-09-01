@@ -892,10 +892,9 @@ class FooInitializer implements InitializerInterface
 >          $instance = $first;
 >      }
 >      if (! $instance implements FooAwareInterface) {
->          return $instance;
+>          return;
 >      }
 >      $container->setFoo($services->get(FooInterface::class);
->      return $instance;
 > });
 > ```
 >
