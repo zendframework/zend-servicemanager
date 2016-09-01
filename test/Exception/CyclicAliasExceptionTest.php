@@ -10,19 +10,7 @@
 namespace ZendTest\ServiceManager\Exception;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use ProxyManager\Autoloader\AutoloaderInterface;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use RecursiveRegexIterator;
-use RegexIterator;
-use stdClass;
 use Zend\ServiceManager\Exception\CyclicAliasException;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\Proxy\LazyServiceFactory;
-use Zend\ServiceManager\ServiceManager;
-use ZendTest\ServiceManager\TestAsset\InvokableObject;
 
 /**
  * @covers \Zend\ServiceManager\Exception\CyclicAliasException

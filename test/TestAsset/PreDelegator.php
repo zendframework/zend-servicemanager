@@ -10,7 +10,6 @@
 namespace ZendTest\ServiceManager\TestAsset;
 
 use Interop\Container\ContainerInterface;
-use stdClass;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 
 class PreDelegator implements DelegatorFactoryInterface
