@@ -8,6 +8,7 @@ pages:
       - Delegators: delegators.md
       - 'Lazy services': lazy-services.md
       - 'Plugin managers': plugin-managers.md
+      - 'Configuration-based Abstract Factory': config-abstract-factory.md
     - 'Migration Guide': migration.md
 site_name: zend-servicemanager
 site_description: 'zend-servicemanager: factory-driven dependency injection container'

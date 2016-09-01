@@ -5,6 +5,7 @@ namespace ZendBench\ServiceManager;
 use PhpBench\Benchmark\Metadata\Annotations\Iterations;
 use PhpBench\Benchmark\Metadata\Annotations\Revs;
 use PhpBench\Benchmark\Metadata\Annotations\Warmup;
+use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -30,6 +31,11 @@ class FetchNewServicesBench
             ],
             'services' => [
                 'service1' => new \stdClass(),
+                'config' => [
+                    ConfigAbstractFactory::class => [
+                        BenchAsset\Bar::class => [],
+                    ],
+                ],
             ],
             'aliases' => [
                 'factoryAlias1'          => 'factory1',
@@ -37,7 +43,8 @@ class FetchNewServicesBench
                 'recursiveFactoryAlias2' => 'recursiveFactoryAlias1',
             ],
             'abstract_factories' => [
-                BenchAsset\AbstractFactoryFoo::class
+                BenchAsset\AbstractFactoryFoo::class,
+                ConfigAbstractFactory::class,
             ],
         ]);
     }
@@ -144,5 +151,19 @@ class FetchNewServicesBench
         $sm = clone $this->sm;
 
         $sm->build('foo');
+    }
+
+    public function benchFetchConfigAbstractFactoryBar()
+    {
+        $sm = clone $this->sm;
+
+        $sm->get(BenchAsset\Bar::class);
+    }
+
+    public function benchBuildConfigAbstractFactoryBar()
+    {
+        $sm = clone $this->sm;
+
+        $sm->build(BenchAsset\Bar::class);
     }
 }
