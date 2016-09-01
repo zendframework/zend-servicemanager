@@ -993,10 +993,9 @@ the callable:</p>
          $instance = $first;
      }
      if (! $instance implements FooAwareInterface) {
-         return $instance;
+         return;
      }
      $container-&gt;setFoo($services-&gt;get(FooInterface::class);
-     return $instance;
 });</code></pre>
 
 
