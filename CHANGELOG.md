@@ -18,7 +18,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#106](https://github.com/zendframework/zend-servicemanager/pull/106) adds
+  detection of multiple attempts to register the same instance or named abstract
+  factory, using a previous instance when detected. You may still use multiple
+  discrete instances, however.
 
 ## 3.1.2 - TBD
 
