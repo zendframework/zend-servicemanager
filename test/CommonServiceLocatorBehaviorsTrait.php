@@ -21,6 +21,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use ZendTest\ServiceManager\TestAsset\CallTimesAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
@@ -137,6 +138,45 @@ trait CommonServiceLocatorBehaviorsTrait
         ]);
 
         $serviceManager->get(DateTime::class);
+    }
+
+    public function testCallTwiceWithDifferentInstanceAbstractFactories()
+    {
+        CallTimesAbstractFactory::setCallTimes(0);
+
+        $obj1 = new CallTimesAbstractFactory();
+        $obj2 = new CallTimesAbstractFactory();
+
+        $serviceManager = $this->createContainer([
+            'abstract_factories' => [
+                $obj1,
+                $obj2,
+            ]
+        ]);
+        $serviceManager->addAbstractFactory($obj1);
+        $serviceManager->addAbstractFactory($obj2);
+        $serviceManager->has(stdClass::class);
+
+        $this->assertEquals(2, CallTimesAbstractFactory::getCallTimes());
+    }
+
+    /**
+     * A new test with the same instance of `CallTimesAbstractFactory` should be provided.
+     */
+    public function testCallOnlyOnceWithSameInstanceAbstractFactory()
+    {
+        CallTimesAbstractFactory::setCallTimes(0);
+
+        $serviceManager = $this->createContainer([
+            'abstract_factories' => [
+                CallTimesAbstractFactory::class,
+                CallTimesAbstractFactory::class,
+            ]
+        ]);
+        $serviceManager->addAbstractFactory(CallTimesAbstractFactory::class);
+        $serviceManager->has(stdClass::class);
+
+        $this->assertEquals(1, CallTimesAbstractFactory::getCallTimes());
     }
 
     public function testCanCreateServiceWithAlias()
