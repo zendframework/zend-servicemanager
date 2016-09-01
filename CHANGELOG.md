@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 2.7.7 - TBD
+## 2.7.7 - 2016-09-01
 
 ### Added
 
@@ -18,7 +18,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#127](https://github.com/zendframework/zend-servicemanager/pull/127) fixes
+  how the `AbstractPluingManager` handles `$options` arrays passed when
+  retrieving a plugin when that plugin resolves to the `InvokableFactory`,
+  ensuring subsequent calls with different options are created correctly.
 
 ## 2.7.6 - 2016-04-27
 
