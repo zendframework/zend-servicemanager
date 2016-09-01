@@ -20,7 +20,21 @@ Or within any config provider using:
 return [
     'service_manager' => [
         'abstract_factories' => [
-            ConfigAbstractFactories::class,
+            ConfigAbstractFactory::class,
+        ],
+    ],
+];
+```
+
+It is also possible to use the config abstract factory in the traditional way; by registering
+it as a factory for a specific class. This marginally improves performance but loses
+the benefit of not needing to create a factory key for all of you configured factories:
+
+```php
+return [
+    'service_manager' => [
+        'factories' => [
+            SomeCustomClass::class => ConfigAbstractFactory::class,
         ],
     ],
 ];
