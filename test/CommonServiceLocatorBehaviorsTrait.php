@@ -140,7 +140,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $serviceManager->get(DateTime::class);
     }
 
-    public function testCallTwiceWithDifferentInstanceAbstractFactories()
+    public function testAllowsMultipleInstancesOfTheSameAbstractFactory()
     {
         CallTimesAbstractFactory::setCallTimes(0);
 
@@ -160,10 +160,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $this->assertEquals(2, CallTimesAbstractFactory::getCallTimes());
     }
 
-    /**
-     * A new test with the same instance of `CallTimesAbstractFactory` should be provided.
-     */
-    public function testCallOnlyOnceWithSameInstanceAbstractFactory()
+    public function testWillReUseAnExistingNamedAbstractFactoryInstance()
     {
         CallTimesAbstractFactory::setCallTimes(0);
 
