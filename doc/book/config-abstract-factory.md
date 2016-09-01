@@ -1,24 +1,37 @@
 # Config Abstract Factory
 
-You can simplify the process of creating factories by adding the 
-`ConfigAbstractFactory` to your service manager. This allows you to define
-services using a configuration map, rather than having to create separate 
-factories for all your services. 
+- Since 3.2.0
 
-## Enabling
-You can enable the `ConfigAbstractFactory` in the same way that you would enable 
-any other abstract factory - in your own code:
+You can simplify the process of creating factories by registering
+`Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory` with your service
+manager instance. This allows you to define services using a configuration map,
+rather than having to create separate factories for each of your services. 
+
+## Enabling the ConfigAbstractFactory
+
+Enable the `ConfigAbstractFactory` in the same way that you would enable 
+any other abstract factory.
+
+Programmatically:
 
 ```php
 $serviceManager = new ServiceManager();
 $serviceManager->addAbstractFactory(new ConfigAbstractFactory());
 ```
 
-Or within any config provider using:
+Or within configuration:
 
 ```php
 return [
+    // zend-mvc:
     'service_manager' => [
+        'abstract_factories' => [
+            ConfigAbstractFactory::class,
+        ],
+    ],
+
+    // zend-expressive or ConfigProvider consumers:
+    'dependencies' => [
         'abstract_factories' => [
             ConfigAbstractFactory::class,
         ],
@@ -26,9 +39,9 @@ return [
 ];
 ```
 
-It is also possible to use the config abstract factory in the traditional way; by registering
-it as a factory for a specific class. This marginally improves performance but loses
-the benefit of not needing to create a factory key for all of you configured factories:
+Like all abstract factories starting in version 3, you may also use the config
+abstract factory as a mapped factory, registering it as a factory for a specific
+class:
 
 ```php
 return [
@@ -40,14 +53,20 @@ return [
 ];
 ```
 
-## Configuring
+## Configuration
 
-Configuration is done through the `config` service manager key, in an array with
-the key `Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory`. If you are using 
-config merging from the MVC/ModuleManager, in this just means that you can 
-add a `ConfigAbstractFactory::class` key to your merged config which contains service
-definitions, where the key is the service name (typically the FQNS of the class you are 
-defining), and the value is an array of it's dependencies, also defined as container keys.
+Configuration should be provided via the `config` service, which should return
+an array or `ArrayObject`. `ConfigAbstractFactory` looks for a top-level key in
+this service named after itself (i.e., `Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory`)
+that is an array value. Each item in the array:
+
+- Should have a key representing the service name (typically the fully
+  qualified class name)
+- Should have a value that is an array of each dependency, ordered using the
+  constructor argument order, and using service names registered with the
+  container.
+
+As an example:
 
 ```php
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
@@ -65,15 +84,20 @@ return [
 ];
 ```
 
-The definition tells the service manager how this abstract factory should manage dependencies in
-the classes defined. In the above example, `MySimpleClass` has a single dependency on a `Logger`
-instance. The abstract factory will simply look to fulfil that dependency by calling a `get` 
-call with that key on the service manager it is attached to. In this way, you can create the 
-correct tree of dependencies to successfully return any given service. Note that `Handler` does not have a 
-configuration for the abstract factory, but this would work if `Handler` had a traditional factory and 
-can be created by this service manager.
+The definition tells the service manager how this abstract factory should manage
+dependencies in the classes defined. In the above example, `MySimpleClass` has a
+single dependency on a `Logger` instance. The abstract factory will simply look
+to fulfil that dependency by calling `get()` with that key on the container
+passed to it. In this way, you can create the correct tree of
+dependencies to successfully return any given service.
 
-For a better example, consider the following classes:
+In the above example, note that the abstract factory configuration does not
+contain configuration for the `Handler` class. At first glance, this appears as
+if it will fail; however, if `Handler` is configured directly with the container
+already &mdash; for example, mapped to a custom factory &mdash; the service will
+be created and used as a dependency.
+
+As another, more complete example, consider the following classes:
 
 ```php
 class UserMapper
