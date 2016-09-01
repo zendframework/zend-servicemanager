@@ -11,7 +11,6 @@ namespace Zend\ServiceManager;
 
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
-use Zend\ServiceManager\Exception;
 
 /**
  * Interface for service locator
