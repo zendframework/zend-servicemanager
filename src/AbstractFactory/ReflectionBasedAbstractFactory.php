@@ -10,18 +10,8 @@ namespace Zend\ServiceManager\AbstractFactory;
 use Interop\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionParameter;
-use Zend\Console\Adapter\AdapterInterface as ConsoleAdapterInterface;
-use Zend\Filter\FilterPluginManager;
-use Zend\Hydrator\HydratorPluginManager;
-use Zend\InputFilter\InputFilterPluginManager;
-use Zend\Log\FilterPluginManager as LogFilterManager;
-use Zend\Log\FormatterPluginManager as LogFormatterManager;
-use Zend\Log\ProcessorPluginManager as LogProcessorManager;
-use Zend\Log\WriterPluginManager as LogWriterManager;
-use Zend\Serializer\AdapterPluginManager as SerializerAdapterManager;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
-use Zend\Validator\ValidatorPluginManager;
 
 /**
  * Reflection-based factory.
@@ -81,26 +71,25 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
      *
      * Extend the class if you wish to add to the list.
      *
+     * Example:
+     *
+     * <code>
+     * [
+     *     \Zend\Filter\FilterPluginManager::class       => 'FilterManager',
+     *     \Zend\Validator\ValidatorPluginManager::class => 'ValidatorManager',
+     * ]
+     * </code>
+     *
      * @var string[]
      */
-    protected $aliases = [
-        ConsoleAdapterInterface::class  => 'ConsoleAdapter',
-        FilterPluginManager::class      => 'FilterManager',
-        HydratorPluginManager::class    => 'HydratorManager',
-        InputFilterPluginManager::class => 'InputFilterManager',
-        LogFilterManager::class         => 'LogFilterManager',
-        LogFormatterManager::class      => 'LogFormatterManager',
-        LogProcessorManager::class      => 'LogProcessorManager',
-        LogWriterManager::class         => 'LogWriterManager',
-        SerializerAdapterManager::class => 'SerializerAdapterManager',
-        ValidatorPluginManager::class   => 'ValidatorManager',
-    ];
+    protected $aliases = [];
 
     /**
      * Constructor.
      *
      * Allows overriding the internal list of aliases. These should be of the
-     * form `class name => well-known service name`.
+     * form `class name => well-known service name`; see the documentation for
+     * the `$aliases` property for details on what is accepted.
      *
      * @param string[] $aliases
      */

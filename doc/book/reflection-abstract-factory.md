@@ -39,28 +39,112 @@ The factory operates with the following constraints/features:
 - Scalar parameters will be resolved as null values.
 - If a service cannot be found for a given typehint, the factory will
   raise an exception detailing this.
-- Some services provided by Zend Framework components do not have
-  entries based on their class name (for historical reasons); the
-  factory contains a map of these class/interface names to the
-  corresponding service name to allow them to resolve. You may override this
-  list by providing an array of class name/service name pairs to the
-  constructor; by default, the following are mapped:
-    - `Zend\Console\Adapter\AdapterInterface` maps to `ConsoleAdapter`,
-    - `Zend\Filter\FilterPluginManager` maps to `FilterManager`,
-    - `Zend\Hydrator\HydratorPluginManager` maps to `HydratorManager`,
-    - `Zend\InputFilter\InputFilterPluginManager` maps to `InputFilterManager`,
-    - `Zend\Log\FilterPluginManager` maps to `LogFilterManager`,
-    - `Zend\Log\FormatterPluginManager` maps to `LogFormatterManager`,
-    - `Zend\Log\ProcessorPluginManager` maps to `LogProcessorManager`,
-    - `Zend\Log\WriterPluginManager` maps to `LogWriterManager`,
-    - `Zend\Serializer\AdapterPluginManager` maps to `SerializerAdapterManager`,
-    - `Zend\Validator\ValidatorPluginManager` maps to `ValidatorManager`,
 
 `$options` passed to the factory are ignored in all cases, as we cannot
 make assumptions about which argument(s) they might replace.
 
 Once your dependencies have stabilized, we recommend writing a dedicated
 factory, as reflection can introduce performance overhead.
+
+## Handling well-known services
+
+Some services provided by Zend Framework components do not have
+entries based on their class name (for historical reasons). As examples:
+
+- `Zend\Console\Adapter\AdapterInterface` maps to the service name `ConsoleAdapter`,
+- `Zend\Filter\FilterPluginManager` maps to the service name `FilterManager`,
+- `Zend\Hydrator\HydratorPluginManager` maps to the service name `HydratorManager`,
+- `Zend\InputFilter\InputFilterPluginManager` maps to the service name `InputFilterManager`,
+- `Zend\Log\FilterPluginManager` maps to the service name `LogFilterManager`,
+- `Zend\Log\FormatterPluginManager` maps to the service name `LogFormatterManager`,
+- `Zend\Log\ProcessorPluginManager` maps to the service name `LogProcessorManager`,
+- `Zend\Log\WriterPluginManager` maps to the service name `LogWriterManager`,
+- `Zend\Serializer\AdapterPluginManager` maps to the service name `SerializerAdapterManager`,
+- `Zend\Validator\ValidatorPluginManager` maps to the service name `ValidatorManager`,
+
+To allow the `ReflectionBasedAbstractFactory` to find these, you have two
+options.
+
+The first is to pass an array of mappings via the constructor:
+
+```php
+$reflectionFactory = new ReflectionBasedAbstractFactory([
+    \Zend\Console\Adapter\AdapterInterface::class     => 'ConsoleAdapter',
+    \Zend\Filter\FilterPluginManager::class           => 'FilterManager',
+    \Zend\Hydrator\HydratorPluginManager::class       => 'HydratorManager',
+    \Zend\InputFilter\InputFilterPluginManager::class => 'InputFilterManager',
+    \Zend\Log\FilterPluginManager::class              => 'LogFilterManager',
+    \Zend\Log\FormatterPluginManager::class           => 'LogFormatterManager',
+    \Zend\Log\ProcessorPluginManager::class           => 'LogProcessorManager',
+    \Zend\Log\WriterPluginManager::class              => 'LogWriterManager',
+    \Zend\Serializer\AdapterPluginManager::class      => 'SerializerAdapterManager',
+    \Zend\Validator\ValidatorPluginManager::class     => 'ValidatorManager',
+]);
+```
+
+This can be done either in your configuration file (which could be problematic
+when considering serialization for caching), or during an early phase of
+application bootstrapping.
+
+For instance, with zend-mvc, this might be in your `Application` module's
+bootstrap listener:
+
+```php
+namespace Application
+
+use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
+
+class Module
+{
+    public function onBootstrap($e)
+    {
+        $application = $e->getApplication();
+        $container = $e->getServiceManager();
+
+        $container->addAbstractFactory(new ReflectionBasedAbstractFactory([
+            /* ... */
+        ]));
+    }
+}
+```
+
+For Expressive, it could be part of your `config/container.php` definition:
+
+```php
+$container = new ServiceManager();
+(new Config($config['dependencies']))->configureServiceManager($container);
+// Add the following:
+$container->addAbstractFactory(new ReflectionBasedAbstractFactory([
+    /* ... */
+]));
+```
+
+The second approach is to extend the class, and define the map in the
+`$aliases` property:
+
+```php
+namespace Application;
+
+use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
+
+class ReflectionAbstractFactory extends ReflectionBasedAbstractFactory
+{
+    protected $aliases = [
+        \Zend\Console\Adapter\AdapterInterface::class     => 'ConsoleAdapter',
+        \Zend\Filter\FilterPluginManager::class           => 'FilterManager',
+        \Zend\Hydrator\HydratorPluginManager::class       => 'HydratorManager',
+        \Zend\InputFilter\InputFilterPluginManager::class => 'InputFilterManager',
+        \Zend\Log\FilterPluginManager::class              => 'LogFilterManager',
+        \Zend\Log\FormatterPluginManager::class           => 'LogFormatterManager',
+        \Zend\Log\ProcessorPluginManager::class           => 'LogProcessorManager',
+        \Zend\Log\WriterPluginManager::class              => 'LogWriterManager',
+        \Zend\Serializer\AdapterPluginManager::class      => 'SerializerAdapterManager',
+        \Zend\Validator\ValidatorPluginManager::class     => 'ValidatorManager',
+    ];
+}
+```
+
+You could then register it via class name in your service configuration.
 
 ## Alternatives
 
