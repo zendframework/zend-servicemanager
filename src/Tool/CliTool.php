@@ -20,28 +20,16 @@ class CliTool
      * @return array
      * @throws InvalidArgumentException
      */
-    public static function handle(array $config, $className)
+    public static function createDependencyConfig(array $config, $className)
     {
-        if (!is_string($className)) {
-            throw new InvalidArgumentException('Class name must be a string, ' . gettype($className) . ' given');
-        }
-
-        if (!class_exists($className)) {
-            throw new InvalidArgumentException('Cannot find class with name ' . $className);
-        }
-
-        if (!array_key_exists(ConfigAbstractFactory::class, $config)) {
-            $config[ConfigAbstractFactory::class] = [];
-        }
+        self::validateClassName($className);
 
         $reflectionClass = new \ReflectionClass($className);
-
         if (!$reflectionClass->getConstructor()) {
             return $config;
         }
 
         $constructorArguments = $reflectionClass->getConstructor()->getParameters();
-
         $constructorArguments = array_filter(
             $constructorArguments,
             function (\ReflectionParameter $argument) {
@@ -58,13 +46,66 @@ class CliTool
         foreach ($constructorArguments as $constructorArgument) {
             $argumentType = $constructorArgument->getClass();
             if (is_null($argumentType)) {
-                throw new InvalidArgumentException('Cannot create config for ' . $className . ', it has no type hints in constructor');
+                throw new InvalidArgumentException(
+                    'Cannot create config for ' . $className . ', it has no type hints in constructor'
+                );
             }
             $argumentName = $argumentType->getName();
-            $config = self::handle($config, $argumentName);
+            $config = self::createDependencyConfig($config, $argumentName);
             $config[ConfigAbstractFactory::class][$className][] = $argumentName;
         }
 
+        return $config;
+    }
+
+    /**
+     * @param $className
+     * @throws InvalidArgumentException
+     */
+    private static function validateClassName($className)
+    {
+        if (!is_string($className)) {
+            throw new InvalidArgumentException('Class name must be a string, ' . gettype($className) . ' given');
+        }
+
+        if (!class_exists($className)) {
+            throw new InvalidArgumentException('Cannot find class with name ' . $className);
+        }
+    }
+
+    public static function createFactoryMappingsFromConfig(array $config)
+    {
+        if (!array_key_exists(ConfigAbstractFactory::class, $config)) {
+            return $config;
+        }
+
+        if (!is_array($config[ConfigAbstractFactory::class])) {
+            throw new InvalidArgumentException(
+                'Config key for ' . ConfigAbstractFactory::class . ' should be an array, ' . gettype(
+                    $config[ConfigAbstractFactory::class]
+                ) . ' given'
+            );
+        }
+
+        foreach ($config[ConfigAbstractFactory::class] as $className => $dependency) {
+            $config = self::createFactoryMappings($config, $className);
+        }
+        return $config;
+    }
+
+    public static function createFactoryMappings(array $config, $className)
+    {
+        self::validateClassName($className);
+
+        if (
+            array_key_exists('service_manager', $config)
+            && array_key_exists('factories', $config['service_manager'])
+            && array_key_exists($className, $config['service_manager']['factories'])
+        ) {
+            return $config;
+        }
+
+        $config['service_manager']['factories'][$className] = ConfigAbstractFactory::class;
         return $config;
     }
 }

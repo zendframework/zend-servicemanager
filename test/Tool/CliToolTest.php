@@ -1,13 +1,14 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: GeeH
- * Date: 06/09/2016
- * Time: 12:34
+ * Zend Framework (http://framework.zend.com/)
+ *
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager\Tool;
 
+namespace ZendTest\ServiceManager\Tool;
 
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
@@ -15,28 +16,29 @@ use Zend\ServiceManager\Tool\CliTool;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
+use ZendTest\ServiceManager\TestAsset\SecondComplexDependencyObject;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
 class CliToolTest extends \PHPUnit_Framework_TestCase
 {
-    public function testExceptsIfClassNameIsNotString()
+    public function testCreateDependencyConfigExceptsIfClassNameIsNotString()
     {
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Class name must be a string, integer given');
-        CliTool::handle([], 42);
+        CliTool::createDependencyConfig([], 42);
     }
 
-    public function testExceptsIfClassDoesNotExist()
+    public function testCreateDependencyConfigExceptsIfClassDoesNotExist()
     {
         $className = 'Dirk\Gentley\Holistic\Detective\Agency';
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Cannot find class with name ' . $className);
-        CliTool::handle([], $className);
+        CliTool::createDependencyConfig([], $className);
     }
 
-    public function testInvokableObjectReturnsEmptyArray()
+    public function testCreateDependencyConfigInvokableObjectReturnsEmptyArray()
     {
-        $config = CliTool::handle([], InvokableObject::class);
+        $config = CliTool::createDependencyConfig([], InvokableObject::class);
         self::assertEquals(
             [
                 ConfigAbstractFactory::class => [
@@ -47,9 +49,9 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testSimpleDependencyReturnsCorrectly()
+    public function testCreateDependencyConfigSimpleDependencyReturnsCorrectly()
     {
-        $config = CliTool::handle([], SimpleDependencyObject::class);
+        $config = CliTool::createDependencyConfig([], SimpleDependencyObject::class);
         self::assertEquals(
             [
                 ConfigAbstractFactory::class => [
@@ -63,20 +65,127 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testClassWithoutConstructorChangesNothing()
+    public function testCreateDependencyConfigClassWithoutConstructorChangesNothing()
     {
-        $config = CliTool::handle([ConfigAbstractFactory::class => []], FailingFactory::class);
+        $config = CliTool::createDependencyConfig([ConfigAbstractFactory::class => []], FailingFactory::class);
         self::assertEquals([ConfigAbstractFactory::class => []], $config);
     }
 
-    public function testWhatHappensWhenYouHaveNoTypeHint()
+    public function testCreateDependencyConfigWithoutTypeHintedParameterExcepts()
     {
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage(
             'Cannot create config for ' . ObjectWithScalarDependency::class . ', it has no type hints in constructor'
         );
-        $config = CliTool::handle([ConfigAbstractFactory::class => []], ObjectWithScalarDependency::class);
-
+        $config = CliTool::createDependencyConfig(
+            [ConfigAbstractFactory::class => []],
+            ObjectWithScalarDependency::class
+        );
     }
 
+    public function testCreateFactoryMappingsExceptsIfClassNameIsNotString()
+    {
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('Class name must be a string, integer given');
+        CliTool::createFactoryMappings([], 42);
+    }
+
+    public function testCreateFactoryMappingsExceptsIfClassDoesNotExist()
+    {
+        $className = 'Dirk\Gentley\Holistic\Detective\Agency';
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('Cannot find class with name ' . $className);
+        CliTool::createFactoryMappings([], $className);
+    }
+
+    public function testCreateFactoryMappingsReturnsUnmodifiedArrayIfMappingExists()
+    {
+        $config = [
+            'service_manager' => [
+                'factories' => [
+                    InvokableObject::class => ConfigAbstractFactory::class,
+                ],
+            ],
+        ];
+        self::assertEquals($config, CliTool::createFactoryMappings($config, InvokableObject::class));
+    }
+
+    public function testCreateFactoryMappingsAddsClassIfNotExists()
+    {
+        $expectedConfig = [
+            'service_manager' => [
+                'factories' => [
+                    InvokableObject::class => ConfigAbstractFactory::class,
+                ],
+            ],
+        ];
+        self::assertEquals($expectedConfig, CliTool::createFactoryMappings([], InvokableObject::class));
+    }
+
+    public function testCreateFactoryMappingsIgnoresExistingsMappings()
+    {
+        $config = [
+            'service_manager' => [
+                'factories' => [
+                    InvokableObject::class => 'SomeOtherExistingFactory',
+                ],
+            ],
+        ];
+        self::assertEquals($config, CliTool::createFactoryMappings($config, InvokableObject::class));
+    }
+
+    public function testCreateFactoryMappingsFromConfigReturnsIfNoConfigKey()
+    {
+        self::assertEquals([], CliTool::createFactoryMappingsFromConfig([]));
+    }
+
+    public function testCreateFactoryMappingsFromConfigExceptsWhenConfigNotArray()
+    {
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage(
+            'Config key for ' . ConfigAbstractFactory::class . ' should be an array, boolean given'
+        );
+
+        CliTool::createFactoryMappingsFromConfig(
+            [
+                ConfigAbstractFactory::class => true,
+            ]
+        );
+    }
+
+    public function testCreateFactoryMappingsFromConfigWithWorkingConfig()
+    {
+        $config = [
+            ConfigAbstractFactory::class => [
+                InvokableObject::class => [],
+                SimpleDependencyObject::class => [
+                    InvokableObject::class,
+                ],
+                SecondComplexDependencyObject::class => [
+                    InvokableObject::class,
+                ],
+            ],
+        ];
+
+        $expectedConfig = [
+            ConfigAbstractFactory::class => [
+                InvokableObject::class => [],
+                SimpleDependencyObject::class => [
+                    InvokableObject::class,
+                ],
+                SecondComplexDependencyObject::class => [
+                    InvokableObject::class,
+                ],
+            ],
+            'service_manager' => [
+                'factories' => [
+                    InvokableObject::class => ConfigAbstractFactory::class,
+                    SimpleDependencyObject::class => ConfigAbstractFactory::class,
+                    SecondComplexDependencyObject::class => ConfigAbstractFactory::class,
+                ],
+            ],
+        ];
+
+        self::assertEquals($expectedConfig, CliTool::createFactoryMappingsFromConfig($config));
+    }
 }

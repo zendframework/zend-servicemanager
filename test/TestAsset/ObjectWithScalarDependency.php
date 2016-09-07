@@ -9,7 +9,6 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-
 class ObjectWithScalarDependency
 {
     public function __construct($aName, $aValue)

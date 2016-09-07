@@ -20,4 +20,4 @@ if (!file_exists($configPath)) {
 
 $appConfig = require $configPath;
 
-\Zend\ServiceManager\Tool\CliTool::handle($appConfig, $className);
+\Zend\ServiceManager\Tool\CliTool::createDependencyConfig($appConfig, $className);
