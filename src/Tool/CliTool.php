@@ -97,8 +97,7 @@ class CliTool
     {
         self::validateClassName($className);
 
-        if (
-            array_key_exists('service_manager', $config)
+        if (array_key_exists('service_manager', $config)
             && array_key_exists('factories', $config['service_manager'])
             && array_key_exists($className, $config['service_manager']['factories'])
         ) {
