@@ -25,7 +25,7 @@ class CliTool
         self::validateClassName($className);
 
         $reflectionClass = new \ReflectionClass($className);
-        if (!$reflectionClass->getConstructor()) {
+        if (! $reflectionClass->getConstructor()) {
             return $config;
         }
 
@@ -33,7 +33,7 @@ class CliTool
         $constructorArguments = array_filter(
             $constructorArguments,
             function (\ReflectionParameter $argument) {
-                return !$argument->isOptional();
+                return ! $argument->isOptional();
             }
         );
 
@@ -64,22 +64,22 @@ class CliTool
      */
     private static function validateClassName($className)
     {
-        if (!is_string($className)) {
+        if (! is_string($className)) {
             throw new InvalidArgumentException('Class name must be a string, ' . gettype($className) . ' given');
         }
 
-        if (!class_exists($className)) {
+        if (! class_exists($className)) {
             throw new InvalidArgumentException('Cannot find class with name ' . $className);
         }
     }
 
     public static function createFactoryMappingsFromConfig(array $config)
     {
-        if (!array_key_exists(ConfigAbstractFactory::class, $config)) {
+        if (! array_key_exists(ConfigAbstractFactory::class, $config)) {
             return $config;
         }
 
-        if (!is_array($config[ConfigAbstractFactory::class])) {
+        if (! is_array($config[ConfigAbstractFactory::class])) {
             throw new InvalidArgumentException(
                 'Config key for ' . ConfigAbstractFactory::class . ' should be an array, ' . gettype(
                     $config[ConfigAbstractFactory::class]

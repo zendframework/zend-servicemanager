@@ -520,7 +520,7 @@ class ServiceManager implements ServiceLocatorInterface
         foreach ($abstractFactories as $abstractFactory) {
             if (is_string($abstractFactory) && class_exists($abstractFactory)) {
                 //Cached string
-                if (!isset($this->cachedAbstractFactories[$abstractFactory])) {
+                if (! isset($this->cachedAbstractFactories[$abstractFactory])) {
                     $this->cachedAbstractFactories[$abstractFactory] = new $abstractFactory();
                 }
 
@@ -754,7 +754,7 @@ class ServiceManager implements ServiceLocatorInterface
     private function doCreate($resolvedName, array $options = null)
     {
         try {
-            if (!isset($this->delegators[$resolvedName])) {
+            if (! isset($this->delegators[$resolvedName])) {
                 // Let's create the service by fetching the factory
                 $factory = $this->getFactory($resolvedName);
                 $object  = $factory($this->creationContext, $resolvedName, $options);
@@ -889,7 +889,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function validateOverrides(array $config)
     {
-        if ($this->allowOverride || !$this->configured) {
+        if ($this->allowOverride || ! $this->configured) {
             return;
         }
 
