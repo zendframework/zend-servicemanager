@@ -33,9 +33,15 @@ if (! is_array($appConfig)) {
     exit(1);
 }
 
-if (! class_exists($className)) {
-    fwrite(STDERR, sprintf('Class "%s" does not exist%s', $className, PHP_EOL));
-    exit(1);
+try {
+    $config = Tool\CliTool::createDependencyConfig($appConfig, $className);
+} catch (Exception\InvalidArgumentException $e) {
+    fwrite(STDERR, sprintf(
+        'Unable to create config for "%s": %s%s',
+        $className,
+        $e->getMessage(),
+        PHP_EOL
+    ));
 }
-
-Tool\CliTool::createDependencyConfig($appConfig, $className);
+echo Tool\CliTool::dumpConfigFile($config);
+exit(0);
