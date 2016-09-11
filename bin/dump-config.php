@@ -9,7 +9,9 @@
 namespace Zend\ServiceManager;
 
 // Setup/verify autoloading
-if (file_exists($a = __DIR__ . '/../../../autoload.php')) {
+if (file_exists($a = getcwd() . '/vendor/autoload.php')) {
+    require $a;
+} elseif (file_exists($a = __DIR__ . '/../../../autoload.php')) {
     require $a;
 } elseif (file_exists($a = __DIR__ . '/../vendor/autoload.php')) {
     require $a;
@@ -42,6 +44,7 @@ try {
         $e->getMessage(),
         PHP_EOL
     ));
+    exit(1);
 }
 echo Tool\CliTool::dumpConfigFile($config);
 exit(0);
