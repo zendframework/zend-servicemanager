@@ -36,7 +36,7 @@ if (! is_array($appConfig)) {
 }
 
 try {
-    $config = Tool\CliTool::createDependencyConfig($appConfig, $className);
+    $config = Tool\ConfigDumper::createDependencyConfig($appConfig, $className);
 } catch (Exception\InvalidArgumentException $e) {
     fwrite(STDERR, sprintf(
         'Unable to create config for "%s": %s%s',
@@ -46,5 +46,5 @@ try {
     ));
     exit(1);
 }
-echo Tool\CliTool::dumpConfigFile($config);
+echo Tool\ConfigDumper::dumpConfigFile($config);
 exit(0);
