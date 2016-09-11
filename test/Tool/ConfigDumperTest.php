@@ -22,11 +22,16 @@ use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
 class ConfigDumperTest extends TestCase
 {
+    public function setUp()
+    {
+        $this->dumper = new ConfigDumper();
+    }
+
     public function testCreateDependencyConfigExceptsIfClassNameIsNotString()
     {
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Class name must be a string, integer given');
-        ConfigDumper::createDependencyConfig([], 42);
+        $this->dumper->createDependencyConfig([], 42);
     }
 
     public function testCreateDependencyConfigExceptsIfClassDoesNotExist()
@@ -34,12 +39,12 @@ class ConfigDumperTest extends TestCase
         $className = 'Dirk\Gentley\Holistic\Detective\Agency';
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Cannot find class with name ' . $className);
-        ConfigDumper::createDependencyConfig([], $className);
+        $this->dumper->createDependencyConfig([], $className);
     }
 
     public function testCreateDependencyConfigInvokableObjectReturnsEmptyArray()
     {
-        $config = ConfigDumper::createDependencyConfig([], InvokableObject::class);
+        $config = $this->dumper->createDependencyConfig([], InvokableObject::class);
         self::assertEquals(
             [
                 ConfigAbstractFactory::class => [
@@ -52,7 +57,7 @@ class ConfigDumperTest extends TestCase
 
     public function testCreateDependencyConfigSimpleDependencyReturnsCorrectly()
     {
-        $config = ConfigDumper::createDependencyConfig([], SimpleDependencyObject::class);
+        $config = $this->dumper->createDependencyConfig([], SimpleDependencyObject::class);
         self::assertEquals(
             [
                 ConfigAbstractFactory::class => [
@@ -69,7 +74,7 @@ class ConfigDumperTest extends TestCase
 
     public function testCreateDependencyConfigClassWithoutConstructorChangesNothing()
     {
-        $config = ConfigDumper::createDependencyConfig([ConfigAbstractFactory::class => []], FailingFactory::class);
+        $config = $this->dumper->createDependencyConfig([ConfigAbstractFactory::class => []], FailingFactory::class);
         self::assertEquals([ConfigAbstractFactory::class => []], $config);
     }
 
@@ -79,7 +84,7 @@ class ConfigDumperTest extends TestCase
         self::expectExceptionMessage(
             'Cannot create config for ' . ObjectWithScalarDependency::class . ', it has no type hints in constructor'
         );
-        $config = ConfigDumper::createDependencyConfig(
+        $config = $this->dumper->createDependencyConfig(
             [ConfigAbstractFactory::class => []],
             ObjectWithScalarDependency::class
         );
@@ -89,7 +94,7 @@ class ConfigDumperTest extends TestCase
     {
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Class name must be a string, integer given');
-        ConfigDumper::createFactoryMappings([], 42);
+        $this->dumper->createFactoryMappings([], 42);
     }
 
     public function testCreateFactoryMappingsExceptsIfClassDoesNotExist()
@@ -97,7 +102,7 @@ class ConfigDumperTest extends TestCase
         $className = 'Dirk\Gentley\Holistic\Detective\Agency';
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Cannot find class with name ' . $className);
-        ConfigDumper::createFactoryMappings([], $className);
+        $this->dumper->createFactoryMappings([], $className);
     }
 
     public function testCreateFactoryMappingsReturnsUnmodifiedArrayIfMappingExists()
@@ -109,7 +114,7 @@ class ConfigDumperTest extends TestCase
                 ],
             ],
         ];
-        self::assertEquals($config, ConfigDumper::createFactoryMappings($config, InvokableObject::class));
+        self::assertEquals($config, $this->dumper->createFactoryMappings($config, InvokableObject::class));
     }
 
     public function testCreateFactoryMappingsAddsClassIfNotExists()
@@ -121,7 +126,7 @@ class ConfigDumperTest extends TestCase
                 ],
             ],
         ];
-        self::assertEquals($expectedConfig, ConfigDumper::createFactoryMappings([], InvokableObject::class));
+        self::assertEquals($expectedConfig, $this->dumper->createFactoryMappings([], InvokableObject::class));
     }
 
     public function testCreateFactoryMappingsIgnoresExistingsMappings()
@@ -133,12 +138,12 @@ class ConfigDumperTest extends TestCase
                 ],
             ],
         ];
-        self::assertEquals($config, ConfigDumper::createFactoryMappings($config, InvokableObject::class));
+        self::assertEquals($config, $this->dumper->createFactoryMappings($config, InvokableObject::class));
     }
 
     public function testCreateFactoryMappingsFromConfigReturnsIfNoConfigKey()
     {
-        self::assertEquals([], ConfigDumper::createFactoryMappingsFromConfig([]));
+        self::assertEquals([], $this->dumper->createFactoryMappingsFromConfig([]));
     }
 
     public function testCreateFactoryMappingsFromConfigExceptsWhenConfigNotArray()
@@ -148,7 +153,7 @@ class ConfigDumperTest extends TestCase
             'Config key for ' . ConfigAbstractFactory::class . ' should be an array, boolean given'
         );
 
-        ConfigDumper::createFactoryMappingsFromConfig(
+        $this->dumper->createFactoryMappingsFromConfig(
             [
                 ConfigAbstractFactory::class => true,
             ]
@@ -188,7 +193,7 @@ class ConfigDumperTest extends TestCase
             ],
         ];
 
-        self::assertEquals($expectedConfig, ConfigDumper::createFactoryMappingsFromConfig($config));
+        self::assertEquals($expectedConfig, $this->dumper->createFactoryMappingsFromConfig($config));
     }
 
     /**
@@ -196,7 +201,7 @@ class ConfigDumperTest extends TestCase
      */
     public function testDumpConfigFileReturnsContentsForConfigFileUsingUsingClassNotationAndShortArrays(array $config)
     {
-        $formatted = ConfigDumper::dumpConfigFile($config);
+        $formatted = $this->dumper->dumpConfigFile($config);
         $this->assertContains(
             '<' . "?php\n/**\n * This file generated by Zend\ServiceManager\Tool\ConfigDumper.\n",
             $formatted
