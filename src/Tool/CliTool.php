@@ -9,6 +9,8 @@
 
 namespace Zend\ServiceManager\Tool;
 
+use ReflectionClass;
+use ReflectionParameter;
 use Traversable;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
@@ -27,15 +29,15 @@ EOC;
 
     /**
      * @param array $config
-     * @param $className
+     * @param string $className
      * @return array
-     * @throws InvalidArgumentException
+     * @throws InvalidArgumentException for invalid $className
      */
     public static function createDependencyConfig(array $config, $className)
     {
         self::validateClassName($className);
 
-        $reflectionClass = new \ReflectionClass($className);
+        $reflectionClass = new ReflectionClass($className);
         if (! $reflectionClass->getConstructor()) {
             return $config;
         }
@@ -43,7 +45,7 @@ EOC;
         $constructorArguments = $reflectionClass->getConstructor()->getParameters();
         $constructorArguments = array_filter(
             $constructorArguments,
-            function (\ReflectionParameter $argument) {
+            function (ReflectionParameter $argument) {
                 return ! $argument->isOptional();
             }
         );
@@ -70,20 +72,11 @@ EOC;
     }
 
     /**
-     * @param $className
-     * @throws InvalidArgumentException
+     * @param array $config
+     * @return array
+     * @throws InvalidArgumentException if ConfigAbstractFactory configuration
+     *     value is not an array.
      */
-    private static function validateClassName($className)
-    {
-        if (! is_string($className)) {
-            throw new InvalidArgumentException('Class name must be a string, ' . gettype($className) . ' given');
-        }
-
-        if (! class_exists($className)) {
-            throw new InvalidArgumentException('Cannot find class with name ' . $className);
-        }
-    }
-
     public static function createFactoryMappingsFromConfig(array $config)
     {
         if (! array_key_exists(ConfigAbstractFactory::class, $config)) {
@@ -104,6 +97,11 @@ EOC;
         return $config;
     }
 
+    /**
+     * @param array $config
+     * @param string $className
+     * @return array
+     */
     public static function createFactoryMappings(array $config, $className)
     {
         self::validateClassName($className);
@@ -119,28 +117,48 @@ EOC;
         return $config;
     }
 
+    /**
+     * @param array $config
+     * @return string
+     */
     public static function dumpConfigFile(array $config)
     {
         $prepared = self::prepareConfig($config);
         return sprintf(self::CONFIG_TEMPLATE, date('Y-m-d H:i:s'), $prepared);
     }
 
+    /**
+     * @param $className
+     * @throws InvalidArgumentException if class name is not a string or does
+     *     not exist.
+     */
+    private static function validateClassName($className)
+    {
+        if (! is_string($className)) {
+            throw new InvalidArgumentException('Class name must be a string, ' . gettype($className) . ' given');
+        }
+
+        if (! class_exists($className)) {
+            throw new InvalidArgumentException('Cannot find class with name ' . $className);
+        }
+    }
+
+    /**
+     * @param array|Traversable $config
+     * @param int $indentLevel
+     * @return string
+     */
     private static function prepareConfig($config, $indentLevel = 1)
     {
         $indent = str_repeat(' ', $indentLevel * 4);
         $entries = [];
         foreach ($config as $key => $value) {
-            $key = class_exists($key)
-                ? sprintf('\\%s::class', $key)
-                : sprintf("'%s'", $key);
-            $value = is_array($value) || $value instanceof Traversable
-                ? self::prepareConfig($value, $indentLevel + 1)
-                : var_export($value, true);
+            $key = self::createConfigKey($key);
             $entries[] = sprintf(
-                '%s%s => %s,',
+                '%s%s%s,',
                 $indent,
-                $key,
-                $value
+                $key ? sprintf('%s => ', $key) : '',
+                self::createConfigValue($value, $indentLevel)
             );
         }
 
@@ -151,5 +169,40 @@ EOC;
             implode("\n", $entries),
             $outerIndent
         );
+    }
+
+    /**
+     * @param string|int|null $key
+     * @return null|string
+     */
+    private static function createConfigKey($key)
+    {
+        if (is_string($key) && class_exists($key)) {
+            return sprintf('\\%s::class', $key);
+        }
+
+        if (is_int($key)) {
+            return null;
+        }
+
+        return sprintf("'%s'", $key);
+    }
+
+    /**
+     * @param mixed $value
+     * @param int $indentLevel
+     * @return string
+     */
+    private static function createConfigValue($value, $indentLevel)
+    {
+        if (is_array($value) || $value instanceof Traversable) {
+            return self::prepareConfig($value, $indentLevel + 1);
+        }
+
+        if (is_string($value) && class_exists($value)) {
+            return sprintf('\\%s::class', $value);
+        }
+
+        return var_export($value, true);
     }
 }
