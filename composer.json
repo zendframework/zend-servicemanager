@@ -45,6 +45,6 @@
         "container-interop/container-interop-implementation": "^1.1"
     },
     "bin": [
-        "bin/dump-config.php"
+        "bin/generate-deps-for-config-factory"
     ]
 }
