@@ -20,33 +20,6 @@ if (file_exists($a = getcwd() . '/vendor/autoload.php')) {
     exit(1);
 }
 
-$configPath = isset($argv[1]) ? $argv[1] : '';
-$className = isset($argv[2]) ? $argv[2] : '';
-
-// Retrieve configuration
-if (! file_exists($configPath)) {
-    fwrite(STDERR, sprintf('Cannot find configuration file at path "%s"%s', $configPath, PHP_EOL));
-    exit(1);
-}
-
-$appConfig = require $configPath;
-if (! is_array($appConfig)) {
-    fwrite(STDERR, sprintf('Configuration file at path "%s" does not return an array%s', $configPath, PHP_EOL));
-    exit(1);
-}
-
-$dumper = new Tool\ConfigDumper();
-
-try {
-    $config = $dumper->createDependencyConfig($appConfig, $className);
-} catch (Exception\InvalidArgumentException $e) {
-    fwrite(STDERR, sprintf(
-        'Unable to create config for "%s": %s%s',
-        $className,
-        $e->getMessage(),
-        PHP_EOL
-    ));
-    exit(1);
-}
-echo $dumper->dumpConfigFile($config);
-exit(0);
+$command = new Tool\ConfigDumperCommand($argv[0]);
+$status = $command(array_slice($argv, 1));
+exit($status);
