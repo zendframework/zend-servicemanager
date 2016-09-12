@@ -10,22 +10,28 @@
 
 namespace ZendTest\ServiceManager\Tool;
 
+use PHPUnit_Framework_TestCase as TestCase;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
-use Zend\ServiceManager\Tool\CliTool;
+use Zend\ServiceManager\Tool\ConfigDumper;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
 use ZendTest\ServiceManager\TestAsset\SecondComplexDependencyObject;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
-class CliToolTest extends \PHPUnit_Framework_TestCase
+class ConfigDumperTest extends TestCase
 {
+    public function setUp()
+    {
+        $this->dumper = new ConfigDumper();
+    }
+
     public function testCreateDependencyConfigExceptsIfClassNameIsNotString()
     {
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Class name must be a string, integer given');
-        CliTool::createDependencyConfig([], 42);
+        $this->dumper->createDependencyConfig([], 42);
     }
 
     public function testCreateDependencyConfigExceptsIfClassDoesNotExist()
@@ -33,12 +39,12 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
         $className = 'Dirk\Gentley\Holistic\Detective\Agency';
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Cannot find class with name ' . $className);
-        CliTool::createDependencyConfig([], $className);
+        $this->dumper->createDependencyConfig([], $className);
     }
 
     public function testCreateDependencyConfigInvokableObjectReturnsEmptyArray()
     {
-        $config = CliTool::createDependencyConfig([], InvokableObject::class);
+        $config = $this->dumper->createDependencyConfig([], InvokableObject::class);
         self::assertEquals(
             [
                 ConfigAbstractFactory::class => [
@@ -51,7 +57,7 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateDependencyConfigSimpleDependencyReturnsCorrectly()
     {
-        $config = CliTool::createDependencyConfig([], SimpleDependencyObject::class);
+        $config = $this->dumper->createDependencyConfig([], SimpleDependencyObject::class);
         self::assertEquals(
             [
                 ConfigAbstractFactory::class => [
@@ -63,11 +69,12 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
             ],
             $config
         );
+        return $config;
     }
 
     public function testCreateDependencyConfigClassWithoutConstructorChangesNothing()
     {
-        $config = CliTool::createDependencyConfig([ConfigAbstractFactory::class => []], FailingFactory::class);
+        $config = $this->dumper->createDependencyConfig([ConfigAbstractFactory::class => []], FailingFactory::class);
         self::assertEquals([ConfigAbstractFactory::class => []], $config);
     }
 
@@ -77,7 +84,7 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
         self::expectExceptionMessage(
             'Cannot create config for ' . ObjectWithScalarDependency::class . ', it has no type hints in constructor'
         );
-        $config = CliTool::createDependencyConfig(
+        $config = $this->dumper->createDependencyConfig(
             [ConfigAbstractFactory::class => []],
             ObjectWithScalarDependency::class
         );
@@ -87,7 +94,7 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
     {
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Class name must be a string, integer given');
-        CliTool::createFactoryMappings([], 42);
+        $this->dumper->createFactoryMappings([], 42);
     }
 
     public function testCreateFactoryMappingsExceptsIfClassDoesNotExist()
@@ -95,7 +102,7 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
         $className = 'Dirk\Gentley\Holistic\Detective\Agency';
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Cannot find class with name ' . $className);
-        CliTool::createFactoryMappings([], $className);
+        $this->dumper->createFactoryMappings([], $className);
     }
 
     public function testCreateFactoryMappingsReturnsUnmodifiedArrayIfMappingExists()
@@ -107,7 +114,7 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ];
-        self::assertEquals($config, CliTool::createFactoryMappings($config, InvokableObject::class));
+        self::assertEquals($config, $this->dumper->createFactoryMappings($config, InvokableObject::class));
     }
 
     public function testCreateFactoryMappingsAddsClassIfNotExists()
@@ -119,7 +126,7 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ];
-        self::assertEquals($expectedConfig, CliTool::createFactoryMappings([], InvokableObject::class));
+        self::assertEquals($expectedConfig, $this->dumper->createFactoryMappings([], InvokableObject::class));
     }
 
     public function testCreateFactoryMappingsIgnoresExistingsMappings()
@@ -131,12 +138,12 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ];
-        self::assertEquals($config, CliTool::createFactoryMappings($config, InvokableObject::class));
+        self::assertEquals($config, $this->dumper->createFactoryMappings($config, InvokableObject::class));
     }
 
     public function testCreateFactoryMappingsFromConfigReturnsIfNoConfigKey()
     {
-        self::assertEquals([], CliTool::createFactoryMappingsFromConfig([]));
+        self::assertEquals([], $this->dumper->createFactoryMappingsFromConfig([]));
     }
 
     public function testCreateFactoryMappingsFromConfigExceptsWhenConfigNotArray()
@@ -146,7 +153,7 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
             'Config key for ' . ConfigAbstractFactory::class . ' should be an array, boolean given'
         );
 
-        CliTool::createFactoryMappingsFromConfig(
+        $this->dumper->createFactoryMappingsFromConfig(
             [
                 ConfigAbstractFactory::class => true,
             ]
@@ -186,6 +193,28 @@ class CliToolTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        self::assertEquals($expectedConfig, CliTool::createFactoryMappingsFromConfig($config));
+        self::assertEquals($expectedConfig, $this->dumper->createFactoryMappingsFromConfig($config));
+    }
+
+    /**
+     * @depends testCreateDependencyConfigSimpleDependencyReturnsCorrectly
+     */
+    public function testDumpConfigFileReturnsContentsForConfigFileUsingUsingClassNotationAndShortArrays(array $config)
+    {
+        $formatted = $this->dumper->dumpConfigFile($config);
+        $this->assertContains(
+            '<' . "?php\n/**\n * This file generated by Zend\ServiceManager\Tool\ConfigDumper.\n",
+            $formatted
+        );
+
+        $this->assertNotContains('array(', $formatted);
+        $this->assertContains('::class', $formatted);
+
+        $file = tempnam(sys_get_temp_dir(), 'ZSCLI');
+        file_put_contents($file, $formatted);
+        $test = include($file);
+        unlink($file);
+
+        $this->assertEquals($test, $config);
     }
 }
