@@ -36,9 +36,9 @@ EOC;
         $this->validateClassName($className);
 
         $reflectionClass = new ReflectionClass($className);
+        // class has no constructor, treat it as an invokable
         if (! $reflectionClass->getConstructor()) {
-            $config[ConfigAbstractFactory::class][$className] = [];
-            return $config;
+            return $this->createInvokable($config, $className);
         }
 
         $constructorArguments = $reflectionClass->getConstructor()->getParameters();
@@ -48,12 +48,12 @@ EOC;
                 return ! $argument->isOptional();
             }
         );
-
-        // has no required parameters, we can just add an empty array
+        // has no required parameters, treat it as an invokable
         if (empty($constructorArguments)) {
-            $config[ConfigAbstractFactory::class][$className] = [];
-            return $config;
+            return $this->createInvokable($config, $className);
         }
+
+        $config[ConfigAbstractFactory::class][$className] = [];
 
         foreach ($constructorArguments as $constructorArgument) {
             $argumentType = $constructorArgument->getClass();
@@ -84,6 +84,17 @@ EOC;
         if (! class_exists($className)) {
             throw new InvalidArgumentException('Cannot find class with name ' . $className);
         }
+    }
+
+    /**
+     * @param array $config
+     * @param string $className
+     * @return array
+     */
+    private function createInvokable(array $config, $className)
+    {
+        $config[ConfigAbstractFactory::class][$className] = [];
+        return $config;
     }
 
     /**

@@ -10,11 +10,11 @@
 
 namespace ZendTest\ServiceManager\Tool;
 
-use PhpBench\Registry\Config;
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Tool\ConfigDumper;
+use ZendTest\ServiceManager\TestAsset\DoubleDependencyObject;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
@@ -99,6 +99,35 @@ class ConfigDumperTest extends TestCase
             [ConfigAbstractFactory::class => []],
             ObjectWithScalarDependency::class
         );
+    }
+
+    public function testCreateDependencyConfigWorksWithExistingConfig()
+    {
+        $config = [
+            ConfigAbstractFactory::class => [
+                InvokableObject::class => [],
+                SimpleDependencyObject::class => [
+                    InvokableObject::class,
+                ],
+            ],
+        ];
+
+        self::assertEquals($config, $this->dumper->createDependencyConfig($config, SimpleDependencyObject::class));
+    }
+
+    public function testCreateDependencyConfigWorksWithMultipleDependenciesOfSameType()
+    {
+        $expectedConfig = [
+            ConfigAbstractFactory::class => [
+                DoubleDependencyObject::class => [
+                    InvokableObject::class,
+                    InvokableObject::class,
+                ],
+                InvokableObject::class => [],
+            ],
+        ];
+
+        self::assertEquals($expectedConfig, $this->dumper->createDependencyConfig([], DoubleDependencyObject::class));
     }
 
     public function testCreateFactoryMappingsExceptsIfClassNameIsNotString()
