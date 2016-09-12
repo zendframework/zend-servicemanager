@@ -10,6 +10,7 @@
 
 namespace ZendTest\ServiceManager\Tool;
 
+use PhpBench\Registry\Config;
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
@@ -22,6 +23,11 @@ use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
 class ConfigDumperTest extends TestCase
 {
+    /**
+     * @var ConfigDumper
+     */
+    private $dumper;
+
     public function setUp()
     {
         $this->dumper = new ConfigDumper();
@@ -72,10 +78,15 @@ class ConfigDumperTest extends TestCase
         return $config;
     }
 
-    public function testCreateDependencyConfigClassWithoutConstructorChangesNothing()
+    public function testCreateDependencyConfigClassWithoutConstructorHandlesAsInvokable()
     {
+        $expectedConfig = [
+            ConfigAbstractFactory::class => [
+                FailingFactory::class => [],
+            ],
+        ];
         $config = $this->dumper->createDependencyConfig([ConfigAbstractFactory::class => []], FailingFactory::class);
-        self::assertEquals([ConfigAbstractFactory::class => []], $config);
+        self::assertEquals($expectedConfig, $config);
     }
 
     public function testCreateDependencyConfigWithoutTypeHintedParameterExcepts()

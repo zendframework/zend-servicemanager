@@ -37,6 +37,7 @@ EOC;
 
         $reflectionClass = new ReflectionClass($className);
         if (! $reflectionClass->getConstructor()) {
+            $config[ConfigAbstractFactory::class][$className] = [];
             return $config;
         }
 
@@ -67,6 +68,22 @@ EOC;
         }
 
         return $config;
+    }
+
+    /**
+     * @param $className
+     * @throws InvalidArgumentException if class name is not a string or does
+     *     not exist.
+     */
+    private function validateClassName($className)
+    {
+        if (! is_string($className)) {
+            throw new InvalidArgumentException('Class name must be a string, ' . gettype($className) . ' given');
+        }
+
+        if (! class_exists($className)) {
+            throw new InvalidArgumentException('Cannot find class with name ' . $className);
+        }
     }
 
     /**
@@ -128,22 +145,6 @@ EOC;
             date('Y-m-d H:i:s'),
             $prepared
         );
-    }
-
-    /**
-     * @param $className
-     * @throws InvalidArgumentException if class name is not a string or does
-     *     not exist.
-     */
-    private function validateClassName($className)
-    {
-        if (! is_string($className)) {
-            throw new InvalidArgumentException('Class name must be a string, ' . gettype($className) . ' given');
-        }
-
-        if (! class_exists($className)) {
-            throw new InvalidArgumentException('Cannot find class with name ' . $className);
-        }
     }
 
     /**
