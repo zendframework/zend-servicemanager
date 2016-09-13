@@ -54,6 +54,7 @@ EOC;
                 return ! $argument->isOptional();
             }
         );
+
         // has no required parameters, treat it as an invokable
         if (empty($constructorArguments)) {
             return $this->createInvokable($config, $className);
