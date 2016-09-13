@@ -13,7 +13,9 @@ namespace ZendTest\ServiceManager\Tool;
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
+use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Tool\ConfigDumper;
+use ZendTest\ServiceManager\TestAsset\ClassDependingOnAnInterface;
 use ZendTest\ServiceManager\TestAsset\DoubleDependencyObject;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
@@ -44,7 +46,7 @@ class ConfigDumperTest extends TestCase
     {
         $className = 'Dirk\Gentley\Holistic\Detective\Agency';
         self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Cannot find class with name ' . $className);
+        self::expectExceptionMessage('Cannot find class or interface with name ' . $className);
         $this->dumper->createDependencyConfig([], $className);
     }
 
@@ -93,7 +95,8 @@ class ConfigDumperTest extends TestCase
     {
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage(
-            'Cannot create config for ' . ObjectWithScalarDependency::class . ', it has no type hints in constructor'
+            'Cannot create config for constructor argument "aName", '
+            . 'it has no type hint, or non-class/interface type hint'
         );
         $config = $this->dumper->createDependencyConfig(
             [ConfigAbstractFactory::class => []],
@@ -141,7 +144,7 @@ class ConfigDumperTest extends TestCase
     {
         $className = 'Dirk\Gentley\Holistic\Detective\Agency';
         self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Cannot find class with name ' . $className);
+        self::expectExceptionMessage('Cannot find class or interface with name ' . $className);
         $this->dumper->createFactoryMappings([], $className);
     }
 
@@ -256,5 +259,20 @@ class ConfigDumperTest extends TestCase
         unlink($file);
 
         $this->assertEquals($test, $config);
+    }
+
+    public function testWillDumpConfigForClassDependingOnInterfaceButOmitInterfaceConfig()
+    {
+        $config = $this->dumper->createDependencyConfig([], ClassDependingOnAnInterface::class);
+        self::assertEquals(
+            [
+                ConfigAbstractFactory::class => [
+                    ClassDependingOnAnInterface::class => [
+                        FactoryInterface::class,
+                    ],
+                ],
+            ],
+            $config
+        );
     }
 }
