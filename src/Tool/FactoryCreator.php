@@ -11,6 +11,7 @@ namespace Zend\ServiceManager\Tool;
 
 use ReflectionClass;
 use ReflectionParameter;
+use Zend\ServiceManager\Exception\InvalidArgumentException;
 
 class FactoryCreator
 {
@@ -89,7 +90,19 @@ EOT;
         $constructorParameters = array_filter(
             $constructorParameters,
             function (ReflectionParameter $argument) {
-                return ! $argument->isOptional();
+                if ($argument->isOptional()) {
+                    return false;
+                }
+
+                if (null === $argument->getClass()) {
+                    throw new InvalidArgumentException(sprintf(
+                        'Cannot identify type for constructor argument "%s"; '
+                        . 'no type hint, or non-class/interface type hint',
+                        $argument->getName()
+                    ));
+                }
+
+                return true;
             }
         );
 

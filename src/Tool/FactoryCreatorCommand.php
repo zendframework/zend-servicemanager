@@ -87,7 +87,7 @@ EOH;
             return 1;
         }
 
-        fwrite(STDOUT, $factory);
+        $this->helper->write($factory, false);
         return 0;
     }
 
@@ -110,7 +110,7 @@ EOH;
         $class = $arg1;
 
         if (! class_exists($class)) {
-            return $this->createArguments(self::COMMAND_ERROR, null, null, sprintf(
+            return $this->createArguments(self::COMMAND_ERROR, null, sprintf(
                 'Class "%s" does not exist or could not be autoloaded.',
                 $class
             ));
