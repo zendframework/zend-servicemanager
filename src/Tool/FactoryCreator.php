@@ -50,7 +50,7 @@ EOT;
 
         return sprintf(
             self::FACTORY_TEMPLATE,
-            str_replace($class, '', $className) . 'Factory',
+            str_replace('\\' . $class, '', $className),
             $className,
             $class,
             $class,

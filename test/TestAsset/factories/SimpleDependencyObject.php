@@ -1,6 +1,6 @@
 <?php
 
-namespace ZendTest\ServiceManager\TestAsset\Factory;
+namespace ZendTest\ServiceManager\TestAsset;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
