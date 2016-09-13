@@ -46,6 +46,7 @@
         "container-interop/container-interop-implementation": "^1.1"
     },
     "bin": [
-        "bin/generate-deps-for-config-factory"
+        "bin/generate-deps-for-config-factory",
+        "bin/generate-factory-for-class"
     ]
 }
