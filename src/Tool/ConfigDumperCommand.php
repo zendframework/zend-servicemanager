@@ -90,7 +90,7 @@ EOH;
             return 1;
         }
 
-        fwrite(STDOUT, $dumper->dumpConfigFile($config));
+        $this->helper->write($dumper->dumpConfigFile($config), false);
         return 0;
     }
 
