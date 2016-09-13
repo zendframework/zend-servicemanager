@@ -2,7 +2,6 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
