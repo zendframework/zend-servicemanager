@@ -8,6 +8,7 @@
 namespace Zend\ServiceManager\Tool;
 
 use Zend\ServiceManager\Exception;
+use Zend\Stdlib\ConsoleHelper;
 
 class ConfigDumperCommand
 {
@@ -15,33 +16,43 @@ class ConfigDumperCommand
     const COMMAND_ERROR = 'error';
     const COMMAND_HELP = 'help';
 
+    const DEFAULT_SCRIPT_NAME = __CLASS__;
+
     const HELP_TEMPLATE = <<< EOH
-%sUsage:%s
+<info>Usage:</info>
 
   %s [-h|--help|help] <configFile> <className>
 
-%sArguments:%s
+<info>Arguments:</info>
 
-  %s-h|--help|help%s    This usage message
-  %s<configFile>%s      Path to an existing config file for which to generate
+  <info>-h|--help|help</info>    This usage message
+  <info><configFile></info>      Path to an existing config file for which to generate
                     additional configuration. Must return an array.
-  %s<className>%s       Name of the class to reflect and for which to generate
+  <info><className></info>       Name of the class to reflect and for which to generate
                     dependency configuration.
 
 Generates to STDOUT a replacement configuration file containing dependency
 configuration for the named class with which to configure the
 ConfigAbstractFactory.
-
 EOH;
 
+    /**
+     * @var ConsoleHelper
+     */
+    private $helper;
+
+    /**
+     * @var string
+     */
     private $scriptName;
 
     /**
      * @param string $scriptName
      */
-    public function __construct($scriptName = self::DEFAULT_SCRIPT_NAME)
+    public function __construct($scriptName = self::DEFAULT_SCRIPT_NAME, ConsoleHelper $helper = null)
     {
         $this->scriptName = $scriptName;
+        $this->helper = $helper ?: new ConsoleHelper();
     }
 
     /**
@@ -57,7 +68,7 @@ EOH;
                 $this->help();
                 return 0;
             case self::COMMAND_ERROR:
-                $this->emitErrorMessage($arguments->message);
+                $this->helper->writeErrorMessage($arguments->message);
                 $this->help(STDERR);
                 return 1;
             case self::COMMAND_DUMP:
@@ -70,7 +81,7 @@ EOH;
         try {
             $config = $dumper->createDependencyConfig($arguments->config, $arguments->class);
         } catch (Exception\InvalidArgumentException $e) {
-            $this->emitErrorMessage(sprintf(
+            $this->helper->writeErrorMessage(sprintf(
                 'Unable to create config for "%s": %s',
                 $arguments->class,
                 $e->getMessage()
@@ -137,22 +148,10 @@ EOH;
      */
     private function help($resource = STDOUT)
     {
-        $startInfoColor = $this->startInfoColor();
-        $resetColor     = $this->resetColor();
-        fwrite($resource, sprintf(
+        $this->helper->writeLine(sprintf(
             self::HELP_TEMPLATE,
-            $startInfoColor,
-            $resetColor,
-            $this->scriptName,
-            $startInfoColor,
-            $resetColor,
-            $startInfoColor,
-            $resetColor,
-            $startInfoColor,
-            $resetColor,
-            $startInfoColor,
-            $resetColor
-        ));
+            $this->scriptName
+        ), true, $resource);
     }
 
     /**
@@ -170,65 +169,5 @@ EOH;
             'class'   => $class,
             'message' => $error,
         ];
-    }
-
-    /**
-     * @param string $message
-     * @return void
-     */
-    private function emitErrorMessage($message)
-    {
-        fwrite(STDERR, sprintf(
-            "%s%s%s%s%s",
-            $this->startErrorColor(),
-            $message,
-            $this->resetColor(),
-            PHP_EOL,
-            PHP_EOL
-        ));
-    }
-
-    /**
-     * Ensure newlines are appropriate for the current terminal.
-     *
-     * @param string
-     * @return string
-     */
-    private function formatNewlines($string)
-    {
-        return str_replace("\n", PHP_EOL, $string);
-    }
-
-    /**
-     * @return string
-     */
-    private function startInfoColor()
-    {
-        if (ConsoleHelper::supportsColorOutput()) {
-            return ConsoleHelper::COLOR_GREEN;
-        }
-        return '';
-    }
-
-    /**
-     * @return string
-     */
-    private function startErrorColor()
-    {
-        if (ConsoleHelper::supportsColorOutput()) {
-            return ConsoleHelper::COLOR_RED;
-        }
-        return '';
-    }
-
-    /**
-     * @return string
-     */
-    private function resetColor()
-    {
-        if (ConsoleHelper::supportsColorOutput()) {
-            return ConsoleHelper::COLOR_RESET;
-        }
-        return '';
     }
 }
