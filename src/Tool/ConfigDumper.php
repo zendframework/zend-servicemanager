@@ -36,6 +36,12 @@ EOC;
         $this->validateClassName($className);
 
         $reflectionClass = new ReflectionClass($className);
+
+        // class is an interface; do nothing
+        if ($reflectionClass->isInterface()) {
+            return $config;
+        }
+
         // class has no constructor, treat it as an invokable
         if (! $reflectionClass->getConstructor()) {
             return $this->createInvokable($config, $className);
@@ -48,6 +54,7 @@ EOC;
                 return ! $argument->isOptional();
             }
         );
+
         // has no required parameters, treat it as an invokable
         if (empty($constructorArguments)) {
             return $this->createInvokable($config, $className);
@@ -58,9 +65,11 @@ EOC;
         foreach ($constructorArguments as $constructorArgument) {
             $argumentType = $constructorArgument->getClass();
             if (is_null($argumentType)) {
-                throw new InvalidArgumentException(
-                    'Cannot create config for ' . $className . ', it has no type hints in constructor'
-                );
+                throw new InvalidArgumentException(sprintf(
+                    'Cannot create config for constructor argument "%s", '
+                    . 'it has no type hint, or non-class/interface type hint',
+                    $constructorArgument->getName()
+                ));
             }
             $argumentName = $argumentType->getName();
             $config = $this->createDependencyConfig($config, $argumentName);
@@ -81,8 +90,8 @@ EOC;
             throw new InvalidArgumentException('Class name must be a string, ' . gettype($className) . ' given');
         }
 
-        if (! class_exists($className)) {
-            throw new InvalidArgumentException('Cannot find class with name ' . $className);
+        if (! class_exists($className) && ! interface_exists($className)) {
+            throw new InvalidArgumentException('Cannot find class or interface with name ' . $className);
         }
     }
 

@@ -9,12 +9,36 @@
 
 namespace Zend\ServiceManager\Tool;
 
-
 use ReflectionClass;
 use ReflectionParameter;
+use Zend\ServiceManager\Exception\InvalidArgumentException;
 
 class FactoryCreator
 {
+    const FACTORY_TEMPLATE = <<<'EOT'
+<?php
+
+namespace %s;
+
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
+use %s;
+
+class %sFactory implements FactoryInterface
+{
+    /**
+     * @param ContainerInterface $container
+     * @param string $requestedName
+     * @param null|array $options
+     * @return %s
+     */
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        return new %s(%s);
+    }
+}
+
+EOT;
 
     /**
      * @param string $className
@@ -23,37 +47,16 @@ class FactoryCreator
     public function createFactory($className)
     {
         $class = $this->getClassName($className);
-        $namespace = str_replace($class, '', $className) . 'Factory';
-        $constructorParameters = $this->getConstructorParameters($className);
 
-        $factory = '<?php' . PHP_EOL;
-        $factory .= PHP_EOL;
-        $factory .= 'namespace ' . $namespace . ';' . PHP_EOL;
-        $factory .= PHP_EOL;
-
-        $factory .= 'use Interop\Container\ContainerInterface;' . PHP_EOL;
-        $factory .= 'use Zend\ServiceManager\Factory\FactoryInterface;' . PHP_EOL;
-        $factory .= 'use ' . $className . ';' . PHP_EOL;
-        $factory .= PHP_EOL;
-
-        $factory .= 'class ' . $class . 'Factory implements FactoryInterface' . PHP_EOL;
-        $factory .= '{' . PHP_EOL;
-        $factory .= '    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)' . PHP_EOL;
-        $factory .= '    {' . PHP_EOL;
-
-        foreach ($constructorParameters as $variable => $fqns) {
-            $factory .= '        ' . $variable . ' = $container->get(\\' . $fqns . '::class);' . PHP_EOL;
-        }
-        if (! empty($constructorParameters)) {
-            $factory .= PHP_EOL;
-        }
-
-        $factory .= '        return new ' . $class . '(' . implode(', ', array_keys($constructorParameters)) . ');' . PHP_EOL;
-        $factory .= '    }' . PHP_EOL;
-        $factory .= '}' . PHP_EOL;
-        $factory .= PHP_EOL;
-
-        return $factory;
+        return sprintf(
+            self::FACTORY_TEMPLATE,
+            str_replace('\\' . $class, '', $className),
+            $className,
+            $class,
+            $class,
+            $class,
+            $this->createArgumentString($className)
+        );
     }
 
     /**
@@ -79,18 +82,63 @@ class FactoryCreator
         }
 
         $constructorParameters = $reflectionClass->getConstructor()->getParameters();
+
+        if (empty($constructorParameters)) {
+            return [];
+        }
+
         $constructorParameters = array_filter(
             $constructorParameters,
             function (ReflectionParameter $argument) {
-                return ! $argument->isOptional();
+                if ($argument->isOptional()) {
+                    return false;
+                }
+
+                if (null === $argument->getClass()) {
+                    throw new InvalidArgumentException(sprintf(
+                        'Cannot identify type for constructor argument "%s"; '
+                        . 'no type hint, or non-class/interface type hint',
+                        $argument->getName()
+                    ));
+                }
+
+                return true;
             }
         );
 
-        $values = [];
-        foreach ($constructorParameters as $parameter) {
-            $values['$' . lcfirst($parameter->getName())] = $parameter->getType();
+        if (empty($constructorParameters)) {
+            return [];
         }
 
-        return $values;
+        return array_map(function ($parameter) {
+            return $parameter->getType();
+        }, $constructorParameters);
+    }
+
+    /**
+     * @param string $className
+     * @return string
+     */
+    private function createArgumentString($className)
+    {
+        $arguments = array_map(function ($dependency) {
+            return sprintf('$container->get(\\%s::class)', $dependency);
+        }, $this->getConstructorParameters($className));
+
+        switch (count($arguments)) {
+            case 0:
+                return '';
+            case 1:
+                return array_shift($arguments);
+            default:
+                $argumentPad = str_repeat(' ', 12);
+                $closePad = str_repeat(' ', 8);
+                return sprintf(
+                    "\n%s%s\n%s",
+                    $argumentPad,
+                    implode(",\n" . $argumentPad, $arguments),
+                    $closePad
+                );
+        }
     }
 }
