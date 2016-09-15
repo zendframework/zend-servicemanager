@@ -38,14 +38,14 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
     public function testFactoryInstantiatesClassDirectlyIfItHasNoConstructor()
     {
         $factory = new ReflectionBasedAbstractFactory();
-        $instance= $factory($this->container->reveal(), TestAsset\ClassWithNoConstructor::class);
+        $instance = $factory($this->container->reveal(), TestAsset\ClassWithNoConstructor::class);
         $this->assertInstanceOf(TestAsset\ClassWithNoConstructor::class, $instance);
     }
 
     public function testFactoryInstantiatesClassDirectlyIfConstructorHasNoArguments()
     {
         $factory = new ReflectionBasedAbstractFactory();
-        $instance= $factory($this->container->reveal(), TestAsset\ClassWithEmptyConstructor::class);
+        $instance = $factory($this->container->reveal(), TestAsset\ClassWithEmptyConstructor::class);
         $this->assertInstanceOf(TestAsset\ClassWithEmptyConstructor::class, $instance);
     }
 
@@ -75,7 +75,7 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
                 TestAsset\ClassWithScalarParameters::class
             )
         );
-        $instance= $factory($this->container->reveal(), TestAsset\ClassWithScalarParameters::class);
+        $instance = $factory($this->container->reveal(), TestAsset\ClassWithScalarParameters::class);
     }
 
     public function testFactoryInjectsConfigServiceForConfigArgumentsTypeHintedAsArray()
@@ -112,7 +112,7 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
         $this->container->get('ValidatorManager')->willReturn($validators);
 
         $factory = new ReflectionBasedAbstractFactory([TestAsset\ValidatorPluginManager::class => 'ValidatorManager']);
-        $instance= $factory(
+        $instance = $factory(
             $this->container->reveal(),
             TestAsset\ClassAcceptingWellKnownServicesAsConstructorParameters::class
         );
@@ -138,7 +138,7 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
         $this->container->get('config')->willReturn($config);
 
         $factory = new ReflectionBasedAbstractFactory([TestAsset\ValidatorPluginManager::class => 'ValidatorManager']);
-        $instance= $factory($this->container->reveal(), TestAsset\ClassWithMixedConstructorParameters::class);
+        $instance = $factory($this->container->reveal(), TestAsset\ClassWithMixedConstructorParameters::class);
         $this->assertInstanceOf(TestAsset\ClassWithMixedConstructorParameters::class, $instance);
 
         $this->assertEquals($config, $instance->config);
