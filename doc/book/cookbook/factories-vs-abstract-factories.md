@@ -27,7 +27,7 @@ Factory          | Performance; explicit mapping to factory responsible | Additi
 Essentially, it comes down to *convenience* versus *explicitness* and/or
 *performance*.
 
-## Conveneience
+## Convenience
 
 Writing a factory per service is time consuming, and, particularly in early
 stages of an application, can distract from the actual business of writing the
