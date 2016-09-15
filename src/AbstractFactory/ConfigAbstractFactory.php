@@ -22,7 +22,7 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
      */
     public function canCreate(\Interop\Container\ContainerInterface $container, $requestedName)
     {
-        if (!$container->has('config') || !array_key_exists(self::class, $container->get('config'))) {
+        if (! $container->has('config') || ! array_key_exists(self::class, $container->get('config'))) {
             return false;
         }
         $config = $container->get('config');
@@ -36,25 +36,25 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
      */
     public function __invoke(\Interop\Container\ContainerInterface $container, $requestedName, array $options = null)
     {
-        if (!$container->has('config')) {
+        if (! $container->has('config')) {
             throw new ServiceNotCreatedException('Cannot find a config array in the container');
         }
 
         $config = $container->get('config');
 
-        if (!is_array($config)) {
+        if (! is_array($config)) {
             throw new ServiceNotCreatedException('Config must be an array');
         }
 
-        if (!array_key_exists(self::class, $config)) {
+        if (! array_key_exists(self::class, $config)) {
             throw new ServiceNotCreatedException('Cannot find a `' . self::class . '` key in the config array');
         }
 
         $dependencies = $config[self::class];
 
-        if (!is_array($dependencies)
-            || !array_key_exists($requestedName, $dependencies)
-            || !is_array($dependencies[$requestedName])
+        if (! is_array($dependencies)
+            || ! array_key_exists($requestedName, $dependencies)
+            || ! is_array($dependencies[$requestedName])
         ) {
             throw new ServiceNotCreatedException('Dependencies config must exist and be an array');
         }
