@@ -1,4 +1,4 @@
-# Automating Factories
+# Reflection Factory
 
 - Since 3.2.0.
 
@@ -36,7 +36,7 @@ The factory operates with the following constraints/features:
   application "config" service (i.e., the merged configuration).
 - Parameters typehinted against array, but not named `$config`, will
   be injected with an empty array.
-- Scalar parameters will be resolved as null values.
+- Scalar parameters will result in the factory raising an exception.
 - If a service cannot be found for a given typehint, the factory will
   raise an exception detailing this.
 
@@ -44,7 +44,9 @@ The factory operates with the following constraints/features:
 make assumptions about which argument(s) they might replace.
 
 Once your dependencies have stabilized, we recommend writing a dedicated
-factory, as reflection can introduce performance overhead.
+factory, as reflection can introduce performance overhead; you may use the
+[generate-factory-for-class console tool](console-tools.md#generate-factory-for-class)
+to do so.
 
 ## Handling well-known services
 

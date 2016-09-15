@@ -57,7 +57,7 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
         $this->setExpectedException(
             ServiceNotFoundException::class,
             sprintf(
-                'Unable to create controller "%s"; unable to resolve parameter "sample" using type hint "%s"',
+                'Unable to create service "%s"; unable to resolve parameter "sample" using type hint "%s"',
                 TestAsset\ClassWithTypeHintedConstructorParameter::class,
                 TestAsset\SampleInterface::class
             )
@@ -65,13 +65,17 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
         $factory($this->container->reveal(), TestAsset\ClassWithTypeHintedConstructorParameter::class);
     }
 
-    public function testFactoryPassesNullForScalarParameters()
+    public function testFactoryRaisesExceptionForScalarParameters()
     {
         $factory = new ReflectionBasedAbstractFactory();
+        $this->setExpectedException(
+            ServiceNotFoundException::class,
+            sprintf(
+                'Unable to create service "%s"; unable to resolve parameter "foo" to a class, interface, or array type',
+                TestAsset\ClassWithScalarParameters::class
+            )
+        );
         $instance= $factory($this->container->reveal(), TestAsset\ClassWithScalarParameters::class);
-        $this->assertInstanceOf(TestAsset\ClassWithScalarParameters::class, $instance);
-        $this->assertNull($instance->foo);
-        $this->assertNull($instance->bar);
     }
 
     public function testFactoryInjectsConfigServiceForConfigArgumentsTypeHintedAsArray()
@@ -138,7 +142,6 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
         $this->assertInstanceOf(TestAsset\ClassWithMixedConstructorParameters::class, $instance);
 
         $this->assertEquals($config, $instance->config);
-        $this->assertNull($instance->foo);
         $this->assertEquals([], $instance->options);
         $this->assertSame($sample, $instance->sample);
         $this->assertSame($validators, $instance->validators);

@@ -10,7 +10,6 @@ namespace ZendTest\ServiceManager\AbstractFactory\TestAsset;
 class ClassWithMixedConstructorParameters
 {
     public $config;
-    public $foo = 'foo';
     public $options;
     public $sample;
     public $validators;
@@ -19,13 +18,11 @@ class ClassWithMixedConstructorParameters
         SampleInterface $sample,
         ValidatorPluginManager $validators,
         array $config,
-        $foo,
         array $options = null
     ) {
         $this->sample = $sample;
         $this->validators = $validators;
         $this->config = $config;
-        $this->foo = $foo;
         $this->options = $options;
     }
 }
