@@ -35,7 +35,8 @@ classes and implementations; in addition, since requirements are often changing
 regularly, this boiler-plate code can be a nuisance.
 
 In such situations, one or more abstract factories &mdash; such as the
-[ConfigAbstractFactory](../config-abstract-factory.md) or the
+[ConfigAbstractFactory](../config-abstract-factory.md), the
+[ReflectionBasedAbstractFactory](../reflection-abstract-factory.md), or the
 [zend-mvc LazyControllerAbstractFactory](https://docs.zendframework.com/zend-mvc/cookbook/automating-controller-factories/)
 &mdash; that can handle the bulk of your needs are often worthwhile, saving you
 time and effort as you code.
@@ -80,10 +81,18 @@ What it comes down to is which development aspects your organization or project
 favor. Hopefully the above arguments detail what tradeoffs occur, so you may
 make an appropriate choice.
 
-> ### Tooling
->
-> We will likely provide tooling in the future to convert
-> `ConfigAbstractFactory` configuration into discrete factory classes in the
-> future, allowing you to mitigate the performance issues of using an abstract
-> factory when in production. As such, tooling support should also be a
-> consideration when deciding on your project strategy.
+## Tooling
+
+Starting with 3.2.0, we began offering a variety of [console tools](../console-tools.md)
+to assist you in generating both dependency configuration and factories. Use
+these to help your code evolve. An expected workflow in your application
+development evolution is:
+
+- Usage of the `ReflectionBasedAbstractFactory` as a "catch-all", so that you
+  do not need to do any factory/dependency configuration immediately.
+- Usage of the `ConfigAbstractFactory`, mapped to services, once dependencies
+  have settled, to disambiguate dependencies, or to list custom services
+  returning scalar or array values.
+- Finally, usage of the `generate-factory-for-class` vendor binary to generate
+  actual factory classes for your production-ready code, providing the best
+  performance.
