@@ -22,7 +22,8 @@
         "phpunit/phpunit": "^4.6 || ^5.2.10",
         "ocramius/proxy-manager": "^1.0 || ^2.0",
         "squizlabs/php_codesniffer": "^2.5.1",
-        "phpbench/phpbench": "^0.10.0"
+        "phpbench/phpbench": "^0.10.0",
+        "mikey179/vfsStream": "^1.6"
     },
     "suggest": {
         "ocramius/proxy-manager": "ProxyManager 1.* to handle lazy initialization of services",

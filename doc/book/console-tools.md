@@ -19,25 +19,17 @@ Arguments:
   <className>       Name of the class to reflect and for which to generate
                     dependency configuration.
 
-Generates to STDOUT a replacement configuration file containing dependency
-configuration for the named class with which to configure the
-ConfigAbstractFactory.
+
+Reads the provided configuration file, and injects it with
+ConfigAbstractFactory dependency configuration for the provided class
+name, writing the changes back to the file.
 ```
 
 This utility will generate dependency configuration for the named class for use
 with the [ConfigAbstractFactory](config-abstract-factory.md). When doing so, it
 will read the named configuration file, and merge any configuration it generates
-with the return values of that file, emitting the updated version to STDOUT.
-This allows you to pipe it back to the original:
-
-```bash
-$ ./vendor/bin/generate-deps-for-config-factory \
-> ./config/autoload/dependencies.local.php \
-> "Application\\Model\\AlbumModel" > ./config/autoload/dependencies.local.php
-```
-
-Alternately, you can pipe them to a new file, so that you can diff the original
-to the generated file.
+with the return values of that file, writing the changes back to the original
+file.
 
 ## generate-factory-for-class
 
