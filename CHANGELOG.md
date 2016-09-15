@@ -22,6 +22,16 @@ All notable changes to this project will be documented in this file, in reverse 
   `Zend\ServiceManager\Tool\FactoryCreator`, which will introspect a given class
   and generate a factory for it. It also adds a vendor binary,
   `generate-factory-for-class`, for generating these from the command line.
+- [#153](https://github.com/zendframework/zend-servicemanager/pull/153) adds
+  `Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory`. This
+  class may be used as either a mapped factory or an abstract factory, and will
+  use reflection in order to determine which dependencies to use from the
+  container when instantiating the requested service, with the following rules:
+  - Scalar values are not allowed, unless they have default values associated.
+  - Values named `$config` type-hinted against `array` will be injected with the
+    `config` service, if present.
+  - All other array values will be provided an empty array.
+  - Class/interface typehints will be pulled from the container.
 
 ### Deprecated
 
