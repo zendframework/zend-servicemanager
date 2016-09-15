@@ -32,6 +32,9 @@ All notable changes to this project will be documented in this file, in reverse 
     `config` service, if present.
   - All other array values will be provided an empty array.
   - Class/interface typehints will be pulled from the container.
+- [#150](https://github.com/zendframework/zend-servicemanager/pull/150) adds
+  a "cookbook" section to the documentation, with an initial document detailing
+  the pros and cons of abstract factory usage.
 
 ### Deprecated
 
