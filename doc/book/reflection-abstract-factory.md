@@ -36,7 +36,8 @@ The factory operates with the following constraints/features:
   application "config" service (i.e., the merged configuration).
 - Parameters typehinted against array, but not named `$config`, will
   be injected with an empty array.
-- Scalar parameters will result in the factory raising an exception.
+- Scalar parameters will result in the factory raising an exception,
+  unless a default value is present; if it is, that value will be used.
 - If a service cannot be found for a given typehint, the factory will
   raise an exception detailing this.
 

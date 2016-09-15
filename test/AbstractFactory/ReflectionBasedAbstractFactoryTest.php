@@ -146,4 +146,13 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
         $this->assertSame($sample, $instance->sample);
         $this->assertSame($validators, $instance->validators);
     }
+
+    public function testFactoryWillUseDefaultValueWhenPresentForScalarArgument()
+    {
+        $this->container->has('config')->willReturn(false);
+        $factory = new ReflectionBasedAbstractFactory();
+        $instance = $factory($this->container->reveal(), TestAsset\ClassWithScalarDependencyDefiningDefaultValue::class);
+        $this->assertInstanceOf(TestAsset\ClassWithScalarDependencyDefiningDefaultValue::class, $instance);
+        $this->assertEquals('bar', $instance->foo);
+    }
 }

@@ -49,7 +49,8 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
  *   application "config" service (i.e., the merged configuration).
  * - Parameters type-hinted against array, but not named `$config` will
  *   be injected with an empty array.
- * - Scalar parameters will result in an exception being thrown.
+ * - Scalar parameters will result in an exception being thrown, unless
+ *   a default value is present; if the default is present, that will be used.
  * - If a service cannot be found for a given typehint, the factory will
  *   raise an exception detailing this.
  * - Some services provided by Zend Framework components do not have
@@ -202,12 +203,16 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
         }
 
         if (! $parameter->getClass()) {
-            throw new ServiceNotFoundException(sprintf(
-                'Unable to create service "%s"; unable to resolve parameter "%s" '
-                . 'to a class, interface, or array type',
-                $requestedName,
-                $parameter->getName()
-            ));
+            if (! $parameter->isDefaultValueAvailable()) {
+                throw new ServiceNotFoundException(sprintf(
+                    'Unable to create service "%s"; unable to resolve parameter "%s" '
+                    . 'to a class, interface, or array type',
+                    $requestedName,
+                    $parameter->getName()
+                ));
+            }
+
+            return $parameter->getDefaultValue();
         }
 
         $type = $parameter->getClass()->getName();
