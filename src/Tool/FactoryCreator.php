@@ -63,7 +63,7 @@ EOT;
      * @param $className
      * @return string
      */
-    private function getClassName($className):string
+    private function getClassName($className)
     {
         $class = substr($className, strrpos($className, '\\') + 1);
         return $class;
