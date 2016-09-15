@@ -31,9 +31,9 @@ class ConfigDumperCommand
   <info><className></info>       Name of the class to reflect and for which to generate
                     dependency configuration.
 
-Generates to STDOUT a replacement configuration file containing dependency
-configuration for the named class with which to configure the
-ConfigAbstractFactory.
+Reads the provided configuration file, and injects it with
+ConfigAbstractFactory dependency configuration for the provided class
+name, writing the changes back to the file.
 EOH;
 
     /**
@@ -90,7 +90,12 @@ EOH;
             return 1;
         }
 
-        $this->helper->write($dumper->dumpConfigFile($config), false);
+        file_put_contents($arguments->configFile, $dumper->dumpConfigFile($config));
+
+        $this->helper->writeLine(sprintf(
+            '<info>[DONE]</info> Changes written to %s',
+            $arguments->configFile
+        ));
         return 0;
     }
 
@@ -101,45 +106,46 @@ EOH;
     private function parseArgs(array $args)
     {
         if (! count($args)) {
-            return $this->createArguments(self::COMMAND_HELP);
+            return $this->createHelpArgument();
         }
 
         $arg1 = array_shift($args);
 
         if (in_array($arg1, ['-h', '--help', 'help'], true)) {
-            return $this->createArguments(self::COMMAND_HELP);
+            return $this->createHelpArgument();
         }
 
         if (! count($args)) {
-            return $this->createArguments(self::COMMAND_ERROR, null, null, 'Missing class name');
+            return $this->createErrorArgument('Missing class name');
         }
 
         if (! file_exists($arg1)) {
-            return $this->createArguments(self::COMMAND_ERROR, null, null, sprintf(
+            return $this->createErrorArgument(sprintf(
                 'Cannot find configuration file at path "%s"',
                 $arg1
             ));
         }
 
-        $config = require $arg1;
+        $configFile = $arg1;
+        $config = require $configFile;
 
         if (! is_array($config)) {
-            return $this->createArguments(self::COMMAND_ERROR, null, null, sprintf(
+            return $this->createErrorArgument(sprintf(
                 'Configuration at path "%s" does not return an array.',
-                $arg1
+                $configFile
             ));
         }
 
         $class = array_shift($args);
 
         if (! class_exists($class)) {
-            return $this->createArguments(self::COMMAND_ERROR, null, null, sprintf(
+            return $this->createErrorArgument(sprintf(
                 'Class "%s" does not exist or could not be autoloaded.',
                 $class
             ));
         }
 
-        return $this->createArguments(self::COMMAND_DUMP, $config, $class);
+        return $this->createArguments(self::COMMAND_DUMP, $configFile, $config, $class);
     }
 
     /**
@@ -156,18 +162,41 @@ EOH;
 
     /**
      * @param string $command
-     * @param array|null $config Parsed configuration.
-     * @param string|null $class Name of class to reflect.
-     * @param string|null $message Error message, if any.
+     * @param string $configFile File from which config originates, and to
+     *     which it will be written.
+     * @param array $config Parsed configuration.
+     * @param string $class Name of class to reflect.
      * @return \stdClass
      */
-    private function createArguments($command, $config = null, $class = null, $error = null)
+    private function createArguments($command, $configFile, $config, $class)
     {
         return (object) [
-            'command' => $command,
-            'config'  => $config,
-            'class'   => $class,
-            'message' => $error,
+            'command'    => $command,
+            'configFile' => $configFile,
+            'config'     => $config,
+            'class'      => $class,
+        ];
+    }
+
+    /**
+     * @param string $message
+     * @return \stdClass
+     */
+    private function createErrorArgument($message)
+    {
+        return (object) [
+            'command' => self::COMMAND_ERROR,
+            'message' => $message,
+        ];
+    }
+
+    /**
+     * @return \stdClass
+     */
+    private function createHelpArgument()
+    {
+        return (object) [
+            'command' => self::COMMAND_HELP,
         ];
     }
 }
