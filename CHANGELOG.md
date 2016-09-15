@@ -11,6 +11,17 @@ All notable changes to this project will be documented in this file, in reverse 
   configuration-based approach to providing class dependencies when all
   dependencies are services known to the `ServiceManager`. Please see
   [the documentation](doc/book/config-abstract-factory.md) for details.
+- [#154](https://github.com/zendframework/zend-servicemanager/pull/154) adds
+  `Zend\ServiceManager\Tool\ConfigDumper`, which will introspect a given class
+  to determine dependencies, and then create configuration for
+  `Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory`, merging it with
+  the provided configuration file. It also adds a vendor binary,
+  `generate-deps-for-config-factory`, for generating these from the command
+  line.
+- [#154](https://github.com/zendframework/zend-servicemanager/pull/154) adds
+  `Zend\ServiceManager\Tool\FactoryCreator`, which will introspect a given class
+  and generate a factory for it. It also adds a vendor binary,
+  `generate-factory-for-class`, for generating these from the command line.
 
 ### Deprecated
 
