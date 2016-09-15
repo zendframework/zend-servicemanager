@@ -120,13 +120,10 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
         }
 
         $resolver = $container->has('config')
-            ? 'resolveParameterWithConfigService'
-            : 'resolveParameterWithoutConfigService';
+            ? $this->resolveParameterWithConfigService($container, $requestedName)
+            : $this->resolveParameterWithoutConfigService($container, $requestedName);
 
-        $parameters = array_map(
-            $this->$resolver($container, $requestedName),
-            $reflectionParameters
-        );
+        $parameters = array_map($resolver, $reflectionParameters);
 
         return new $requestedName(...$parameters);
     }
