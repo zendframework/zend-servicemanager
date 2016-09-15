@@ -45,6 +45,7 @@ EOH;
 
     /**
      * @param string $scriptName
+     * @param ConsoleHelper $helper
      */
     public function __construct($scriptName = self::DEFAULT_SCRIPT_NAME, ConsoleHelper $helper = null)
     {
@@ -134,7 +135,7 @@ EOH;
     /**
      * @param string $command
      * @param string|null $class Name of class to reflect.
-     * @param string|null $message Error message, if any.
+     * @param string|null $error Error message, if any.
      * @return \stdClass
      */
     private function createArguments($command, $class = null, $error = null)

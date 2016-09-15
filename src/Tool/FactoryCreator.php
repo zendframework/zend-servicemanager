@@ -110,8 +110,8 @@ EOT;
             return [];
         }
 
-        return array_map(function ($parameter) {
-            return $parameter->getType();
+        return array_map(function (ReflectionParameter $parameter) {
+            return $parameter->getClass()->getName();
         }, $constructorParameters);
     }
 

@@ -12,7 +12,6 @@ use Prophecy\Argument;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Tool\FactoryCreatorCommand;
 use Zend\Stdlib\ConsoleHelper;
-use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
@@ -24,6 +23,13 @@ class FactoryCreatorCommandTest extends TestCase
         $this->command = new FactoryCreatorCommand(ConfigDumperCommand::class, $this->helper->reveal());
     }
 
+    public function testEmitsHelpWhenNoArgumentsProvided()
+    {
+        $command = $this->command;
+        $this->assertHelp();
+        $this->assertEquals(0, $command([]));
+    }
+
     public function assertHelp($stream = STDOUT)
     {
         $this->helper->writeLine(
@@ -33,25 +39,11 @@ class FactoryCreatorCommandTest extends TestCase
         )->shouldBeCalled();
     }
 
-    public function assertErrorRaised($message)
-    {
-        $this->helper->writeErrorMessage(
-            Argument::containingString($message)
-        )->shouldBeCalled();
-    }
-
-    public function testEmitsHelpWhenNoArgumentsProvided()
-    {
-        $command = $this->command;
-        $this->assertHelp();
-        $this->assertEquals(0, $command([]));
-    }
-
     public function helpArguments()
     {
         return [
-            'short'   => ['-h'],
-            'long'    => ['--help'],
+            'short' => ['-h'],
+            'long' => ['--help'],
             'literal' => ['help'],
         ];
     }
@@ -69,7 +61,7 @@ class FactoryCreatorCommandTest extends TestCase
     public function invalidArguments()
     {
         return [
-            'string'    => ['string'],
+            'string' => ['string'],
             'interface' => [FactoryInterface::class],
         ];
     }
@@ -83,6 +75,13 @@ class FactoryCreatorCommandTest extends TestCase
         $this->assertErrorRaised(sprintf('Class "%s" does not exist', $argument));
         $this->assertHelp(STDERR);
         $this->assertEquals(1, $command([$argument]));
+    }
+
+    public function assertErrorRaised($message)
+    {
+        $this->helper->writeErrorMessage(
+            Argument::containingString($message)
+        )->shouldBeCalled();
     }
 
     public function testEmitsErrorWhenUnableToCreateFactory()
