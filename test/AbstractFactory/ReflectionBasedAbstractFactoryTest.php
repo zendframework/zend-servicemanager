@@ -151,7 +151,10 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
     {
         $this->container->has('config')->willReturn(false);
         $factory = new ReflectionBasedAbstractFactory();
-        $instance = $factory($this->container->reveal(), TestAsset\ClassWithScalarDependencyDefiningDefaultValue::class);
+        $instance = $factory(
+            $this->container->reveal(),
+            TestAsset\ClassWithScalarDependencyDefiningDefaultValue::class
+        );
         $this->assertInstanceOf(TestAsset\ClassWithScalarDependencyDefiningDefaultValue::class, $instance);
         $this->assertEquals('bar', $instance->foo);
     }
