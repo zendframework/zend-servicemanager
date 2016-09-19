@@ -42,14 +42,13 @@ class InvokableFactoryTest extends TestCase
         $this->assertInstanceOf(InvokableObject::class, $object);
     }
 
-    public function testCanCreateObjectViaCreateServiceWhenCanonicalNameIsQualified()
+    public function testRaisesExceptionIfCanonicalNameIsQualifiedAndRequestedNameIsNotQualified()
     {
         $container = new ServiceManager();
         $factory   = new InvokableFactory();
 
-        $object = $factory->createService($container, InvokableObject::class, 'invokableobject');
-
-        $this->assertInstanceOf(InvokableObject::class, $object);
+        $this->setExpectedException(InvalidServiceException::class);
+        $factory->createService($container, InvokableObject::class, 'invokableobject');
     }
 
     public function testRaisesExceptionIfNeitherCanonicalNorRequestedNameAreQualified()
@@ -66,7 +65,7 @@ class InvokableFactoryTest extends TestCase
         $container = new ServiceManager();
         $factory   = new InvokableFactory(['foo' => 'bar']);
 
-        $object = $factory->createService($container, InvokableObject::class);
+        $object = $factory->createService($container, 'invokableobject', InvokableObject::class);
 
         $this->assertInstanceOf(InvokableObject::class, $object);
         $this->assertEquals(['foo' => 'bar'], $object->options);
