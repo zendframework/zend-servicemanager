@@ -77,12 +77,37 @@ class ConfigDumperCommandTest extends TestCase
         $this->assertEquals(1, $command(['foo']));
     }
 
-    public function testEmitsErrorWhenConfigurationFileNotFound()
+    public function testRaisesExceptionIfConfigFileNotFoundAndDirectoryNotWritable()
     {
         $command = $this->command;
-        $this->assertErrorRaised('Cannot find configuration file at path "foo"');
+        vfsStream::newDirectory('config', 0550)
+            ->at($this->configDir);
+        $config = vfsStream::url('project/config/test.config.php');
+        $this->assertErrorRaised(sprintf('Cannot create configuration at path "%s"; not writable.', $config));
         $this->assertHelp(STDERR);
-        $this->assertEquals(1, $command(['foo', 'Not\A\Real\Class']));
+        $this->assertEquals(1, $command([$config, 'Not\A\Real\Class']));
+    }
+
+    public function testGeneratesConfigFileWhenProvidedConfigurationFileNotFound()
+    {
+        $command = $this->command;
+        vfsStream::newDirectory('config', 0775)
+            ->at($this->configDir);
+        $config = vfsStream::url('project/config/test.config.php');
+
+        $this->helper->writeLine('<info>[DONE]</info> Changes written to ' . $config)->shouldBeCalled();
+
+        $this->assertEquals(0, $command([$config, SimpleDependencyObject::class]));
+
+        $generated = include $config;
+        $this->assertInternalType('array', $generated);
+        $this->assertArrayHasKey(ConfigAbstractFactory::class, $generated);
+        $factoryConfig = $generated[ConfigAbstractFactory::class];
+        $this->assertInternalType('array', $factoryConfig);
+        $this->assertArrayHasKey(SimpleDependencyObject::class, $factoryConfig);
+        $this->assertArrayHasKey(InvokableObject::class, $factoryConfig);
+        $this->assertContains(InvokableObject::class, $factoryConfig[SimpleDependencyObject::class]);
+        $this->assertEquals([], $factoryConfig[InvokableObject::class]);
     }
 
     public function testEmitsErrorWhenConfigurationFileDoesNotReturnArray()
