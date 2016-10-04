@@ -107,7 +107,7 @@ final class InvokableFactory implements FactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function setCreationOptions(array $creationOptions)
+    public function setCreationOptions(array $creationOptions = null)
     {
         $this->creationOptions = $creationOptions;
     }
