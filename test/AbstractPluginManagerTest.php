@@ -151,6 +151,8 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
         $plugin2 = $pluginManager->get(Baz::class);
 
         $this->assertNotEquals($plugin1, $plugin2);
+        $this->assertSame($creationOptions, $plugin1->getOptions());
+        $this->assertNull($plugin2->getOptions());
     }
 
     public function testValidatePluginIsCalledWithDelegatorFactoryIfItsAService()
