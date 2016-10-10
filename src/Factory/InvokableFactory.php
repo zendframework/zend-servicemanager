@@ -65,8 +65,13 @@ final class InvokableFactory implements FactoryInterface
     /**
      * Create an instance of the named service.
      *
-     * If `$requestedName` resolves to a class, this method uses that value
-     * to proxy to `__invoke()`; otherwise, raises an exception.
+     * First, it checks if `$requestedName` is non-empty and resolves to a class, and, if so, uses
+     * that value to proxy to `__invoke()`.
+     *
+     * Next, if `$canonicalName` resolves to a class, this method uses that value
+     * to proxy to `__invoke()`.
+     *
+     * Finally, if the above each fail, it raises an exception.
      *
      * @param ServiceLocatorInterface $serviceLocator
      * @param null|string $canonicalName
@@ -76,8 +81,12 @@ final class InvokableFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator, $canonicalName = null, $requestedName = null)
     {
-        if (class_exists($requestedName)) {
+        if (is_string($requestedName) && class_exists($requestedName)) {
             return $this($serviceLocator, $requestedName, $this->creationOptions);
+        }
+
+        if (class_exists($canonicalName)) {
+            return $this($serviceLocator, $canonicalName, $this->creationOptions);
         }
 
         throw new InvalidServiceException(sprintf(
