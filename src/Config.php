@@ -111,7 +111,7 @@ class Config implements ConfigInterface
                     $a[$key] = $value;
                 }
             } else {
-                if (!$value instanceof MergeRemoveKey) {
+                if (! $value instanceof MergeRemoveKey) {
                     $a[$key] = $value;
                 }
             }
