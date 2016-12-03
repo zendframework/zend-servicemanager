@@ -599,6 +599,31 @@ class ServiceManagerTest extends TestCase
     }
 
     /**
+     * @expectedException \Zend\ServiceManager\Exception\ServiceNotCreatedException
+     */
+    public function testFactoryExceptionWithStringAsCodeFactory()
+    {
+        $serviceManager = new ServiceManager();
+        $serviceManager->setFactory(
+            \ZendTest\ServiceManager\TestAsset\Bar::class,
+            \ZendTest\ServiceManager\TestAsset\ExceptionThrowingWithStringAsCodeFactory::class
+        );
+        $serviceManager->get(\ZendTest\ServiceManager\TestAsset\Bar::class);
+    }
+
+    /**
+     * @expectedException \Zend\ServiceManager\Exception\ServiceNotCreatedException
+     */
+    public function testFactoryAbstractExceptionWithStringAsCodeFactory()
+    {
+        $serviceManager = new ServiceManager();
+        $serviceManager->addAbstractFactory(
+            \ZendTest\ServiceManager\TestAsset\ExceptionThrowingWithStringAsCodeAbstractFactory::class
+        );
+        $serviceManager->get('ZendTest\ServiceManager\TestAsset\ExceptionThrowingWithStringAsCodeAbstract');
+    }
+
+    /**
      * @expectedException Zend\ServiceManager\Exception\InvalidServiceNameException
      */
     public function testAssignAliasWithExistingServiceName()
