@@ -755,7 +755,7 @@ class ServiceManager implements ServiceLocatorInterface
                 'Service with name "%s" could not be created. Reason: %s',
                 $resolvedName,
                 $exception->getMessage()
-            ), $exception->getCode(), $exception);
+            ), (int)$exception->getCode(), $exception);
         }
 
         foreach ($this->initializers as $initializer) {
