@@ -13,5 +13,6 @@ use Exception;
 
 class ExceptionWithStringAsCode extends Exception
 {
+    /** @var string */
     protected $code = 'ExceptionString';
 }
