@@ -598,11 +598,10 @@ class ServiceManagerTest extends TestCase
         $bar = $serviceManager->get('ZendTest\ServiceManager\TestAsset\Bar');
     }
 
-    /**
-     * @expectedException \Zend\ServiceManager\Exception\ServiceNotCreatedException
-     */
     public function testFactoryExceptionWithStringAsCodeFactory()
     {
+        $this->setExpectedException(\Zend\ServiceManager\Exception\ServiceNotCreatedException::class);
+
         $serviceManager = new ServiceManager();
         $serviceManager->setFactory(
             \ZendTest\ServiceManager\TestAsset\Bar::class,
@@ -611,11 +610,10 @@ class ServiceManagerTest extends TestCase
         $serviceManager->get(\ZendTest\ServiceManager\TestAsset\Bar::class);
     }
 
-    /**
-     * @expectedException \Zend\ServiceManager\Exception\ServiceNotCreatedException
-     */
     public function testFactoryAbstractExceptionWithStringAsCodeFactory()
     {
+        $this->setExpectedException(\Zend\ServiceManager\Exception\ServiceNotCreatedException::class);
+
         $serviceManager = new ServiceManager();
         $serviceManager->addAbstractFactory(
             \ZendTest\ServiceManager\TestAsset\ExceptionThrowingWithStringAsCodeAbstractFactory::class
