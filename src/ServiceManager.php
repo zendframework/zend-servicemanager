@@ -1133,7 +1133,7 @@ class ServiceManager implements ServiceLocatorInterface
                         $canonicalName,
                         ($requestedName ? '(alias: ' . $requestedName . ')' : '')
                     ),
-                    (int)$e->getCode(),
+                    $e->getCode(),
                     $e
                 );
             }
