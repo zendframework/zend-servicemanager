@@ -15,6 +15,12 @@ All notable changes to this project will be documented in this file, in reverse 
   for a class matching the `$requestedName` prior to the `$canonicalName`; this
   also is more in line with version 3, which only has access to the requested
   name.
+- [#164](https://github.com/zendframework/zend-servicemanager/pull/164) fixes
+  how the `InvokableFactory` deals with creation options. Prior to this release,
+  absence of options led to setting the creation options to an empty array,
+  which, because it was non-null, led to breakage in plugins that treated an
+  empty array differently than null. This patch ensures that the original
+  behavior is restored.
 
 ### Deprecated
 
