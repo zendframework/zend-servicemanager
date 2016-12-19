@@ -8,6 +8,14 @@ All notable changes to this project will be documented in this file, in reverse 
 
 - Nothing.
 
+### Changes
+
+- [#158](https://github.com/zendframework/zend-servicemanager/pull/158) provides
+  a performance optimization within the `InvokableFactory`, ensuring it checks
+  for a class matching the `$requestedName` prior to the `$canonicalName`; this
+  also is more in line with version 3, which only has access to the requested
+  name.
+
 ### Deprecated
 
 - Nothing.
