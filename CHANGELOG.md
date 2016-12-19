@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 3.1.2 - TBD
+## 3.1.2 - 2016-12-19
 
 ### Added
 
@@ -18,7 +18,12 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#167](https://github.com/zendframework/zend-servicemanager/pull/167) fixes
+  how exception codes are provided to ServiceNotCreatedException. Previously,
+  the code was provided as-is. However, some PHP internal exception classes,
+  notably PDOException, can sometimes return other values (such as strings),
+  which can lead to fatal errors when instantiating the new exception. The
+  patch provided casts exception codes to integers to prevent these errors.
 
 ## 3.1.1 - 2016-07-15
 
