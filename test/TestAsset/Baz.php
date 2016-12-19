@@ -17,9 +17,4 @@ class Baz
     {
         $this->options = $options;
     }
-
-    public function getOptions()
-    {
-        return $this->options;
-    }
 }
