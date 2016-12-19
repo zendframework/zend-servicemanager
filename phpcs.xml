@@ -3,6 +3,7 @@
     <rule ref="./vendor/zendframework/zend-coding-standard/ruleset.xml"/>
 
     <!-- Paths to check -->
+    <file>bin</file>
     <file>src</file>
     <file>test</file>
     <file>benchmarks</file>

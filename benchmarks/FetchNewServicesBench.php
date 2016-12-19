@@ -1,4 +1,9 @@
 <?php
+/**
+ * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2016 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ */
 
 namespace ZendBench\ServiceManager;
 
@@ -30,6 +35,7 @@ class FetchNewServicesBench
             ],
             'services' => [
                 'service1' => new \stdClass(),
+                'config' => [],
             ],
             'aliases' => [
                 'factoryAlias1'          => 'factory1',
@@ -37,7 +43,7 @@ class FetchNewServicesBench
                 'recursiveFactoryAlias2' => 'recursiveFactoryAlias1',
             ],
             'abstract_factories' => [
-                BenchAsset\AbstractFactoryFoo::class
+                BenchAsset\AbstractFactoryFoo::class,
             ],
         ]);
     }

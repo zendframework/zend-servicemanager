@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 3.2.0 - TBD
+
+### Added
+
+- [#146](https://github.com/zendframework/zend-servicemanager/pull/146) adds
+  `Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory`, which enables a
+  configuration-based approach to providing class dependencies when all
+  dependencies are services known to the `ServiceManager`. Please see
+  [the documentation](doc/book/config-abstract-factory.md) for details.
+- [#154](https://github.com/zendframework/zend-servicemanager/pull/154) adds
+  `Zend\ServiceManager\Tool\ConfigDumper`, which will introspect a given class
+  to determine dependencies, and then create configuration for
+  `Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory`, merging it with
+  the provided configuration file. It also adds a vendor binary,
+  `generate-deps-for-config-factory`, for generating these from the command
+  line.
+- [#154](https://github.com/zendframework/zend-servicemanager/pull/154) adds
+  `Zend\ServiceManager\Tool\FactoryCreator`, which will introspect a given class
+  and generate a factory for it. It also adds a vendor binary,
+  `generate-factory-for-class`, for generating these from the command line.
+- [#153](https://github.com/zendframework/zend-servicemanager/pull/153) adds
+  `Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory`. This
+  class may be used as either a mapped factory or an abstract factory, and will
+  use reflection in order to determine which dependencies to use from the
+  container when instantiating the requested service, with the following rules:
+  - Scalar values are not allowed, unless they have default values associated.
+  - Values named `$config` type-hinted against `array` will be injected with the
+    `config` service, if present.
+  - All other array values will be provided an empty array.
+  - Class/interface typehints will be pulled from the container.
+- [#150](https://github.com/zendframework/zend-servicemanager/pull/150) adds
+  a "cookbook" section to the documentation, with an initial document detailing
+  the pros and cons of abstract factory usage.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- [#106](https://github.com/zendframework/zend-servicemanager/pull/106) adds
+  detection of multiple attempts to register the same instance or named abstract
+  factory, using a previous instance when detected. You may still use multiple
+  discrete instances, however.
+
 ## 3.1.2 - 2016-12-19
 
 ### Added
