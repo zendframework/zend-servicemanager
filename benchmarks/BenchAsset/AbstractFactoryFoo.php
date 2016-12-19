@@ -18,5 +18,4 @@ class AbstractFactoryFoo implements AbstractFactoryInterface
     {
         return ($requestedName === 'foo');
     }
-
 }
