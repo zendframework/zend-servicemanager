@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <link rel="shortcut icon" href="../img/favicon.ico">
 
-    <title>Delegators - zend-servicemanager</title>
+    <title>Configuration-based Abstract Factory - zend-servicemanager</title>
 
     <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
@@ -91,8 +91,8 @@
 
                         
                             
-<li class="active">
-    <a href="./">Delegators</a>
+<li >
+    <a href="../delegators/">Delegators</a>
 </li>
 
                         
@@ -109,8 +109,8 @@
 
                         
                             
-<li >
-    <a href="../config-abstract-factory/">Configuration-based Abstract Factory</a>
+<li class="active">
+    <a href="./">Configuration-based Abstract Factory</a>
 </li>
 
                         
@@ -187,11 +187,11 @@
         <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#delegators">Delegators</a></li>
+        <li class="main active"><a href="#config-abstract-factory">Config Abstract Factory</a></li>
         
-            <li><a href="#delegator-factory-signature">Delegator factory signature</a></li>
+            <li><a href="#enabling-the-configabstractfactory">Enabling the ConfigAbstractFactory</a></li>
         
-            <li><a href="#a-delegator-factory-use-case">A Delegator factory use case</a></li>
+            <li><a href="#configuration">Configuration</a></li>
         
     
     </ul>
@@ -199,10 +199,10 @@
     
     <ul class="pager hidden-print">
       <li class="previous">
-        <a rel="prev" href="../configuring-the-service-manager/"><i class="fa fa-arrow-left"></i> Previous</a>
+        <a rel="prev" href="../plugin-managers/"><i class="fa fa-arrow-left"></i> Previous</a>
       </li>
       <li class="next">
-        <a rel="next" href="../lazy-services/">Next <i class="fa fa-arrow-right"></i></a>
+        <a rel="next" href="../reflection-abstract-factory/">Next <i class="fa fa-arrow-right"></i></a>
       </li>
     </ul>
     
@@ -218,140 +218,134 @@
       
     
   
-  <li class="active">Delegators</li>
+  <li class="active">Configuration-based Abstract Factory</li>
 </ol>
 
-<h1 id="delegators">Delegators</h1>
-<p><code>Zend\ServiceManager</code> can instantiate <a href="http://en.wikipedia.org/wiki/Delegation_pattern">delegators</a>
-of requested services, decorating them as specified in a delegate factory
-implementing the <a href="https://github.com/zendframework/zend-servicemanager/tree/master/src/Factory/DelegatorFactoryInterface.php">delegator factory interface</a>.</p>
-<p>The delegate pattern is useful in cases when you want to wrap a real service in
-a <a href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator</a>, or generally
-intercept actions being performed on the delegate in an
-<a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">AOP</a> fashioned way.</p>
-<h2 id="delegator-factory-signature">Delegator factory signature</h2>
-<p>A delegator factory has the following signature:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
-
-public function __invoke(
-    ContainerInterface $container,
-    $name,
-    callable $callback,
-    array $options = null
-);</code></pre>
-
-
-<p>The parameters passed to the delegator factory are the following:</p>
+<h1 id="config-abstract-factory">Config Abstract Factory</h1>
 <ul>
-<li><code>$container</code> is the service locator that is used while creating the delegator
-  for the requested service.</li>
-<li><code>$name</code> is the name of the service being requested.</li>
-<li><code>$callback</code> is a <a href="http://www.php.net/manual/en/language.types.callable.php">callable</a> that is
-  responsible for instantiating the delegated service (the real service instance).</li>
-<li><code>$options</code> is an array of options to use when creating the instance; these are
-  typically used only during <code>build()</code> operations.</li>
+<li>Since 3.2.0</li>
 </ul>
-<h2 id="a-delegator-factory-use-case">A Delegator factory use case</h2>
-<p>A typical use case for delegators is to handle logic before or after a method is
-called.</p>
-<p>In the following example, an event is being triggered before <code>Buzzer::buzz()</code> is
-called and some output text is prepended.</p>
-<p>The delegated object <code>Buzzer</code> (original object) is defined as following:</p>
-<pre class="codehilite"><code class="language-php">class Buzzer
-{
-    public function buzz()
-    {
-        return 'Buzz!';
-    }
-}</code></pre>
+<p>You can simplify the process of creating factories by registering
+<code>Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory</code> with your service
+manager instance. This allows you to define services using a configuration map,
+rather than having to create separate factories for each of your services. </p>
+<h2 id="enabling-the-configabstractfactory">Enabling the ConfigAbstractFactory</h2>
+<p>Enable the <code>ConfigAbstractFactory</code> in the same way that you would enable 
+any other abstract factory.</p>
+<p>Programmatically:</p>
+<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager();
+$serviceManager-&gt;addAbstractFactory(new ConfigAbstractFactory());</code></pre>
 
 
-<p>The delegator class <code>BuzzerDelegator</code> has the following structure:</p>
-<pre class="codehilite"><code class="language-php">use Zend\EventManager\EventManagerInterface;
-
-class BuzzerDelegator extends Buzzer
-{
-    protected $realBuzzer;
-    protected $eventManager;
-
-    public function __construct(Buzzer $realBuzzer, EventManagerInterface $eventManager)
-    {
-        $this-&gt;realBuzzer   = $realBuzzer;
-        $this-&gt;eventManager = $eventManager;
-    }
-
-    public function buzz()
-    {
-        $this-&gt;eventManager-&gt;trigger('buzz', $this);
-
-        return $this-&gt;realBuzzer-&gt;buzz();
-    }
-}</code></pre>
-
-
-<p>To use the <code>BuzzerDelegator</code>, you can run the following code:</p>
-<pre class="codehilite"><code class="language-php">$wrappedBuzzer = new Buzzer();
-$eventManager  = new Zend\EventManager\EventManager();
-
-$eventManager-&gt;attach('buzz', function () { echo &quot;Stare at the art!\n&quot;; });
-
-$buzzer = new BuzzerDelegator($wrappedBuzzer, $eventManager);
-
-echo $buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;</code></pre>
-
-
-<p>This logic is fairly simple as long as you have access to the instantiation
-logic of the <code>$wrappedBuzzer</code> object.</p>
-<p>You may not always be able to define how <code>$wrappedBuzzer</code> is created, since a
-factory for it may be defined by some code to which you don't have access, or
-which you cannot modify without introducing further complexity.</p>
-<p>Delegator factories solve this specific problem by allowing you to wrap,
-decorate or modify any existing service.</p>
-<p>A simple delegator factory for the <code>buzzer</code> service can be implemented as
-following:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
-
-class BuzzerDelegatorFactory implements DelegatorFactoryInterface
-{
-    public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null)
-    {
-        $realBuzzer   = call_user_func($callback);
-        $eventManager = $serviceLocator-&gt;get('EventManager');
-
-        $eventManager-&gt;attach('buzz', function () { echo &quot;Stare at the art!\n&quot;; });
-
-        return new BuzzerDelegator($realBuzzer, $eventManager);
-    }
-}</code></pre>
-
-
-<p>You can then instruct the service manager to handle the service <code>buzzer</code> as a
-delegate:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableClass;
-use Zend\ServiceManager\ServiceManager;
-
-$serviceManager = new Zend\ServiceManager\ServiceManager([
-    'factories' =&gt; [
-        Buzzer::class =&gt; InvokableClass::class,
-    ],
-    'delegators' =&gt; [
-        Buzzer::class =&gt; [
-            BuzzerDelegatorFactory::class,
+<p>Or within configuration:</p>
+<pre class="codehilite"><code class="language-php">return [
+    // zend-mvc:
+    'service_manager' =&gt; [
+        'abstract_factories' =&gt; [
+            ConfigAbstractFactory::class,
         ],
     ],
-]);
 
-// now, when fetching Buzzer, we get a BuzzerDelegator instead
-$buzzer = $serviceManager-&gt;get(Buzzer::class);
+    // zend-expressive or ConfigProvider consumers:
+    'dependencies' =&gt; [
+        'abstract_factories' =&gt; [
+            ConfigAbstractFactory::class,
+        ],
+    ],
+];</code></pre>
 
-$buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;</code></pre>
+
+<p>Like all abstract factories starting in version 3, you may also use the config
+abstract factory as a mapped factory, registering it as a factory for a specific
+class:</p>
+<pre class="codehilite"><code class="language-php">return [
+    'service_manager' =&gt; [
+        'factories' =&gt; [
+            SomeCustomClass::class =&gt; ConfigAbstractFactory::class,
+        ],
+    ],
+];</code></pre>
 
 
-<p>You can specify multiple delegators for a service. Each will add one decorator
-around the instantiation logic of that particular service.</p>
-<p>This latter point is the primary use case for delegators: <em>decorating the
-instantiation logic for a service</em>.</p>
+<h2 id="configuration">Configuration</h2>
+<p>Configuration should be provided via the <code>config</code> service, which should return
+an array or <code>ArrayObject</code>. <code>ConfigAbstractFactory</code> looks for a top-level key in
+this service named after itself (i.e., <code>Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory</code>)
+that is an array value. Each item in the array:</p>
+<ul>
+<li>Should have a key representing the service name (typically the fully
+  qualified class name)</li>
+<li>Should have a value that is an array of each dependency, ordered using the
+  constructor argument order, and using service names registered with the
+  container.</li>
+</ul>
+<p>As an example:</p>
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+
+return [
+    ConfigAbstractFactory::class =&gt; [
+        MyInvokableClass::class =&gt; [],
+        MySimpleClass::class =&gt; [
+            Logger::class,          
+        ],
+        Logger::class =&gt; [
+            Handler::class,
+        ],
+    ],
+];</code></pre>
+
+
+<p>The definition tells the service manager how this abstract factory should manage
+dependencies in the classes defined. In the above example, <code>MySimpleClass</code> has a
+single dependency on a <code>Logger</code> instance. The abstract factory will simply look
+to fulfil that dependency by calling <code>get()</code> with that key on the container
+passed to it. In this way, you can create the correct tree of
+dependencies to successfully return any given service.</p>
+<p>In the above example, note that the abstract factory configuration does not
+contain configuration for the <code>Handler</code> class. At first glance, this appears as
+if it will fail; however, if <code>Handler</code> is configured directly with the container
+already &mdash; for example, mapped to a custom factory &mdash; the service will
+be created and used as a dependency.</p>
+<p>As another, more complete example, consider the following classes:</p>
+<pre class="codehilite"><code class="language-php">class UserMapper
+{
+    public function __construct(Adapter $db, Cache $cache) {}
+}
+
+class Adapter
+{
+    public function __construct(array $config) {}
+}
+
+class Cache
+{
+    public function __construct(CacheAdapter $cacheAdapter) {}
+}
+
+class CacheAdapter
+{
+}</code></pre>
+
+
+<p>In this case, we can define the configuration for these classes as follows:</p>
+<pre class="codehilite"><code class="language-php">// config/autoload/dependencies.php or anywhere that gets merged into global config
+return [
+    ConfigAbstractFactory::class =&gt; [
+        CacheAdapter::class =&gt; [], // no dependencies
+        Cache::class =&gt; [
+            CacheAdapter::class, // dependency on the CacheAdapter key defined above
+        ],
+        UserMapper::class =&gt; [
+            Adapter::class, // will be called using normal factory defined below
+            Cache::class, // defined above and will be created using this abstract factory
+        ],
+    ],
+    'service_manager' =&gt; [
+        'factories' =&gt; [
+            Adapter::class =&gt; AdapterFactory::class, // normal factory not using above config
+        ],
+    ],    
+],</code></pre>
 
 <hr />
 
@@ -359,10 +353,10 @@ instantiation logic for a service</em>.</p>
 <nav>
   <ul class="pager hidden-print">
     <li class="previous">
-      <a rel="prev" href="../configuring-the-service-manager/"><i class="fa fa-arrow-left"></i> Previous</a>
+      <a rel="prev" href="../plugin-managers/"><i class="fa fa-arrow-left"></i> Previous</a>
     </li>
     <li class="next">
-      <a rel="next" href="../lazy-services/">Next <i class="fa fa-arrow-right"></i></a>
+      <a rel="next" href="../reflection-abstract-factory/">Next <i class="fa fa-arrow-right"></i></a>
     </li>
   </ul>
 </nav>

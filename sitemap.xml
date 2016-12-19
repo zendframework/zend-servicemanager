@@ -43,6 +43,34 @@
      <changefreq>daily</changefreq>
     </url>
         
+    <url>
+     <loc>/config-abstract-factory/</loc>
+     <lastmod>2016-12-19</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/reflection-abstract-factory/</loc>
+     <lastmod>2016-12-19</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/console-tools/</loc>
+     <lastmod>2016-12-19</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+        
+    <url>
+     <loc>/cookbook/factories-vs-abstract-factories/</loc>
+     <lastmod>2016-12-19</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
     
 
     

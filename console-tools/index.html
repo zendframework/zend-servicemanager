@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <link rel="shortcut icon" href="../img/favicon.ico">
 
-    <title>Delegators - zend-servicemanager</title>
+    <title>Console Tools - zend-servicemanager</title>
 
     <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
@@ -91,8 +91,8 @@
 
                         
                             
-<li class="active">
-    <a href="./">Delegators</a>
+<li >
+    <a href="../delegators/">Delegators</a>
 </li>
 
                         
@@ -121,8 +121,8 @@
 
                         
                             
-<li >
-    <a href="../console-tools/">Console Tools</a>
+<li class="active">
+    <a href="./">Console Tools</a>
 </li>
 
                         
@@ -187,11 +187,11 @@
         <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#delegators">Delegators</a></li>
+        <li class="main active"><a href="#console-tools">Console Tools</a></li>
         
-            <li><a href="#delegator-factory-signature">Delegator factory signature</a></li>
+            <li><a href="#generate-deps-for-config-factory">generate-deps-for-config-factory</a></li>
         
-            <li><a href="#a-delegator-factory-use-case">A Delegator factory use case</a></li>
+            <li><a href="#generate-factory-for-class">generate-factory-for-class</a></li>
         
     
     </ul>
@@ -199,10 +199,10 @@
     
     <ul class="pager hidden-print">
       <li class="previous">
-        <a rel="prev" href="../configuring-the-service-manager/"><i class="fa fa-arrow-left"></i> Previous</a>
+        <a rel="prev" href="../reflection-abstract-factory/"><i class="fa fa-arrow-left"></i> Previous</a>
       </li>
       <li class="next">
-        <a rel="next" href="../lazy-services/">Next <i class="fa fa-arrow-right"></i></a>
+        <a rel="next" href="../cookbook/factories-vs-abstract-factories/">Next <i class="fa fa-arrow-right"></i></a>
       </li>
     </ul>
     
@@ -218,140 +218,65 @@
       
     
   
-  <li class="active">Delegators</li>
+  <li class="active">Console Tools</li>
 </ol>
 
-<h1 id="delegators">Delegators</h1>
-<p><code>Zend\ServiceManager</code> can instantiate <a href="http://en.wikipedia.org/wiki/Delegation_pattern">delegators</a>
-of requested services, decorating them as specified in a delegate factory
-implementing the <a href="https://github.com/zendframework/zend-servicemanager/tree/master/src/Factory/DelegatorFactoryInterface.php">delegator factory interface</a>.</p>
-<p>The delegate pattern is useful in cases when you want to wrap a real service in
-a <a href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator</a>, or generally
-intercept actions being performed on the delegate in an
-<a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">AOP</a> fashioned way.</p>
-<h2 id="delegator-factory-signature">Delegator factory signature</h2>
-<p>A delegator factory has the following signature:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<h1 id="console-tools">Console Tools</h1>
+<p>Starting in 3.2.0, zend-servicemanager began shipping with console tools. This
+document details each.</p>
+<h2 id="generate-deps-for-config-factory">generate-deps-for-config-factory</h2>
+<pre class="codehilite"><code class="language-bash">$ ./vendor/bin/generate-deps-for-config-factory
+Usage:
 
-public function __invoke(
-    ContainerInterface $container,
-    $name,
-    callable $callback,
-    array $options = null
-);</code></pre>
+  generate-deps-for-config-factory [-h|--help|help] &lt;configFile&gt; &lt;className&gt;
 
+Arguments:
 
-<p>The parameters passed to the delegator factory are the following:</p>
-<ul>
-<li><code>$container</code> is the service locator that is used while creating the delegator
-  for the requested service.</li>
-<li><code>$name</code> is the name of the service being requested.</li>
-<li><code>$callback</code> is a <a href="http://www.php.net/manual/en/language.types.callable.php">callable</a> that is
-  responsible for instantiating the delegated service (the real service instance).</li>
-<li><code>$options</code> is an array of options to use when creating the instance; these are
-  typically used only during <code>build()</code> operations.</li>
-</ul>
-<h2 id="a-delegator-factory-use-case">A Delegator factory use case</h2>
-<p>A typical use case for delegators is to handle logic before or after a method is
-called.</p>
-<p>In the following example, an event is being triggered before <code>Buzzer::buzz()</code> is
-called and some output text is prepended.</p>
-<p>The delegated object <code>Buzzer</code> (original object) is defined as following:</p>
-<pre class="codehilite"><code class="language-php">class Buzzer
-{
-    public function buzz()
-    {
-        return 'Buzz!';
-    }
-}</code></pre>
+  -h|--help|help    This usage message
+  &lt;configFile&gt;      Path to a config file for which to generate configuration.
+                    If the file does not exist, it will be created. If it does
+                    exist, it must return an array, and the file will be
+                    updated with new configuration.
+  &lt;className&gt;       Name of the class to reflect and for which to generate
+                    dependency configuration.
 
 
-<p>The delegator class <code>BuzzerDelegator</code> has the following structure:</p>
-<pre class="codehilite"><code class="language-php">use Zend\EventManager\EventManagerInterface;
-
-class BuzzerDelegator extends Buzzer
-{
-    protected $realBuzzer;
-    protected $eventManager;
-
-    public function __construct(Buzzer $realBuzzer, EventManagerInterface $eventManager)
-    {
-        $this-&gt;realBuzzer   = $realBuzzer;
-        $this-&gt;eventManager = $eventManager;
-    }
-
-    public function buzz()
-    {
-        $this-&gt;eventManager-&gt;trigger('buzz', $this);
-
-        return $this-&gt;realBuzzer-&gt;buzz();
-    }
-}</code></pre>
+Reads the provided configuration file (creating it if it does not exist),
+and injects it with ConfigAbstractFactory dependency configuration for
+the provided class name, writing the changes back to the file.</code></pre>
 
 
-<p>To use the <code>BuzzerDelegator</code>, you can run the following code:</p>
-<pre class="codehilite"><code class="language-php">$wrappedBuzzer = new Buzzer();
-$eventManager  = new Zend\EventManager\EventManager();
+<p>This utility will generate dependency configuration for the named class for use
+with the <a href="../config-abstract-factory/">ConfigAbstractFactory</a>. When doing so, it
+will read the named configuration file (creating it if it does not exist), and
+merge any configuration it generates with the return values of that file,
+writing the changes back to the original file.</p>
+<h2 id="generate-factory-for-class">generate-factory-for-class</h2>
+<pre class="codehilite"><code class="language-bash">$ ./vendor/bin/generate-factory-for-class
 
-$eventManager-&gt;attach('buzz', function () { echo &quot;Stare at the art!\n&quot;; });
+Usage:
 
-$buzzer = new BuzzerDelegator($wrappedBuzzer, $eventManager);
+  ./bin/generate-factory-for-class [-h|--help|help] &lt;className&gt;
 
-echo $buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;</code></pre>
+Arguments:
 
+  -h|--help|help    This usage message
+  &lt;className&gt;       Name of the class to reflect and for which to generate
+                    a factory.
 
-<p>This logic is fairly simple as long as you have access to the instantiation
-logic of the <code>$wrappedBuzzer</code> object.</p>
-<p>You may not always be able to define how <code>$wrappedBuzzer</code> is created, since a
-factory for it may be defined by some code to which you don't have access, or
-which you cannot modify without introducing further complexity.</p>
-<p>Delegator factories solve this specific problem by allowing you to wrap,
-decorate or modify any existing service.</p>
-<p>A simple delegator factory for the <code>buzzer</code> service can be implemented as
-following:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
-
-class BuzzerDelegatorFactory implements DelegatorFactoryInterface
-{
-    public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null)
-    {
-        $realBuzzer   = call_user_func($callback);
-        $eventManager = $serviceLocator-&gt;get('EventManager');
-
-        $eventManager-&gt;attach('buzz', function () { echo &quot;Stare at the art!\n&quot;; });
-
-        return new BuzzerDelegator($realBuzzer, $eventManager);
-    }
-}</code></pre>
+Generates to STDOUT a factory for creating the specified class; this may then
+be added to your application, and configured as a factory for the class.</code></pre>
 
 
-<p>You can then instruct the service manager to handle the service <code>buzzer</code> as a
-delegate:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableClass;
-use Zend\ServiceManager\ServiceManager;
-
-$serviceManager = new Zend\ServiceManager\ServiceManager([
-    'factories' =&gt; [
-        Buzzer::class =&gt; InvokableClass::class,
-    ],
-    'delegators' =&gt; [
-        Buzzer::class =&gt; [
-            BuzzerDelegatorFactory::class,
-        ],
-    ],
-]);
-
-// now, when fetching Buzzer, we get a BuzzerDelegator instead
-$buzzer = $serviceManager-&gt;get(Buzzer::class);
-
-$buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;</code></pre>
+<p>This utility generates a factory class for the given class, based on the
+typehints in its constructor. The factory is emitted to STDOUT, and may be piped
+to a file if desired:</p>
+<pre class="codehilite"><code class="language-bash">$ ./vendor/bin/generate-factory-for-class \
+&gt; &quot;Application\\Model\\AlbumModel&quot; &gt; ./module/Application/src/Model/AlbumModelFactory.php</code></pre>
 
 
-<p>You can specify multiple delegators for a service. Each will add one decorator
-around the instantiation logic of that particular service.</p>
-<p>This latter point is the primary use case for delegators: <em>decorating the
-instantiation logic for a service</em>.</p>
+<p>The class generated implements <code>Zend\ServiceManager\Factory\FactoryInterface</code>,
+and is generated within the same namespace as the originating class.</p>
 
 <hr />
 
@@ -359,10 +284,10 @@ instantiation logic for a service</em>.</p>
 <nav>
   <ul class="pager hidden-print">
     <li class="previous">
-      <a rel="prev" href="../configuring-the-service-manager/"><i class="fa fa-arrow-left"></i> Previous</a>
+      <a rel="prev" href="../reflection-abstract-factory/"><i class="fa fa-arrow-left"></i> Previous</a>
     </li>
     <li class="next">
-      <a rel="next" href="../lazy-services/">Next <i class="fa fa-arrow-right"></i></a>
+      <a rel="next" href="../cookbook/factories-vs-abstract-factories/">Next <i class="fa fa-arrow-right"></i></a>
     </li>
   </ul>
 </nav>
