@@ -153,6 +153,20 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEquals($plugin1, $plugin2);
     }
 
+    public function testInvokableFactoryNoOptionsResetsCreationOptions()
+    {
+        /** @var $pluginManager AbstractPluginManager */
+        $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
+        $pluginManager->setFactory(Baz::class, InvokableFactory::class);
+        $pluginManager->setShared(Baz::class, false);
+        $creationOptions = ['key1' => 'value1'];
+        $plugin1 = $pluginManager->get(Baz::class, $creationOptions);
+        $plugin2 = $pluginManager->get(Baz::class);
+
+        $this->assertSame($creationOptions, $plugin1->getOptions());
+        $this->assertNull($plugin2->getOptions());
+    }
+
     public function testValidatePluginIsCalledWithDelegatorFactoryIfItsAService()
     {
         $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
