@@ -84,14 +84,14 @@ standards checks, and provides configuration for our selected checks.
 To run checks only:
 
 ```console
-$ ./vendor/bin/phpcs
+$ composer cs-check
 ```
 
 `phpcs` provides another tool, `phpcbf`, that can automatically fix many common
 problems:
 
 ```console
-$ ./vendor/bin/phpcbf
+$ composer cs-fix
 ```
 
 If you allow `phpcbf` to fix CS issues, please re-run the tests to ensure

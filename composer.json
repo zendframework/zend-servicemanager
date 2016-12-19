@@ -20,8 +20,8 @@
     "require-dev": {
         "phpunit/phpunit": "^4.6 || ^5.2.10",
         "ocramius/proxy-manager": "^1.0 || ^2.0",
-        "squizlabs/php_codesniffer": "^2.5.1",
-        "phpbench/phpbench": "^0.10.0"
+        "phpbench/phpbench": "^0.10.0",
+        "zendframework/zend-coding-standard": "~1.0.0"
     },
     "suggest": {
         "ocramius/proxy-manager": "ProxyManager 1.* to handle lazy initialization of services",
@@ -43,5 +43,16 @@
     },
     "provide": {
         "container-interop/container-interop-implementation": "^1.1"
+    },
+    "scripts": {
+        "check": [
+            "@cs-check",
+            "@test"
+        ],
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "test": "phpunit --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
+        "upload-coverage": "coveralls -v"
     }
 }
