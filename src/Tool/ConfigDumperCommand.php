@@ -26,14 +26,16 @@ class ConfigDumperCommand
 <info>Arguments:</info>
 
   <info>-h|--help|help</info>    This usage message
-  <info><configFile></info>      Path to an existing config file for which to generate
-                    additional configuration. Must return an array.
+  <info><configFile></info>      Path to a config file for which to generate configuration.
+                    If the file does not exist, it will be created. If it does
+                    exist, it must return an array, and the file will be
+                    updated with new configuration.
   <info><className></info>       Name of the class to reflect and for which to generate
                     dependency configuration.
 
-Reads the provided configuration file, and injects it with
-ConfigAbstractFactory dependency configuration for the provided class
-name, writing the changes back to the file.
+Reads the provided configuration file (creating it if it does not exist),
+and injects it with ConfigAbstractFactory dependency configuration for
+the provided class name, writing the changes back to the file.
 EOH;
 
     /**
@@ -119,21 +121,31 @@ EOH;
             return $this->createErrorArgument('Missing class name');
         }
 
-        if (! file_exists($arg1)) {
-            return $this->createErrorArgument(sprintf(
-                'Cannot find configuration file at path "%s"',
-                $arg1
-            ));
-        }
-
         $configFile = $arg1;
-        $config = require $configFile;
+        switch (file_exists($configFile)) {
+            case true:
+                $config = require $configFile;
 
-        if (! is_array($config)) {
-            return $this->createErrorArgument(sprintf(
-                'Configuration at path "%s" does not return an array.',
-                $configFile
-            ));
+                if (! is_array($config)) {
+                    return $this->createErrorArgument(sprintf(
+                        'Configuration at path "%s" does not return an array.',
+                        $configFile
+                    ));
+                }
+
+                break;
+            case false:
+                // fall-through
+            default:
+                if (! is_writable(dirname($configFile))) {
+                    return $this->createErrorArgument(sprintf(
+                        'Cannot create configuration at path "%s"; not writable.',
+                        $configFile
+                    ));
+                }
+
+                $config = [];
+                break;
         }
 
         $class = array_shift($args);

@@ -14,22 +14,24 @@ Usage:
 Arguments:
 
   -h|--help|help    This usage message
-  <configFile>      Path to an existing config file for which to generate
-                    additional configuration. Must return an array.
+  <configFile>      Path to a config file for which to generate configuration.
+                    If the file does not exist, it will be created. If it does
+                    exist, it must return an array, and the file will be
+                    updated with new configuration.
   <className>       Name of the class to reflect and for which to generate
                     dependency configuration.
 
 
-Reads the provided configuration file, and injects it with
-ConfigAbstractFactory dependency configuration for the provided class
-name, writing the changes back to the file.
+Reads the provided configuration file (creating it if it does not exist),
+and injects it with ConfigAbstractFactory dependency configuration for
+the provided class name, writing the changes back to the file.
 ```
 
 This utility will generate dependency configuration for the named class for use
 with the [ConfigAbstractFactory](config-abstract-factory.md). When doing so, it
-will read the named configuration file, and merge any configuration it generates
-with the return values of that file, writing the changes back to the original
-file.
+will read the named configuration file (creating it if it does not exist), and
+merge any configuration it generates with the return values of that file,
+writing the changes back to the original file.
 
 ## generate-factory-for-class
 
