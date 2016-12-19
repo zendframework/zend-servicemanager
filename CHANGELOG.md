@@ -15,12 +15,6 @@ All notable changes to this project will be documented in this file, in reverse 
   for a class matching the `$requestedName` prior to the `$canonicalName`; this
   also is more in line with version 3, which only has access to the requested
   name.
-- [#164](https://github.com/zendframework/zend-servicemanager/pull/164) fixes
-  how the `InvokableFactory` deals with creation options. Prior to this release,
-  absence of options led to setting the creation options to an empty array,
-  which, because it was non-null, led to breakage in plugins that treated an
-  empty array differently than null. This patch ensures that the original
-  behavior is restored.
 
 ### Deprecated
 
@@ -32,7 +26,18 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#164](https://github.com/zendframework/zend-servicemanager/pull/164) fixes
+  how the `InvokableFactory` deals with creation options. Prior to this release,
+  absence of options led to setting the creation options to an empty array,
+  which, because it was non-null, led to breakage in plugins that treated an
+  empty array differently than null. This patch ensures that the original
+  behavior is restored.
+- [#168](https://github.com/zendframework/zend-servicemanager/pull/168) fixes
+  how exception codes are provided to `ServiceNotCreatedException`. Previously,
+  the code was provided as-is. However, some PHP internal exception classes,
+  notably `PDOException`, can sometimes return other values (such as strings),
+  which can lead to fatal errors when instantiating the new exception. The patch
+  provided casts exception codes to integers to prevent these errors.
 
 ## 2.7.7 - 2016-09-01
 
