@@ -3,16 +3,16 @@
 
     
     <url>
-     <loc>None/</loc>
-     <lastmod>2016-09-06</lastmod>
+     <loc>/</loc>
+     <lastmod>2016-12-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
 
     
     <url>
-     <loc>None/quick-start/</loc>
-     <lastmod>2016-09-06</lastmod>
+     <loc>/quick-start/</loc>
+     <lastmod>2016-12-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -20,26 +20,26 @@
     
         
     <url>
-     <loc>None/configuring-the-service-manager/</loc>
-     <lastmod>2016-09-06</lastmod>
+     <loc>/configuring-the-service-manager/</loc>
+     <lastmod>2016-12-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc>None/delegators/</loc>
-     <lastmod>2016-09-06</lastmod>
+     <loc>/delegators/</loc>
+     <lastmod>2016-12-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc>None/lazy-services/</loc>
-     <lastmod>2016-09-06</lastmod>
+     <loc>/lazy-services/</loc>
+     <lastmod>2016-12-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc>None/plugin-managers/</loc>
-     <lastmod>2016-09-06</lastmod>
+     <loc>/plugin-managers/</loc>
+     <lastmod>2016-12-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -47,8 +47,8 @@
 
     
     <url>
-     <loc>None/migration/</loc>
-     <lastmod>2016-09-06</lastmod>
+     <loc>/migration/</loc>
+     <lastmod>2016-12-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
