@@ -19,11 +19,11 @@
         "zendframework/zend-stdlib": "^3.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.6 || ^5.2.10",
         "ocramius/proxy-manager": "^1.0 || ^2.0",
-        "squizlabs/php_codesniffer": "^2.5.1",
         "phpbench/phpbench": "^0.10.0",
-        "mikey179/vfsStream": "^1.6"
+        "phpunit/phpunit": "^4.6 || ^5.2.10",
+        "mikey179/vfsStream": "^1.6",
+        "zendframework/zend-coding-standard": "~1.0.0"
     },
     "suggest": {
         "ocramius/proxy-manager": "ProxyManager 1.* to handle lazy initialization of services",
@@ -51,8 +51,12 @@
         "bin/generate-factory-for-class"
     ],
     "scripts": {
-        "cs-check": "phpcs --colors",
-        "cs-fix": "phpcbf --colors",
+        "check": [
+            "@cs-check",
+            "@test"
+        ],
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
         "test": "phpunit --colors=always",
         "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
         "upload-coverage": "coveralls -v"

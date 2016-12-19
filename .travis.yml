@@ -31,6 +31,7 @@ matrix:
     - php: 7
       env:
         - CS_CHECK=true
+    - php: 7.1
     - php: hhvm 
   allow_failures:
     - php: hhvm
