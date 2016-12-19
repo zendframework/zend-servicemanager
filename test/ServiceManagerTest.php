@@ -598,6 +598,18 @@ class ServiceManagerTest extends TestCase
         $bar = $serviceManager->get('ZendTest\ServiceManager\TestAsset\Bar');
     }
 
+    public function testFactoryExceptionWithStringAsCodeFactory()
+    {
+        $this->setExpectedException(\Zend\ServiceManager\Exception\ServiceNotCreatedException::class);
+
+        $serviceManager = new ServiceManager();
+        $serviceManager->setFactory(
+            \ZendTest\ServiceManager\TestAsset\Bar::class,
+            \ZendTest\ServiceManager\TestAsset\ExceptionThrowingWithStringAsCodeFactory::class
+        );
+        $serviceManager->get(\ZendTest\ServiceManager\TestAsset\Bar::class);
+    }
+
     /**
      * @expectedException Zend\ServiceManager\Exception\InvalidServiceNameException
      */
