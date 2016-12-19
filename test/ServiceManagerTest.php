@@ -2,8 +2,8 @@
 /**
  * Zend Framework (http://framework.zend.com/)
  *
- * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
+ * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -344,7 +344,9 @@ class ServiceManagerTest extends TestCase
      */
     public function testCreateWithCallableFactory()
     {
-        $this->serviceManager->setFactory('foo', function () { return new TestAsset\Foo; });
+        $this->serviceManager->setFactory('foo', function () {
+            return new TestAsset\Foo;
+        });
         $this->assertInstanceOf('ZendTest\ServiceManager\TestAsset\Foo', $this->serviceManager->get('foo'));
     }
 
@@ -600,14 +602,14 @@ class ServiceManagerTest extends TestCase
 
     public function testFactoryExceptionWithStringAsCodeFactory()
     {
-        $this->setExpectedException(\Zend\ServiceManager\Exception\ServiceNotCreatedException::class);
+        $this->setExpectedException(Exception\ServiceNotCreatedException::class);
 
         $serviceManager = new ServiceManager();
         $serviceManager->setFactory(
-            \ZendTest\ServiceManager\TestAsset\Bar::class,
-            \ZendTest\ServiceManager\TestAsset\ExceptionThrowingWithStringAsCodeFactory::class
+            TestAsset\Bar::class,
+            TestAsset\ExceptionThrowingWithStringAsCodeFactory::class
         );
-        $serviceManager->get(\ZendTest\ServiceManager\TestAsset\Bar::class);
+        $serviceManager->get(TestAsset\Bar::class);
     }
 
     /**
@@ -617,8 +619,8 @@ class ServiceManagerTest extends TestCase
     {
         $this->serviceManager->setFactory('foo', 'ZendTest\ServiceManager\TestAsset\FooFactory');
         $this->serviceManager->setFactory('bar', function ($sm) {
-                return new Bar(['a']);
-            });
+            return new Bar(['a']);
+        });
         $this->serviceManager->setAllowOverride(false);
         // should throw an exception because 'foo' already exists in the service manager
         $this->serviceManager->setAlias('foo', 'bar');
@@ -1104,7 +1106,9 @@ class ServiceManagerTest extends TestCase
             return $delegator;
         };
 
-        $this->serviceManager->setFactory('foo-service', function () use ($realService) { return $realService; });
+        $this->serviceManager->setFactory('foo-service', function () use ($realService) {
+            return $realService;
+        });
         $this->serviceManager->addDelegator('foo-service', $delegatorFactoryCallback);
 
         $service = $this->serviceManager->create('foo-service');
@@ -1197,7 +1201,8 @@ class ServiceManagerTest extends TestCase
             [1],
             [1.2],
             [[]],
-            [function () {}],
+            [function () {
+            }],
             [false],
             [new \stdClass()],
             [tmpfile()]
