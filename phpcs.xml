@@ -6,4 +6,6 @@
     <file>src</file>
     <file>test</file>
     <file>benchmarks</file>
+
+    <exclude-pattern>test/log/</exclude-pattern>
 </ruleset>
