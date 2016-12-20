@@ -301,6 +301,22 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
+     * Set factories
+     *
+     * @param  array $nameFactoryPairs
+     * @return ServiceManager
+     * @throws Exception\InvalidArgumentException
+     * @throws Exception\InvalidServiceNameException
+     */
+    public function setFactories($nameFactoryPairs)
+    {
+        foreach ($nameFactoryPairs as $name => $factory) {
+            $this->setFactory($name, $factory);
+        }
+        return $this;
+    }
+
+    /**
      * Add abstract factory
      *
      * @param  AbstractFactoryInterface|string $factory
@@ -842,6 +858,20 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         $this->aliases[$cAlias] = $nameOrAlias;
+        return $this;
+    }
+
+    /**
+     * @param  array $aliasNamePairs
+     * @return ServiceManager
+     * @throws Exception\ServiceNotFoundException
+     * @throws Exception\InvalidServiceNameException
+     */
+    public function setAliases($aliasNamePairs)
+    {
+        foreach ($aliasNamePairs as $alias => $nameOrAlias) {
+            $this->setAlias($alias, $nameOrAlias);
+        }
         return $this;
     }
 

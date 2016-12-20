@@ -95,6 +95,19 @@ class ServiceManagerTest extends TestCase
     }
 
     /**
+     * @covers Zend\ServiceManager\ServiceManager::setFactories
+     * @depends testSetFactory
+     */
+    public function testSetFactories()
+    {
+        $ret = $this->serviceManager->setFactories([
+            'foo' => 'bar',
+            'baz' => 'bar',
+        ]);
+        $this->assertSame($this->serviceManager, $ret);
+    }
+
+    /**
      * @covers Zend\ServiceManager\ServiceManager::setFactory
      */
     public function testSetFactoryThrowsExceptionOnDuplicate()
@@ -431,6 +444,20 @@ class ServiceManagerTest extends TestCase
     {
         $this->serviceManager->setInvokableClass('foo', 'bar');
         $ret = $this->serviceManager->setAlias('bar', 'foo');
+        $this->assertSame($this->serviceManager, $ret);
+    }
+
+    /**
+     * @covers Zend\ServiceManager\ServiceManager::setAliases
+     * @depends testSetAlias
+     */
+    public function testSetAliases()
+    {
+        $this->serviceManager->setInvokableClass('foo', 'bar');
+        $ret = $this->serviceManager->setAliases([
+            'bar' => 'foo',
+            'baz' => 'foo',
+        ]);
         $this->assertSame($this->serviceManager, $ret);
     }
 
