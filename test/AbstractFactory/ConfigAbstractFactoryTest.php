@@ -177,6 +177,38 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
         $abstractFactory($serviceManager, 'Dirk_Gently');
     }
 
+    public function testFalseWhenCanCreateConfigNotExists()
+    {
+        $abstractFactory = new ConfigAbstractFactory();
+        $serviceManager = new ServiceManager();
+
+        $result = $abstractFactory->canCreate($serviceManager, 'Dirk_Gently');
+
+        $this->assertFalse($result);
+    }
+
+    public function testFalseWhenCanCreateConfigIsNotArray()
+    {
+        $abstractFactory = new ConfigAbstractFactory();
+        $serviceManager = new ServiceManager();
+        $serviceManager->setService('config', 'Holistic');
+
+        $result = $abstractFactory->canCreate($serviceManager, 'Dirk_Gently');
+
+        $this->assertFalse($result);
+    }
+
+    public function testFalseWhenCanCreateConfigIsArrayWithoutCorrectConfig()
+    {
+        $abstractFactory = new ConfigAbstractFactory();
+        $serviceManager = new ServiceManager();
+        $serviceManager->setService('config', []);
+
+        $result = $abstractFactory->canCreate($serviceManager, 'Dirk_Gently');
+
+        $this->assertFalse($result);
+    }
+
     public function testExceptsWhenServiceConfigIsNotArray()
     {
         $abstractFactory = new ConfigAbstractFactory();
