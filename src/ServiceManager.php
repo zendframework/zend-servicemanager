@@ -206,14 +206,6 @@ class ServiceManager implements ServiceLocatorInterface
             $this->services[$name] = $object;
         }
 
-        // Also do so for aliases; this allows sharing based on service name used.
-        if ($requestedName !== $name
-            && (($this->sharedByDefault && ! isset($this->shared[$requestedName]))
-                || (isset($this->shared[$requestedName]) && $this->shared[$requestedName]))
-        ) {
-            $this->services[$requestedName] = $object;
-        }
-
         return $object;
     }
 
