@@ -12,6 +12,7 @@ use ReflectionClass;
 use ReflectionParameter;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Zend\ServiceManager\Tool\FactoryCreator;
 
 /**
  * Reflection-based factory.
@@ -42,6 +43,16 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
  * </code>
  *
  * The latter approach is more explicit, and also more performant.
+ *
+ * There is also a hybrid approach where reflection factories are generated on demand
+ * and then stored in a file cache. To enable this, instantiate ReflectionBasedAbstractFactory
+ * manually in your application bootstrap and enable caching.
+ * See https://zendframework.github.io/zend-servicemanager/reflection-abstract-factory/ for examples
+ * of how to do this.
+ *
+ * <code>
+ * $container->addAbstractFactory(new ReflectionBasedAbstractFactory([], true));
+ * </code>
  *
  * The factory has the following constraints/features:
  *
@@ -86,6 +97,21 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
     protected $aliases = [];
 
     /**
+     * @var FactoryCreator
+     */
+    private $factoryCreator;
+
+    /**
+     * @var bool
+     */
+    private $cacheEnabled;
+
+    /**
+     * @var string
+     */
+    protected $cacheDirectory;
+
+    /**
      * Constructor.
      *
      * Allows overriding the internal list of aliases. These should be of the
@@ -94,11 +120,16 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
      *
      * @param string[] $aliases
      */
-    public function __construct(array $aliases = [])
-    {
+    public function __construct(
+        array $aliases = [],
+        $cacheEnabled = false,
+        $cacheDirectory = '/data/cache/reflection-factory'
+    ) {
         if (! empty($aliases)) {
             $this->aliases = $aliases;
         }
+        $this->cacheEnabled = $cacheEnabled;
+        $this->cacheDirectory = $cacheDirectory;
     }
 
     /**
@@ -108,25 +139,53 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $reflectionClass = new ReflectionClass($requestedName);
+        if ($this->cacheEnabled) {
+            $factoryName = $requestedName  . 'Factory';
+            $filename = $this->cacheDirectory . DIRECTORY_SEPARATOR
+                . str_replace('\\', DIRECTORY_SEPARATOR, $requestedName) . 'Factory.php';
 
-        if (null === ($constructor = $reflectionClass->getConstructor())) {
-            return new $requestedName();
+            if (file_exists($filename)) {
+                include $filename;
+                $factory = new $factoryName;
+                return $factory($container);
+            }
+
+            if (is_null($this->factoryCreator)) {
+                $this->factoryCreator = new FactoryCreator;
+            }
+
+            $factoryCode = $this->factoryCreator->createFactory($requestedName);
+            $parentDir = dirname($filename);
+            if (! file_exists($parentDir)) {
+                mkdir($parentDir, 0755, true);
+            }
+
+            file_put_contents($filename, $factoryCode);
+            // eval() is evil, but we just generated this code and can assume it to be safe
+            eval(substr($factoryCode, 5));
+            $factory = new $factoryName;
+            return $factory($container);
+        } else {
+            $reflectionClass = new ReflectionClass($requestedName);
+
+            if (null === ($constructor = $reflectionClass->getConstructor())) {
+                return new $requestedName();
+            }
+
+            $reflectionParameters = $constructor->getParameters();
+
+            if (empty($reflectionParameters)) {
+                return new $requestedName();
+            }
+
+            $resolver = $container->has('config')
+                ? $this->resolveParameterWithConfigService($container, $requestedName)
+                : $this->resolveParameterWithoutConfigService($container, $requestedName);
+
+            $parameters = array_map($resolver, $reflectionParameters);
+
+            return new $requestedName(...$parameters);
         }
-
-        $reflectionParameters = $constructor->getParameters();
-
-        if (empty($reflectionParameters)) {
-            return new $requestedName();
-        }
-
-        $resolver = $container->has('config')
-            ? $this->resolveParameterWithConfigService($container, $requestedName)
-            : $this->resolveParameterWithoutConfigService($container, $requestedName);
-
-        $parameters = array_map($resolver, $reflectionParameters);
-
-        return new $requestedName(...$parameters);
     }
 
     /**
