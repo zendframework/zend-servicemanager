@@ -460,7 +460,7 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @param  string $name
      * @param  bool   $usePeeringServiceManagers
-     * @return bool
+     * @return bool|null
      * @throws Exception\ServiceNotFoundException
      */
     public function getShared($name, $usePeeringServiceManagers = true)
