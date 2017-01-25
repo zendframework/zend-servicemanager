@@ -463,7 +463,7 @@ class ServiceManager implements ServiceLocatorInterface
      * @return bool|null
      * @throws Exception\ServiceNotFoundException
      */
-    public function getShared($name, $usePeeringServiceManagers = true)
+    private function getShared($name, $usePeeringServiceManagers = true)
     {
         $cName = $this->canonicalizeName($name);
 
