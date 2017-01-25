@@ -1037,7 +1037,8 @@ class ServiceManager implements ServiceLocatorInterface
             $peeringServiceManager->serviceManagerCaller = $this;
 
             if ($peeringServiceManager->has($name)) {
-                $this->shared[$name] = $peeringServiceManager->isShared($name);
+                $cname = $this->canonicalizeName($name);
+                $this->shared[$cname] = $peeringServiceManager->isShared($name);
                 $instance = $peeringServiceManager->get($name);
                 $peeringServiceManager->serviceManagerCaller = null;
                 return $instance;
