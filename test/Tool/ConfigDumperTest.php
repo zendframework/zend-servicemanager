@@ -7,6 +7,7 @@
 
 namespace ZendTest\ServiceManager\Tool;
 
+use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
@@ -16,6 +17,7 @@ use ZendTest\ServiceManager\TestAsset\ClassDependingOnAnInterface;
 use ZendTest\ServiceManager\TestAsset\DoubleDependencyObject;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
+use ZendTest\ServiceManager\TestAsset\ObjectWithObjectScalarDependency;
 use ZendTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
 use ZendTest\ServiceManager\TestAsset\SecondComplexDependencyObject;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
@@ -98,6 +100,76 @@ class ConfigDumperTest extends TestCase
         $config = $this->dumper->createDependencyConfig(
             [ConfigAbstractFactory::class => []],
             ObjectWithScalarDependency::class
+        );
+    }
+
+    public function testCreateDependencyConfigWithContainerAndNoServiceWithoutTypeHintedParameterExcepts()
+    {
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage(
+            'Cannot create config for constructor argument "aName", '
+            . 'it has no type hint, or non-class/interface type hint'
+        );
+        $container = $this->prophesize(ContainerInterface::class);
+        $container->has(ObjectWithScalarDependency::class)
+            ->shouldBeCalled()
+            ->willReturn(false);
+        $this->dumper->setContainer($container->reveal());
+        $config = $this->dumper->createDependencyConfig(
+            [ConfigAbstractFactory::class => []],
+            ObjectWithScalarDependency::class
+        );
+    }
+
+    public function testCreateDependencyConfigWithContainerWithoutTypeHintedParameter()
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+        $container->has(ObjectWithScalarDependency::class)
+            ->shouldBeCalled()
+            ->willReturn(true);
+        $this->dumper->setContainer($container->reveal());
+        $config = $this->dumper->createDependencyConfig(
+            [ConfigAbstractFactory::class => []],
+            ObjectWithObjectScalarDependency::class
+        );
+        self::assertEquals(
+            [
+                ConfigAbstractFactory::class => [
+                    SimpleDependencyObject::class => [
+                        InvokableObject::class,
+                    ],
+                    InvokableObject::class => [],
+                    ObjectWithObjectScalarDependency::class => [
+                        SimpleDependencyObject::class,
+                        ObjectWithScalarDependency::class,
+                    ],
+                ]
+            ],
+            $config
+        );
+    }
+
+    public function testCreateDependencyConfigWithoutTypeHintedParameterIgnoringUnresolved()
+    {
+        $config = $this->dumper->createDependencyConfig(
+            [ConfigAbstractFactory::class => []],
+            ObjectWithObjectScalarDependency::class,
+            true
+        );
+        self::assertEquals(
+            [
+                ConfigAbstractFactory::class => [
+                    SimpleDependencyObject::class => [
+                        InvokableObject::class,
+                    ],
+                    InvokableObject::class => [],
+                    ObjectWithObjectScalarDependency::class => [
+                        SimpleDependencyObject::class,
+                        ObjectWithScalarDependency::class,
+                    ],
+                ]
+            ],
+            $config
         );
     }
 
