@@ -7,12 +7,13 @@
 
 namespace ZendTest\ServiceManager\Tool;
 
+use PHPUnit\Framework\TestCase;
 use Zend\ServiceManager\Tool\FactoryCreator;
 use ZendTest\ServiceManager\TestAsset\ComplexDependencyObject;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
-class FactoryCreatorTest extends \PHPUnit_Framework_TestCase
+class FactoryCreatorTest extends TestCase
 {
     /**
      * @var FactoryCreator

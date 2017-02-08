@@ -9,7 +9,7 @@ namespace ZendTest\ServiceManager\Proxy;
 
 use Interop\Container\ContainerInterface;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use ProxyManager\Proxy\VirtualProxyInterface;
@@ -64,10 +64,8 @@ class LazyServiceFactoryTest extends TestCase
         $this->proxyFactory->expects($this->never())
             ->method('createProxy')
         ;
-        $this->setExpectedException(
-            ServiceNotFoundException::class,
-            'The requested service "not_exists" was not found in the provided services map'
-        );
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage('The requested service "not_exists" was not found in the provided services map');
 
         $this->factory->__invoke($container, 'not_exists', [$callback, 'callback']);
     }

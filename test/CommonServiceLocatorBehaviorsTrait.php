@@ -136,7 +136,7 @@ trait CommonServiceLocatorBehaviorsTrait
             ]
         ]);
 
-        $serviceManager->get(DateTime::class);
+        $this->assertInstanceOf(DateTime::class, $serviceManager->get(DateTime::class));
     }
 
     public function testAllowsMultipleInstancesOfTheSameAbstractFactory()
@@ -258,7 +258,7 @@ trait CommonServiceLocatorBehaviorsTrait
             ]
         ]);
 
-        $this->setExpectedException(ServiceNotCreatedException::class);
+        $this->expectException(ServiceNotCreatedException::class);
 
         $serviceManager->get(stdClass::class);
     }
@@ -271,7 +271,7 @@ trait CommonServiceLocatorBehaviorsTrait
             ]
         ]);
 
-        $this->setExpectedException(ServiceNotCreatedException::class);
+        $this->expectException(ServiceNotCreatedException::class);
 
         $serviceManager->get(stdClass::class);
     }
@@ -512,7 +512,8 @@ trait CommonServiceLocatorBehaviorsTrait
         $factory,
         $contains = 'invalid abstract factory'
     ) {
-        $this->setExpectedException(InvalidArgumentException::class, $contains);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($contains);
         $serviceManager = $this->createContainer([
             'abstract_factories' => [
                 $factory,
@@ -552,7 +553,8 @@ trait CommonServiceLocatorBehaviorsTrait
         $initializer,
         $contains = 'invalid initializer'
     ) {
-        $this->setExpectedException(InvalidArgumentException::class, $contains);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($contains);
         $serviceManager = $this->createContainer([
             'initializers' => [
                 $initializer,
@@ -566,7 +568,8 @@ trait CommonServiceLocatorBehaviorsTrait
     public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {
         $serviceManager = $this->createContainer();
-        $this->setExpectedException(ContainerException::class, 'Unable to resolve');
+        $this->expectException(ContainerException::class);
+        $this->expectExceptionMessage('Unable to resolve');
         $serviceManager->get('Some\Unknown\Service');
     }
 
@@ -600,7 +603,8 @@ trait CommonServiceLocatorBehaviorsTrait
             ],
         ]);
 
-        $this->setExpectedException(ServiceNotCreatedException::class, $contains);
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionMessage($contains);
         $serviceManager->get(stdClass::class);
     }
 
@@ -799,7 +803,7 @@ trait CommonServiceLocatorBehaviorsTrait
     {
         $container = $this->createContainer(['services' => ['foo' => $this]]);
         $container->setAllowOverride(false);
-        $this->setExpectedException(ContainerModificationsNotAllowedException::class);
+        $this->expectException(ContainerModificationsNotAllowedException::class);
         call_user_func_array([$container, $method], $args);
     }
 
@@ -841,7 +845,7 @@ trait CommonServiceLocatorBehaviorsTrait
      */
     public function testCrashesOnCyclicAliases()
     {
-        $this->setExpectedException(CyclicAliasException::class);
+        $this->expectException(CyclicAliasException::class);
 
         $this->createContainer([
             'aliases' => [

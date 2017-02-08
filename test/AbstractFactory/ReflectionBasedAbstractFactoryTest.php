@@ -8,7 +8,7 @@
 namespace ZendTest\ServiceManager\AbstractFactory;
 
 use Interop\Container\ContainerInterface;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 
@@ -54,27 +54,23 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
         $this->container->has(TestAsset\SampleInterface::class)->willReturn(false);
         $this->container->has('config')->willReturn(false);
         $factory = new ReflectionBasedAbstractFactory();
-        $this->setExpectedException(
-            ServiceNotFoundException::class,
-            sprintf(
-                'Unable to create service "%s"; unable to resolve parameter "sample" using type hint "%s"',
-                TestAsset\ClassWithTypeHintedConstructorParameter::class,
-                TestAsset\SampleInterface::class
-            )
-        );
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Unable to create service "%s"; unable to resolve parameter "sample" using type hint "%s"',
+            TestAsset\ClassWithTypeHintedConstructorParameter::class,
+            TestAsset\SampleInterface::class
+        ));
         $factory($this->container->reveal(), TestAsset\ClassWithTypeHintedConstructorParameter::class);
     }
 
     public function testFactoryRaisesExceptionForScalarParameters()
     {
         $factory = new ReflectionBasedAbstractFactory();
-        $this->setExpectedException(
-            ServiceNotFoundException::class,
-            sprintf(
-                'Unable to create service "%s"; unable to resolve parameter "foo" to a class, interface, or array type',
-                TestAsset\ClassWithScalarParameters::class
-            )
-        );
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Unable to create service "%s"; unable to resolve parameter "foo" to a class, interface, or array type',
+            TestAsset\ClassWithScalarParameters::class
+        ));
         $instance = $factory($this->container->reveal(), TestAsset\ClassWithScalarParameters::class);
     }
 
