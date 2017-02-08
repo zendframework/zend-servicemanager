@@ -64,10 +64,8 @@ class LazyServiceFactoryTest extends TestCase
         $this->proxyFactory->expects($this->never())
             ->method('createProxy')
         ;
-        $this->setExpectedException(
-            ServiceNotFoundException::class,
-            'The requested service "not_exists" was not found in the provided services map'
-        );
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage('The requested service "not_exists" was not found in the provided services map');
 
         $this->factory->__invoke($container, 'not_exists', [$callback, 'callback']);
     }

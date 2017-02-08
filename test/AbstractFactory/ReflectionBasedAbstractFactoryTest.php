@@ -54,8 +54,8 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
         $this->container->has(TestAsset\SampleInterface::class)->willReturn(false);
         $this->container->has('config')->willReturn(false);
         $factory = new ReflectionBasedAbstractFactory();
-        $this->setExpectedException(
-            ServiceNotFoundException::class,
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage(
             sprintf(
                 'Unable to create service "%s"; unable to resolve parameter "sample" using type hint "%s"',
                 TestAsset\ClassWithTypeHintedConstructorParameter::class,
@@ -68,8 +68,8 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
     public function testFactoryRaisesExceptionForScalarParameters()
     {
         $factory = new ReflectionBasedAbstractFactory();
-        $this->setExpectedException(
-            ServiceNotFoundException::class,
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage(
             sprintf(
                 'Unable to create service "%s"; unable to resolve parameter "foo" to a class, interface, or array type',
                 TestAsset\ClassWithScalarParameters::class
