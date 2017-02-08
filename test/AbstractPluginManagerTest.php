@@ -8,7 +8,7 @@
 namespace ZendTest\ServiceManager;
 
 use Interop\Container\ContainerInterface;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use stdClass;
 use Zend\ServiceManager\ConfigInterface;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
@@ -181,7 +181,8 @@ class AbstractPluginManagerTest extends TestCase
     public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {
         $pluginManager = $this->createContainer();
-        $this->expectException(ServiceNotFoundException::class, get_class($pluginManager));
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage(get_class($pluginManager));
         $pluginManager->get('Some\Unknown\Service');
     }
 

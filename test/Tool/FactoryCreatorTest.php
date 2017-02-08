@@ -12,7 +12,7 @@ use ZendTest\ServiceManager\TestAsset\ComplexDependencyObject;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
-class FactoryCreatorTest extends \PHPUnit_Framework_TestCase
+class FactoryCreatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var FactoryCreator

@@ -7,7 +7,7 @@
 
 namespace ZendTest\ServiceManager;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase as TestCase;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\Test\CommonPluginManagerTrait;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;

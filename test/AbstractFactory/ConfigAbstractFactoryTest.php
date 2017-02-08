@@ -15,7 +15,7 @@ use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SecondComplexDependencyObject;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
-class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
+class ConfigAbstractFactoryTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testCanCreateReturnsTrueIfDependencyNotArrays()
