@@ -8,7 +8,7 @@
 namespace ZendTest\ServiceManager;
 
 use DateTime;
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;

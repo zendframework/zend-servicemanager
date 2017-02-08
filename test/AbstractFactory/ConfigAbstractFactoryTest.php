@@ -7,6 +7,7 @@
 
 namespace ZendTest\ServiceManager\AbstractFactory;
 
+use PHPUnit\Framework\TestCase;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\ServiceManager;
@@ -15,7 +16,7 @@ use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SecondComplexDependencyObject;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
-class ConfigAbstractFactoryTest extends \PHPUnit\Framework\TestCase
+class ConfigAbstractFactoryTest extends TestCase
 {
 
     public function testCanCreateReturnsTrueIfDependencyNotArrays()

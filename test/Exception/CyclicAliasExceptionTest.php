@@ -7,7 +7,7 @@
 
 namespace ZendTest\ServiceManager\Exception;
 
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Zend\ServiceManager\Exception\CyclicAliasException;
 
 /**

@@ -7,7 +7,7 @@
 
 namespace ZendTest\ServiceManager\Tool;
 
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Tool\FactoryCreatorCommand;

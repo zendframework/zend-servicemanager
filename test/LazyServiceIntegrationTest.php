@@ -7,7 +7,7 @@
 
 namespace ZendTest\ServiceManager;
 
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use ProxyManager\Autoloader\AutoloaderInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;

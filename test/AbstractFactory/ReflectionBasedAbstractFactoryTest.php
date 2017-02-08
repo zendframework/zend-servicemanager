@@ -8,7 +8,7 @@
 namespace ZendTest\ServiceManager\AbstractFactory;
 
 use Interop\Container\ContainerInterface;
-use PHPUnit\Framework\TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 
