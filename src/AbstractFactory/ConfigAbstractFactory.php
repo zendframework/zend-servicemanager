@@ -7,6 +7,7 @@
 
 namespace Zend\ServiceManager\AbstractFactory;
 
+use ArrayObject;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
@@ -40,8 +41,8 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
 
         $config = $container->get('config');
 
-        if (! is_array($config)) {
-            throw new ServiceNotCreatedException('Config must be an array');
+        if (! (is_array($config) || $config instanceof ArrayObject)) {
+            throw new ServiceNotCreatedException('Config must be an array or an instance of ArrayObject');
         }
 
         if (! array_key_exists(self::class, $config)) {

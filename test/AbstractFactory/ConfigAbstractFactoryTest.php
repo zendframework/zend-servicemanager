@@ -7,6 +7,7 @@
 
 namespace ZendTest\ServiceManager\AbstractFactory;
 
+use ArrayObject;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\ServiceManager;
@@ -74,6 +75,39 @@ class ConfigAbstractFactoryTest extends \PHPUnit_Framework_TestCase
 
         self::assertTrue($abstractFactory->canCreate($serviceManager, InvokableObject::class));
         self::assertFalse($abstractFactory->canCreate($serviceManager, ServiceManager::class));
+    }
+
+    public function testCanCreateReturnsTrueWhenConfigIsAnArrayObject()
+    {
+        $abstractFactory = new ConfigAbstractFactory();
+        $serviceManager = new ServiceManager();
+        $serviceManager->setService(
+            'config',
+            new ArrayObject([
+                ConfigAbstractFactory::class => [
+                    InvokableObject::class => [],
+                ]
+            ])
+        );
+
+        self::assertTrue($abstractFactory->canCreate($serviceManager, InvokableObject::class));
+        self::assertFalse($abstractFactory->canCreate($serviceManager, ServiceManager::class));
+    }
+
+    public function testFactoryCanCreateInstancesWhenConfigIsAnArrayObject()
+    {
+        $abstractFactory = new ConfigAbstractFactory();
+        $serviceManager = new ServiceManager();
+        $serviceManager->setService(
+            'config',
+            new ArrayObject([
+                ConfigAbstractFactory::class => [
+                    InvokableObject::class => [],
+                ]
+            ])
+        );
+
+        self::assertInstanceOf(InvokableObject::class, $abstractFactory($serviceManager, InvokableObject::class));
     }
 
     public function testInvokeWithInvokableClass()
