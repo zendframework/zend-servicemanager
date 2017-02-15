@@ -230,13 +230,12 @@ with the most common features of the Service manager.</p>
 <h2 id="1-install-zend-service-manager">1. Install Zend Service Manager</h2>
 <p>If you haven't already, <a href="https://getcomposer.org">install Composer</a>. Once you
 have, you can install the service manager:</p>
-<pre class="codehilite"><code class="language-bash">$ composer require zendframework/zend-servicemanager</code></pre>
-
+<pre class="codehilite"><code class="language-bash linenums">$ composer require zendframework/zend-servicemanager</code></pre>
 
 <h2 id="2-configuring-a-service-manager">2. Configuring a service manager</h2>
 <p>You can now create and configure a service manager. The service manager
 constructor accepts a simple array:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\ServiceManager;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use stdClass;
 
@@ -246,25 +245,22 @@ $serviceManager = new ServiceManager([
     ],
 ]);</code></pre>
 
-
 <p>The service manager accepts a variety of keys; refer to the
 <a href="../configuring-the-service-manager/">Configuring service manager</a> section for
 full details.</p>
 <h2 id="3-retrieving-objects">3. Retrieving objects</h2>
 <p>Finally, you can retrieve instances using the <code>get()</code> method:</p>
-<pre class="codehilite"><code class="language-php">$object = $serviceManager-&gt;get(stdClass::class);</code></pre>
-
+<pre class="codehilite"><code class="language-php linenums">$object = $serviceManager-&gt;get(stdClass::class);</code></pre>
 
 <p>By default, all objects created through the service manager are shared. This
 means that calling the <code>get()</code> method twice will return the exact same object:</p>
-<pre class="codehilite"><code class="language-php">$object1 = $serviceManager-&gt;get(stdClass::class);
+<pre class="codehilite"><code class="language-php linenums">$object1 = $serviceManager-&gt;get(stdClass::class);
 $object2 = $serviceManager-&gt;get(stdClass::class);
 
 var_dump($object1 === $object2); // prints &quot;true&quot;</code></pre>
 
-
 <p>You can use the <code>build()</code> method to retrieve discrete instances for a service:</p>
-<pre class="codehilite"><code class="language-php">$object1 = $serviceManager-&gt;build(stdClass::class);
+<pre class="codehilite"><code class="language-php linenums">$object1 = $serviceManager-&gt;build(stdClass::class);
 $object2 = $serviceManager-&gt;build(stdClass::class);
 
 var_dump($object1 === $object2); // prints &quot;false&quot;</code></pre>

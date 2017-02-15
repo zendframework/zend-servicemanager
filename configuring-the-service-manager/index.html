@@ -253,7 +253,7 @@ constructor. The following keys are:</p>
   the <code>get</code> method should be cached. This is true by default.</li>
 </ul>
 <p>Here is an example of how you could configure a service manager:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\ServiceManager;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\ServiceManager;
 
 $serviceManager = new ServiceManager([
     'services'           =&gt; [],
@@ -264,13 +264,12 @@ $serviceManager = new ServiceManager([
     'shared_by_default'  =&gt; true
 ]);</code></pre>
 
-
 <h2 id="factories">Factories</h2>
 <p>A factory is any callable or any class that implements the interface
 <code>Zend\ServiceManager\Factory\FactoryInterface</code>.</p>
 <p>Service manager components provide a default factory that can be used to create
 objects that do not have any dependencies:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableFactory;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use stdClass;
 
@@ -280,12 +279,11 @@ $serviceManager = new ServiceManager([
     ]
 ]);</code></pre>
 
-
 <blockquote>
 <p>This mechanism replaces the <code>invokables</code> key that was used in Zend Framework 2.</p>
 </blockquote>
 <p>As said before, a factory can also be a callable, to create more complex objects:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use stdClass;
@@ -300,13 +298,12 @@ $serviceManager = new ServiceManager([
     ],
 ]);</code></pre>
 
-
 <p>Each factory always receive a <code>ContainerInterface</code> argument (this is the base
 interface that the <code>ServiceManager</code> implements), as well as the requested name
 as the second argument. In this case, the <code>$requestedName</code> is <code>MyObject</code>.</p>
 <p>Alternatively, the above code can be replaced by a factory class instead of a
 closure. This leads to more readable code. For instance:</p>
-<pre class="codehilite"><code class="language-php">// In MyObjectFactory.php file
+<pre class="codehilite"><code class="language-php linenums">// In MyObjectFactory.php file
 
 class MyObjectFactory implements FactoryInterface
 {
@@ -325,7 +322,6 @@ $serviceManager = new ServiceManager([
     ]
 ]);</code></pre>
 
-
 <blockquote>
 <p>For performance reasons, factories objects are not created until requested.
 In the above example, this means that the <code>MyObjectFactory</code> object won't be
@@ -338,7 +334,7 @@ parameter of a factory. This is useful when you need to create multiple
 services that are created exactly the same way, hence reducing the number of
 needed factories.</p>
 <p>For instance, if two services share the same creation pattern, you could attach the same factory:</p>
-<pre class="codehilite"><code class="language-php">// In MyObjectFactory.php file
+<pre class="codehilite"><code class="language-php linenums">// In MyObjectFactory.php file
 
 class MyObjectFactory implements FactoryInterface
 {
@@ -356,7 +352,6 @@ $serviceManager = new ServiceManager([
         MyObjectB::class =&gt; MyObjectFactory::class
     ]
 ]);</code></pre>
-
 
 <p>This pattern can often replace abstract factories, and is more performant:</p>
 <ul>
@@ -379,7 +374,7 @@ common creation pattern.</p>
 <p>An abstract factory must be registered inside the service manager, and is
 checked if no factory can create an object. Each abstract factory must
 implement <code>Zend\ServiceManager\Factory\AbstractFactoryInterface</code>:</p>
-<pre class="codehilite"><code class="language-php">// In MyAbstractFactory.php:
+<pre class="codehilite"><code class="language-php linenums">// In MyAbstractFactory.php:
 
 class MyAbstractFactory implements AbstractFactoryInterface
 {
@@ -403,7 +398,6 @@ $serviceManager = new ServiceManager([
 
 // When fetching an object:
 $object = $serviceManager-&gt;get(A::class);</code></pre>
-
 
 <p>Here is what will happen:</p>
 <ol>
@@ -431,7 +425,7 @@ efficiently (as described in the <code>Factories</code> section).</p>
 <p>An <em>alias</em> provides an alternative name for a registered service.</p>
 <p>An alias can also be mapped to another alias (it will be resolved recursively).
 For instance:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableFactory;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use stdClass;
 
@@ -447,7 +441,6 @@ $serviceManager = new ServiceManager([
 ]);
 
 $object = $serviceManager-&gt;get('B');</code></pre>
-
 
 <p>In this example, asking <code>B</code> will be resolved to <code>A</code>, which will be itself
 resolved to <code>stdClass::class</code>, which will finally be constructed using the
@@ -466,7 +459,7 @@ inject additional dependencies.</p>
 <p>For instance, if we'd want to automatically inject the dependency
 <code>EventManager::class</code> in all objects that implement the interface
 <code>EventManagerAwareInterface</code>, we could create the following initializer:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
 use stdClass;
 use Zend\ServiceManager\ServiceManager;
 
@@ -481,11 +474,10 @@ $serviceManager = new ServiceManager([
     ]
 ]);</code></pre>
 
-
 <p>Alternately, you can create a class that implements
 <code>Zend\ServiceManager\Initializer\InitializerInterface</code>, and pass it to the
 <code>initializers</code> array:</p>
-<pre class="codehilite"><code class="language-php">// In MyInitializer.php
+<pre class="codehilite"><code class="language-php linenums">// In MyInitializer.php
 
 class MyInitializer implements InitializerInterface
 {
@@ -509,7 +501,6 @@ $serviceManager = new ServiceManager([
         new MyInitializer() // You could also use MyInitializer::class
     ]
 ]);</code></pre>
-
 
 <blockquote>
 <p>Note that initializers are automatically created when the service manager is
@@ -540,7 +531,7 @@ primarily for backwards compatibility, but we highly discourage their usage.</p>
 method twice for a given service will return exactly the same service. This is
 typically what you want, as it can saves a lot of memory and increase
 performance:</p>
-<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
+<pre class="codehilite"><code class="language-php linenums">$serviceManager = new ServiceManager([
     'factories' =&gt; [
         stdClass::class =&gt; InvokableFactory::class
     ]
@@ -551,11 +542,10 @@ $object2 = $serviceManager-&gt;get(stdClass::class);
 
 var_dump($object1 === $object2); // prints &quot;true&quot;</code></pre>
 
-
 <p>However, occasionally you may require discrete instances of a service. To
 enable this, you can use the <code>shared</code> key, providing a boolean false value for
 your service, as shown below:</p>
-<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
+<pre class="codehilite"><code class="language-php linenums">$serviceManager = new ServiceManager([
     'factories' =&gt; [
         stdClass::class =&gt; InvokableFactory::class
     ],
@@ -569,12 +559,11 @@ $object2 = $serviceManager-&gt;get(stdClass::class);
 
 var_dump($object1 === $object2); // prints &quot;false&quot;</code></pre>
 
-
 <p>Alternately, you can use the <code>build()</code> method instead of the <code>get()</code> method.
 The <code>build()</code> method works exactly the same as the <code>get</code> method, but never
 caches the service created, nor uses a previously cached instance for the
 service.</p>
-<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
+<pre class="codehilite"><code class="language-php linenums">$serviceManager = new ServiceManager([
     'factories' =&gt; [
         stdClass::class =&gt; InvokableFactory::class
     ]
@@ -585,10 +574,9 @@ $object2 = $serviceManager-&gt;build(stdClass::class);
 
 var_dump($object1 === $object2); // prints &quot;false&quot;</code></pre>
 
-
 <p>Finally, you could also decide to disable caching by default (even when calling
 the <code>get()</code> method), by setting the <code>shared_by_default</code> option to false:</p>
-<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
+<pre class="codehilite"><code class="language-php linenums">$serviceManager = new ServiceManager([
     'factories' =&gt; [
         stdClass::class =&gt; InvokableFactory::class
     ],
@@ -599,7 +587,6 @@ $object1 = $serviceManager-&gt;get(stdClass::class);
 $object2 = $serviceManager-&gt;get(stdClass::class);
 
 var_dump($object1 === $object2); // prints &quot;false&quot;</code></pre>
-
 
 <h2 id="passing-config-to-a-factorydelegator">Passing config to a factory/delegator</h2>
 <p>So far, we have covered examples where services are created through factories
@@ -619,7 +606,7 @@ similarly to the <code>get()</code> method, with two main differences:</p>
 </ul>
 <p>Those options are transferred to all factories, abstract factories, and delegators.
 For instance:</p>
-<pre class="codehilite"><code class="language-php">// In StringLengthValidatorFactory.php
+<pre class="codehilite"><code class="language-php linenums">// In StringLengthValidatorFactory.php
 
 class StringLengthValidatorFactory implements FactoryInterface
 {
@@ -641,11 +628,10 @@ $serviceManager = new ServiceManager([
 $validator1 = $serviceManager-&gt;build(StringLengthValidator::class, ['min' =&gt; 5]);
 $validator2 = $serviceManager-&gt;build(StringLengthValidator::class, ['min' =&gt; 15]);</code></pre>
 
-
 <p>In our previous example, because the <code>StringLengthValidator</code> does not have any
 other dependencies other than the <code>$options</code>, we could remove the factory, and
 simply map it to the built-in <code>InvokableFactory</code> factory:</p>
-<pre class="codehilite"><code class="language-php">// When creating the service manager:
+<pre class="codehilite"><code class="language-php linenums">// When creating the service manager:
 $serviceManager = new ServiceManager([
     'factories' =&gt; [
         StringLengthValidator::class =&gt; InvokableFactory::class
@@ -656,7 +642,6 @@ $serviceManager = new ServiceManager([
 
 $validator1 = $serviceManager-&gt;build(StringLengthValidator::class, ['min' =&gt; 5]);
 $validator2 = $serviceManager-&gt;build(StringLengthValidator::class, ['min' =&gt; 15]);</code></pre>
-
 
 <p>This works because the <code>InvokableFactory</code> will automatically pass the options
 (if any) to the constructor of the created object.</p>
@@ -686,7 +671,7 @@ following methods:</p>
   whether or not the named service should be shared.</li>
 </ul>
 <p>As examples:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\ServiceManager;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\ServiceManager;
 
 $serviceManager = new ServiceManager([
     'factories' =&gt; [

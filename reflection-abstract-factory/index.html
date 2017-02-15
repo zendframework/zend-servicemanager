@@ -234,7 +234,7 @@ out dependencies.</p>
 which provides a reflection-based approach to instantiation, resolving
 constructor dependencies to the relevant services. The factory may be used as
 either an abstract factory, or mapped to specific service names as a factory:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
 return [
     /* ... */
@@ -248,7 +248,6 @@ return [
     ],
     /* ... */
 ];</code></pre>
-
 
 <p>Mapping services to the factory is more explicit and performant.</p>
 <p>The factory operates with the following constraints/features:</p>
@@ -286,7 +285,7 @@ entries based on their class name (for historical reasons). As examples:</p>
 <p>To allow the <code>ReflectionBasedAbstractFactory</code> to find these, you have two
 options.</p>
 <p>The first is to pass an array of mappings via the constructor:</p>
-<pre class="codehilite"><code class="language-php">$reflectionFactory = new ReflectionBasedAbstractFactory([
+<pre class="codehilite"><code class="language-php linenums">$reflectionFactory = new ReflectionBasedAbstractFactory([
     \Zend\Console\Adapter\AdapterInterface::class     =&gt; 'ConsoleAdapter',
     \Zend\Filter\FilterPluginManager::class           =&gt; 'FilterManager',
     \Zend\Hydrator\HydratorPluginManager::class       =&gt; 'HydratorManager',
@@ -299,13 +298,12 @@ options.</p>
     \Zend\Validator\ValidatorPluginManager::class     =&gt; 'ValidatorManager',
 ]);</code></pre>
 
-
 <p>This can be done either in your configuration file (which could be problematic
 when considering serialization for caching), or during an early phase of
 application bootstrapping.</p>
 <p>For instance, with zend-mvc, this might be in your <code>Application</code> module's
 bootstrap listener:</p>
-<pre class="codehilite"><code class="language-php">namespace Application
+<pre class="codehilite"><code class="language-php linenums">namespace Application
 
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
@@ -322,19 +320,17 @@ class Module
     }
 }</code></pre>
 
-
 <p>For Expressive, it could be part of your <code>config/container.php</code> definition:</p>
-<pre class="codehilite"><code class="language-php">$container = new ServiceManager();
+<pre class="codehilite"><code class="language-php linenums">$container = new ServiceManager();
 (new Config($config['dependencies']))-&gt;configureServiceManager($container);
 // Add the following:
 $container-&gt;addAbstractFactory(new ReflectionBasedAbstractFactory([
     /* ... */
 ]));</code></pre>
 
-
 <p>The second approach is to extend the class, and define the map in the
 <code>$aliases</code> property:</p>
-<pre class="codehilite"><code class="language-php">namespace Application;
+<pre class="codehilite"><code class="language-php linenums">namespace Application;
 
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
@@ -353,7 +349,6 @@ class ReflectionAbstractFactory extends ReflectionBasedAbstractFactory
         \Zend\Validator\ValidatorPluginManager::class     =&gt; 'ValidatorManager',
     ];
 }</code></pre>
-
 
 <p>You could then register it via class name in your service configuration.</p>
 <h2 id="alternatives">Alternatives</h2>

@@ -246,14 +246,13 @@ object is really needed.</p>
 capable of generating lazy loading proxies for your services.</p>
 <p>The lazy service facilities depend on <a href="https://github.com/Ocramius/ProxyManager">ProxyManager</a>;
 you will need to install that package before using the feature:</p>
-<pre class="codehilite"><code class="language-php">$ composer require ocramius/proxy-manager</code></pre>
-
+<pre class="codehilite"><code class="language-php linenums">$ composer require ocramius/proxy-manager</code></pre>
 
 <h2 id="practical-example">Practical example</h2>
 <p>To demonstrate how a lazy service works, you may use the following <code>Buzzer</code>
 example class, which is designed to be slow at instantiation time for
 demonstration purposes:</p>
-<pre class="codehilite"><code class="language-php">namespace MyApp;
+<pre class="codehilite"><code class="language-php linenums">namespace MyApp;
 
 class Buzzer
 {
@@ -269,10 +268,9 @@ class Buzzer
     }
 }</code></pre>
 
-
 <p>You can then proceed and configure the service manager to generate proxies
 instead of real services:</p>
-<pre class="codehilite"><code class="language-php">use MyApp\Buzzer;
+<pre class="codehilite"><code class="language-php linenums">use MyApp\Buzzer;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\Proxy\LazyServiceFactory;
 use Zend\ServiceManager\ServiceManager;
@@ -295,20 +293,18 @@ $serviceManager = new \Zend\ServiceManager\ServiceManager([
     ],
 ]);</code></pre>
 
-
 <p>This configuration tells the service manager to add the add
 <code>LazyServiceFactory</code> as a delegator for <code>Buzzer</code>.</p>
 <p>You can now retrieve the buzzer:</p>
-<pre class="codehilite"><code class="language-php">use MyApp\Buzzer;
+<pre class="codehilite"><code class="language-php linenums">use MyApp\Buzzer;
 
 $buzzer = $serviceManager-&gt;get(Buzzer::class);
 echo $buzzer-&gt;buzz();</code></pre>
 
-
 <p>To verify that the proxying occurred correctly, you can run the following code,
 which should delay the 5 seconds wait time hardcoded in <code>Buzzer::__construct</code>
 until <code>Buzzer::buzz</code> is invoked:</p>
-<pre class="codehilite"><code class="language-php">use MyApp\Buzzer;
+<pre class="codehilite"><code class="language-php linenums">use MyApp\Buzzer;
 
 for ($i = 0; $i &lt; 100; $i += 1) {
     $buzzer = $serviceManager-&gt;get(Buzzer::class);
@@ -317,11 +313,10 @@ for ($i = 0; $i &lt; 100; $i += 1) {
 
 echo $buzzer-&gt;buzz();</code></pre>
 
-
 <h2 id="configuration">Configuration</h2>
 <p>This is the config structure expected by <code>Zend\ServiceManager\Proxy\LazyServiceFactory</code>,
 in the <code>lazy_services</code> key passed in the service manager configuration:</p>
-<pre class="codehilite"><code class="language-php">[
+<pre class="codehilite"><code class="language-php linenums">[
     // map of service names and their relative class names - this
     // is required since the service manager cannot know the
     // class name of defined services up front
@@ -339,10 +334,9 @@ in the <code>lazy_services</code> key passed in the service manager configuratio
     'write_proxy_files' =&gt; false,
 ];</code></pre>
 
-
 <p>After you have an instance, you can map lazy service/class pairs using
 <code>mapLazyService()</code>:</p>
-<pre class="codehilite"><code class="language-php">$container-&gt;mapLazyService('foo', \MyApplication\Foo::class);</code></pre>
+<pre class="codehilite"><code class="language-php linenums">$container-&gt;mapLazyService('foo', \MyApplication\Foo::class);</code></pre>
 
 <hr />
 

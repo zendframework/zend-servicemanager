@@ -233,12 +233,11 @@ rather than having to create separate factories for each of your services. </p>
 <p>Enable the <code>ConfigAbstractFactory</code> in the same way that you would enable 
 any other abstract factory.</p>
 <p>Programmatically:</p>
-<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager();
+<pre class="codehilite"><code class="language-php linenums">$serviceManager = new ServiceManager();
 $serviceManager-&gt;addAbstractFactory(new ConfigAbstractFactory());</code></pre>
 
-
 <p>Or within configuration:</p>
-<pre class="codehilite"><code class="language-php">return [
+<pre class="codehilite"><code class="language-php linenums">return [
     // zend-mvc:
     'service_manager' =&gt; [
         'abstract_factories' =&gt; [
@@ -254,18 +253,16 @@ $serviceManager-&gt;addAbstractFactory(new ConfigAbstractFactory());</code></pre
     ],
 ];</code></pre>
 
-
 <p>Like all abstract factories starting in version 3, you may also use the config
 abstract factory as a mapped factory, registering it as a factory for a specific
 class:</p>
-<pre class="codehilite"><code class="language-php">return [
+<pre class="codehilite"><code class="language-php linenums">return [
     'service_manager' =&gt; [
         'factories' =&gt; [
             SomeCustomClass::class =&gt; ConfigAbstractFactory::class,
         ],
     ],
 ];</code></pre>
-
 
 <h2 id="configuration">Configuration</h2>
 <p>Configuration should be provided via the <code>config</code> service, which should return
@@ -280,7 +277,7 @@ that is an array value. Each item in the array:</p>
   container.</li>
 </ul>
 <p>As an example:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 
 return [
     ConfigAbstractFactory::class =&gt; [
@@ -294,7 +291,6 @@ return [
     ],
 ];</code></pre>
 
-
 <p>The definition tells the service manager how this abstract factory should manage
 dependencies in the classes defined. In the above example, <code>MySimpleClass</code> has a
 single dependency on a <code>Logger</code> instance. The abstract factory will simply look
@@ -307,7 +303,7 @@ if it will fail; however, if <code>Handler</code> is configured directly with th
 already &mdash; for example, mapped to a custom factory &mdash; the service will
 be created and used as a dependency.</p>
 <p>As another, more complete example, consider the following classes:</p>
-<pre class="codehilite"><code class="language-php">class UserMapper
+<pre class="codehilite"><code class="language-php linenums">class UserMapper
 {
     public function __construct(Adapter $db, Cache $cache) {}
 }
@@ -326,9 +322,8 @@ class CacheAdapter
 {
 }</code></pre>
 
-
 <p>In this case, we can define the configuration for these classes as follows:</p>
-<pre class="codehilite"><code class="language-php">// config/autoload/dependencies.php or anywhere that gets merged into global config
+<pre class="codehilite"><code class="language-php linenums">// config/autoload/dependencies.php or anywhere that gets merged into global config
 return [
     ConfigAbstractFactory::class =&gt; [
         CacheAdapter::class =&gt; [], // no dependencies

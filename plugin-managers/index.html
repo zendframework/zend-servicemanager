@@ -233,11 +233,10 @@ specified inside a specialized <code>ValidatorPluginManager</code>.</p>
 <h2 id="creating-a-plugin-manager">Creating a plugin manager</h2>
 <p>To create a plugin manager, you first need to create a new class that extends
 <code>Zend\ServiceManager\AbstractPluginManager</code>:</p>
-<pre class="codehilite"><code class="language-php">class ValidatorPluginManager extends AbstractPluginManager
+<pre class="codehilite"><code class="language-php linenums">class ValidatorPluginManager extends AbstractPluginManager
 {
     protected $instanceOf = ValidatorInterface::class;
 }</code></pre>
-
 
 <p>The <code>$instanceOf</code> variable specifies a class/interface type that all instances
 retrieved from the plugin manager must fulfill. If an instance created by the
@@ -245,7 +244,7 @@ plugin manager does not match, a <code>Zend\ServiceManager\Exception\InvalidServ
 exception will be thrown.</p>
 <p>Most of the time, this shortcut is enough. However if you have more complex
 validation rules, you can override the <code>validate()</code> method:</p>
-<pre class="codehilite"><code class="language-php">class ValidatorPluginManager extends AbstractPluginManager
+<pre class="codehilite"><code class="language-php linenums">class ValidatorPluginManager extends AbstractPluginManager
 {
     public function validate($instance)
     {
@@ -257,7 +256,6 @@ validation rules, you can override the <code>validate()</code> method:</p>
     }
 }</code></pre>
 
-
 <h2 id="configuring-a-plugin-manager">Configuring a plugin manager</h2>
 <p>A plugin manager requires that you pass a parent service manager (typically,
 the application's service manager) as well as service configuration. Service
@@ -266,7 +264,7 @@ refer to the <a href="../configuring-the-service-manager/">configuring the servi
 <p>Because a plugin manager is often a service itself, we recommend you to
 register the plugin manager as part of the general service manager, as shown
 below:</p>
-<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
+<pre class="codehilite"><code class="language-php linenums">$serviceManager = new ServiceManager([
     'factories' =&gt; [
         ValidatorPluginManager::class =&gt; function(ContainerInterface $container, $requestedName) {
             return new ValidatorPluginManager($container, [
@@ -286,18 +284,16 @@ $pluginManager = $serviceManager-&gt;get(ValidatorPluginManager::class);
 
 $validator = $pluginManager-&gt;get(StringLengthValidator::class);</code></pre>
 
-
 <blockquote>
 <p>Unlike the version 2 implementation, when inside the context of the factory
 of a service created by a plugin manager, the passed container <strong>will not
 be</strong> the plugin manager, but the parent service manager instead. If you need
 access to other plugins of the same type, you will need to fetch the plugin
 manager from the container:</p>
-<pre class="codehilite"><code class="language-php">function ($container, $name, array $options = []) {
+<pre class="codehilite"><code class="language-php linenums">function ($container, $name, array $options = []) {
     $validators = $container-&gt;get(ValidatorPluginManager::class);
     // ...
 }</code></pre>
-
 
 </blockquote>
 

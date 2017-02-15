@@ -262,7 +262,7 @@ managers:</p>
 </ul>
 <h3 id="configuration-arrays">Configuration arrays</h3>
 <p>Configuration for v2 consisted of the following:</p>
-<pre class="codehilite"><code class="language-php">[
+<pre class="codehilite"><code class="language-php linenums">[
     'services' =&gt; [
         // service name =&gt; instance pairs
     ],
@@ -290,9 +290,8 @@ managers:</p>
     'share_by_default' =&gt; boolean,
 ]</code></pre>
 
-
 <p>In v3, the configuration remains the same, with the following additions:</p>
-<pre class="codehilite"><code class="language-php">[
+<pre class="codehilite"><code class="language-php linenums">[
     'lazy_services' =&gt; [
         // The class_map is required if using lazy services:
         'class_map' =&gt; [
@@ -304,7 +303,6 @@ managers:</p>
         'write_proxy_files'  =&gt; true, // boolean; false by default
     ],
 ]</code></pre>
-
 
 <p>The main change is the addition of integrated lazy service configuration is now
 integrated.</p>
@@ -339,7 +337,7 @@ definition, you will need to make some changes.</p>
 <p><code>$invokableClasses</code> will need to become <code>$factories</code> entries, and you will
 potentially need to add <code>$aliases</code> entries.</p>
 <p>As an example, consider the following, from zend-math v2.x:</p>
-<pre class="codehilite"><code class="language-php">class AdapterPluginManager extends AbstractPluginManager
+<pre class="codehilite"><code class="language-php linenums">class AdapterPluginManager extends AbstractPluginManager
 {
     protected $invokableClasses = [
         'bcmath' =&gt; Adapter\Bcmath::class,
@@ -347,10 +345,9 @@ potentially need to add <code>$aliases</code> entries.</p>
     ];
 }</code></pre>
 
-
 <p>Because we no longer define an <code>$invokableClasses</code> property, for v3.x, this
 now becomes:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableFactory;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\Factory\InvokableFactory;
 
 class AdapterPluginManager extends AbstractPluginManager
 {
@@ -365,7 +362,6 @@ class AdapterPluginManager extends AbstractPluginManager
     ];
 }</code></pre>
 
-
 </blockquote>
 <h2 id="lazy-services">Lazy Services</h2>
 <p>In v2, if you wanted to create a lazy service, you needed to take the following
@@ -378,7 +374,7 @@ steps:</p>
 <li>Assign the <code>LazyServiceFactory</code> as a delegator factory for your service.</li>
 </ul>
 <p>As an example:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Proxy\LazyServiceFactoryFactory;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\Proxy\LazyServiceFactoryFactory;
 
 $config = [
     'lazy_services' =&gt; [
@@ -408,7 +404,6 @@ return [
     ],
 ];</code></pre>
 
-
 <p>This was done in part because lazy services were introduced later in the v2
 cycle, and not fully integrated in order to retain the API.</p>
 <p>In order to reduce the number of dependencies and steps necessary to configure
@@ -420,7 +415,7 @@ lazy services, the following changes were made for v3:</p>
   <code>LazyServiceFactory</code> delegator factory, based on the configuration present.</li>
 </ul>
 <p>The above example becomes the following in v3:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableFactory;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\Proxy\LazyServiceFactory;
 
 return [
@@ -442,14 +437,12 @@ return [
     ],
 ];</code></pre>
 
-
 <p>Additionally, assuming you have configured lazy services initially with the
 proxy namespace, target directory, etc., you can map lazy services using the new
 method <code>mapLazyService($name, $class)</code>:</p>
-<pre class="codehilite"><code class="language-php">$container-&gt;mapLazyService('MyClass', 'MyClass');
+<pre class="codehilite"><code class="language-php linenums">$container-&gt;mapLazyService('MyClass', 'MyClass');
 // or, more simply:
 $container-&gt;mapLazyService('MyClass');</code></pre>
-
 
 <h2 id="servicelocatorinterface-changes">ServiceLocatorInterface Changes</h2>
 <p>The <code>ServiceLocatorInterface</code> now extends the
@@ -457,8 +450,7 @@ $container-&gt;mapLazyService('MyClass');</code></pre>
 interface <code>ContainerInterface</code>, which defines the same <code>get()</code> and <code>has()</code>
 methods as were previously defined.</p>
 <p>Additionally, it adds a new method:</p>
-<pre class="codehilite"><code class="language-php">public function build($name, array $options = null)</code></pre>
-
+<pre class="codehilite"><code class="language-php linenums">public function build($name, array $options = null)</code></pre>
 
 <p>This method is defined to <em>always</em> return a <em>new</em> instance of the requested
 service, and to allow using the provided <code>$options</code> when creating the instance.</p>
@@ -498,7 +490,7 @@ factory may use to create a new instance. This is primarily of interest when
 creating plugin managers (more on plugin managers below), which may pass that
 information on in order to create discrete plugin instances with specific state.</p>
 <p>As examples:</p>
-<pre class="codehilite"><code class="language-php">use Zend\Validator\Between;
+<pre class="codehilite"><code class="language-php linenums">use Zend\Validator\Between;
 
 $between = $container-&gt;build(Between::class, [
     'min'        =&gt; 5,
@@ -511,7 +503,6 @@ $alsoBetween = $container-&gt;build(Between::class, [
     'max'       =&gt; 100,
     'inclusive' =&gt; false,
 ]);</code></pre>
-
 
 <p>The above two validators would be different instances, with their own
 configuration.</p>
@@ -552,7 +543,7 @@ those defined in version 3.)</p>
 your code to use the new interfaces in the future.</p>
 <h3 id="abstractfactoryinterface">AbstractFactoryInterface</h3>
 <p>The previous signature of the <code>AbstractFactoryInterface</code> was:</p>
-<pre class="codehilite"><code class="language-php">interface AbstractFactoryInterface
+<pre class="codehilite"><code class="language-php linenums">interface AbstractFactoryInterface
 {
     /**
      * Determine if we can create a service with name
@@ -575,9 +566,8 @@ your code to use the new interfaces in the future.</p>
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName);
 }</code></pre>
 
-
 <p>The new signature is:</p>
-<pre class="codehilite"><code class="language-php">interface AbstractFactoryInterface extends FactoryInterface
+<pre class="codehilite"><code class="language-php linenums">interface AbstractFactoryInterface extends FactoryInterface
 {
     /**
      * Does the factory have a way to create an instance for the service?
@@ -588,7 +578,6 @@ your code to use the new interfaces in the future.</p>
      */
     public function canCreate(ContainerInterface $container, $requestedName);
 }</code></pre>
-
 
 <p>Note that it now <em>extends</em> the <code>FactoryInterface</code> (detailed below), and thus the
 factory logic has the same signature.</p>
@@ -604,7 +593,7 @@ arguments, the container and the requested service name.</p>
   <code>__invoke()</code></li>
 </ul>
 <p>As an example, given the following implementation from version 2:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\AbstractFactoryInterface;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class LenientAbstractFactory implements AbstractFactoryInterface
@@ -620,11 +609,10 @@ class LenientAbstractFactory implements AbstractFactoryInterface
     }
 }</code></pre>
 
-
 <p>To update this for version 3 compatibility, you will add the methods
 <code>canCreate()</code> and <code>__invoke()</code>, move the code from the existing methods into
 them, and update the existing methods to proxy to the new methods:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -651,7 +639,6 @@ class LenientAbstractFactory implements AbstractFactoryInterface
     }
 }</code></pre>
 
-
 <p>After you have upgraded to version 3, you can take the following steps to remove
 the migration artifacts:</p>
 <ul>
@@ -660,7 +647,7 @@ the migration artifacts:</p>
   from your implementation.</li>
 </ul>
 <p>From our example above, we would update the class to read as follows:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface; // &lt;-- note the change!
 
 class LenientAbstractFactory implements AbstractFactoryInterface
@@ -676,10 +663,9 @@ class LenientAbstractFactory implements AbstractFactoryInterface
     }
 }</code></pre>
 
-
 <h3 id="delegatorfactoryinterface">DelegatorFactoryInterface</h3>
 <p>The previous signature of the <code>DelegatorFactoryInterface</code> was:</p>
-<pre class="codehilite"><code class="language-php">interface DelegatorFactoryInterface
+<pre class="codehilite"><code class="language-php linenums">interface DelegatorFactoryInterface
 {
     /**
      * A factory that creates delegates of a given service
@@ -694,9 +680,8 @@ class LenientAbstractFactory implements AbstractFactoryInterface
     public function createDelegatorWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName, $callback);
 }</code></pre>
 
-
 <p>The new signature is:</p>
-<pre class="codehilite"><code class="language-php">interface DelegatorFactoryInterface
+<pre class="codehilite"><code class="language-php linenums">interface DelegatorFactoryInterface
 {
     /**
      * A factory that creates delegates of a given service
@@ -710,7 +695,6 @@ class LenientAbstractFactory implements AbstractFactoryInterface
     public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null);
 }</code></pre>
 
-
 <p>Note that the <code>$name</code> and <code>$requestedName</code> arguments are now merged into a
 single <code>$name</code> argument, and that the factory now allows passing additional
 options to use (typically as passed via <code>build()</code>).</p>
@@ -722,7 +706,7 @@ steps:</p>
 <li>Modify the <code>createDelegatorWithName()</code> method to proxy to the new method.</li>
 </ul>
 <p>Consider the following delegator factory that works for version 2:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\DelegatorFactoryInterface;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\DelegatorFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class ObserverAttachmentDelegator implements DelegatorFactoryInterface
@@ -735,10 +719,9 @@ class ObserverAttachmentDelegator implements DelegatorFactoryInterface
     }
 }</code></pre>
 
-
 <p>To prepare this for version 3, we'd implement the <code>__invoke()</code> signature from
 version 3, and modify <code>createDelegatorWithName()</code> to proxy to it:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\DelegatorFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -757,7 +740,6 @@ class ObserverAttachmentDelegator implements DelegatorFactoryInterface
     }
 }</code></pre>
 
-
 <p>After you have upgraded to version 3, you can take the following steps to remove
 the migration artifacts:</p>
 <ul>
@@ -765,7 +747,7 @@ the migration artifacts:</p>
 <li>Remove the <code>createDelegatorWithName()</code> method from your implementation.</li>
 </ul>
 <p>From our example above, we would update the class to read as follows:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface; // &lt;-- note the change!
 
 class ObserverAttachmentDelegator implements DelegatorFactoryInterface
@@ -778,10 +760,9 @@ class ObserverAttachmentDelegator implements DelegatorFactoryInterface
     }
 }</code></pre>
 
-
 <h3 id="factoryinterface">FactoryInterface</h3>
 <p>The previous signature of the <code>FactoryInterface</code> was:</p>
-<pre class="codehilite"><code class="language-php">interface FactoryInterface
+<pre class="codehilite"><code class="language-php linenums">interface FactoryInterface
 {
     /**
      * Create service
@@ -792,9 +773,8 @@ class ObserverAttachmentDelegator implements DelegatorFactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator);
 }</code></pre>
 
-
 <p>The new signature is:</p>
-<pre class="codehilite"><code class="language-php">interface FactoryInterface
+<pre class="codehilite"><code class="language-php linenums">interface FactoryInterface
 {
     /**
      * Create an object
@@ -806,7 +786,6 @@ class ObserverAttachmentDelegator implements DelegatorFactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null);
 }</code></pre>
-
 
 <p>Note that the factory now accepts an additional <em>required</em> argument,
 <code>$requestedName</code>; v2 already passed this argument, but it was not specified in
@@ -823,7 +802,7 @@ re-used for multiple services, largely replacing abstract factories in version
 <li>Modify the <code>createService()</code> method to proxy to the new method.</li>
 </ul>
 <p>Consider the following factory that works for version 2:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\FactoryInterface;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class FooFactory implements FactoryInterface
@@ -834,10 +813,9 @@ class FooFactory implements FactoryInterface
     }
 }</code></pre>
 
-
 <p>To prepare this for version 3, we'd implement the <code>__invoke()</code> signature from
 version 3, and modify <code>createService()</code> to proxy to it:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -854,7 +832,6 @@ class FooFactory implements FactoryInterface
     }
 }</code></pre>
 
-
 <p>Note that the call to <code>$this()</code> adds a new argument; since your factory isn't
 using the <code>$requestedName</code>, this can be anything, but must be passed to prevent
 a fatal exception due to a missing argument. In this case, we chose to pass the
@@ -866,7 +843,7 @@ the migration artifacts:</p>
 <li>Remove the <code>createService()</code> method from your implementation.</li>
 </ul>
 <p>From our example above, we would update the class to read as follows:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface; // &lt;-- note the change!
 
 class FooFactory implements FactoryInterface
@@ -876,7 +853,6 @@ class FooFactory implements FactoryInterface
         return new Foo($container-&gt;get(Bar::class));
     }
 }</code></pre>
-
 
 <blockquote>
 <h4 id="many-factories-already-work-with-v3">Many factories already work with v3!</h4>
@@ -917,12 +893,10 @@ the one defined in version 3.)</p>
 <li>The interface itself has a new signature.</li>
 </ul>
 <p>The previous signature was:</p>
-<pre class="codehilite"><code class="language-php">public function initialize($instance, ServiceLocatorInterface $serviceLocator)</code></pre>
-
+<pre class="codehilite"><code class="language-php linenums">public function initialize($instance, ServiceLocatorInterface $serviceLocator)</code></pre>
 
 <p>It is now:</p>
-<pre class="codehilite"><code class="language-php">public function __invoke(ContainerInterface $container, $instance)</code></pre>
-
+<pre class="codehilite"><code class="language-php linenums">public function __invoke(ContainerInterface $container, $instance)</code></pre>
 
 <p>The changes were made to ensure the signature is internally consistent with the
 various factories.</p>
@@ -933,7 +907,7 @@ various factories.</p>
 <li>Modify the <code>initialize()</code> method to proxy to the new method.</li>
 </ul>
 <p>As an example, consider this initializer for version 2:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\InitializerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class FooInitializer implements InitializerInterface
@@ -948,10 +922,9 @@ class FooInitializer implements InitializerInterface
     }
 }</code></pre>
 
-
 <p>To prepare this for version 3, we'd implement the <code>__invoke()</code> signature from
 version 3, and modify <code>initialize()</code> to proxy to it:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -972,7 +945,6 @@ class FooInitializer implements InitializerInterface
     }
 }</code></pre>
 
-
 <p>After you have upgraded to version 3, you can take the following steps to remove
 the migration artifacts:</p>
 <ul>
@@ -980,7 +952,7 @@ the migration artifacts:</p>
 <li>Remove the <code>initialize()</code> method from your implementation.</li>
 </ul>
 <p>From our example above, we would update the class to read as follows:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Initializer\InitializerInterface; // &lt;-- note the change!
 
 class FooInitializer implements InitializerInterface
@@ -995,7 +967,6 @@ class FooInitializer implements InitializerInterface
     }
 }</code></pre>
 
-
 <blockquote>
 <h3 id="update-your-callables">Update your callables!</h3>
 <p>Version 2 allows you to provide initializers as PHP callables. However, this
@@ -1006,7 +977,7 @@ instead. This guarantees that the correct method is called based on the
 version of the <code>ServiceManager</code> in use.</p>
 <p>The second approach is to omit typehints on the arguments, and do typechecks
 internally. As an example, let's say you have the following:</p>
-<pre class="codehilite"><code class="language-php">$container-&gt;addInitializer(function ($instance, ContainerInterface $container) {
+<pre class="codehilite"><code class="language-php linenums">$container-&gt;addInitializer(function ($instance, ContainerInterface $container) {
      if (! $instance implements FooAwareInterface) {
          return $instance;
      }
@@ -1014,10 +985,9 @@ internally. As an example, let's say you have the following:</p>
      return $instance;
 });</code></pre>
 
-
 <p>To make this future-proof, remove the typehints, and check the types within
 the callable:</p>
-<pre class="codehilite"><code class="language-php">$container-&gt;addInitializer(function ($first, $second) {
+<pre class="codehilite"><code class="language-php linenums">$container-&gt;addInitializer(function ($first, $second) {
      if ($first instanceof ContainerInterface) {
          $container = $first;
          $instance = $second;
@@ -1030,7 +1000,6 @@ the callable:</p>
      }
      $container-&gt;setFoo($services-&gt;get(FooInterface::class);
 });</code></pre>
-
 
 <p>This approach can also be done if you omitted typehints in the first place.
 Regardless, the important part to remember is that order of arguments is
@@ -1054,7 +1023,7 @@ manager, if composed, in order to resolve application-level dependencies.</p>
 <h3 id="pluginmanagerinterface">PluginManagerInterface</h3>
 <p><code>Zend\ServiceManager\PluginInterface</code> is a new interface for version 3,
 extending <code>ServiceLocatorInterface</code> and adding one method:</p>
-<pre class="codehilite"><code class="language-php">/**
+<pre class="codehilite"><code class="language-php linenums">/**
  * Validate an instance
  *
  * @param  object $instance
@@ -1063,7 +1032,6 @@ extending <code>ServiceLocatorInterface</code> and adding one method:</p>
  *     constraint on type imposed by the plugin manager
  */
 public function validate($instance);</code></pre>
-
 
 <p>All plugin managers <em>must</em> implement this interface. For backwards-compatibility
 purposes, <code>AbstractPluginManager</code> will check for the <code>validatePlugin()</code> method
@@ -1101,7 +1069,7 @@ following for the initial argument:</p>
 </ul>
 <h4 id="validation">Validation</h4>
 <p>The <code>validate()</code> method is defined as follows:</p>
-<pre class="codehilite"><code class="language-php">public function validate($instance)
+<pre class="codehilite"><code class="language-php linenums">public function validate($instance)
 {
     if (method_exists($this, 'validatePlugin')) {
         trigger_error(sprintf(
@@ -1124,7 +1092,6 @@ following for the initial argument:</p>
     ));
 }</code></pre>
 
-
 <p>The two takeaways from this are:</p>
 <ul>
 <li>If you are upgrading from v2, your code should continue to work, <em>but will
@@ -1136,17 +1103,14 @@ following for the initial argument:</p>
   indicate what plugin interface is considered valid for the plugin manager, and
   make no further changes to the abstract plugin manager:</li>
 </ul>
-<pre class="codehilite"><code class="language-php">protected $instanceOf = ValidatorInterface::class;</code></pre>
-
+<pre class="codehilite"><code class="language-php linenums">protected $instanceOf = ValidatorInterface::class;</code></pre>
 
 <h4 id="get">get()</h4>
 <p>The <code>get()</code> signature changes from:</p>
-<pre class="codehilite"><code class="language-php">public function get($name, $options = [], $usePeeringServiceManagers = true)</code></pre>
-
+<pre class="codehilite"><code class="language-php linenums">public function get($name, $options = [], $usePeeringServiceManagers = true)</code></pre>
 
 <p>to:</p>
-<pre class="codehilite"><code class="language-php">public function get($name, array $options = null)</code></pre>
-
+<pre class="codehilite"><code class="language-php linenums">public function get($name, array $options = null)</code></pre>
 
 <p>Essentially: <code>$options</code> now <em>must</em> be an array if passed, and peering is no
 longer supported.</p>
@@ -1165,7 +1129,7 @@ retained (without implementing the interface), but marked as deprecated:</p>
 compatibility <em>for existing plugin factories</em>. These factories typically pull
 dependencies from the parent/application container in order to initialize the
 plugin. In v2, this would look like:</p>
-<pre class="codehilite"><code class="language-php">function ($plugins)
+<pre class="codehilite"><code class="language-php linenums">function ($plugins)
 {
     $services = $plugins-&gt;getServiceLocator();
 
@@ -1176,7 +1140,6 @@ plugin. In v2, this would look like:</p>
     return new Plugin($foo, $bar);
 }</code></pre>
 
-
 <p>In v3, the initial argument to the factory is not the plugin manager instance,
 but the <em>creation context</em>, which is analogous to the parent locator in v2. In
 order to preserve existing behavior, we added the <code>getServiceLocator()</code> method
@@ -1184,7 +1147,7 @@ to the <code>ServiceManager</code>. As such, the above will continue to work in 
 <p>However, this method is marked as deprecated, and will emit an
 <code>E_USER_DEPRECATED</code> notice. To remove the notice, you will need to upgrade your
 code. The above example thus becomes:</p>
-<pre class="codehilite"><code class="language-php">function ($services)
+<pre class="codehilite"><code class="language-php linenums">function ($services)
 {
     // pull dependencies from $services:
     $foo = $services-&gt;get('Foo');
@@ -1193,25 +1156,22 @@ code. The above example thus becomes:</p>
     return new Plugin($foo, $bar);
 }</code></pre>
 
-
 <p>If you <em>were</em> using the passed plugin manager and pulling other plugins, you
 will need to update your code to retrieve the plugin manager from the passed
 container. As an example, given this:</p>
-<pre class="codehilite"><code class="language-php">function ($plugins)
+<pre class="codehilite"><code class="language-php linenums">function ($plugins)
 {
     $anotherPlugin = $plugins-&gt;get('AnotherPlugin');
     return new Plugin($anotherPlugin);
 }</code></pre>
 
-
 <p>You will need to rewrite it to:</p>
-<pre class="codehilite"><code class="language-php">function ($services)
+<pre class="codehilite"><code class="language-php linenums">function ($services)
 {
     $plugins = $services-&gt;get('PluginManager');
     $anotherPlugin = $plugins-&gt;get('AnotherPlugin');
     return new Plugin($anotherPlugin);
 }</code></pre>
-
 
 <h3 id="plugin-service-creation">Plugin Service Creation</h3>
 <p>The <code>get()</code> method has new behavior:</p>
@@ -1227,7 +1187,7 @@ container. As an example, given this:</p>
 </ul>
 <h3 id="migration-example">Migration example</h3>
 <p>Let's consider the following plugin manager geared towards version 2:</p>
-<pre class="codehilite"><code class="language-php">use RuntimeException;
+<pre class="codehilite"><code class="language-php linenums">use RuntimeException;
 use Zend\ServiceManager\AbstractPluginManager;
 
 class ObserverPluginManager extends AbstractPluginManager
@@ -1251,7 +1211,6 @@ class ObserverPluginManager extends AbstractPluginManager
     }
 }</code></pre>
 
-
 <p>To prepare this for version 3, we need to do the following:</p>
 <ul>
 <li>We need to change the <code>$invokables</code> configuration to a combination of
@@ -1261,7 +1220,7 @@ class ObserverPluginManager extends AbstractPluginManager
 <li>We need to add a <code>$sharedByDefault</code> property (if <code>$shareByDefault</code> is present).</li>
 </ul>
 <p>Doing so, we get the following result:</p>
-<pre class="codehilite"><code class="language-php">namespace MyNamespace;
+<pre class="codehilite"><code class="language-php linenums">namespace MyNamespace;
 
 use RuntimeException;
 use Zend\ServiceManager\AbstractPluginManager;
@@ -1312,7 +1271,6 @@ class ObserverPluginManager extends AbstractPluginManager
     }
 }</code></pre>
 
-
 <p>Things to note about the above:</p>
 <ul>
 <li>It introduces a new property, <code>$instanceOf</code>. We'll use this later, when we're
@@ -1336,7 +1294,7 @@ class ObserverPluginManager extends AbstractPluginManager
 <code>getPluginManager()</code> to return an instance of your plugin manager, and override
 <code>getV2InvalidPluginException()</code> to return the classname of the exception your
 <code>validatePlugin()</code> method throws:</p>
-<pre class="codehilite"><code class="language-php">use MyNamespace\ObserverInterface;
+<pre class="codehilite"><code class="language-php linenums">use MyNamespace\ObserverInterface;
 use MyNamespace\ObserverPluginManager;
 use MyNamespace\Exception\RuntimeException;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -1363,7 +1321,6 @@ class MigrationTest extends TestCase
     }
 }</code></pre>
 
-
 <p>This will check that:</p>
 <ul>
 <li>You have set the <code>$instanceOf</code> property.</li>
@@ -1382,7 +1339,7 @@ class MigrationTest extends TestCase
 <li>Remove the canonicalized FQCN entry for each factory</li>
 </ul>
 <p>Performing these steps on the above, we get:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\AbstractPluginManager;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\AbstractPluginManager;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
 class ObserverPluginManager extends AbstractPluginManager
@@ -1401,7 +1358,6 @@ class ObserverPluginManager extends AbstractPluginManager
         LogObserver::class =&gt; InvokableFactory::class,
     ];
 }</code></pre>
-
 
 <h2 id="di-namespace">DI Namespace</h2>
 <p><strong>The <code>Zend\ServiceManager\Di</code> namespace has been removed.</strong></p>

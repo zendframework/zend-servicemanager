@@ -4,7 +4,7 @@
     
     <url>
      <loc>/</loc>
-     <lastmod>2016-12-19</lastmod>
+     <lastmod>2017-02-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -12,7 +12,7 @@
     
     <url>
      <loc>/quick-start/</loc>
-     <lastmod>2016-12-19</lastmod>
+     <lastmod>2017-02-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -21,43 +21,43 @@
         
     <url>
      <loc>/configuring-the-service-manager/</loc>
-     <lastmod>2016-12-19</lastmod>
+     <lastmod>2017-02-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/delegators/</loc>
-     <lastmod>2016-12-19</lastmod>
+     <lastmod>2017-02-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/lazy-services/</loc>
-     <lastmod>2016-12-19</lastmod>
+     <lastmod>2017-02-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/plugin-managers/</loc>
-     <lastmod>2016-12-19</lastmod>
+     <lastmod>2017-02-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/config-abstract-factory/</loc>
-     <lastmod>2016-12-19</lastmod>
+     <lastmod>2017-02-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/reflection-abstract-factory/</loc>
-     <lastmod>2016-12-19</lastmod>
+     <lastmod>2017-02-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/console-tools/</loc>
-     <lastmod>2016-12-19</lastmod>
+     <lastmod>2017-02-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -67,7 +67,7 @@
         
     <url>
      <loc>/cookbook/factories-vs-abstract-factories/</loc>
-     <lastmod>2016-12-19</lastmod>
+     <lastmod>2017-02-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -76,7 +76,7 @@
     
     <url>
      <loc>/migration/</loc>
-     <lastmod>2016-12-19</lastmod>
+     <lastmod>2017-02-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     

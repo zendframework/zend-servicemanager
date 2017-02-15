@@ -231,7 +231,7 @@ intercept actions being performed on the delegate in an
 <a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">AOP</a> fashioned way.</p>
 <h2 id="delegator-factory-signature">Delegator factory signature</h2>
 <p>A delegator factory has the following signature:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
 
 public function __invoke(
     ContainerInterface $container,
@@ -239,7 +239,6 @@ public function __invoke(
     callable $callback,
     array $options = null
 );</code></pre>
-
 
 <p>The parameters passed to the delegator factory are the following:</p>
 <ul>
@@ -257,7 +256,7 @@ called.</p>
 <p>In the following example, an event is being triggered before <code>Buzzer::buzz()</code> is
 called and some output text is prepended.</p>
 <p>The delegated object <code>Buzzer</code> (original object) is defined as following:</p>
-<pre class="codehilite"><code class="language-php">class Buzzer
+<pre class="codehilite"><code class="language-php linenums">class Buzzer
 {
     public function buzz()
     {
@@ -265,9 +264,8 @@ called and some output text is prepended.</p>
     }
 }</code></pre>
 
-
 <p>The delegator class <code>BuzzerDelegator</code> has the following structure:</p>
-<pre class="codehilite"><code class="language-php">use Zend\EventManager\EventManagerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Zend\EventManager\EventManagerInterface;
 
 class BuzzerDelegator extends Buzzer
 {
@@ -288,9 +286,8 @@ class BuzzerDelegator extends Buzzer
     }
 }</code></pre>
 
-
 <p>To use the <code>BuzzerDelegator</code>, you can run the following code:</p>
-<pre class="codehilite"><code class="language-php">$wrappedBuzzer = new Buzzer();
+<pre class="codehilite"><code class="language-php linenums">$wrappedBuzzer = new Buzzer();
 $eventManager  = new Zend\EventManager\EventManager();
 
 $eventManager-&gt;attach('buzz', function () { echo &quot;Stare at the art!\n&quot;; });
@@ -298,7 +295,6 @@ $eventManager-&gt;attach('buzz', function () { echo &quot;Stare at the art!\n&qu
 $buzzer = new BuzzerDelegator($wrappedBuzzer, $eventManager);
 
 echo $buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;</code></pre>
-
 
 <p>This logic is fairly simple as long as you have access to the instantiation
 logic of the <code>$wrappedBuzzer</code> object.</p>
@@ -309,7 +305,7 @@ which you cannot modify without introducing further complexity.</p>
 decorate or modify any existing service.</p>
 <p>A simple delegator factory for the <code>buzzer</code> service can be implemented as
 following:</p>
-<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 
 class BuzzerDelegatorFactory implements DelegatorFactoryInterface
@@ -325,10 +321,9 @@ class BuzzerDelegatorFactory implements DelegatorFactoryInterface
     }
 }</code></pre>
 
-
 <p>You can then instruct the service manager to handle the service <code>buzzer</code> as a
 delegate:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableClass;
+<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\Factory\InvokableClass;
 use Zend\ServiceManager\ServiceManager;
 
 $serviceManager = new Zend\ServiceManager\ServiceManager([
@@ -346,7 +341,6 @@ $serviceManager = new Zend\ServiceManager\ServiceManager([
 $buzzer = $serviceManager-&gt;get(Buzzer::class);
 
 $buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;</code></pre>
-
 
 <p>You can specify multiple delegators for a service. Each will add one decorator
 around the instantiation logic of that particular service.</p>

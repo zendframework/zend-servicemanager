@@ -233,12 +233,11 @@ extends <code>Zend\ServiceManager\Factory\FactoryInterface</code>, meaning they 
 as either an abstract factory, or mapped to a specific service name as its
 factory.</p>
 <p>As an example:</p>
-<pre class="codehilite"><code class="language-php">return [
+<pre class="codehilite"><code class="language-php linenums">return [
     'factories' =&gt; [
         SomeService::class =&gt; AnAbstractFactory::class,
     ],
 ];</code></pre>
-
 
 <p>Why would you choose one approach over the other?</p>
 <h2 id="comparisons">Comparisons</h2>
