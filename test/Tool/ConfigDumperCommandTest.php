@@ -1,7 +1,7 @@
 <?php
 /**
  * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2016-2017 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -63,8 +63,8 @@ class ConfigDumperCommandTest extends TestCase
     public function ignoreUnresolvedArguments()
     {
         return [
-            'short'   => ['-i'],
-            'long'    => ['--ignore-unresolved'],
+            'short' => ['-i'],
+            'long'  => ['--ignore-unresolved'],
         ];
     }
 

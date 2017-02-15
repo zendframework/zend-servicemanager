@@ -1,7 +1,7 @@
 <?php
 /**
  * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2016-2017 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -114,8 +114,10 @@ class ConfigDumperTest extends TestCase
         $container->has(ObjectWithScalarDependency::class)
             ->shouldBeCalled()
             ->willReturn(false);
-        $this->dumper->setContainer($container->reveal());
-        $config = $this->dumper->createDependencyConfig(
+
+        $dumper = new ConfigDumper($container->reveal());
+
+        $config = $dumper->createDependencyConfig(
             [ConfigAbstractFactory::class => []],
             ObjectWithScalarDependency::class
         );
@@ -127,11 +129,14 @@ class ConfigDumperTest extends TestCase
         $container->has(ObjectWithScalarDependency::class)
             ->shouldBeCalled()
             ->willReturn(true);
-        $this->dumper->setContainer($container->reveal());
-        $config = $this->dumper->createDependencyConfig(
+
+        $dumper = new ConfigDumper($container->reveal());
+
+        $config = $dumper->createDependencyConfig(
             [ConfigAbstractFactory::class => []],
             ObjectWithObjectScalarDependency::class
         );
+
         self::assertEquals(
             [
                 ConfigAbstractFactory::class => [
