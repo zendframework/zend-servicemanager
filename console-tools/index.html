@@ -228,17 +228,19 @@ document details each.</p>
 <pre class="codehilite"><code class="language-bash linenums">$ ./vendor/bin/generate-deps-for-config-factory
 Usage:
 
-  generate-deps-for-config-factory [-h|--help|help] &lt;configFile&gt; &lt;className&gt;
+  generate-deps-for-config-factory [-h|--help|help] [-i|--ignore-unresolved] &lt;configFile&gt; &lt;className&gt;
 
 Arguments:
 
-  -h|--help|help    This usage message
-  &lt;configFile&gt;      Path to a config file for which to generate configuration.
-                    If the file does not exist, it will be created. If it does
-                    exist, it must return an array, and the file will be
-                    updated with new configuration.
-  &lt;className&gt;       Name of the class to reflect and for which to generate
-                    dependency configuration.
+  -h|--help|help          This usage message
+  -i|--ignore-unresolved  Ignore classes with unresolved direct dependencies.
+  &lt;configFile&gt;            Path to a config file for which to generate
+                          configuration. If the file does not exist, it will
+                          be created. If it does exist, it must return an
+                          array, and the file will be updated with new
+                          configuration.
+  &lt;className&gt;             Name of the class to reflect and for which to
+                          generate dependency configuration.
 
 
 Reads the provided configuration file (creating it if it does not exist),
@@ -250,6 +252,12 @@ with the <a href="../config-abstract-factory/">ConfigAbstractFactory</a>. When d
 will read the named configuration file (creating it if it does not exist), and
 merge any configuration it generates with the return values of that file,
 writing the changes back to the original file.</p>
+<p>Since 3.2.1, the tool also supports the <code>-i</code> or <code>--ignore-unresolved</code> flag.
+Use these flags when you have typehints to classes that cannot be resolved.
+When you omit the flag, such classes will cause the tool to fail with an
+exception message. By adding the flag, you can have it continue and produce
+configuration. This option is particularly useful when typehints are on
+interfaces or resolve to services served by other abstract factories.</p>
 <h2 id="generate-factory-for-class">generate-factory-for-class</h2>
 <pre class="codehilite"><code class="language-bash linenums">$ ./vendor/bin/generate-factory-for-class
 
