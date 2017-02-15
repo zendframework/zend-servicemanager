@@ -9,6 +9,7 @@ namespace ZendTest\ServiceManager;
 
 use DateTime;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use stdClass;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
@@ -27,6 +28,12 @@ class ServiceManagerTest extends TestCase
     {
         $this->creationContext = new ServiceManager($config);
         return $this->creationContext;
+    }
+
+    public function testServiceManagerIsAPsr11Container()
+    {
+        $container = $this->createContainer();
+        $this->assertInstanceOf(ContainerInterface::class, $container);
     }
 
     public function testConfigurationCanBeMerged()
