@@ -7,7 +7,7 @@
 
 namespace ZendTest\ServiceManager;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Zend\ServiceManager\Config;
 use Zend\ServiceManager\ServiceManager;
 

@@ -7,7 +7,7 @@
 
 namespace ZendTest\ServiceManager;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use ProxyManager\Autoloader\AutoloaderInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -162,7 +162,8 @@ class LazyServiceIntegrationTest extends TestCase
         ];
 
         $container = new ServiceManager($config);
-        $this->setExpectedException(ServiceNotCreatedException::class, 'class_map');
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionMessage('class_map');
         $container->get(InvokableObject::class);
     }
 
@@ -277,7 +278,8 @@ class LazyServiceIntegrationTest extends TestCase
 
         $container = new ServiceManager($config);
 
-        $this->setExpectedException(ServiceNotFoundException::class, 'not found in the provided services map');
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage('not found in the provided services map');
         $container->build(InvokableObject::class, ['foo' => 'bar']);
     }
 

@@ -8,7 +8,7 @@
 namespace ZendTest\ServiceManager;
 
 use Interop\Container\ContainerInterface;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 use Zend\ServiceManager\ConfigInterface;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
@@ -77,7 +77,7 @@ class AbstractPluginManagerTest extends TestCase
         $pluginManager->get(InvokableObject::class);
 
         // Assert it throws an exception for anything else
-        $this->setExpectedException(InvalidServiceException::class);
+        $this->expectException(InvalidServiceException::class);
         $pluginManager->get(stdClass::class);
     }
 
@@ -181,7 +181,8 @@ class AbstractPluginManagerTest extends TestCase
     public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {
         $pluginManager = $this->createContainer();
-        $this->setExpectedException(ServiceNotFoundException::class, get_class($pluginManager));
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage(get_class($pluginManager));
         $pluginManager->get('Some\Unknown\Service');
     }
 
@@ -259,7 +260,7 @@ class AbstractPluginManagerTest extends TestCase
      */
     public function testPassingNonContainerNonConfigNonNullFirstConstructorArgumentRaisesException($arg)
     {
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         new TestAsset\LenientPluginManager($arg);
     }
 
@@ -308,7 +309,8 @@ class AbstractPluginManagerTest extends TestCase
     public function testPluginManagersMayOptOutOfSupportingAutoInvokableServices()
     {
         $pluginManager = new TestAsset\NonAutoInvokablePluginManager(new ServiceManager());
-        $this->setExpectedException(ServiceNotFoundException::class, TestAsset\NonAutoInvokablePluginManager::class);
+        $this->expectException(ServiceNotFoundException::class);
+        $this->expectExceptionMessage(TestAsset\NonAutoInvokablePluginManager::class);
         $pluginManager->get(TestAsset\InvokableObject::class);
     }
 
@@ -342,14 +344,14 @@ class AbstractPluginManagerTest extends TestCase
     public function testSetServiceShouldRaiseExceptionForInvalidPlugin()
     {
         $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
-        $this->setExpectedException(InvalidServiceException::class);
+        $this->expectException(InvalidServiceException::class);
         $pluginManager->setService(stdClass::class, new stdClass());
     }
 
     public function testPassingServiceInstanceViaConfigureShouldRaiseExceptionForInvalidPlugin()
     {
         $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
-        $this->setExpectedException(InvalidServiceException::class);
+        $this->expectException(InvalidServiceException::class);
         $pluginManager->configure(['services' => [
             stdClass::class => new stdClass(),
         ]]);
