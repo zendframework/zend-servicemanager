@@ -53,7 +53,7 @@ trait CommonPluginManagerTrait
 
     public function testRegisteringInvalidElementRaisesException()
     {
-        $this->setExpectedException($this->getServiceNotFoundException());
+        $this->expectException($this->getServiceNotFoundException());
         $this->getPluginManager()->setService('test', $this);
     }
 
@@ -61,7 +61,7 @@ trait CommonPluginManagerTrait
     {
         $manager = $this->getPluginManager();
         $manager->setInvokableClass('test', get_class($this));
-        $this->setExpectedException($this->getServiceNotFoundException());
+        $this->expectException($this->getServiceNotFoundException());
         $manager->get('test');
     }
 
