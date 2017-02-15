@@ -4,6 +4,7 @@ pages:
     - index.md
     - 'Quick Start': quick-start.md
     - Reference:
+      - 'PSR-11 Support': psr-11.md
       - 'Configuring the service manager': configuring-the-service-manager.md
       - Delegators: delegators.md
       - 'Lazy services': lazy-services.md
