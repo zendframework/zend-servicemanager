@@ -15,6 +15,7 @@ use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Tool\ConfigDumperCommand;
 use Zend\Stdlib\ConsoleHelper;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
+use ZendTest\ServiceManager\TestAsset\ObjectWithObjectScalarDependency;
 use ZendTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
@@ -56,6 +57,14 @@ class ConfigDumperCommandTest extends TestCase
             'short'   => ['-h'],
             'long'    => ['--help'],
             'literal' => ['help'],
+        ];
+    }
+
+    public function ignoreUnresolvedArguments()
+    {
+        return [
+            'short'   => ['-i'],
+            'long'    => ['--ignore-unresolved'],
         ];
     }
 
@@ -108,6 +117,41 @@ class ConfigDumperCommandTest extends TestCase
         $this->assertArrayHasKey(InvokableObject::class, $factoryConfig);
         $this->assertContains(InvokableObject::class, $factoryConfig[SimpleDependencyObject::class]);
         $this->assertEquals([], $factoryConfig[InvokableObject::class]);
+    }
+
+    /**
+     * @dataProvider ignoreUnresolvedArguments
+     */
+    public function testGeneratesConfigFileIgnoringUnresolved($argument)
+    {
+        $command = $this->command;
+        vfsStream::newDirectory('config', 0775)
+            ->at($this->configDir);
+        $config = vfsStream::url('project/config/test.config.php');
+
+        $this->helper->writeLine('<info>[DONE]</info> Changes written to ' . $config)->shouldBeCalled();
+
+        $this->assertEquals(0, $command([$argument, $config, ObjectWithObjectScalarDependency::class]));
+
+        $generated = include $config;
+        $this->assertInternalType('array', $generated);
+        $this->assertArrayHasKey(ConfigAbstractFactory::class, $generated);
+        $factoryConfig = $generated[ConfigAbstractFactory::class];
+        $this->assertInternalType('array', $factoryConfig);
+        $this->assertArrayHasKey(SimpleDependencyObject::class, $factoryConfig);
+        $this->assertArrayHasKey(InvokableObject::class, $factoryConfig);
+        $this->assertContains(InvokableObject::class, $factoryConfig[SimpleDependencyObject::class]);
+        $this->assertEquals([], $factoryConfig[InvokableObject::class]);
+
+        $this->assertArrayHasKey(ObjectWithObjectScalarDependency::class, $factoryConfig);
+        $this->assertContains(
+            SimpleDependencyObject::class,
+            $factoryConfig[ObjectWithObjectScalarDependency::class]
+        );
+        $this->assertContains(
+            ObjectWithScalarDependency::class,
+            $factoryConfig[ObjectWithObjectScalarDependency::class]
+        );
     }
 
     public function testEmitsErrorWhenConfigurationFileDoesNotReturnArray()
