@@ -9,17 +9,19 @@ document details each.
 $ ./vendor/bin/generate-deps-for-config-factory
 Usage:
 
-  generate-deps-for-config-factory [-h|--help|help] <configFile> <className>
+  generate-deps-for-config-factory [-h|--help|help] [-i|--ignore-unresolved] <configFile> <className>
 
 Arguments:
 
-  -h|--help|help    This usage message
-  <configFile>      Path to a config file for which to generate configuration.
-                    If the file does not exist, it will be created. If it does
-                    exist, it must return an array, and the file will be
-                    updated with new configuration.
-  <className>       Name of the class to reflect and for which to generate
-                    dependency configuration.
+  -h|--help|help          This usage message
+  -i|--ignore-unresolved  Ignore classes with unresolved direct dependencies.
+  <configFile>            Path to a config file for which to generate
+                          configuration. If the file does not exist, it will
+                          be created. If it does exist, it must return an
+                          array, and the file will be updated with new
+                          configuration.
+  <className>             Name of the class to reflect and for which to
+                          generate dependency configuration.
 
 
 Reads the provided configuration file (creating it if it does not exist),
@@ -32,6 +34,13 @@ with the [ConfigAbstractFactory](config-abstract-factory.md). When doing so, it
 will read the named configuration file (creating it if it does not exist), and
 merge any configuration it generates with the return values of that file,
 writing the changes back to the original file.
+
+Since 3.2.1, the tool also supports the `-i` or `--ignore-unresolved` flag.
+Use these flags when you have typehints to classes that cannot be resolved.
+When you omit the flag, such classes will cause the tool to fail with an
+exception message. By adding the flag, you can have it continue and produce
+configuration. This option is particularly useful when typehints are on
+interfaces or resolve to services served by other abstract factories.
 
 ## generate-factory-for-class
 
