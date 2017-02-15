@@ -1,7 +1,7 @@
 <?php
 /**
  * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2016-2017 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -21,17 +21,19 @@ class ConfigDumperCommand
     const HELP_TEMPLATE = <<< EOH
 <info>Usage:</info>
 
-  %s [-h|--help|help] <configFile> <className>
+  %s [-h|--help|help] [-i|--ignore-unresolved] <configFile> <className>
 
 <info>Arguments:</info>
 
-  <info>-h|--help|help</info>    This usage message
-  <info><configFile></info>      Path to a config file for which to generate configuration.
-                    If the file does not exist, it will be created. If it does
-                    exist, it must return an array, and the file will be
-                    updated with new configuration.
-  <info><className></info>       Name of the class to reflect and for which to generate
-                    dependency configuration.
+  <info>-h|--help|help</info>          This usage message
+  <info>-i|--ignore-unresolved</info>  Ignore classes with unresolved direct dependencies.
+  <info><configFile></info>            Path to a config file for which to generate
+                          configuration. If the file does not exist, it will
+                          be created. If it does exist, it must return an
+                          array, and the file will be updated with new
+                          configuration.
+  <info><className></info>             Name of the class to reflect and for which to
+                          generate dependency configuration.
 
 Reads the provided configuration file (creating it if it does not exist),
 and injects it with ConfigAbstractFactory dependency configuration for
@@ -81,7 +83,11 @@ EOH;
 
         $dumper = new ConfigDumper();
         try {
-            $config = $dumper->createDependencyConfig($arguments->config, $arguments->class);
+            $config = $dumper->createDependencyConfig(
+                $arguments->config,
+                $arguments->class,
+                $arguments->ignoreUnresolved
+            );
         } catch (Exception\InvalidArgumentException $e) {
             $this->helper->writeErrorMessage(sprintf(
                 'Unable to create config for "%s": %s',
@@ -115,6 +121,12 @@ EOH;
 
         if (in_array($arg1, ['-h', '--help', 'help'], true)) {
             return $this->createHelpArgument();
+        }
+
+        $ignoreUnresolved = false;
+        if (in_array($arg1, ['-i', '--ignore-unresolved'], true)) {
+            $ignoreUnresolved = true;
+            $arg1 = array_shift($args);
         }
 
         if (! count($args)) {
@@ -157,7 +169,7 @@ EOH;
             ));
         }
 
-        return $this->createArguments(self::COMMAND_DUMP, $configFile, $config, $class);
+        return $this->createArguments(self::COMMAND_DUMP, $configFile, $config, $class, $ignoreUnresolved);
     }
 
     /**
@@ -178,15 +190,17 @@ EOH;
      *     which it will be written.
      * @param array $config Parsed configuration.
      * @param string $class Name of class to reflect.
+     * @param bool $ignoreUnresolved If to ignore classes with unresolved direct dependencies.
      * @return \stdClass
      */
-    private function createArguments($command, $configFile, $config, $class)
+    private function createArguments($command, $configFile, $config, $class, $ignoreUnresolved)
     {
         return (object) [
-            'command'    => $command,
-            'configFile' => $configFile,
-            'config'     => $config,
-            'class'      => $class,
+            'command'          => $command,
+            'configFile'       => $configFile,
+            'config'           => $config,
+            'class'            => $class,
+            'ignoreUnresolved' => $ignoreUnresolved,
         ];
     }
 

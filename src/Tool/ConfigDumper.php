@@ -1,12 +1,13 @@
 <?php
 /**
  * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2016-2017 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
 namespace Zend\ServiceManager\Tool;
 
+use Interop\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionParameter;
 use Traversable;
@@ -26,12 +27,26 @@ return %s;
 EOC;
 
     /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
+    /**
      * @param array $config
      * @param string $className
+     * @param bool $ignoreUnresolved
      * @return array
      * @throws InvalidArgumentException for invalid $className
      */
-    public function createDependencyConfig(array $config, $className)
+    public function createDependencyConfig(array $config, $className, $ignoreUnresolved = false)
     {
         $this->validateClassName($className);
 
@@ -60,11 +75,19 @@ EOC;
             return $this->createInvokable($config, $className);
         }
 
-        $config[ConfigAbstractFactory::class][$className] = [];
+        $classConfig = [];
 
         foreach ($constructorArguments as $constructorArgument) {
             $argumentType = $constructorArgument->getClass();
             if (is_null($argumentType)) {
+                if ($ignoreUnresolved) {
+                    // don't throw an exception, just return the previous config
+                    return $config;
+                }
+                // don't throw an exception if the class is an already defined service
+                if ($this->container && $this->container->has($className)) {
+                    return $config;
+                }
                 throw new InvalidArgumentException(sprintf(
                     'Cannot create config for constructor argument "%s", '
                     . 'it has no type hint, or non-class/interface type hint',
@@ -72,9 +95,11 @@ EOC;
                 ));
             }
             $argumentName = $argumentType->getName();
-            $config = $this->createDependencyConfig($config, $argumentName);
-            $config[ConfigAbstractFactory::class][$className][] = $argumentName;
+            $config = $this->createDependencyConfig($config, $argumentName, $ignoreUnresolved);
+            $classConfig[] = $argumentName;
         }
+
+        $config[ConfigAbstractFactory::class][$className] = $classConfig;
 
         return $config;
     }
