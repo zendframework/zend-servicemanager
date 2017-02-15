@@ -6,7 +6,11 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [#176](https://github.com/zendframework/zend-servicemanager/pull/176) adds
+  the options `-i` or `--ignore-unresolved` to the shipped
+  `generate-deps-for-config-factory` command. This flag allows it to build
+  configuration for classes resolved by the `ConfigAbstractFactory` that
+  typehint on interfaces, which was previously unsupported.
 
 ### Deprecated
 
