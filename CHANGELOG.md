@@ -36,7 +36,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#174](https://github.com/zendframework/zend-servicemanager/pull/174) updates
+  the `ConfigAbstractFactory` to allow the `config` service to be either an
+  `array` or an `ArrayObject`; previously, only `array` was supported.
 
 ## 3.2.0 - 2016-12-19
 
