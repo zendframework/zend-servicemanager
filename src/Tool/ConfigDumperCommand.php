@@ -21,19 +21,19 @@ class ConfigDumperCommand
     const HELP_TEMPLATE = <<< EOH
 <info>Usage:</info>
 
-  %s [-h|--help|help] <configFile> <className>
+  %s [-h|--help|help] [-i|--ignore-unresolved] <configFile> <className>
 
 <info>Arguments:</info>
 
-  <info>-h|--help|help</info>    This usage message
-  <info>-i|--ignore-unresolved</info>    Ignore classes with unresolved
-                    direct dependencies.
-  <info><configFile></info>      Path to a config file for which to generate configuration.
-                    If the file does not exist, it will be created. If it does
-                    exist, it must return an array, and the file will be
-                    updated with new configuration.
-  <info><className></info>       Name of the class to reflect and for which to generate
-                    dependency configuration.
+  <info>-h|--help|help</info>          This usage message
+  <info>-i|--ignore-unresolved</info>  Ignore classes with unresolved direct dependencies.
+  <info><configFile></info>            Path to a config file for which to generate
+                          configuration. If the file does not exist, it will
+                          be created. If it does exist, it must return an
+                          array, and the file will be updated with new
+                          configuration.
+  <info><className></info>             Name of the class to reflect and for which to
+                          generate dependency configuration.
 
 Reads the provided configuration file (creating it if it does not exist),
 and injects it with ConfigAbstractFactory dependency configuration for
