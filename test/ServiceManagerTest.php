@@ -1268,6 +1268,60 @@ class ServiceManagerTest extends TestCase
         $this->assertSame($expectedService, $secondParentServiceManager->get('peered_service'));
     }
 
+    public function testSharedServiceCanBeFoundFromPeeringServicesManagers()
+    {
+        $peeredServiceManager = new ServiceManager();
+        $peeredServiceManager->addPeeringServiceManager($this->serviceManager);
+        $this->serviceManager->addPeeringServiceManager($peeredServiceManager);
+
+        $secondParentServiceManager = new ServiceManager();
+        $secondParentServiceManager->addPeeringServiceManager($peeredServiceManager);
+        $peeredServiceManager->addPeeringServiceManager($secondParentServiceManager);
+
+        $secondParentServiceManager->setInvokableClass('peered\service', \stdClass::class, true);
+
+        // check if service is direct child of secong parent service manager
+        $this->assertFalse($this->serviceManager->has('peered\service', true, false));
+        $this->assertFalse($peeredServiceManager->has('peered\service', true, false));
+        $this->assertTrue($secondParentServiceManager->has('peered\service', true, false));
+
+        // check if we can receive service from peered service managers
+        $this->assertTrue($this->serviceManager->has('peered\service'));
+        $this->assertTrue($peeredServiceManager->has('peered\service'));
+        $this->assertTrue($secondParentServiceManager->has('peered\service'));
+        $this->assertInstanceOf(\stdClass::class, $this->serviceManager->get('peered\service'));
+        $this->assertInstanceOf(\stdClass::class, $peeredServiceManager->get('peered\service'));
+        $this->assertInstanceOf(\stdClass::class, $secondParentServiceManager->get('peered\service'));
+        $this->assertTrue($peeredServiceManager->isShared('peered\service'));
+    }
+
+    public function testNonSharedServiceCanBeFoundFromPeeringServicesManagers()
+    {
+        $peeredServiceManager = new ServiceManager();
+        $peeredServiceManager->addPeeringServiceManager($this->serviceManager);
+        $this->serviceManager->addPeeringServiceManager($peeredServiceManager);
+
+        $secondParentServiceManager = new ServiceManager();
+        $secondParentServiceManager->addPeeringServiceManager($peeredServiceManager);
+        $peeredServiceManager->addPeeringServiceManager($secondParentServiceManager);
+
+        $secondParentServiceManager->setInvokableClass('peered\service', \stdClass::class, false);
+
+        // check if service is direct child of secong parent service manager
+        $this->assertFalse($this->serviceManager->has('peered\service', true, false));
+        $this->assertFalse($peeredServiceManager->has('peered\service', true, false));
+        $this->assertTrue($secondParentServiceManager->has('peered\service', true, false));
+
+        // check if we can receive service from peered service managers
+        $this->assertTrue($this->serviceManager->has('peered\service'));
+        $this->assertTrue($peeredServiceManager->has('peered\service'));
+        $this->assertTrue($secondParentServiceManager->has('peered\service'));
+        $this->assertInstanceOf(\stdClass::class, $this->serviceManager->get('peered\service'));
+        $this->assertInstanceOf(\stdClass::class, $peeredServiceManager->get('peered\service'));
+        $this->assertInstanceOf(\stdClass::class, $secondParentServiceManager->get('peered\service'));
+        $this->assertFalse($peeredServiceManager->isShared('peered\service'));
+    }
+
     public function testCanGetServiceUsingAliasAndBuildByInvokableFactory()
     {
         $this->serviceManager->setAlias('foo', TestAsset\InvokableObject::class);

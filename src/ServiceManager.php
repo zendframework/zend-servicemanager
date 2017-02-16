@@ -456,6 +456,45 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
+     * returns null if shared value is not set at all otherwise it returns the value
+     *
+     * @param  string $name
+     * @param  bool   $usePeeringServiceManagers
+     * @return bool|null
+     * @throws Exception\ServiceNotFoundException
+     */
+    private function getShared($name, $usePeeringServiceManagers = true)
+    {
+        $cName = $this->canonicalizeName($name);
+
+        if (!isset($this->shared[$cName]) && $usePeeringServiceManagers) {
+            $caller = $this->serviceManagerCaller;
+            foreach ($this->peeringServiceManagers as $peeringServiceManager) {
+                // ignore peering service manager if they are the same instance
+                if ($caller === $peeringServiceManager) {
+                    continue;
+                }
+
+                $peeringServiceManager->serviceManagerCaller = $this;
+
+                $shared = $peeringServiceManager->getShared($cName);
+                if ($shared !== null) {
+                    $peeringServiceManager->serviceManagerCaller = null;
+                    return $shared;
+                }
+
+                $peeringServiceManager->serviceManagerCaller = null;
+            }
+        }
+
+        if (isset($this->shared[$cName])) {
+            return $this->shared[$cName];
+        }
+
+        return;
+    }
+
+    /**
      * Resolve the alias for the given canonical name
      *
      * @param  string $cName The canonical name to resolve
@@ -1037,7 +1076,12 @@ class ServiceManager implements ServiceLocatorInterface
             $peeringServiceManager->serviceManagerCaller = $this;
 
             if ($peeringServiceManager->has($name)) {
-                $this->shared[$name] = $peeringServiceManager->isShared($name);
+                $cname = $this->canonicalizeName($name);
+                $shared = $peeringServiceManager->getShared($name);
+                if ($shared === null) {
+                    $shared = $this->shareByDefault();
+                }
+                $this->shared[$cname] = $shared;
                 $instance = $peeringServiceManager->get($name);
                 $peeringServiceManager->serviceManagerCaller = null;
                 return $instance;
