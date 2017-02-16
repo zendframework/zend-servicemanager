@@ -467,14 +467,6 @@ class ServiceManager implements ServiceLocatorInterface
     {
         $cName = $this->canonicalizeName($name);
 
-        if (!$this->has($name)) {
-            throw new Exception\ServiceNotFoundException(sprintf(
-                '%s: A service by the name "%s" was not found',
-                get_class($this) . '::' . __FUNCTION__,
-                $name
-            ));
-        }
-
         if (!isset($this->shared[$cName]) && $usePeeringServiceManagers) {
             $caller = $this->serviceManagerCaller;
             foreach ($this->peeringServiceManagers as $peeringServiceManager) {
