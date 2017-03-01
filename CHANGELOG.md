@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 3.3.0 - TBD
+
+### Added
+
+- [#180](https://github.com/zendframework/zend-servicemanager/pull/180) adds
+  explicit support for PSR-11 (ContainerInterface) by requiring
+  container-interop at a minimum version of 1.2.0, and adding a requirement on
+  psr/container 1.0. `Zend\ServiceManager\ServiceLocatorInterface` now
+  explicitly extends the `ContainerInterface` from both projects.
+  
+  Factory interfaces still typehint against the container-interop variant, as
+  changing the typehint would break backwards compatibility. Users can
+  duck-type most of these interfaces, however, by creating callables or
+  invokables that typehint against psr/container instead.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
 ## 3.2.1 - 2017-02-15
 
 ### Added
