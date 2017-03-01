@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <link rel="shortcut icon" href="../img/favicon.ico">
 
-    <title>Quick Start - zend-servicemanager</title>
+    <title>PSR-11 Support - zend-servicemanager</title>
 
     <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
@@ -74,19 +74,19 @@
                 
                 
                 
-                    <li class="active">
-                        <a href="./">Quick Start</a>
+                    <li >
+                        <a href="../quick-start/">Quick Start</a>
                     </li>
                 
                 
                 
-                    <li class="dropdown">
+                    <li class="dropdown active">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reference <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                         
                             
-<li >
-    <a href="../psr-11/">PSR-11 Support</a>
+<li class="active">
+    <a href="./">PSR-11 Support</a>
 </li>
 
                         
@@ -193,13 +193,7 @@
         <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#quick-start">Quick Start</a></li>
-        
-            <li><a href="#1-install-zend-service-manager">1. Install Zend Service Manager</a></li>
-        
-            <li><a href="#2-configuring-a-service-manager">2. Configuring a service manager</a></li>
-        
-            <li><a href="#3-retrieving-objects">3. Retrieving objects</a></li>
+        <li class="main active"><a href="#psr-11-support">PSR-11 Support</a></li>
         
     
     </ul>
@@ -207,10 +201,10 @@
     
     <ul class="pager hidden-print">
       <li class="previous">
-        <a rel="prev" href=".."><i class="fa fa-arrow-left"></i> Previous</a>
+        <a rel="prev" href="../quick-start/"><i class="fa fa-arrow-left"></i> Previous</a>
       </li>
       <li class="next">
-        <a rel="next" href="../psr-11/">Next <i class="fa fa-arrow-right"></i></a>
+        <a rel="next" href="../configuring-the-service-manager/">Next <i class="fa fa-arrow-right"></i></a>
       </li>
     </ul>
     
@@ -221,55 +215,64 @@
   <li><a href="..">Docs</a> &raquo;</li>
   
     
+      
+        <li>Reference &raquo;</li>
+      
+    
   
-  <li class="active">Quick Start</li>
+  <li class="active">PSR-11 Support</li>
 </ol>
 
-<h1 id="quick-start">Quick Start</h1>
-<p>The Service Manager is a modern, fast, and easy-to-use implementation of the
-<a href="https://en.wikipedia.org/wiki/Service_locator_pattern">Service Locator design pattern</a>.
-The implementation implements the
-<a href="https://github.com/container-interop/container-interop">Container Interop</a>
-interfaces, providing interoperability with other implementations.</p>
-<p>The following is a "quick start" tutorial intended to get you up and running
-with the most common features of the Service manager.</p>
-<h2 id="1-install-zend-service-manager">1. Install Zend Service Manager</h2>
-<p>If you haven't already, <a href="https://getcomposer.org">install Composer</a>. Once you
-have, you can install the service manager:</p>
-<pre class="codehilite"><code class="language-bash linenums">$ composer require zendframework/zend-servicemanager</code></pre>
+<h1 id="psr-11-support">PSR-11 Support</h1>
+<p><a href="https://github.com/container-interop/container-interop/releases/tag/1.2.0">container-interop/container-interop 1.2.0</a>
+modifies its codebase to extend interfaces from <a href="https://github.com/php-fig/container">psr/container</a>
+(the official interfaces for <a href="http://www.php-fig.org/psr/psr-11/">PSR-11</a>). If
+you are on a pre-3.3.0 version of zend-servicemanager, update your project, and
+receive container-interop 1.2, then zend-servicemanager can already act as a
+PSR-11 provider!</p>
+<p>zend-servicemanager 3.3.0 requires at least version 1.2 of container-interop,
+and <em>also</em> requires psr/container 1.0 to explicitly signal that it is a PSR-11
+provider, and to allow removal of the container-interop dependency later.</p>
+<p>Version 4.0 will require only psr/container, and will update the various factory
+interfaces and exception implementations to typehint against the PSR-11
+interfaces, which will require changes to any implementations you have. In the
+meantime, you can <a href="https://en.wikipedia.org/wiki/Duck_typing">duck-type</a> the
+following factory types:</p>
+<ul>
+<li><code>Zend\ServiceManager\Factory\FactoryInterface</code>: use a callable with the
+  following signature:</li>
+</ul>
+<pre class="codehilite"><code class="language-php linenums">function (
+    \Psr\Container\ContainerInterface $container,
+    string $requestedName,
+    array $options = null
+)</code></pre>
 
-<h2 id="2-configuring-a-service-manager">2. Configuring a service manager</h2>
-<p>You can now create and configure a service manager. The service manager
-constructor accepts a simple array:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\ServiceManager;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use stdClass;
+<ul>
+<li><code>Zend\ServiceManager\Factory\DelegatorFactoryInterface</code>: use a callable with
+  the following signature:</li>
+</ul>
+<pre class="codehilite"><code class="language-php linenums">function (
+    \Psr\Container\ContainerInterface $container,
+    string $name,
+    callable $callback,
+    array $options = null
+)</code></pre>
 
-$serviceManager = new ServiceManager([
-    'factories' =&gt; [
-        stdClass::class =&gt; InvokableFactory::class,
-    ],
-]);</code></pre>
+<ul>
+<li><code>Zend\ServiceManager\Initializer\InitializerInterface</code>: use a callable with
+  the following signature:</li>
+</ul>
+<pre class="codehilite"><code class="language-php linenums">function (
+    \Psr\Container\ContainerInterface $container,
+    $instance
+)</code></pre>
 
-<p>The service manager accepts a variety of keys; refer to the
-<a href="../configuring-the-service-manager/">Configuring service manager</a> section for
-full details.</p>
-<h2 id="3-retrieving-objects">3. Retrieving objects</h2>
-<p>Finally, you can retrieve instances using the <code>get()</code> method:</p>
-<pre class="codehilite"><code class="language-php linenums">$object = $serviceManager-&gt;get(stdClass::class);</code></pre>
-
-<p>By default, all objects created through the service manager are shared. This
-means that calling the <code>get()</code> method twice will return the exact same object:</p>
-<pre class="codehilite"><code class="language-php linenums">$object1 = $serviceManager-&gt;get(stdClass::class);
-$object2 = $serviceManager-&gt;get(stdClass::class);
-
-var_dump($object1 === $object2); // prints &quot;true&quot;</code></pre>
-
-<p>You can use the <code>build()</code> method to retrieve discrete instances for a service:</p>
-<pre class="codehilite"><code class="language-php linenums">$object1 = $serviceManager-&gt;build(stdClass::class);
-$object2 = $serviceManager-&gt;build(stdClass::class);
-
-var_dump($object1 === $object2); // prints &quot;false&quot;</code></pre>
+<p>Abstract factories <em>can not</em> be duck typed, due to the additional <code>canCreate()</code>
+method.</p>
+<p>You can also leave your factories as-is for now, and update them once
+zend-servicemanager v4.0 is released, at which time we will be providing tooling
+to help migrate your factories to PSR-11.</p>
 
 <hr />
 
@@ -277,10 +280,10 @@ var_dump($object1 === $object2); // prints &quot;false&quot;</code></pre>
 <nav>
   <ul class="pager hidden-print">
     <li class="previous">
-      <a rel="prev" href=".."><i class="fa fa-arrow-left"></i> Previous</a>
+      <a rel="prev" href="../quick-start/"><i class="fa fa-arrow-left"></i> Previous</a>
     </li>
     <li class="next">
-      <a rel="next" href="../psr-11/">Next <i class="fa fa-arrow-right"></i></a>
+      <a rel="next" href="../configuring-the-service-manager/">Next <i class="fa fa-arrow-right"></i></a>
     </li>
   </ul>
 </nav>
