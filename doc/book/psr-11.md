@@ -1,7 +1,7 @@
 # PSR-11 Support
 
 [container-interop/container-interop 1.2.0](https://github.com/container-interop/container-interop/releases/tag/1.2.0)
-modifies its codebase to extend interfaces [psr/container](https://github.com/php-fig/container)
+modifies its codebase to extend interfaces from [psr/container](https://github.com/php-fig/container)
 (the official interfaces for [PSR-11](http://www.php-fig.org/psr/psr-11/)). If
 you are on a pre-3.3.0 version of zend-servicemanager, update your project, and
 receive container-interop 1.2, then zend-servicemanager can already act as a
