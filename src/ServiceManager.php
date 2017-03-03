@@ -401,6 +401,10 @@ class ServiceManager implements ServiceLocatorInterface
             $this->unregisterService($cName);
         }
 
+        if($service instanceof \Closure) {
+            $service = $service();
+        }
+
         $this->instances[$cName] = $service;
 
         return $this;
