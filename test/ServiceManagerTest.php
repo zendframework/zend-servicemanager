@@ -65,6 +65,17 @@ class ServiceManagerTest extends TestCase
         $serviceManager->get(stdClass::class);
     }
 
+    public function testEnsureIsSharedByDefault()
+    {
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                stdClass::class => InvokableFactory::class
+            ]
+        ]);
+
+        $this->assertSame($serviceManager->get(stdClass::class), $serviceManager->get(stdClass::class));
+    }
+
     /**
      * @covers \Zend\ServiceManager\ServiceManager::doCreate
      * @covers \Zend\ServiceManager\ServiceManager::createDelegatorFromName
