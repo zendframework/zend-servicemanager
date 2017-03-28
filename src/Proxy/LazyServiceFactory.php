@@ -7,7 +7,7 @@
 
 namespace Zend\ServiceManager\Proxy;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
 use Zend\ServiceManager\Exception;

@@ -8,8 +8,8 @@
 namespace Zend\ServiceManager;
 
 use Exception;
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use ProxyManager\Configuration as ProxyConfiguration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\FileLocator\FileLocator;
@@ -658,7 +658,7 @@ class ServiceManager implements ServiceLocatorInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      *     creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerExceptionInterface|Exception if any other error occurs
      */
     private function doCreate($resolvedName, array $options = null)
     {
@@ -670,7 +670,7 @@ class ServiceManager implements ServiceLocatorInterface
             } else {
                 $object = $this->createDelegatorFromName($resolvedName, $options);
             }
-        } catch (ContainerException $exception) {
+        } catch (ContainerExceptionInterface $exception) {
             throw $exception;
         } catch (Exception $exception) {
             throw new ServiceNotCreatedException(sprintf(
