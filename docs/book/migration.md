@@ -251,7 +251,7 @@ $container->mapLazyService('MyClass');
 ## ServiceLocatorInterface Changes
 
 The `ServiceLocatorInterface` now extends the
-[container-interop](https://github.com/container-interop/container-interop)
+[Psr\Container\ContainerInterface](https://github.com/php-fig/container)
 interface `ContainerInterface`, which defines the same `get()` and `has()`
 methods as were previously defined.
 
