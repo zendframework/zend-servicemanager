@@ -57,7 +57,7 @@ This means, internally:
 - a hash table lookup (for the abstract factory)
 - invocation of 1:N methods for discovery
     - which may contain additional lookups and/or retrievals in the container
-- invocation of a factory method (assuming succesful lookup)
+- invocation of a factory method (assuming successful lookup)
 
 As such, having an explicit map can aid performance dramatically.
 
