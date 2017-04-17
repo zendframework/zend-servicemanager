@@ -1277,4 +1277,15 @@ class ServiceManagerTest extends TestCase
 
         $this->assertInstanceOf(TestAsset\InvokableObject::class, $result);
     }
+
+    public function testCanGetServiceUsingAliasWithProxyAndBuildByInvokableFactory()
+    {
+        $this->serviceManager->setAlias('foo', 'TestAsset\\InvokableInterface');
+        $this->serviceManager->setAlias('TestAsset\\InvokableInterface', TestAsset\InvokableObject::class);
+        $this->serviceManager->setFactory(TestAsset\InvokableObject::class, InvokableFactory::class);
+
+        $result = $this->serviceManager->get('foo');
+
+        $this->assertInstanceOf(TestAsset\InvokableObject::class, $result);
+    }
 }
