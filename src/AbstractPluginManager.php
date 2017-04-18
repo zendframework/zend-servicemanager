@@ -148,6 +148,9 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      */
     public function validate($instance)
     {
+        if($instance === null){
+            return;
+        }
         if (method_exists($this, 'validatePlugin')) {
             trigger_error(sprintf(
                 '%s::validatePlugin() has been deprecated as of 3.0; please define validate() instead',
