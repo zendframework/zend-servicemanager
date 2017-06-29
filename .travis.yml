@@ -25,13 +25,48 @@ matrix:
   include:
     - php: 5.6
       env:
+        - DEPS=lowest
+    - php: 5.6
+      env:
+        - DEPS=locked
         - TEST_COVERAGE=true
         - DEPLOY_DOCS="$(if [[ $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then echo -n 'true' ; else echo -n 'false' ; fi)"
         - PATH="$HOME/.local/bin:$PATH"
+    - php: 5.6
+      env:
+        - DEPS=latest
     - php: 7
       env:
+        - DEPS=lowest
+    - php: 7
+      env:
+        - DEPS=locked
         - CS_CHECK=true
+    - php: 7
+      env:
+        - DEPS=latest
     - php: 7.1
+      env:
+        - DEPS=lowest
+    - php: 7.1
+      env:
+        - DEPS=locked
+    - php: 7.1
+      env:
+        - DEPS=latest
+    - php: nightly
+      env:
+        - DEPS=lowest
+    - php: nightly
+      env:
+        - DEPS=locked
+    - php: nightly
+      env:
+        - DEPS=latest
+  allow_failures:
+    - php: nightly
+  allow_failures:
+    - php: nightly
 
 notifications:
   irc: "irc.freenode.org#zftalk.dev"
