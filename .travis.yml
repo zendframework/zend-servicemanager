@@ -29,7 +29,7 @@ matrix:
     - php: 7
       env:
         - DEPS=locked
-        - LEGACY_DEPS="ocramius/proxy-manager phpbench/phpbench phpunit/phpunit"
+        - CS_CHECK=true
     - php: 7
       env:
         - DEPS=latest
@@ -39,21 +39,22 @@ matrix:
     - php: 7.1
       env:
         - DEPS=locked
-        - BENCHMARKS=true
-        - CS_CHECK=true
-        - TEST_COVERAGE=true
     - php: 7.1
       env:
         - DEPS=latest
-    - php: 7.2
+    - php: nightly
       env:
         - DEPS=lowest
-    - php: 7.2
+    - php: nightly
       env:
         - DEPS=locked
-    - php: 7.2
+    - php: nightly
       env:
         - DEPS=latest
+  allow_failures:
+    - php: nightly
+  allow_failures:
+    - php: nightly
 
 notifications:
   irc: "irc.freenode.org#zftalk.dev"
