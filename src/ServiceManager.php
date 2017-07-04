@@ -365,7 +365,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         if (isset($config['delegators'])) {
-            $this->delegators = array_merge_recursive($this->delegators, $config['delegators']);
+            $this->delegators = \array_merge_recursive($this->delegators, $config['delegators']);
         }
 
         if (isset($config['shared'])) {
@@ -386,7 +386,7 @@ class ServiceManager implements ServiceLocatorInterface
         // If lazy service configuration was provided, reset the lazy services
         // delegator factory.
         if (isset($config['lazy_services']) && ! empty($config['lazy_services'])) {
-            $this->lazyServices          = array_merge_recursive($this->lazyServices, $config['lazy_services']);
+            $this->lazyServices          = \array_merge_recursive($this->lazyServices, $config['lazy_services']);
             $this->lazyServicesDelegator = null;
         }
 
@@ -555,8 +555,52 @@ class ServiceManager implements ServiceLocatorInterface
                 $this->initializers[] = $initializer;
                 return;
             }
+		}
+        
+		throw InvalidArgumentException::fromInvalidInitializer($initializer);
+    }
 
-            throw InvalidArgumentException::fromInvalidInitializer($initializer);
+    /**
+     * Resolve aliases to their canonical service names.
+     *
+     * @param string[] $aliases
+     *
+     * @returns void
+     */
+    private function resolveAliases(array $aliases)
+    {
+        foreach ($aliases as $alias => $service) {
+            $visited = [];
+            $name    = $alias;
+
+            while (isset($this->aliases[$name])) {
+                if (isset($visited[$name])) {
+                    throw CyclicAliasException::fromAliasesMap($aliases);
+                }
+
+                $visited[$name] = true;
+                $name           = $this->aliases[$name];
+            }
+
+            $this->resolvedAliases[$alias] = $name;
+        }
+    }
+
+    /**
+     * Rewrites the map of aliases by resolving the given $aliases with the existing resolved ones.
+     * This is mostly done for performance reasons.
+     *
+     * @param string[] $aliases
+     *
+     * @return void
+     */
+    private function resolveNewAliasesWithPreviouslyResolvedAliases(array $aliases)
+    {
+        foreach ($this->resolvedAliases as $name => $target) {
+            if (isset($aliases[$target])) {
+                $this->resolvedAliases[$name] = $this->resolvedAliases[$target];
+            }
+>>>>>>> Optimize PHP function calls
         }
     }
 
@@ -621,12 +665,12 @@ class ServiceManager implements ServiceLocatorInterface
                 $delegatorFactory = $this->createLazyServiceDelegatorFactory();
             }
 
-            if (is_string($delegatorFactory) && class_exists($delegatorFactory)) {
+            if (\is_string($delegatorFactory) && \class_exists($delegatorFactory)) {
                 $delegatorFactory = new $delegatorFactory();
             }
 
-            if (! is_callable($delegatorFactory)) {
-                if (is_string($delegatorFactory)) {
+            if (! \is_callable($delegatorFactory)) {
+                if (\is_string($delegatorFactory)) {
                     throw new ServiceNotCreatedException(sprintf(
                         'An invalid delegator factory was registered; resolved to class or function "%s"'
                         . ' which does not exist; please provide a valid function name or class name resolving'
@@ -729,7 +773,7 @@ class ServiceManager implements ServiceLocatorInterface
             ));
         }
 
-        spl_autoload_register($factoryConfig->getProxyAutoloader());
+        \spl_autoload_register($factoryConfig->getProxyAutoloader());
 
         $this->lazyServicesDelegator = new Proxy\LazyServiceFactory(
             new LazyLoadingValueHolderFactory($factoryConfig),
@@ -760,12 +804,12 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         if (isset($config['services'])) {
-            foreach ($config['services'] as $service => $_) {
-                if (isset($this->services[$service]) && ! $this->allowOverride) {
-                    throw ContainerModificationsNotAllowedException::fromExistingService($service);
-                }
-            }
-        }
+			foreach ($config['services'] as $service => $_) {
+				if (isset($this->services[$service]) && ! $this->allowOverride) {
+					throw ContainerModificationsNotAllowedException::fromExistingService($service);
+				}
+			}
+		}
 
         if (isset($config['aliases'])) {
             foreach ($config['aliases'] as $service => $_) {
