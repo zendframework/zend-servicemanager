@@ -65,8 +65,6 @@ matrix:
         - DEPS=latest
   allow_failures:
     - php: nightly
-  allow_failures:
-    - php: nightly
 
 notifications:
   irc: "irc.freenode.org#zftalk.dev"
