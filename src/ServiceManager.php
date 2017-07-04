@@ -323,12 +323,12 @@ class ServiceManager implements ServiceLocatorInterface
 
             if (! empty($aliases)) {
                 $config['aliases'] = (isset($config['aliases']))
-                    ? array_merge($config['aliases'], $aliases)
+                    ? \array_merge($config['aliases'], $aliases)
                     : $aliases;
             }
 
             $config['factories'] = (isset($config['factories']))
-                ? array_merge($config['factories'], $factories)
+                ? \array_merge($config['factories'], $factories)
                 : $factories;
         }
 
@@ -337,7 +337,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         if (isset($config['delegators'])) {
-            $this->delegators = array_merge_recursive($this->delegators, $config['delegators']);
+            $this->delegators = \array_merge_recursive($this->delegators, $config['delegators']);
         }
 
         if (isset($config['shared'])) {
@@ -357,7 +357,7 @@ class ServiceManager implements ServiceLocatorInterface
         // If lazy service configuration was provided, reset the lazy services
         // delegator factory.
         if (isset($config['lazy_services']) && ! empty($config['lazy_services'])) {
-            $this->lazyServices          = array_merge_recursive($this->lazyServices, $config['lazy_services']);
+            $this->lazyServices          = \array_merge_recursive($this->lazyServices, $config['lazy_services']);
             $this->lazyServicesDelegator = null;
         }
 
@@ -516,7 +516,7 @@ class ServiceManager implements ServiceLocatorInterface
     private function resolveAbstractFactories(array $abstractFactories)
     {
         foreach ($abstractFactories as $abstractFactory) {
-            if (is_string($abstractFactory) && class_exists($abstractFactory)) {
+            if (\is_string($abstractFactory) && \class_exists($abstractFactory)) {
                 //Cached string
                 if (! isset($this->cachedAbstractFactories[$abstractFactory])) {
                     $this->cachedAbstractFactories[$abstractFactory] = new $abstractFactory();
@@ -526,7 +526,7 @@ class ServiceManager implements ServiceLocatorInterface
             }
 
             if ($abstractFactory instanceof Factory\AbstractFactoryInterface) {
-                $abstractFactoryObjHash = spl_object_hash($abstractFactory);
+                $abstractFactoryObjHash = \spl_object_hash($abstractFactory);
                 $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
                 continue;
             }
@@ -534,7 +534,7 @@ class ServiceManager implements ServiceLocatorInterface
             // Error condition; let's find out why.
 
             // If we still have a string, we have a class name that does not resolve
-            if (is_string($abstractFactory)) {
+            if (\is_string($abstractFactory)) {
                 throw new InvalidArgumentException(
                     sprintf(
                         'An invalid abstract factory was registered; resolved to class "%s" ' .
@@ -568,18 +568,18 @@ class ServiceManager implements ServiceLocatorInterface
     private function resolveInitializers(array $initializers)
     {
         foreach ($initializers as $initializer) {
-            if (is_string($initializer) && class_exists($initializer)) {
+            if (\is_string($initializer) && \class_exists($initializer)) {
                 $initializer = new $initializer();
             }
 
-            if (is_callable($initializer)) {
+            if (\is_callable($initializer)) {
                 $this->initializers[] = $initializer;
                 continue;
             }
 
             // Error condition; let's find out why.
 
-            if (is_string($initializer)) {
+            if (\is_string($initializer)) {
                 throw new InvalidArgumentException(
                     sprintf(
                         'An invalid initializer was registered; resolved to class or function "%s" ' .
@@ -659,12 +659,12 @@ class ServiceManager implements ServiceLocatorInterface
         $factory = isset($this->factories[$name]) ? $this->factories[$name] : null;
 
         $lazyLoaded = false;
-        if (is_string($factory) && class_exists($factory)) {
+        if (\is_string($factory) && \class_exists($factory)) {
             $factory = new $factory();
             $lazyLoaded = true;
         }
 
-        if (is_callable($factory)) {
+        if (\is_callable($factory)) {
             if ($lazyLoaded) {
                 $this->factories[$name] = $factory;
             }
@@ -704,12 +704,12 @@ class ServiceManager implements ServiceLocatorInterface
                 $delegatorFactory = $this->createLazyServiceDelegatorFactory();
             }
 
-            if (is_string($delegatorFactory) && class_exists($delegatorFactory)) {
+            if (\is_string($delegatorFactory) && \class_exists($delegatorFactory)) {
                 $delegatorFactory = new $delegatorFactory();
             }
 
-            if (! is_callable($delegatorFactory)) {
-                if (is_string($delegatorFactory)) {
+            if (! \is_callable($delegatorFactory)) {
+                if (\is_string($delegatorFactory)) {
                     throw new ServiceNotCreatedException(sprintf(
                         'An invalid delegator factory was registered; resolved to class or function "%s" '
                         . 'which does not exist; please provide a valid function name or class name resolving '
@@ -814,7 +814,7 @@ class ServiceManager implements ServiceLocatorInterface
             ));
         }
 
-        spl_autoload_register($factoryConfig->getProxyAutoloader());
+        \spl_autoload_register($factoryConfig->getProxyAutoloader());
 
         $this->lazyServicesDelegator = new Proxy\LazyServiceFactory(
             new LazyLoadingValueHolderFactory($factoryConfig),
@@ -892,31 +892,31 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         if (isset($config['services'])) {
-            $this->validateOverrideSet(array_keys($config['services']), 'service');
+            $this->validateOverrideSet(\array_keys($config['services']), 'service');
         }
 
         if (isset($config['aliases'])) {
-            $this->validateOverrideSet(array_keys($config['aliases']), 'alias');
+            $this->validateOverrideSet(\array_keys($config['aliases']), 'alias');
         }
 
         if (isset($config['invokables'])) {
-            $this->validateOverrideSet(array_keys($config['invokables']), 'invokable class');
+            $this->validateOverrideSet(\array_keys($config['invokables']), 'invokable class');
         }
 
         if (isset($config['factories'])) {
-            $this->validateOverrideSet(array_keys($config['factories']), 'factory');
+            $this->validateOverrideSet(\array_keys($config['factories']), 'factory');
         }
 
         if (isset($config['delegators'])) {
-            $this->validateOverrideSet(array_keys($config['delegators']), 'delegator');
+            $this->validateOverrideSet(\array_keys($config['delegators']), 'delegator');
         }
 
         if (isset($config['shared'])) {
-            $this->validateOverrideSet(array_keys($config['shared']), 'sharing rule');
+            $this->validateOverrideSet(\array_keys($config['shared']), 'sharing rule');
         }
 
         if (isset($config['lazy_services']['class_map'])) {
-            $this->validateOverrideSet(array_keys($config['lazy_services']['class_map']), 'lazy service');
+            $this->validateOverrideSet(\array_keys($config['lazy_services']['class_map']), 'lazy service');
         }
     }
 
