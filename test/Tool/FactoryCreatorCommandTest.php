@@ -27,7 +27,7 @@ class FactoryCreatorCommandTest extends TestCase
     {
         $command = $this->command;
         $this->assertHelp();
-        $this->assertEquals(0, $command([]));
+        self::assertEquals(0, $command([]));
     }
 
     public function assertHelp($stream = STDOUT)
@@ -55,7 +55,7 @@ class FactoryCreatorCommandTest extends TestCase
     {
         $command = $this->command;
         $this->assertHelp();
-        $this->assertEquals(0, $command([$argument]));
+        self::assertEquals(0, $command([$argument]));
     }
 
     public function invalidArguments()
@@ -74,7 +74,7 @@ class FactoryCreatorCommandTest extends TestCase
         $command = $this->command;
         $this->assertErrorRaised(sprintf('Class "%s" does not exist', $argument));
         $this->assertHelp(STDERR);
-        $this->assertEquals(1, $command([$argument]));
+        self::assertEquals(1, $command([$argument]));
     }
 
     public function assertErrorRaised($message)
@@ -89,7 +89,7 @@ class FactoryCreatorCommandTest extends TestCase
         $command = $this->command;
         $this->assertErrorRaised('Unable to create factory for "' . ObjectWithScalarDependency::class . '":');
         $this->assertHelp(STDERR);
-        $this->assertEquals(1, $command([ObjectWithScalarDependency::class]));
+        self::assertEquals(1, $command([ObjectWithScalarDependency::class]));
     }
 
     public function testEmitsFactoryFileToStdoutWhenSuccessful()
@@ -98,6 +98,6 @@ class FactoryCreatorCommandTest extends TestCase
         $expected = file_get_contents(__DIR__ . '/../TestAsset/factories/SimpleDependencyObject.php');
 
         $this->helper->write($expected, false)->shouldBeCalled();
-        $this->assertEquals(0, $command([SimpleDependencyObject::class]));
+        self::assertEquals(0, $command([SimpleDependencyObject::class]));
     }
 }

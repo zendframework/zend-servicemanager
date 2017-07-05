@@ -36,33 +36,24 @@ For sensitive email communications, please use [our PGP key](http://framework.ze
 
 ## RUNNING TESTS
 
-> ### Note: testing versions prior to 2.4
->
-> This component originates with Zend Framework 2. During the lifetime of ZF2,
-> testing infrastructure migrated from PHPUnit 3 to PHPUnit 4. In most cases, no
-> changes were necessary. However, due to the migration, tests may not run on
-> versions < 2.4. As such, you may need to change the PHPUnit dependency if
-> attempting a fix on such a version.
-
 To run tests:
 
 - Clone the repository:
 
   ```console
-  $ git clone git@github.com:zendframework/zend-servicemanager.git
-  $ cd
+  $ git clone git://github.com/zendframework/zend-servicemanager.git
+  $ cd zend-servicemanager
   ```
 
 - Install dependencies via composer:
 
   ```console
-  $ curl -sS https://getcomposer.org/installer | php --
-  $ ./composer.phar install
+  $ composer install
   ```
 
-  If you don't have `curl` installed, you can also download `composer.phar` from https://getcomposer.org/
+  If you don't have `composer` installed, please download it from https://getcomposer.org/download/
 
-- Run the tests:
+- Run the tests using the "test" command shipped in the `composer.json`:
 
   ```console
   $ composer test
@@ -77,23 +68,22 @@ To do so:
 
 ## Running Coding Standards Checks
 
-This component follows [PSR-1](http://www.php-fig.org/psr/psr-1/) and
-[PSR-2](http://www.php-fig.org/psr/psr-2/) guidelines, and ships with tooling
-for both checking code against standards, as well as fixing most errors.
+First, ensure you've installed dependencies via composer, per the previous
+section on running tests.
 
-To run checks only:
+To run CS checks only:
 
 ```console
 $ composer cs-check
 ```
 
-To fix common errors:
+To attempt to automatically fix common CS issues:
 
 ```console
 $ composer cs-fix
 ```
 
-If you allow tooling to fix CS issues, please re-run the tests to ensure
+If the above fixes any CS issues, please re-run the tests to ensure
 they pass, and make sure you add and commit the changes after verification.
 
 ## Recommended Workflow for Contributions
@@ -102,12 +92,12 @@ Your first step is to establish a public repository from which we can
 pull your work into the master repository. We recommend using
 [GitHub](https://github.com), as that is where the component is already hosted.
 
-1. Setup a [GitHub account](http://github.com/), if you haven't yet
-2. Fork the repository (http://github.com/zendframework/zend-servicemanager)
+1. Setup a [GitHub account](https://github.com/), if you haven't yet
+2. Fork the repository (https://github.com/zendframework/zend-servicemanager)
 3. Clone the canonical repository locally and enter it.
 
    ```console
-   $ git clone git://github.com:zendframework/zend-servicemanager.git
+   $ git clone git://github.com/zendframework/zend-servicemanager.git
    $ cd zend-servicemanager
    ```
 

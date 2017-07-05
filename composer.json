@@ -14,21 +14,21 @@
         }
     },
     "require": {
-        "php": "^5.6 || ^7.0",
+        "php": "^7.1",
         "container-interop/container-interop": "^1.2",
         "psr/container": "^1.0",
         "zendframework/zend-stdlib": "^3.1"
     },
     "require-dev": {
-        "ocramius/proxy-manager": "^1.0 || ^2.0",
-        "phpbench/phpbench": "^0.10.0",
-        "phpunit/phpunit": "^5.7 || ^6.0.6",
-        "mikey179/vfsStream": "^1.6",
+        "mikey179/vfsStream": "^1.6.4",
+        "ocramius/proxy-manager": "^2.1.1",
+        "phpbench/phpbench": "^0.13.0",
+        "phpunit/phpunit": "^6.2.3",
         "zendframework/zend-coding-standard": "~1.0.0"
     },
     "suggest": {
-        "ocramius/proxy-manager": "ProxyManager 1.* to handle lazy initialization of services",
-        "zendframework/zend-stdlib": "zend-stdlib ^2.5 if you wish to use the MergeReplaceKey or MergeRemoveKey features in Config instances"
+        "ocramius/proxy-manager": "ProxyManager ^2.1.1 to handle lazy initialization of services",
+        "zendframework/zend-stdlib": "zend-stdlib ^2.7.7 | ^3.1 if you wish to use the MergeReplaceKey or MergeRemoveKey features in Config instances"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
