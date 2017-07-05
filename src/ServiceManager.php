@@ -226,7 +226,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         // We now deal with requests which may be aliases.
-        $resolvedName = isset($this->aliases[$name]) ? $this->aliases[$name] : $name;
+        $resolvedName = $this->aliases[$name]) ?? $name;
 
         // The following is only true if the requested service is a shared alias.
         $sharedAlias = $sharedService && isset($this->services[$resolvedName]);
@@ -270,14 +270,15 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function has($name)
     {
-        $name  = isset($this->aliases[$name]) ? $this->aliases[$name] : $name;
+        $name  = $this->aliases[$name]) ?? $name;
         if (isset($this->services[$name]) 
 			|| isset($this->factories[$name]) 
 			|| isset($this->invokables[$name])) 
 		{
 			return true;
+		}
 
-        // Check abstract factories next.
+        // Check abstract factories
         foreach ($this->abstractFactories as $abstractFactory) {
             if ($abstractFactory->canCreate($this->creationContext, $name)) {
                 return true;
@@ -680,9 +681,9 @@ class ServiceManager implements ServiceLocatorInterface
                     ));
                 }
 
-                throw new ServiceNotCreatedException(sprintf(
+                throw new ServiceNotCreatedException(\sprintf(
                     'A non-callable delegator, "%s", was provided; expected a callable or instance of "%s"',
-                    is_object($delegatorFactory) ? get_class($delegatorFactory) : gettype($delegatorFactory),
+                    \is_object($delegatorFactory) ? \get_class($delegatorFactory) : \gettype($delegatorFactory),
                     DelegatorFactoryInterface::class
                 ));
             }
