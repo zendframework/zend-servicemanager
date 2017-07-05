@@ -81,14 +81,14 @@ class LazyServiceIntegrationTest extends TestCase
     {
         $message = $message ?: 'Expected empty proxy directory; found files';
         // AssertEquals instead AssertEmpty because the first one prints the list of files.
-        $this->assertEquals([], iterator_to_array($this->listProxyFiles()), $message);
+        self::assertEquals([], iterator_to_array($this->listProxyFiles()), $message);
     }
 
     public function assertProxyFileWritten($message = '')
     {
         $message = $message ?: 'Expected ProxyManager to write at least one class file; none found';
         // AssertNotEquals instead AssertNotEmpty because the first one prints the list of files.
-        $this->assertNotEquals([], iterator_to_array($this->listProxyFiles()), $message);
+        self::assertNotEquals([], iterator_to_array($this->listProxyFiles()), $message);
     }
 
     /**
@@ -121,12 +121,12 @@ class LazyServiceIntegrationTest extends TestCase
         $this->assertProxyFileWritten();
 
         // Test we got a usable proxy
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             InvokableObject::class,
             $instance,
             'Service returned does not extend ' . InvokableObject::class
         );
-        $this->assertContains(
+        self::assertContains(
             'TestAssetProxy',
             get_class($instance),
             'Service returned does not contain expected namespace'
@@ -134,15 +134,15 @@ class LazyServiceIntegrationTest extends TestCase
 
         // Test proxying works as expected
         $options = $instance->getOptions();
-        $this->assertInternalType(
+        self::assertInternalType(
             'array',
             $options,
             'Expected an array of options'
         );
-        $this->assertEquals(['foo' => 'bar'], $options, 'Options returned do not match configuration');
+        self::assertEquals(['foo' => 'bar'], $options, 'Options returned do not match configuration');
 
         $proxyAutoloadFunctions = $this->getRegisteredProxyAutoloadFunctions();
-        $this->assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
+        self::assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
     }
 
     /**
@@ -196,12 +196,12 @@ class LazyServiceIntegrationTest extends TestCase
         $this->assertProxyDirEmpty('Expected proxy directory to remain empty when write_proxy_files disabled');
 
         // Test we got a usable proxy
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             InvokableObject::class,
             $instance,
             'Service returned does not extend ' . InvokableObject::class
         );
-        $this->assertContains(
+        self::assertContains(
             'TestAssetProxy',
             get_class($instance),
             'Service returned does not contain expected namespace'
@@ -209,15 +209,15 @@ class LazyServiceIntegrationTest extends TestCase
 
         // Test proxying works as expected
         $options = $instance->getOptions();
-        $this->assertInternalType(
+        self::assertInternalType(
             'array',
             $options,
             'Expected an array of options'
         );
-        $this->assertEquals(['foo' => 'bar'], $options, 'Options returned do not match configuration');
+        self::assertEquals(['foo' => 'bar'], $options, 'Options returned do not match configuration');
 
         $proxyAutoloadFunctions = $this->getRegisteredProxyAutoloadFunctions();
-        $this->assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
+        self::assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
     }
 
     public function testOnlyOneProxyAutoloaderItsRegisteredOnSubsequentCalls()
@@ -241,20 +241,20 @@ class LazyServiceIntegrationTest extends TestCase
 
         $container = new ServiceManager($config);
         $instance  = $container->build(InvokableObject::class, ['foo' => 'bar']);
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             InvokableObject::class,
             $instance,
             'Service returned does not extend ' . InvokableObject::class
         );
         $instance  = $container->build(stdClass::class, ['foo' => 'bar']);
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             stdClass::class,
             $instance,
             'Service returned does not extend ' . stdClass::class
         );
 
         $proxyAutoloadFunctions = $this->getRegisteredProxyAutoloadFunctions();
-        $this->assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
+        self::assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
     }
 
     public function testRaisesServiceNotFoundExceptionIfRequestedLazyServiceIsNotInClassMap()

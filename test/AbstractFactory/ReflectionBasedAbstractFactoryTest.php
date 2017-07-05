@@ -33,21 +33,21 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
     public function testCanCreateReturnsFalseForNonClassRequestedNames($requestedName)
     {
         $factory = new ReflectionBasedAbstractFactory();
-        $this->assertFalse($factory->canCreate($this->container->reveal(), $requestedName));
+        self::assertFalse($factory->canCreate($this->container->reveal(), $requestedName));
     }
 
     public function testFactoryInstantiatesClassDirectlyIfItHasNoConstructor()
     {
         $factory = new ReflectionBasedAbstractFactory();
         $instance = $factory($this->container->reveal(), TestAsset\ClassWithNoConstructor::class);
-        $this->assertInstanceOf(TestAsset\ClassWithNoConstructor::class, $instance);
+        self::assertInstanceOf(TestAsset\ClassWithNoConstructor::class, $instance);
     }
 
     public function testFactoryInstantiatesClassDirectlyIfConstructorHasNoArguments()
     {
         $factory = new ReflectionBasedAbstractFactory();
         $instance = $factory($this->container->reveal(), TestAsset\ClassWithEmptyConstructor::class);
-        $this->assertInstanceOf(TestAsset\ClassWithEmptyConstructor::class, $instance);
+        self::assertInstanceOf(TestAsset\ClassWithEmptyConstructor::class, $instance);
     }
 
     public function testFactoryRaisesExceptionWhenUnableToResolveATypeHintedService()
@@ -83,8 +83,8 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
 
         $factory = new ReflectionBasedAbstractFactory();
         $instance = $factory($this->container->reveal(), TestAsset\ClassAcceptingConfigToConstructor::class);
-        $this->assertInstanceOf(TestAsset\ClassAcceptingConfigToConstructor::class, $instance);
-        $this->assertEquals($config, $instance->config);
+        self::assertInstanceOf(TestAsset\ClassAcceptingConfigToConstructor::class, $instance);
+        self::assertEquals($config, $instance->config);
     }
 
     public function testFactoryCanInjectKnownTypeHintedServices()
@@ -96,8 +96,8 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
 
         $factory = new ReflectionBasedAbstractFactory();
         $instance = $factory($this->container->reveal(), TestAsset\ClassWithTypeHintedConstructorParameter::class);
-        $this->assertInstanceOf(TestAsset\ClassWithTypeHintedConstructorParameter::class, $instance);
-        $this->assertSame($sample, $instance->sample);
+        self::assertInstanceOf(TestAsset\ClassWithTypeHintedConstructorParameter::class, $instance);
+        self::assertSame($sample, $instance->sample);
     }
 
     public function testFactoryResolvesTypeHintsForServicesToWellKnownServiceNames()
@@ -113,11 +113,11 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
             $this->container->reveal(),
             TestAsset\ClassAcceptingWellKnownServicesAsConstructorParameters::class
         );
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             TestAsset\ClassAcceptingWellKnownServicesAsConstructorParameters::class,
             $instance
         );
-        $this->assertSame($validators, $instance->validators);
+        self::assertSame($validators, $instance->validators);
     }
 
     public function testFactoryCanSupplyAMixOfParameterTypes()
@@ -136,12 +136,12 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
 
         $factory = new ReflectionBasedAbstractFactory([TestAsset\ValidatorPluginManager::class => 'ValidatorManager']);
         $instance = $factory($this->container->reveal(), TestAsset\ClassWithMixedConstructorParameters::class);
-        $this->assertInstanceOf(TestAsset\ClassWithMixedConstructorParameters::class, $instance);
+        self::assertInstanceOf(TestAsset\ClassWithMixedConstructorParameters::class, $instance);
 
-        $this->assertEquals($config, $instance->config);
-        $this->assertEquals([], $instance->options);
-        $this->assertSame($sample, $instance->sample);
-        $this->assertSame($validators, $instance->validators);
+        self::assertEquals($config, $instance->config);
+        self::assertEquals([], $instance->options);
+        self::assertSame($sample, $instance->sample);
+        self::assertSame($validators, $instance->validators);
     }
 
     public function testFactoryWillUseDefaultValueWhenPresentForScalarArgument()
@@ -152,8 +152,8 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
             $this->container->reveal(),
             TestAsset\ClassWithScalarDependencyDefiningDefaultValue::class
         );
-        $this->assertInstanceOf(TestAsset\ClassWithScalarDependencyDefiningDefaultValue::class, $instance);
-        $this->assertEquals('bar', $instance->foo);
+        self::assertInstanceOf(TestAsset\ClassWithScalarDependencyDefiningDefaultValue::class, $instance);
+        self::assertEquals('bar', $instance->foo);
     }
 
     /**

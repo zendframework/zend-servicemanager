@@ -37,7 +37,7 @@ class ServiceManagerTest extends TestCase
     public function testServiceManagerIsAPsr11Container()
     {
         $container = $this->createContainer();
-        $this->assertInstanceOf(ContainerInterface::class, $container);
+        self::assertInstanceOf(ContainerInterface::class, $container);
     }
 
     public function testConfigurationCanBeMerged()
@@ -48,9 +48,9 @@ class ServiceManagerTest extends TestCase
             ]
         ]);
 
-        $this->assertTrue($serviceManager->has(DateTime::class));
+        self::assertTrue($serviceManager->has(DateTime::class));
         // stdClass service is inlined in SimpleServiceManager
-        $this->assertTrue($serviceManager->has(stdClass::class));
+        self::assertTrue($serviceManager->has(stdClass::class));
     }
 
     public function testConfigurationTakesPrecedenceWhenMerged()
@@ -98,13 +98,13 @@ class ServiceManagerTest extends TestCase
         ]);
 
         $instance = $serviceManager->get(stdClass::class);
-        $this->assertTrue(isset($instance->option), 'Delegator-injected option was not found');
-        $this->assertEquals(
+        self::assertTrue(isset($instance->option), 'Delegator-injected option was not found');
+        self::assertEquals(
             $config['option'],
             $instance->option,
             'Delegator-injected option does not match configuration'
         );
-        $this->assertEquals('bar', $instance->foo);
+        self::assertEquals('bar', $instance->foo);
     }
 
     public function shareProvider()
@@ -152,7 +152,7 @@ class ServiceManagerTest extends TestCase
         $a = $serviceManager->get(stdClass::class);
         $b = $serviceManager->get(stdClass::class);
 
-        $this->assertEquals($shouldBeSameInstance, $a === $b);
+        self::assertEquals($shouldBeSameInstance, $a === $b);
     }
 
     public function testSharedServicesReferencingInvokableAliasShouldBeHonored()
@@ -170,7 +170,7 @@ class ServiceManagerTest extends TestCase
         $instance1 = $serviceManager->get('Invokable');
         $instance2 = $serviceManager->get('Invokable');
 
-        $this->assertNotSame($instance1, $instance2);
+        self::assertNotSame($instance1, $instance2);
     }
 
     public function testSharedServicesReferencingAliasShouldBeHonored()
@@ -191,7 +191,7 @@ class ServiceManagerTest extends TestCase
         $instance1 = $serviceManager->get('Invokable');
         $instance2 = $serviceManager->get('Invokable');
 
-        $this->assertNotSame($instance1, $instance2);
+        self::assertNotSame($instance1, $instance2);
     }
 
     public function testAliasToAnExplicitServiceShouldWork()
@@ -210,7 +210,7 @@ class ServiceManagerTest extends TestCase
         $service = $serviceManager->get(InvokableObject::class);
         $alias   = $serviceManager->get('Invokable');
 
-        $this->assertSame($service, $alias);
+        self::assertSame($service, $alias);
     }
 
     /**
@@ -234,8 +234,8 @@ class ServiceManagerTest extends TestCase
         $alias     = $serviceManager->get('Alias');
         $headAlias = $serviceManager->get('HeadAlias');
 
-        $this->assertSame($service, $alias);
-        $this->assertSame($service, $headAlias);
+        self::assertSame($service, $alias);
+        self::assertSame($service, $headAlias);
     }
 
     public static function sampleFactory()
