@@ -97,7 +97,7 @@ class ConfigDumperTest extends TestCase
             'Cannot create config for constructor argument "aName", '
             . 'it has no type hint, or non-class/interface type hint'
         );
-        $config = $this->dumper->createDependencyConfig(
+        $this->dumper->createDependencyConfig(
             [ConfigAbstractFactory::class => []],
             ObjectWithScalarDependency::class
         );
@@ -117,7 +117,7 @@ class ConfigDumperTest extends TestCase
 
         $dumper = new ConfigDumper($container->reveal());
 
-        $config = $dumper->createDependencyConfig(
+        $dumper->createDependencyConfig(
             [ConfigAbstractFactory::class => []],
             ObjectWithScalarDependency::class
         );
