@@ -8,7 +8,6 @@
 namespace ZendTest\ServiceManager\Tool;
 
 use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
