@@ -183,7 +183,7 @@ class ServiceManager implements ServiceLocatorInterface
             return $this->services[$requestedName];
         }
 
-        $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+        $name = $this->resolvedAliases[$name] ?? $name;
 
         // Next, if the alias should be shared, and we have cached the resolved
         // service, use it.
@@ -223,7 +223,7 @@ class ServiceManager implements ServiceLocatorInterface
     public function build($name, array $options = null)
     {
         // We never cache when using "build"
-        $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+        $name = $this->resolvedAliases[$name] ?? $name;
         return $this->doCreate($name, $options);
     }
 
@@ -232,7 +232,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function has($name)
     {
-        $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+        $name  = $this->resolvedAliases[$name] ?? $name;
         $found = isset($this->services[$name]) || isset($this->factories[$name]);
 
         if ($found) {
@@ -656,7 +656,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function getFactory($name)
     {
-        $factory = isset($this->factories[$name]) ? $this->factories[$name] : null;
+        $factory = $this->factories[$name] ?? null;
 
         $lazyLoaded = false;
         if (\is_string($factory) && \class_exists($factory)) {
@@ -710,7 +710,7 @@ class ServiceManager implements ServiceLocatorInterface
 
             if (! \is_callable($delegatorFactory)) {
                 if (\is_string($delegatorFactory)) {
-                    throw new ServiceNotCreatedException(sprintf(
+                    throw new ServiceNotCreatedException(\sprintf(
                         'An invalid delegator factory was registered; resolved to class or function "%s" '
                         . 'which does not exist; please provide a valid function name or class name resolving '
                         . 'to an implementation of %s',
@@ -719,9 +719,9 @@ class ServiceManager implements ServiceLocatorInterface
                     ));
                 }
 
-                throw new ServiceNotCreatedException(sprintf(
+                throw new ServiceNotCreatedException(\sprintf(
                     'A non-callable delegator, "%s", was provided; expected a callable or instance of "%s"',
-                    is_object($delegatorFactory) ? get_class($delegatorFactory) : gettype($delegatorFactory),
+                    \is_object($delegatorFactory) ? \get_class($delegatorFactory) : \gettype($delegatorFactory),
                     DelegatorFactoryInterface::class
                 ));
             }
