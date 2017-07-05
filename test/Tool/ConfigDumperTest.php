@@ -329,7 +329,7 @@ class ConfigDumperTest extends TestCase
 
         $file = tempnam(sys_get_temp_dir(), 'ZSCLI');
         file_put_contents($file, $formatted);
-        $test = include($file);
+        $test = include $file;
         unlink($file);
 
         self::assertEquals($test, $config);
