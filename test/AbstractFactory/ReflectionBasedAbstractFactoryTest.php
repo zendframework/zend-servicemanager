@@ -71,7 +71,7 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
             'Unable to create service "%s"; unable to resolve parameter "foo" to a class, interface, or array type',
             TestAsset\ClassWithScalarParameters::class
         ));
-        $instance = $factory($this->container->reveal(), TestAsset\ClassWithScalarParameters::class);
+        $factory($this->container->reveal(), TestAsset\ClassWithScalarParameters::class);
     }
 
     public function testFactoryInjectsConfigServiceForConfigArgumentsTypeHintedAsArray()
