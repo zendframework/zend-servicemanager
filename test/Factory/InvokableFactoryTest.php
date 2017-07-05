@@ -25,7 +25,7 @@ class InvokableFactoryTest extends TestCase
 
         $object = $factory($container, InvokableObject::class, ['foo' => 'bar']);
 
-        $this->assertInstanceOf(InvokableObject::class, $object);
-        $this->assertEquals(['foo' => 'bar'], $object->options);
+        self::assertInstanceOf(InvokableObject::class, $object);
+        self::assertEquals(['foo' => 'bar'], $object->options);
     }
 }
