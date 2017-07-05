@@ -261,7 +261,7 @@ class ServiceManagerTest extends TestCase
             ->willReturnCallback(function ($context, $name) {
                 return $name === 'Alias';
             });
-        $this->assertTrue($serviceManager->has('Alias'));
+        self::assertTrue($serviceManager->has('Alias'));
     }
 
     public static function sampleFactory()
