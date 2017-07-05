@@ -204,7 +204,7 @@ class ServiceManager implements ServiceLocatorInterface
             return $this->services[$requestedName];
         }
 
-        $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+        $name = $this->resolvedAliases[$name] ?? $name;
 
         // Next, if the alias should be shared, and we have cached the resolved
         // service, use it.
@@ -244,7 +244,7 @@ class ServiceManager implements ServiceLocatorInterface
     public function build($name, array $options = null)
     {
         // We never cache when using "build"
-        $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+        $name = $this->resolvedAliases[$name] ?? $name;
         return $this->doCreate($name, $options);
     }
 
@@ -254,11 +254,12 @@ class ServiceManager implements ServiceLocatorInterface
     public function has($name)
     {
         $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
-        $found = isset($this->services[$name]) || isset($this->factories[$name]) || isset($this->invokables[$name]);
-
-        if ($found) {
-            return $found;
-        }
+        if(isset($this->services[$name]) 
+			|| isset($this->factories[$name]) 
+			|| isset($this->invokables[$name])) 
+		{
+			return true;
+		}
 
         // Check abstract factories
         foreach ($this->abstractFactories as $abstractFactory) {
@@ -338,24 +339,8 @@ class ServiceManager implements ServiceLocatorInterface
             $this->services = $config['services'] + $this->services;
         }
 
-<<<<<<< HEAD
         if (! empty($config['invokables'])) {
             $this->invokables = $config['invokables'] + $this->invokables;
-=======
-        if (isset($config['invokables']) && ! empty($config['invokables'])) {
-            $aliases   = $this->createAliasesForInvokables($config['invokables']);
-            $factories = $this->createFactoriesForInvokables($config['invokables']);
-
-            if (! empty($aliases)) {
-                $config['aliases'] = (isset($config['aliases']))
-                    ? \array_merge($config['aliases'], $aliases)
-                    : $aliases;
-            }
-
-            $config['factories'] = (isset($config['factories']))
-                ? \array_merge($config['factories'], $factories)
-                : $factories;
->>>>>>> Optimize PHP function calls
         }
 
         if (isset($config['factories'])) {
@@ -690,7 +675,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function createServiceThroughFactory($name, array $options = null)
     {
-        $factory = isset($this->factories[$name]) ? $this->factories[$name] : null;
+        $factory = $this->factories[$name] ?? null;
 
         if (is_string($factory) && class_exists($factory)) {
             $factory = new $factory();
@@ -753,7 +738,7 @@ class ServiceManager implements ServiceLocatorInterface
 
             if (! \is_callable($delegatorFactory)) {
                 if (\is_string($delegatorFactory)) {
-                    throw new ServiceNotCreatedException(sprintf(
+                    throw new ServiceNotCreatedException(\sprintf(
                         'An invalid delegator factory was registered; resolved to class or function "%s" '
                         . 'which does not exist; please provide a valid function name or class name resolving '
                         . 'to an implementation of %s',
@@ -762,9 +747,9 @@ class ServiceManager implements ServiceLocatorInterface
                     ));
                 }
 
-                throw new ServiceNotCreatedException(sprintf(
+                throw new ServiceNotCreatedException(\sprintf(
                     'A non-callable delegator, "%s", was provided; expected a callable or instance of "%s"',
-                    is_object($delegatorFactory) ? get_class($delegatorFactory) : gettype($delegatorFactory),
+                    \is_object($delegatorFactory) ? \get_class($delegatorFactory) : \gettype($delegatorFactory),
                     DelegatorFactoryInterface::class
                 ));
             }
