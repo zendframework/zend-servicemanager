@@ -36,16 +36,16 @@ class ConfigDumperTest extends TestCase
 
     public function testCreateDependencyConfigExceptsIfClassNameIsNotString()
     {
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Class name must be a string, integer given');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Class name must be a string, integer given');
         $this->dumper->createDependencyConfig([], 42);
     }
 
     public function testCreateDependencyConfigExceptsIfClassDoesNotExist()
     {
         $className = 'Dirk\Gentley\Holistic\Detective\Agency';
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Cannot find class or interface with name ' . $className);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cannot find class or interface with name ' . $className);
         $this->dumper->createDependencyConfig([], $className);
     }
 
@@ -92,8 +92,8 @@ class ConfigDumperTest extends TestCase
 
     public function testCreateDependencyConfigWithoutTypeHintedParameterExcepts()
     {
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage(
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
             'Cannot create config for constructor argument "aName", '
             . 'it has no type hint, or non-class/interface type hint'
         );
@@ -105,8 +105,8 @@ class ConfigDumperTest extends TestCase
 
     public function testCreateDependencyConfigWithContainerAndNoServiceWithoutTypeHintedParameterExcepts()
     {
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage(
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
             'Cannot create config for constructor argument "aName", '
             . 'it has no type hint, or non-class/interface type hint'
         );
@@ -209,16 +209,16 @@ class ConfigDumperTest extends TestCase
 
     public function testCreateFactoryMappingsExceptsIfClassNameIsNotString()
     {
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Class name must be a string, integer given');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Class name must be a string, integer given');
         $this->dumper->createFactoryMappings([], 42);
     }
 
     public function testCreateFactoryMappingsExceptsIfClassDoesNotExist()
     {
         $className = 'Dirk\Gentley\Holistic\Detective\Agency';
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Cannot find class or interface with name ' . $className);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cannot find class or interface with name ' . $className);
         $this->dumper->createFactoryMappings([], $className);
     }
 
@@ -265,8 +265,8 @@ class ConfigDumperTest extends TestCase
 
     public function testCreateFactoryMappingsFromConfigExceptsWhenConfigNotArray()
     {
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage(
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
             'Config key for ' . ConfigAbstractFactory::class . ' should be an array, boolean given'
         );
 
