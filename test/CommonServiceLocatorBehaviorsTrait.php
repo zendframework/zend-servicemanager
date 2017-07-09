@@ -24,14 +24,14 @@ use ZendTest\ServiceManager\TestAsset\FailingAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingExceptionWithStringAsCodeFactory;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
+use ZendTest\ServiceManager\TestAsset\AbstractFactoryFoo;
+use ZendTest\ServiceManager\TestAsset\PassthroughDelegatorFactory;
+use ZendTest\ServiceManager\TestAsset\SampleFactory;
 use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
 
 use function call_user_func_array;
 use function restore_error_handler;
 use function set_error_handler;
-use ZendTest\ServiceManager\TestAsset\SampleFactory;
-use ZendTest\ServiceManager\TestAsset\AbstractFactoryFoo;
-use ZendTest\ServiceManager\TestAsset\PassthroughDelegatorFactory;
 
 trait CommonServiceLocatorBehaviorsTrait
 {

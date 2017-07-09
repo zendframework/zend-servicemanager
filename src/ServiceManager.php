@@ -22,11 +22,15 @@ use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
+use function array_intersect_key;
+use function array_keys;
+use function array_merge;
 use function array_merge_recursive;
 use function class_exists;
 use function get_class;
 use function gettype;
 use function in_array;
+use function implode;
 use function is_callable;
 use function is_object;
 use function is_string;
