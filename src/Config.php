@@ -10,6 +10,11 @@ namespace Zend\ServiceManager;
 use Zend\Stdlib\ArrayUtils\MergeRemoveKey;
 use Zend\Stdlib\ArrayUtils\MergeReplaceKeyInterface;
 
+use function array_key_exists;
+use function array_keys;
+use function is_array;
+use function is_int;
+
 /**
  * Object for defining configuration and configuring an existing service manager instance.
  *

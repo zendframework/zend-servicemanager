@@ -10,6 +10,12 @@ namespace Zend\ServiceManager\Tool;
 use Zend\ServiceManager\Exception;
 use Zend\Stdlib\ConsoleHelper;
 
+use function array_shift;
+use function class_exists;
+use function count;
+use function in_array;
+use function sprintf;
+
 class FactoryCreatorCommand
 {
     const COMMAND_DUMP = 'dump';

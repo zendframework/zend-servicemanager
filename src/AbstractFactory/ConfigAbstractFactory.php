@@ -11,6 +11,12 @@ use ArrayObject;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
+use function array_key_exists;
+use function array_map;
+use function array_values;
+use function is_array;
+use function json_encode;
+
 final class ConfigAbstractFactory implements AbstractFactoryInterface
 {
 
