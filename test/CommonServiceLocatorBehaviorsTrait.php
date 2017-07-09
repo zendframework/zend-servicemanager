@@ -21,8 +21,8 @@ use Zend\ServiceManager\Initializer\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use ZendTest\ServiceManager\TestAsset\CallTimesAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingAbstractFactory;
-use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\FailingExceptionWithStringAsCodeFactory;
+use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
 
