@@ -21,6 +21,22 @@ use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 
+use function array_intersect_key;
+use function array_keys;
+use function array_merge;
+use function array_merge_recursive;
+use function class_exists;
+use function get_class;
+use function gettype;
+use function implode;
+use function is_callable;
+use function is_object;
+use function is_string;
+use function spl_autoload_register;
+use function spl_object_hash;
+use function sprintf;
+use function trigger_error;
+
 /**
  * Service Manager.
  *
@@ -392,8 +408,8 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         // Performance optimization. If there are no collisions, then we don't need to recompute loops
-        $intersecting  = $this->aliases && \array_intersect_key($this->aliases, $aliases);
-        $this->aliases = $this->aliases ? \array_merge($this->aliases, $aliases) : $aliases;
+        $intersecting  = $this->aliases && array_intersect_key($this->aliases, $aliases);
+        $this->aliases = $this->aliases ? array_merge($this->aliases, $aliases) : $aliases;
 
         if ($intersecting) {
             $this->resolveAliases($this->aliases);

@@ -15,6 +15,9 @@ use Zend\Stdlib\ConsoleHelper;
 use ZendTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
+use function file_get_contents;
+use function sprintf;
+
 class FactoryCreatorCommandTest extends TestCase
 {
     public function setUp()

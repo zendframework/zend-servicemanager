@@ -11,6 +11,9 @@ use Zend\ServiceManager\AbstractPluginManager;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
+use function get_class;
+use function sprintf;
+
 class V2v3PluginManager extends AbstractPluginManager
 {
     protected $aliases = [
