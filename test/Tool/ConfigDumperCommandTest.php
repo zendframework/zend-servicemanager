@@ -18,6 +18,10 @@ use ZendTest\ServiceManager\TestAsset\ObjectWithObjectScalarDependency;
 use ZendTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
+use function file_get_contents;
+use function realpath;
+use function sprintf;
+
 class ConfigDumperCommandTest extends TestCase
 {
     public function setUp()

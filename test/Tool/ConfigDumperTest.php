@@ -22,6 +22,11 @@ use ZendTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
 use ZendTest\ServiceManager\TestAsset\SecondComplexDependencyObject;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
+use function file_put_contents;
+use function sys_get_temp_dir;
+use function tempnam;
+use function unlink;
+
 class ConfigDumperTest extends TestCase
 {
     /**

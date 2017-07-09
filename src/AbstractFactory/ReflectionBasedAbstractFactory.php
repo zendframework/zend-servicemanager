@@ -13,6 +13,10 @@ use ReflectionParameter;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
+use function array_map;
+use function class_exists;
+use function sprintf;
+
 /**
  * Reflection-based factory.
  *

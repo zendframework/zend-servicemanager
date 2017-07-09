@@ -21,6 +21,21 @@ use Zend\ServiceManager\Proxy\LazyServiceFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 
+use function array_filter;
+use function closedir;
+use function get_class;
+use function is_dir;
+use function is_file;
+use function iterator_to_array;
+use function mkdir;
+use function opendir;
+use function readdir;
+use function rmdir;
+use function spl_autoload_functions;
+use function spl_autoload_unregister;
+use function sys_get_temp_dir;
+use function unlink;
+
 /**
  * @covers \Zend\ServiceManager\ServiceManager
  */

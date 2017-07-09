@@ -22,6 +22,10 @@ use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimplePluginManager;
 use ZendTest\ServiceManager\TestAsset\V2v3PluginManager;
 
+use function get_class;
+use function restore_error_handler;
+use function set_error_handler;
+
 /**
  * @covers \Zend\ServiceManager\AbstractPluginManager
  */

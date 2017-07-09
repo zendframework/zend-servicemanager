@@ -13,6 +13,8 @@ use PHPUnit\Framework\TestCase;
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 
+use function sprintf;
+
 class ReflectionBasedAbstractFactoryTest extends TestCase
 {
     public function setUp()
