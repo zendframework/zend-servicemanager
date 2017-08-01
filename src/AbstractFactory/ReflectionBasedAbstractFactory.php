@@ -220,7 +220,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
         }
 
         $type = $parameter->getClass()->getName();
-        $type = isset($this->aliases[$type]) ? $this->aliases[$type] : $type;
+        $type = $this->aliases[$type] ?? $type;
 
         if (! $container->has($type)) {
             throw new ServiceNotFoundException(sprintf(
