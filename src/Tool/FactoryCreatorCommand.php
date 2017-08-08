@@ -104,7 +104,7 @@ EOH;
      */
     private function parseArgs(array $args)
     {
-        if (! count($args)) {
+        if (empty($args)) {
             return $this->createArguments(self::COMMAND_HELP);
         }
 

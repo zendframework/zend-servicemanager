@@ -124,7 +124,7 @@ EOH;
      */
     private function parseArgs(array $args)
     {
-        if (! count($args)) {
+        if (empty($args)) {
             return $this->createHelpArgument();
         }
 
@@ -140,7 +140,7 @@ EOH;
             $arg1 = array_shift($args);
         }
 
-        if (! count($args)) {
+        if (empty($args)) {
             return $this->createErrorArgument('Missing class name');
         }
 
