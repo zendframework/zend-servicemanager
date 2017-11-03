@@ -267,4 +267,20 @@ class ServiceManagerTest extends TestCase
         $this->assertSame($service, $alias);
         $this->assertSame($service, $headAlias);
     }
+
+    public static function sampleFactory()
+    {
+        return new stdClass();
+    }
+
+    public function testStaticCallable()
+    {
+        $config = [
+            'factories' => [
+                stdClass::class => 'ZendTest\ServiceManager\ServiceManagerTest::sampleFactory',
+            ]
+        ];
+        $serviceManager = new SimpleServiceManager($config);
+        $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
+    }
 }
