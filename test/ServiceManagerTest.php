@@ -273,7 +273,7 @@ class ServiceManagerTest extends TestCase
         return new stdClass();
     }
 
-    public function testStaticCallable()
+    public function testFactoryMayBeStaticMethodDescribedByCallableString()
     {
         $config = [
             'factories' => [

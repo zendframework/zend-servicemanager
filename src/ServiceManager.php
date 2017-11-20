@@ -669,7 +669,9 @@ class ServiceManager implements ServiceLocatorInterface
                 $this->factories[$name] = $factory;
             }
             // PHP 5.6 fails on 'class::method' callables unless we explode them:
-            if (is_string($factory) && strpos($factory, '::') !== false) {
+            if (PHP_MAJOR_VERSION < 7
+                && is_string($factory) && strpos($factory, '::') !== false
+            ) {
                 $factory = explode('::', $factory);
             }
             return $factory;
