@@ -38,17 +38,17 @@ matrix:
     - php: 7.1
       env:
         - DEPS=latest
-    - php: nightly
+    - php: 7.2
       env:
         - DEPS=lowest
-    - php: nightly
+    - php: 7.2
       env:
         - DEPS=locked
-    - php: nightly
+    - php: 7.2
       env:
         - DEPS=latest
   allow_failures:
-    - php: nightly
+    - php: 7.2
 
 notifications:
   irc: "irc.freenode.org#zftalk.dev"
