@@ -49,6 +49,7 @@
         "psr/container-implementation": "^1.0"
     },
     "bin": [
+        "bin/create-factory-map",
         "bin/generate-deps-for-config-factory",
         "bin/generate-factory-for-class"
     ],

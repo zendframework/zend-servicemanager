@@ -72,3 +72,53 @@ $ ./vendor/bin/generate-factory-for-class \
 
 The class generated implements `Zend\ServiceManager\Factory\FactoryInterface`,
 and is generated within the same namespace as the originating class.
+
+## create-factory-map
+
+```bash
+Usage:
+
+  create-factory-map [-h|--help|help] <configFile> <className> <factoryName> [<key>]
+
+Arguments:
+
+  -h|--help|help    This usage message
+  <configFile>      Path to an config file in which to map the factory.
+                    If the file does not exist, it will be created. If
+                    it does exist, it must return an array.
+  <className>       Name of the class to map to a factory.
+  <factoryName>     Name of the factory class to use with <className>.
+  [<key>]           (Optional) The top-level configuration key under which
+                    the factory map should appear; defaults to
+                    "service_manager".
+
+Reads the provided configuration file, creating it if necessary, and
+injects it with a mapping of the given class to its factory. If key is
+provided, the factory configuration will be injected under that key, and
+not the default "service_manager" key.
+```
+
+This utility maps the given class to the given factory, writing it to the
+specified configuration file. If a key is given, then the mapping will occur
+under that top-level key (the default is the `service_manager` key).
+
+As an example, if using this to map a controller for a zend-mvc application, you
+might use:
+
+```bash
+$ ./vendor/bin/create-factory-map \
+> module/Application/config/module.config.php \
+> "Application\\Controller\\PingController" \
+> "Zend\\Mvc\Controller\\LazyControllerAbstractFactory" \
+> controllers
+```
+
+For Expressive, you might do the following to map middleware to a factory:
+
+```bash
+$ ./vendor/bin/create-factory-map \
+> config/autoload/routes.global.php \
+> "Application\\Middleware\\PingMiddleware" \
+> "Zend\\ServiceManager\\AbstractFactory\\ReflectionBasedAbstractFactory" \
+> dependencies
+```
