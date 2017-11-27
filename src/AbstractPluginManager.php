@@ -147,6 +147,8 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
     public function get($name, $options = [], $usePeeringServiceManagers = true)
     {
         $isAutoInvokable = false;
+        $cName = null;
+        $sharedInstance = null;
 
         // Allow specifying a class name directly; registers as an invokable class
         if (!$this->has($name) && $this->autoAddInvokableClass && class_exists($name)) {
@@ -157,20 +159,56 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
 
         $this->creationOptions = $options;
 
+        // If creation options were provided, we want to force creation of a
+        // new instance.
+        if (! empty($this->creationOptions)) {
+            $cName = isset($this->canonicalNames[$name])
+                ? $this->canonicalNames[$name]
+                : $this->canonicalizeName($name);
+
+            if (isset($this->instances[$cName])) {
+                $sharedInstance = $this->instances[$cName];
+                unset($this->instances[$cName]);
+            }
+        }
+
         try {
             $instance = parent::get($name, $usePeeringServiceManagers);
         } catch (Exception\ServiceNotFoundException $exception) {
+            if ($sharedInstance) {
+                $this->instances[$cName] = $sharedInstance;
+            }
+            $this->creationOptions = null;
             $this->tryThrowingServiceLocatorUsageException($name, $isAutoInvokable, $exception);
         } catch (Exception\ServiceNotCreatedException $exception) {
+            if ($sharedInstance) {
+                $this->instances[$cName] = $sharedInstance;
+            }
+            $this->creationOptions = null;
             $this->tryThrowingServiceLocatorUsageException($name, $isAutoInvokable, $exception);
         }
 
         $this->creationOptions = null;
 
+        // If we had a previously shared instance, restore it.
+        if ($sharedInstance) {
+            $this->instances[$cName] = $sharedInstance;
+        }
+
         try {
             $this->validatePlugin($instance);
         } catch (Exception\RuntimeException $exception) {
             $this->tryThrowingServiceLocatorUsageException($name, $isAutoInvokable, $exception);
+        }
+
+        // If we created a new instance using creation options, and it was
+        // marked to share, we remove the shared instance
+        // (options === cannot share)
+        if ($cName
+            && isset($this->instances[$cName])
+            && $this->instances[$cName] === $instance
+        ) {
+            unset($this->instances[$cName]);
         }
 
         return $instance;
@@ -321,10 +359,8 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
         // duck-type MutableCreationOptionsInterface for forward compatibility
         if (isset($factory)
             && method_exists($factory, 'setCreationOptions')
-            && is_array($this->creationOptions)
-            && !empty($this->creationOptions)
         ) {
-            $factory->setCreationOptions($this->creationOptions);
+            $factory->setCreationOptions(is_array($this->creationOptions) ? $this->creationOptions : []);
         } elseif ($factory instanceof Factory\InvokableFactory) {
             $factory->setCreationOptions(null);
         }
