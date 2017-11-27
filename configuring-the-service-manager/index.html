@@ -4,36 +4,15 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="zend-servicemanager: factory-driven dependency injection container">  
     <link rel="shortcut icon" href="../img/favicon.ico">
 
     <title>Configuring the service manager - zend-servicemanager</title>
 
-    <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.018/css/hack.min.css">
-    <link href="//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700,700italic&subset=latin-ext,latin" rel="stylesheet" type="text/css">
-    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin" rel="stylesheet" type="text/css">
-    <link href="//fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic,700&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-    <link href="../css/base.css" rel="stylesheet">
-    <link href="../css/zf-web.css" rel="stylesheet">
-    <link href="../css/zf.css" rel="stylesheet">
-    <link href="../css/prism-zf.css" rel="stylesheet">
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-        <![endif]-->
-
-    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
-    <script>
-    WebFont.load({
-        google: {
-            families: ['Open Sans', 'PT Sans']
-        }
-    });
-    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/styles-482aa2add1.css">
 
     
 </head>
@@ -57,8 +36,8 @@
 
             <!-- Main title -->
             <span class="navbar-brand">
-              <a class="logo-link" href="http://framework.zend.com" data-toggle="tooltip" data-placement="bottom" title="Zend Framework"><img src="../img/zf-logo-mark.svg" height="28" alt="Zend Framework" /></a>
-              <a href="..">zend-servicemanager</a>
+                <a class="logo-link" href="https://framework.zend.com/" data-toggle="tooltip" data-placement="bottom" title="Go to the ZF homepage"><img src="../img/zf-logo-mark.svg" height="28" alt="Zend Framework" /></a>
+                <a href="..">zend-servicemanager</a>
             </span>
         </div>
 
@@ -227,11 +206,11 @@
         <div class="col-md-9" role="main">
 
 <ol class="breadcrumb" role="navigation" aria-label="breadcrumbs navigation">
-  <li><a href="..">zend-servicemanager</a> &raquo;</li>
+  <li><a href="..">zend-servicemanager</a></li>
   
     
       
-        <li>Reference &raquo;</li>
+        <li>Reference</li>
       
     
   
@@ -260,7 +239,7 @@ constructor. The following keys are:</p>
   the <code>get</code> method should be cached. This is true by default.</li>
 </ul>
 <p>Here is an example of how you could configure a service manager:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\ServiceManager;
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\ServiceManager;
 
 $serviceManager = new ServiceManager([
     'services'           =&gt; [],
@@ -276,7 +255,7 @@ $serviceManager = new ServiceManager([
 <code>Zend\ServiceManager\Factory\FactoryInterface</code>.</p>
 <p>Service manager components provide a default factory that can be used to create
 objects that do not have any dependencies:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\Factory\InvokableFactory;
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use stdClass;
 
@@ -290,7 +269,7 @@ $serviceManager = new ServiceManager([
 <p>This mechanism replaces the <code>invokables</code> key that was used in Zend Framework 2.</p>
 </blockquote>
 <p>As said before, a factory can also be a callable, to create more complex objects:</p>
-<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use stdClass;
@@ -310,7 +289,7 @@ interface that the <code>ServiceManager</code> implements), as well as the reque
 as the second argument. In this case, the <code>$requestedName</code> is <code>MyObject</code>.</p>
 <p>Alternatively, the above code can be replaced by a factory class instead of a
 closure. This leads to more readable code. For instance:</p>
-<pre class="codehilite"><code class="language-php linenums">// In MyObjectFactory.php file
+<pre class="codehilite"><code class="language-php">// In MyObjectFactory.php file
 
 class MyObjectFactory implements FactoryInterface
 {
@@ -341,7 +320,7 @@ parameter of a factory. This is useful when you need to create multiple
 services that are created exactly the same way, hence reducing the number of
 needed factories.</p>
 <p>For instance, if two services share the same creation pattern, you could attach the same factory:</p>
-<pre class="codehilite"><code class="language-php linenums">// In MyObjectFactory.php file
+<pre class="codehilite"><code class="language-php">// In MyObjectFactory.php file
 
 class MyObjectFactory implements FactoryInterface
 {
@@ -381,7 +360,7 @@ common creation pattern.</p>
 <p>An abstract factory must be registered inside the service manager, and is
 checked if no factory can create an object. Each abstract factory must
 implement <code>Zend\ServiceManager\Factory\AbstractFactoryInterface</code>:</p>
-<pre class="codehilite"><code class="language-php linenums">// In MyAbstractFactory.php:
+<pre class="codehilite"><code class="language-php">// In MyAbstractFactory.php:
 
 class MyAbstractFactory implements AbstractFactoryInterface
 {
@@ -432,7 +411,7 @@ efficiently (as described in the <code>Factories</code> section).</p>
 <p>An <em>alias</em> provides an alternative name for a registered service.</p>
 <p>An alias can also be mapped to another alias (it will be resolved recursively).
 For instance:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\Factory\InvokableFactory;
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use stdClass;
 
@@ -466,7 +445,7 @@ inject additional dependencies.</p>
 <p>For instance, if we'd want to automatically inject the dependency
 <code>EventManager::class</code> in all objects that implement the interface
 <code>EventManagerAwareInterface</code>, we could create the following initializer:</p>
-<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
 use stdClass;
 use Zend\ServiceManager\ServiceManager;
 
@@ -484,7 +463,7 @@ $serviceManager = new ServiceManager([
 <p>Alternately, you can create a class that implements
 <code>Zend\ServiceManager\Initializer\InitializerInterface</code>, and pass it to the
 <code>initializers</code> array:</p>
-<pre class="codehilite"><code class="language-php linenums">// In MyInitializer.php
+<pre class="codehilite"><code class="language-php">// In MyInitializer.php
 
 class MyInitializer implements InitializerInterface
 {
@@ -536,9 +515,9 @@ primarily for backwards compatibility, but we highly discourage their usage.</p>
 <h2 id="shared">Shared</h2>
 <p>By default, a service created is shared. This means that calling the <code>get()</code>
 method twice for a given service will return exactly the same service. This is
-typically what you want, as it can saves a lot of memory and increase
+typically what you want, as it can save a lot of memory and increase
 performance:</p>
-<pre class="codehilite"><code class="language-php linenums">$serviceManager = new ServiceManager([
+<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
     'factories' =&gt; [
         stdClass::class =&gt; InvokableFactory::class
     ]
@@ -552,7 +531,7 @@ var_dump($object1 === $object2); // prints &quot;true&quot;</code></pre>
 <p>However, occasionally you may require discrete instances of a service. To
 enable this, you can use the <code>shared</code> key, providing a boolean false value for
 your service, as shown below:</p>
-<pre class="codehilite"><code class="language-php linenums">$serviceManager = new ServiceManager([
+<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
     'factories' =&gt; [
         stdClass::class =&gt; InvokableFactory::class
     ],
@@ -570,7 +549,7 @@ var_dump($object1 === $object2); // prints &quot;false&quot;</code></pre>
 The <code>build()</code> method works exactly the same as the <code>get</code> method, but never
 caches the service created, nor uses a previously cached instance for the
 service.</p>
-<pre class="codehilite"><code class="language-php linenums">$serviceManager = new ServiceManager([
+<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
     'factories' =&gt; [
         stdClass::class =&gt; InvokableFactory::class
     ]
@@ -583,7 +562,7 @@ var_dump($object1 === $object2); // prints &quot;false&quot;</code></pre>
 
 <p>Finally, you could also decide to disable caching by default (even when calling
 the <code>get()</code> method), by setting the <code>shared_by_default</code> option to false:</p>
-<pre class="codehilite"><code class="language-php linenums">$serviceManager = new ServiceManager([
+<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager([
     'factories' =&gt; [
         stdClass::class =&gt; InvokableFactory::class
     ],
@@ -613,7 +592,7 @@ similarly to the <code>get()</code> method, with two main differences:</p>
 </ul>
 <p>Those options are transferred to all factories, abstract factories, and delegators.
 For instance:</p>
-<pre class="codehilite"><code class="language-php linenums">// In StringLengthValidatorFactory.php
+<pre class="codehilite"><code class="language-php">// In StringLengthValidatorFactory.php
 
 class StringLengthValidatorFactory implements FactoryInterface
 {
@@ -638,7 +617,7 @@ $validator2 = $serviceManager-&gt;build(StringLengthValidator::class, ['min' =&g
 <p>In our previous example, because the <code>StringLengthValidator</code> does not have any
 other dependencies other than the <code>$options</code>, we could remove the factory, and
 simply map it to the built-in <code>InvokableFactory</code> factory:</p>
-<pre class="codehilite"><code class="language-php linenums">// When creating the service manager:
+<pre class="codehilite"><code class="language-php">// When creating the service manager:
 $serviceManager = new ServiceManager([
     'factories' =&gt; [
         StringLengthValidator::class =&gt; InvokableFactory::class
@@ -678,7 +657,7 @@ following methods:</p>
   whether or not the named service should be shared.</li>
 </ul>
 <p>As examples:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\ServiceManager;
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\ServiceManager;
 
 $serviceManager = new ServiceManager([
     'factories' =&gt; [
@@ -754,7 +733,7 @@ $serviceManager-&gt;setShared(DateTime::class, false);</code></pre>
             <div class="col-lg-3">
               <p>
                 <strong>Zend Framework</strong><br />
-                <a href="http://framework.zend.com/">framework.zend.com</a><br />
+                <a href="https://framework.zend.com/">framework.zend.com</a><br />
                 <a href="https://docs.zendframework.com">docs.zendframework.com</a><br />
                 <a href="https://packages.zendframework.com">packages.zendframework.com</a><br />
                 <a href="https://apigility.org">apigility.org</a><br />
@@ -775,14 +754,15 @@ $serviceManager-&gt;setShared(DateTime::class, false);</code></pre>
                 <h4>Copyright</h4>
                 <div class="hline-w"></div>
 
-                <p>&copy; 2006-2016 by <a href="http://www.zend.com">Zend</a>, a <a href="http://www.roguewave.com/">Rogue Wave Company</a>.</p>
+                <p>&copy; 2006-2017 by <a href="https://www.zend.com/">Zend</a>, a <a href="https://www.roguewave.com/">Rogue Wave Company</a>.</p>
             </div>
 
             <div class="col-lg-4">
                 <h4>Contacts</h4>
                 <div class="hline-w"></div>
                 <p>
-                    <a href="irc://irc.freenode.net/zftalk" class="btn-social btn-outline" alt="IRC" title="IRC"><i class="fa fa-comment"></i></a>
+                    <a href="https://discourse.zendframework.com" class="btn-social btn-outline" alt="Forum" title="Forum"><i class="fa fa-comments"></i></a>
+                    <a href="https://zendframework-slack.herokuapp.com" class="btn-social btn-outline" alt="Slack" title="Slack"><i class="fa fa-slack"></i></a>
                     <a href="https://github.com/zendframework" class="btn-social btn-outline" alt="Github" title="Github"><i class="fa fa-github"></i></a>
                     <a href="https://twitter.com/zfdevteam" class="btn-social btn-outline" alt="Twitter" title="Twitter"><i class="fa fa-twitter"></i></a>
                 </p>
@@ -791,14 +771,11 @@ $serviceManager-&gt;setShared(DateTime::class, false);</code></pre>
     </div>
 </div>
 
-
-    <script src="../js/jquery-1.10.2.min.js"></script>
-    <script src="../js/bootstrap-3.0.3.min.js"></script>
-    <script src="../js/prism-zf.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
     <script>var base_url = '..';</script>
+    <script src="../js/scripts-0b6185f4a5.js"></script>
     <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
-    <script src="../js/base.js"></script>
 
     <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
         <div class="modal-dialog">
@@ -830,7 +807,7 @@ $serviceManager-&gt;setShared(DateTime::class, false);</code></pre>
     <div class="zf-components">
   <div class="zf-components-grid">
     <div class="zf-logo">
-      <a href="http://framework.zend.com" data-toggle="tooltip" data-placement="bottom" title="Go to the ZF homepage"><img src="../img/zf-logo-mark.svg" alt="Zend Framework" width="250" /></a>
+      <a href="https://framework.zend.com" data-toggle="tooltip" data-placement="bottom" title="Go to the ZF homepage"><img src="../img/zf-logo-mark.svg" alt="Zend Framework" width="250" /></a>
     </div>
 
     <div class="component-list"></div>
@@ -839,112 +816,6 @@ $serviceManager-&gt;setShared(DateTime::class, false);</code></pre>
   </div>
 </div>
 
-    <script>
-  // Prepare the component list dropdown for display
-  $(function () {
-    var components = $(".zf-components"),
-        componentList = components.find(".component-list"),
-        sidebar = $(".bs-sidebar.affix"),
-        sidebarInitialPos = sidebar.css("position"),
-        hidden,
-        componentToggle = $(".component-toggle"),
-        navbar = $(".navbar-fixed-top"),
-        rollUpLink = $(".zf-components-rollup a");
-
-    // Initial setup on document load
-    components.insertBefore(navbar);
-    $(".zf-logo a").tooltip();
-    componentToggle.tooltip();
-    rollUpLink.attr({ href: "#", alt: "Hide component list" });
-
-    // Cast initial sidebar position value
-    if (undefined === sidebarInitialPos) {
-      sidebarInitialPos = "fixed";
-    }
-
-    // Setup onclick events to toggle list
-    componentToggle.click(toggleComponentList);
-    rollUpLink.click(toggleComponentList);
-
-    // Toggle the component list display
-    function toggleComponentList(event) {
-      event.preventDefault();
-
-      if (hidden === undefined) {
-        // Not loaded yet; load and display.
-        loadComponentList();
-        return;
-      }
-
-      if (hidden) {
-        // Hidden; display.
-        showComponentList();
-        return;
-      }
-
-      // Currently visible; hide
-      hideComponentList();
-    }
-
-    // Show the component list
-    function showComponentList() {
-      navbar.css({position: "relative"});
-      sidebar.css({position: "relative"});
-      components
-        .css({"margin-top": "-" + components.outerHeight() + "px"})
-        .show()
-        .animate({"margin-top": 0}, {
-          complete: function () {
-            componentToggle
-              .data("placement", "top")
-              .attr("data-original-title", "Hide component list");
-            hidden = false;
-          },
-          queue: false
-        });
-    }
-
-    // Hide the component list
-    function hideComponentList() {
-      components.animate({"margin-top": "-" + components.outerHeight() + "px"}, {
-        complete: function () {
-          navbar.css({position: "fixed"});
-          sidebar.css({position: sidebarInitialPos});
-          componentToggle
-            .data("placement", "bottom")
-            .attr("data-original-title", "Show component list");
-          components.hide();
-          hidden = true;
-        },
-        queue: false
-      });
-      sidebar.animate({ top: sidebarInitialTop + "px" }, { queue: false});
-    }
-
-    // Inject a component into the componet list DOM.
-    function injectComponent(index, component) {
-      componentList.append('<div class="component"><h4><a href="' + component.url + '">' + component.name + '</a></h4><p>' + component.description + '</p></div>');
-    }
-
-    // Parse the component list, build the DOM, and display it.
-    function parseComponentList(components) {
-      $.each(components, injectComponent);
-      showComponentList();
-    }
-
-    // Fetch the component list and display it.
-    function loadComponentList () {
-      $.ajax({
-        url: "//docs.zendframework.com/zf-mkdoc-theme/scripts/zf-component-list.json",
-        dataType: "text json",
-        success: parseComponentList,
-        error: function (e) {
-          console.log("Error occurred with XHR call", e);
-        }
-      });
-    }
-  });
-</script>
-    </body>
+</body>
 
 </html>

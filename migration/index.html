@@ -4,36 +4,15 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="zend-servicemanager: factory-driven dependency injection container">  
     <link rel="shortcut icon" href="../img/favicon.ico">
 
     <title>Migration Guide - zend-servicemanager</title>
 
-    <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.018/css/hack.min.css">
-    <link href="//fonts.googleapis.com/css?family=PT+Sans:400,400italic,700,700italic&subset=latin-ext,latin" rel="stylesheet" type="text/css">
-    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin" rel="stylesheet" type="text/css">
-    <link href="//fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic,700&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-    <link href="../css/base.css" rel="stylesheet">
-    <link href="../css/zf-web.css" rel="stylesheet">
-    <link href="../css/zf.css" rel="stylesheet">
-    <link href="../css/prism-zf.css" rel="stylesheet">
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-        <![endif]-->
-
-    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
-    <script>
-    WebFont.load({
-        google: {
-            families: ['Open Sans', 'PT Sans']
-        }
-    });
-    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/styles-482aa2add1.css">
 
     
 </head>
@@ -57,8 +36,8 @@
 
             <!-- Main title -->
             <span class="navbar-brand">
-              <a class="logo-link" href="http://framework.zend.com" data-toggle="tooltip" data-placement="bottom" title="Zend Framework"><img src="../img/zf-logo-mark.svg" height="28" alt="Zend Framework" /></a>
-              <a href="..">zend-servicemanager</a>
+                <a class="logo-link" href="https://framework.zend.com/" data-toggle="tooltip" data-placement="bottom" title="Go to the ZF homepage"><img src="../img/zf-logo-mark.svg" height="28" alt="Zend Framework" /></a>
+                <a href="..">zend-servicemanager</a>
             </span>
         </div>
 
@@ -222,20 +201,11 @@
     </ul>
 
     
-    <ul class="pager hidden-print">
-      <li class="previous">
-        <a rel="prev" href="../cookbook/factories-vs-abstract-factories/"><i class="fa fa-arrow-left"></i> Previous</a>
-      </li>
-      <li class="next disabled ">
-        <a rel="next" >Next <i class="fa fa-arrow-right"></i></a>
-      </li>
-    </ul>
-    
 </div></div>
         <div class="col-md-9" role="main">
 
 <ol class="breadcrumb" role="navigation" aria-label="breadcrumbs navigation">
-  <li><a href="..">zend-servicemanager</a> &raquo;</li>
+  <li><a href="..">zend-servicemanager</a></li>
   
     
   
@@ -269,7 +239,7 @@ managers:</p>
 </ul>
 <h3 id="configuration-arrays">Configuration arrays</h3>
 <p>Configuration for v2 consisted of the following:</p>
-<pre class="codehilite"><code class="language-php linenums">[
+<pre class="codehilite"><code class="language-php">[
     'services' =&gt; [
         // service name =&gt; instance pairs
     ],
@@ -298,7 +268,7 @@ managers:</p>
 ]</code></pre>
 
 <p>In v3, the configuration remains the same, with the following additions:</p>
-<pre class="codehilite"><code class="language-php linenums">[
+<pre class="codehilite"><code class="language-php">[
     'lazy_services' =&gt; [
         // The class_map is required if using lazy services:
         'class_map' =&gt; [
@@ -344,7 +314,7 @@ definition, you will need to make some changes.</p>
 <p><code>$invokableClasses</code> will need to become <code>$factories</code> entries, and you will
 potentially need to add <code>$aliases</code> entries.</p>
 <p>As an example, consider the following, from zend-math v2.x:</p>
-<pre class="codehilite"><code class="language-php linenums">class AdapterPluginManager extends AbstractPluginManager
+<pre class="codehilite"><code class="language-php">class AdapterPluginManager extends AbstractPluginManager
 {
     protected $invokableClasses = [
         'bcmath' =&gt; Adapter\Bcmath::class,
@@ -354,7 +324,7 @@ potentially need to add <code>$aliases</code> entries.</p>
 
 <p>Because we no longer define an <code>$invokableClasses</code> property, for v3.x, this
 now becomes:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\Factory\InvokableFactory;
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableFactory;
 
 class AdapterPluginManager extends AbstractPluginManager
 {
@@ -381,7 +351,7 @@ steps:</p>
 <li>Assign the <code>LazyServiceFactory</code> as a delegator factory for your service.</li>
 </ul>
 <p>As an example:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\Proxy\LazyServiceFactoryFactory;
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Proxy\LazyServiceFactoryFactory;
 
 $config = [
     'lazy_services' =&gt; [
@@ -422,7 +392,7 @@ lazy services, the following changes were made for v3:</p>
   <code>LazyServiceFactory</code> delegator factory, based on the configuration present.</li>
 </ul>
 <p>The above example becomes the following in v3:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\Factory\InvokableFactory;
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\Proxy\LazyServiceFactory;
 
 return [
@@ -447,7 +417,7 @@ return [
 <p>Additionally, assuming you have configured lazy services initially with the
 proxy namespace, target directory, etc., you can map lazy services using the new
 method <code>mapLazyService($name, $class)</code>:</p>
-<pre class="codehilite"><code class="language-php linenums">$container-&gt;mapLazyService('MyClass', 'MyClass');
+<pre class="codehilite"><code class="language-php">$container-&gt;mapLazyService('MyClass', 'MyClass');
 // or, more simply:
 $container-&gt;mapLazyService('MyClass');</code></pre>
 
@@ -457,7 +427,7 @@ $container-&gt;mapLazyService('MyClass');</code></pre>
 interface <code>ContainerInterface</code>, which defines the same <code>get()</code> and <code>has()</code>
 methods as were previously defined.</p>
 <p>Additionally, it adds a new method:</p>
-<pre class="codehilite"><code class="language-php linenums">public function build($name, array $options = null)</code></pre>
+<pre class="codehilite"><code class="language-php">public function build($name, array $options = null)</code></pre>
 
 <p>This method is defined to <em>always</em> return a <em>new</em> instance of the requested
 service, and to allow using the provided <code>$options</code> when creating the instance.</p>
@@ -497,7 +467,7 @@ factory may use to create a new instance. This is primarily of interest when
 creating plugin managers (more on plugin managers below), which may pass that
 information on in order to create discrete plugin instances with specific state.</p>
 <p>As examples:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\Validator\Between;
+<pre class="codehilite"><code class="language-php">use Zend\Validator\Between;
 
 $between = $container-&gt;build(Between::class, [
     'min'        =&gt; 5,
@@ -550,7 +520,7 @@ those defined in version 3.)</p>
 your code to use the new interfaces in the future.</p>
 <h3 id="abstractfactoryinterface">AbstractFactoryInterface</h3>
 <p>The previous signature of the <code>AbstractFactoryInterface</code> was:</p>
-<pre class="codehilite"><code class="language-php linenums">interface AbstractFactoryInterface
+<pre class="codehilite"><code class="language-php">interface AbstractFactoryInterface
 {
     /**
      * Determine if we can create a service with name
@@ -574,7 +544,7 @@ your code to use the new interfaces in the future.</p>
 }</code></pre>
 
 <p>The new signature is:</p>
-<pre class="codehilite"><code class="language-php linenums">interface AbstractFactoryInterface extends FactoryInterface
+<pre class="codehilite"><code class="language-php">interface AbstractFactoryInterface extends FactoryInterface
 {
     /**
      * Does the factory have a way to create an instance for the service?
@@ -600,7 +570,7 @@ arguments, the container and the requested service name.</p>
   <code>__invoke()</code></li>
 </ul>
 <p>As an example, given the following implementation from version 2:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\AbstractFactoryInterface;
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class LenientAbstractFactory implements AbstractFactoryInterface
@@ -619,7 +589,7 @@ class LenientAbstractFactory implements AbstractFactoryInterface
 <p>To update this for version 3 compatibility, you will add the methods
 <code>canCreate()</code> and <code>__invoke()</code>, move the code from the existing methods into
 them, and update the existing methods to proxy to the new methods:</p>
-<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -654,7 +624,7 @@ the migration artifacts:</p>
   from your implementation.</li>
 </ul>
 <p>From our example above, we would update the class to read as follows:</p>
-<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface; // &lt;-- note the change!
 
 class LenientAbstractFactory implements AbstractFactoryInterface
@@ -672,7 +642,7 @@ class LenientAbstractFactory implements AbstractFactoryInterface
 
 <h3 id="delegatorfactoryinterface">DelegatorFactoryInterface</h3>
 <p>The previous signature of the <code>DelegatorFactoryInterface</code> was:</p>
-<pre class="codehilite"><code class="language-php linenums">interface DelegatorFactoryInterface
+<pre class="codehilite"><code class="language-php">interface DelegatorFactoryInterface
 {
     /**
      * A factory that creates delegates of a given service
@@ -688,7 +658,7 @@ class LenientAbstractFactory implements AbstractFactoryInterface
 }</code></pre>
 
 <p>The new signature is:</p>
-<pre class="codehilite"><code class="language-php linenums">interface DelegatorFactoryInterface
+<pre class="codehilite"><code class="language-php">interface DelegatorFactoryInterface
 {
     /**
      * A factory that creates delegates of a given service
@@ -713,7 +683,7 @@ steps:</p>
 <li>Modify the <code>createDelegatorWithName()</code> method to proxy to the new method.</li>
 </ul>
 <p>Consider the following delegator factory that works for version 2:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\DelegatorFactoryInterface;
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\DelegatorFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class ObserverAttachmentDelegator implements DelegatorFactoryInterface
@@ -728,7 +698,7 @@ class ObserverAttachmentDelegator implements DelegatorFactoryInterface
 
 <p>To prepare this for version 3, we'd implement the <code>__invoke()</code> signature from
 version 3, and modify <code>createDelegatorWithName()</code> to proxy to it:</p>
-<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\DelegatorFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -754,7 +724,7 @@ the migration artifacts:</p>
 <li>Remove the <code>createDelegatorWithName()</code> method from your implementation.</li>
 </ul>
 <p>From our example above, we would update the class to read as follows:</p>
-<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface; // &lt;-- note the change!
 
 class ObserverAttachmentDelegator implements DelegatorFactoryInterface
@@ -769,7 +739,7 @@ class ObserverAttachmentDelegator implements DelegatorFactoryInterface
 
 <h3 id="factoryinterface">FactoryInterface</h3>
 <p>The previous signature of the <code>FactoryInterface</code> was:</p>
-<pre class="codehilite"><code class="language-php linenums">interface FactoryInterface
+<pre class="codehilite"><code class="language-php">interface FactoryInterface
 {
     /**
      * Create service
@@ -781,7 +751,7 @@ class ObserverAttachmentDelegator implements DelegatorFactoryInterface
 }</code></pre>
 
 <p>The new signature is:</p>
-<pre class="codehilite"><code class="language-php linenums">interface FactoryInterface
+<pre class="codehilite"><code class="language-php">interface FactoryInterface
 {
     /**
      * Create an object
@@ -809,7 +779,7 @@ re-used for multiple services, largely replacing abstract factories in version
 <li>Modify the <code>createService()</code> method to proxy to the new method.</li>
 </ul>
 <p>Consider the following factory that works for version 2:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\FactoryInterface;
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class FooFactory implements FactoryInterface
@@ -822,7 +792,7 @@ class FooFactory implements FactoryInterface
 
 <p>To prepare this for version 3, we'd implement the <code>__invoke()</code> signature from
 version 3, and modify <code>createService()</code> to proxy to it:</p>
-<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -850,7 +820,7 @@ the migration artifacts:</p>
 <li>Remove the <code>createService()</code> method from your implementation.</li>
 </ul>
 <p>From our example above, we would update the class to read as follows:</p>
-<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface; // &lt;-- note the change!
 
 class FooFactory implements FactoryInterface
@@ -900,10 +870,10 @@ the one defined in version 3.)</p>
 <li>The interface itself has a new signature.</li>
 </ul>
 <p>The previous signature was:</p>
-<pre class="codehilite"><code class="language-php linenums">public function initialize($instance, ServiceLocatorInterface $serviceLocator)</code></pre>
+<pre class="codehilite"><code class="language-php">public function initialize($instance, ServiceLocatorInterface $serviceLocator)</code></pre>
 
 <p>It is now:</p>
-<pre class="codehilite"><code class="language-php linenums">public function __invoke(ContainerInterface $container, $instance)</code></pre>
+<pre class="codehilite"><code class="language-php">public function __invoke(ContainerInterface $container, $instance)</code></pre>
 
 <p>The changes were made to ensure the signature is internally consistent with the
 various factories.</p>
@@ -914,7 +884,7 @@ various factories.</p>
 <li>Modify the <code>initialize()</code> method to proxy to the new method.</li>
 </ul>
 <p>As an example, consider this initializer for version 2:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\InitializerInterface;
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
 class FooInitializer implements InitializerInterface
@@ -931,7 +901,7 @@ class FooInitializer implements InitializerInterface
 
 <p>To prepare this for version 3, we'd implement the <code>__invoke()</code> signature from
 version 3, and modify <code>initialize()</code> to proxy to it:</p>
-<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -959,7 +929,7 @@ the migration artifacts:</p>
 <li>Remove the <code>initialize()</code> method from your implementation.</li>
 </ul>
 <p>From our example above, we would update the class to read as follows:</p>
-<pre class="codehilite"><code class="language-php linenums">use Interop\Container\ContainerInterface;
+<pre class="codehilite"><code class="language-php">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Initializer\InitializerInterface; // &lt;-- note the change!
 
 class FooInitializer implements InitializerInterface
@@ -984,7 +954,7 @@ instead. This guarantees that the correct method is called based on the
 version of the <code>ServiceManager</code> in use.</p>
 <p>The second approach is to omit typehints on the arguments, and do typechecks
 internally. As an example, let's say you have the following:</p>
-<pre class="codehilite"><code class="language-php linenums">$container-&gt;addInitializer(function ($instance, ContainerInterface $container) {
+<pre class="codehilite"><code class="language-php">$container-&gt;addInitializer(function ($instance, ContainerInterface $container) {
      if (! $instance implements FooAwareInterface) {
          return $instance;
      }
@@ -994,7 +964,7 @@ internally. As an example, let's say you have the following:</p>
 
 <p>To make this future-proof, remove the typehints, and check the types within
 the callable:</p>
-<pre class="codehilite"><code class="language-php linenums">$container-&gt;addInitializer(function ($first, $second) {
+<pre class="codehilite"><code class="language-php">$container-&gt;addInitializer(function ($first, $second) {
      if ($first instanceof ContainerInterface) {
          $container = $first;
          $instance = $second;
@@ -1030,7 +1000,7 @@ manager, if composed, in order to resolve application-level dependencies.</p>
 <h3 id="pluginmanagerinterface">PluginManagerInterface</h3>
 <p><code>Zend\ServiceManager\PluginInterface</code> is a new interface for version 3,
 extending <code>ServiceLocatorInterface</code> and adding one method:</p>
-<pre class="codehilite"><code class="language-php linenums">/**
+<pre class="codehilite"><code class="language-php">/**
  * Validate an instance
  *
  * @param  object $instance
@@ -1076,7 +1046,7 @@ following for the initial argument:</p>
 </ul>
 <h4 id="validation">Validation</h4>
 <p>The <code>validate()</code> method is defined as follows:</p>
-<pre class="codehilite"><code class="language-php linenums">public function validate($instance)
+<pre class="codehilite"><code class="language-php">public function validate($instance)
 {
     if (method_exists($this, 'validatePlugin')) {
         trigger_error(sprintf(
@@ -1110,14 +1080,14 @@ following for the initial argument:</p>
   indicate what plugin interface is considered valid for the plugin manager, and
   make no further changes to the abstract plugin manager:</li>
 </ul>
-<pre class="codehilite"><code class="language-php linenums">protected $instanceOf = ValidatorInterface::class;</code></pre>
+<pre class="codehilite"><code class="language-php">protected $instanceOf = ValidatorInterface::class;</code></pre>
 
 <h4 id="get">get()</h4>
 <p>The <code>get()</code> signature changes from:</p>
-<pre class="codehilite"><code class="language-php linenums">public function get($name, $options = [], $usePeeringServiceManagers = true)</code></pre>
+<pre class="codehilite"><code class="language-php">public function get($name, $options = [], $usePeeringServiceManagers = true)</code></pre>
 
 <p>to:</p>
-<pre class="codehilite"><code class="language-php linenums">public function get($name, array $options = null)</code></pre>
+<pre class="codehilite"><code class="language-php">public function get($name, array $options = null)</code></pre>
 
 <p>Essentially: <code>$options</code> now <em>must</em> be an array if passed, and peering is no
 longer supported.</p>
@@ -1136,7 +1106,7 @@ retained (without implementing the interface), but marked as deprecated:</p>
 compatibility <em>for existing plugin factories</em>. These factories typically pull
 dependencies from the parent/application container in order to initialize the
 plugin. In v2, this would look like:</p>
-<pre class="codehilite"><code class="language-php linenums">function ($plugins)
+<pre class="codehilite"><code class="language-php">function ($plugins)
 {
     $services = $plugins-&gt;getServiceLocator();
 
@@ -1154,7 +1124,7 @@ to the <code>ServiceManager</code>. As such, the above will continue to work in 
 <p>However, this method is marked as deprecated, and will emit an
 <code>E_USER_DEPRECATED</code> notice. To remove the notice, you will need to upgrade your
 code. The above example thus becomes:</p>
-<pre class="codehilite"><code class="language-php linenums">function ($services)
+<pre class="codehilite"><code class="language-php">function ($services)
 {
     // pull dependencies from $services:
     $foo = $services-&gt;get('Foo');
@@ -1166,14 +1136,14 @@ code. The above example thus becomes:</p>
 <p>If you <em>were</em> using the passed plugin manager and pulling other plugins, you
 will need to update your code to retrieve the plugin manager from the passed
 container. As an example, given this:</p>
-<pre class="codehilite"><code class="language-php linenums">function ($plugins)
+<pre class="codehilite"><code class="language-php">function ($plugins)
 {
     $anotherPlugin = $plugins-&gt;get('AnotherPlugin');
     return new Plugin($anotherPlugin);
 }</code></pre>
 
 <p>You will need to rewrite it to:</p>
-<pre class="codehilite"><code class="language-php linenums">function ($services)
+<pre class="codehilite"><code class="language-php">function ($services)
 {
     $plugins = $services-&gt;get('PluginManager');
     $anotherPlugin = $plugins-&gt;get('AnotherPlugin');
@@ -1194,7 +1164,7 @@ container. As an example, given this:</p>
 </ul>
 <h3 id="migration-example">Migration example</h3>
 <p>Let's consider the following plugin manager geared towards version 2:</p>
-<pre class="codehilite"><code class="language-php linenums">use RuntimeException;
+<pre class="codehilite"><code class="language-php">use RuntimeException;
 use Zend\ServiceManager\AbstractPluginManager;
 
 class ObserverPluginManager extends AbstractPluginManager
@@ -1227,7 +1197,7 @@ class ObserverPluginManager extends AbstractPluginManager
 <li>We need to add a <code>$sharedByDefault</code> property (if <code>$shareByDefault</code> is present).</li>
 </ul>
 <p>Doing so, we get the following result:</p>
-<pre class="codehilite"><code class="language-php linenums">namespace MyNamespace;
+<pre class="codehilite"><code class="language-php">namespace MyNamespace;
 
 use RuntimeException;
 use Zend\ServiceManager\AbstractPluginManager;
@@ -1301,7 +1271,7 @@ class ObserverPluginManager extends AbstractPluginManager
 <code>getPluginManager()</code> to return an instance of your plugin manager, and override
 <code>getV2InvalidPluginException()</code> to return the classname of the exception your
 <code>validatePlugin()</code> method throws:</p>
-<pre class="codehilite"><code class="language-php linenums">use MyNamespace\ObserverInterface;
+<pre class="codehilite"><code class="language-php">use MyNamespace\ObserverInterface;
 use MyNamespace\ObserverPluginManager;
 use MyNamespace\Exception\RuntimeException;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -1346,7 +1316,7 @@ class MigrationTest extends TestCase
 <li>Remove the canonicalized FQCN entry for each factory</li>
 </ul>
 <p>Performing these steps on the above, we get:</p>
-<pre class="codehilite"><code class="language-php linenums">use Zend\ServiceManager\AbstractPluginManager;
+<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\AbstractPluginManager;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
 class ObserverPluginManager extends AbstractPluginManager
@@ -1405,17 +1375,6 @@ container should never be composed by objects.</p>
 
 <hr />
 
-
-<nav>
-  <ul class="pager hidden-print">
-    <li class="previous">
-      <a rel="prev" href="../cookbook/factories-vs-abstract-factories/"><i class="fa fa-arrow-left"></i> Previous</a>
-    </li>
-    <li class="next disabled ">
-      <a rel="next" >Next <i class="fa fa-arrow-right"></i></a>
-    </li>
-  </ul>
-</nav>
 </div>
         
     </div>
@@ -1427,7 +1386,7 @@ container should never be composed by objects.</p>
             <div class="col-lg-3">
               <p>
                 <strong>Zend Framework</strong><br />
-                <a href="http://framework.zend.com/">framework.zend.com</a><br />
+                <a href="https://framework.zend.com/">framework.zend.com</a><br />
                 <a href="https://docs.zendframework.com">docs.zendframework.com</a><br />
                 <a href="https://packages.zendframework.com">packages.zendframework.com</a><br />
                 <a href="https://apigility.org">apigility.org</a><br />
@@ -1448,14 +1407,15 @@ container should never be composed by objects.</p>
                 <h4>Copyright</h4>
                 <div class="hline-w"></div>
 
-                <p>&copy; 2006-2016 by <a href="http://www.zend.com">Zend</a>, a <a href="http://www.roguewave.com/">Rogue Wave Company</a>.</p>
+                <p>&copy; 2006-2017 by <a href="https://www.zend.com/">Zend</a>, a <a href="https://www.roguewave.com/">Rogue Wave Company</a>.</p>
             </div>
 
             <div class="col-lg-4">
                 <h4>Contacts</h4>
                 <div class="hline-w"></div>
                 <p>
-                    <a href="irc://irc.freenode.net/zftalk" class="btn-social btn-outline" alt="IRC" title="IRC"><i class="fa fa-comment"></i></a>
+                    <a href="https://discourse.zendframework.com" class="btn-social btn-outline" alt="Forum" title="Forum"><i class="fa fa-comments"></i></a>
+                    <a href="https://zendframework-slack.herokuapp.com" class="btn-social btn-outline" alt="Slack" title="Slack"><i class="fa fa-slack"></i></a>
                     <a href="https://github.com/zendframework" class="btn-social btn-outline" alt="Github" title="Github"><i class="fa fa-github"></i></a>
                     <a href="https://twitter.com/zfdevteam" class="btn-social btn-outline" alt="Twitter" title="Twitter"><i class="fa fa-twitter"></i></a>
                 </p>
@@ -1464,14 +1424,11 @@ container should never be composed by objects.</p>
     </div>
 </div>
 
-
-    <script src="../js/jquery-1.10.2.min.js"></script>
-    <script src="../js/bootstrap-3.0.3.min.js"></script>
-    <script src="../js/prism-zf.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
     <script>var base_url = '..';</script>
+    <script src="../js/scripts-0b6185f4a5.js"></script>
     <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
-    <script src="../js/base.js"></script>
 
     <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
         <div class="modal-dialog">
@@ -1503,7 +1460,7 @@ container should never be composed by objects.</p>
     <div class="zf-components">
   <div class="zf-components-grid">
     <div class="zf-logo">
-      <a href="http://framework.zend.com" data-toggle="tooltip" data-placement="bottom" title="Go to the ZF homepage"><img src="../img/zf-logo-mark.svg" alt="Zend Framework" width="250" /></a>
+      <a href="https://framework.zend.com" data-toggle="tooltip" data-placement="bottom" title="Go to the ZF homepage"><img src="../img/zf-logo-mark.svg" alt="Zend Framework" width="250" /></a>
     </div>
 
     <div class="component-list"></div>
@@ -1512,112 +1469,6 @@ container should never be composed by objects.</p>
   </div>
 </div>
 
-    <script>
-  // Prepare the component list dropdown for display
-  $(function () {
-    var components = $(".zf-components"),
-        componentList = components.find(".component-list"),
-        sidebar = $(".bs-sidebar.affix"),
-        sidebarInitialPos = sidebar.css("position"),
-        hidden,
-        componentToggle = $(".component-toggle"),
-        navbar = $(".navbar-fixed-top"),
-        rollUpLink = $(".zf-components-rollup a");
-
-    // Initial setup on document load
-    components.insertBefore(navbar);
-    $(".zf-logo a").tooltip();
-    componentToggle.tooltip();
-    rollUpLink.attr({ href: "#", alt: "Hide component list" });
-
-    // Cast initial sidebar position value
-    if (undefined === sidebarInitialPos) {
-      sidebarInitialPos = "fixed";
-    }
-
-    // Setup onclick events to toggle list
-    componentToggle.click(toggleComponentList);
-    rollUpLink.click(toggleComponentList);
-
-    // Toggle the component list display
-    function toggleComponentList(event) {
-      event.preventDefault();
-
-      if (hidden === undefined) {
-        // Not loaded yet; load and display.
-        loadComponentList();
-        return;
-      }
-
-      if (hidden) {
-        // Hidden; display.
-        showComponentList();
-        return;
-      }
-
-      // Currently visible; hide
-      hideComponentList();
-    }
-
-    // Show the component list
-    function showComponentList() {
-      navbar.css({position: "relative"});
-      sidebar.css({position: "relative"});
-      components
-        .css({"margin-top": "-" + components.outerHeight() + "px"})
-        .show()
-        .animate({"margin-top": 0}, {
-          complete: function () {
-            componentToggle
-              .data("placement", "top")
-              .attr("data-original-title", "Hide component list");
-            hidden = false;
-          },
-          queue: false
-        });
-    }
-
-    // Hide the component list
-    function hideComponentList() {
-      components.animate({"margin-top": "-" + components.outerHeight() + "px"}, {
-        complete: function () {
-          navbar.css({position: "fixed"});
-          sidebar.css({position: sidebarInitialPos});
-          componentToggle
-            .data("placement", "bottom")
-            .attr("data-original-title", "Show component list");
-          components.hide();
-          hidden = true;
-        },
-        queue: false
-      });
-      sidebar.animate({ top: sidebarInitialTop + "px" }, { queue: false});
-    }
-
-    // Inject a component into the componet list DOM.
-    function injectComponent(index, component) {
-      componentList.append('<div class="component"><h4><a href="' + component.url + '">' + component.name + '</a></h4><p>' + component.description + '</p></div>');
-    }
-
-    // Parse the component list, build the DOM, and display it.
-    function parseComponentList(components) {
-      $.each(components, injectComponent);
-      showComponentList();
-    }
-
-    // Fetch the component list and display it.
-    function loadComponentList () {
-      $.ajax({
-        url: "//docs.zendframework.com/zf-mkdoc-theme/scripts/zf-component-list.json",
-        dataType: "text json",
-        success: parseComponentList,
-        error: function (e) {
-          console.log("Error occurred with XHR call", e);
-        }
-      });
-    }
-  });
-</script>
-    </body>
+</body>
 
 </html>
