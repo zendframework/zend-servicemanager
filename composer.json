@@ -23,10 +23,10 @@
         "zendframework/zend-stdlib": "^3.1"
     },
     "require-dev": {
+        "mikey179/vfsStream": "^1.6.5",
         "ocramius/proxy-manager": "^1.0 || ^2.0",
         "phpbench/phpbench": "^0.13.0",
         "phpunit/phpunit": "^5.7.25 || ^6.4.4",
-        "mikey179/vfsStream": "^1.6.5",
         "zendframework/zend-coding-standard": "~1.0.0"
     },
     "provide": {
