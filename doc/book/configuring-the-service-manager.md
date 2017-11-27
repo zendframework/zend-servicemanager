@@ -344,7 +344,7 @@ The primary issues with initializers are:
 
 By default, a service created is shared. This means that calling the `get()`
 method twice for a given service will return exactly the same service. This is
-typically what you want, as it can saves a lot of memory and increase
+typically what you want, as it can save a lot of memory and increase
 performance:
 
 ```php

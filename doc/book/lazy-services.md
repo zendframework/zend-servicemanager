@@ -19,7 +19,7 @@ execute queries through it.
 Additionally, instantiating a connection to the database may require some time
 and eat up resources.
 
-Proxying the database connection would allow to delay that overhead until the
+Proxying the database connection would allow you to delay that overhead until the
 object is really needed.
 
 ## Setup
