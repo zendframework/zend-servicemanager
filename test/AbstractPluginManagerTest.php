@@ -19,6 +19,7 @@ use Zend\ServiceManager\Exception\RuntimeException;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\Baz;
+use ZendTest\ServiceManager\TestAsset\FactoryUsingCreationOptions;
 use ZendTest\ServiceManager\TestAsset\FooPluginManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\MockSelfReturningDelegatorFactory;
@@ -110,8 +111,9 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
     {
         $mock = 'ZendTest\ServiceManager\TestAsset\CallableWithMutableCreationOptions';
         $callable = $this->getMock($mock, ['setCreationOptions']);
-        $callable->expects($this->never())
-            ->method('setCreationOptions');
+        $callable->expects($this->once())
+            ->method('setCreationOptions')
+            ->with([]);
 
         $ref = new ReflectionObject($this->pluginManager);
 
@@ -164,7 +166,70 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
         $plugin2 = $pluginManager->get(Baz::class);
 
         $this->assertSame($creationOptions, $plugin1->options);
-        $this->assertNull($plugin2->options);
+        $this->assertEmpty($plugin2->options);
+    }
+
+    /**
+     * @group 205
+     */
+    public function testRetrievingServicesViaFactoryThatUsesCreationOptionsShouldNotRememberServiceOnSubsequentRetrievals()
+    {
+        /** @var $pluginManager AbstractPluginManager */
+        $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
+        $pluginManager->setFactory(Baz::class, FactoryUsingCreationOptions::class);
+        $pluginManager->setShared(Baz::class, false);
+        $creationOptions = ['key1' => 'value1'];
+        $plugin1 = $pluginManager->get(Baz::class, $creationOptions);
+        $plugin2 = $pluginManager->get(Baz::class);
+
+        $this->assertNotSame($plugin1, $plugin2);
+
+        $this->assertSame($creationOptions, $plugin1->options);
+        $this->assertEmpty($plugin2->options);
+    }
+
+    /**
+     * @group 205
+     */
+    public function testRetrievingServicesViaFactoryThatUsesCreationOptionsShouldReturnNewInstanceIfOptionsAreProvided()
+    {
+        /** @var $pluginManager AbstractPluginManager */
+        $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
+        $pluginManager->setFactory(Baz::class, FactoryUsingCreationOptions::class);
+        $pluginManager->setShared(Baz::class, false);
+        $creationOptions = ['key1' => 'value1'];
+        $plugin1 = $pluginManager->get(Baz::class);
+        $plugin2 = $pluginManager->get(Baz::class, $creationOptions);
+
+        $this->assertNotSame($plugin1, $plugin2);
+
+        $this->assertEmpty($plugin1->options);
+        $this->assertSame($creationOptions, $plugin2->options);
+    }
+
+    /**
+     * @group 205
+     */
+    // @codingStandardsIgnoreStart
+    public function testRetrievingServicesViaFactoryThatUsesCreationOptionsShouldReturnNewInstanceEveryTimeOptionsAreProvided()
+    {
+        // @codingStandardsIgnoreEnd
+        /** @var $pluginManager AbstractPluginManager */
+        $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
+        $pluginManager->setFactory(Baz::class, FactoryUsingCreationOptions::class);
+        $pluginManager->setShared(Baz::class, false);
+        $creationOptions = ['key1' => 'value1'];
+        $plugin1 = $pluginManager->get(Baz::class, $creationOptions);
+        $plugin2 = $pluginManager->get(Baz::class);
+        $plugin3 = $pluginManager->get(Baz::class, $creationOptions);
+
+        $this->assertNotSame($plugin1, $plugin2);
+        $this->assertNotSame($plugin1, $plugin3);
+        $this->assertNotSame($plugin2, $plugin3);
+
+        $this->assertSame($creationOptions, $plugin1->options);
+        $this->assertEmpty($plugin2->options);
+        $this->assertSame($creationOptions, $plugin3->options);
     }
 
     public function testValidatePluginIsCalledWithDelegatorFactoryIfItsAService()
