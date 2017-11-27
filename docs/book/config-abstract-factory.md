@@ -5,11 +5,11 @@
 You can simplify the process of creating factories by registering
 `Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory` with your service
 manager instance. This allows you to define services using a configuration map,
-rather than having to create separate factories for each of your services. 
+rather than having to create separate factories for each of your services.
 
 ## Enabling the ConfigAbstractFactory
 
-Enable the `ConfigAbstractFactory` in the same way that you would enable 
+Enable the `ConfigAbstractFactory` in the same way that you would enable
 any other abstract factory.
 
 Programmatically:
@@ -75,7 +75,7 @@ return [
     ConfigAbstractFactory::class => [
         MyInvokableClass::class => [],
         MySimpleClass::class => [
-            Logger::class,          
+            Logger::class,
         ],
         Logger::class => [
             Handler::class,
@@ -139,6 +139,6 @@ return [
         'factories' => [
             Adapter::class => AdapterFactory::class, // normal factory not using above config
         ],
-    ],    
+    ],
 ],
 ```

@@ -174,7 +174,7 @@ class MyAbstractFactory implements AbstractFactoryInterface
     {
         return in_array('Traversable', class_implements($requestedName), true);
     }
-    
+
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         return $requestedName();
@@ -233,7 +233,7 @@ $serviceManager = new ServiceManager([
     'factories' => [
         stdClass::class => InvokableFactory::class
     ],
-    
+
     'aliases' => [
         'A' => stdClass::class,
         'B' => 'A'
@@ -328,11 +328,11 @@ The primary issues with initializers are:
   the constructor, it means that the object may be in an "incomplete state". If
   for any reason the initializer is not run (if it was not correctly registered
   for instance), bugs ranging from the subtle to fatal can be introduced.
-  
+
   Instead, we encourage you to inject all necessary dependencies via
   the constructor, using factories. If some dependencies use setter or interface
   injection, use delegator factories.
-  
+
   If a given service has too many dependencies, then it may be a sign that you
   need to split this service into smaller, more focused services.
 
