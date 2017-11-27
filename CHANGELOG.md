@@ -18,7 +18,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#206](https://github.com/zendframework/zend-servicemanager/pull/206) fixes an
+  issue where by callables in `Class::method` notation were not being honored
+  under PHP 5.6.
 
 ## 3.3.0 - 2017-03-01
 
