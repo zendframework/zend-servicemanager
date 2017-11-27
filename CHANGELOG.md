@@ -24,7 +24,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [#201](https://github.com/zendframework/zend-servicemanager/pull/201) and
+  [#202](https://github.com/zendframework/zend-servicemanager/pull/202) add
+  support for PHP versions 7.1 and 7.2.
 
 ### Deprecated
 
