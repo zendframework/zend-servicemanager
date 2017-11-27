@@ -2,9 +2,13 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 3.4.0 - TBD
+## 4.0.0 - TBD
 
 ### Added
+
+- Nothing.
+
+### Changed
 
 - Nothing.
 
@@ -14,13 +18,17 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Removed
 
-- Nothing.
+- [#197](https://github.com/zendframework/zend-servicemanager/pull/197) drops
+  support for PHP versions prior to 7.1.
+
+- [#193](https://github.com/zendframework/zend-servicemanager/pull/193) drops
+  support for HHVM.
 
 ### Fixed
 
 - Nothing.
 
-## 3.3.1 - TBD
+## 3.3.1 - 2017-11-27
 
 ### Added
 
