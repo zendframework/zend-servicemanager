@@ -19,6 +19,7 @@ use Zend\ServiceManager\Exception\RuntimeException;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\Baz;
+use ZendTest\ServiceManager\TestAsset\BazFactory;
 use ZendTest\ServiceManager\TestAsset\FooPluginManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\MockSelfReturningDelegatorFactory;
@@ -158,6 +159,20 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
         /** @var $pluginManager AbstractPluginManager */
         $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
         $pluginManager->setFactory(Baz::class, InvokableFactory::class);
+        $pluginManager->setShared(Baz::class, false);
+        $creationOptions = ['key1' => 'value1'];
+        $plugin1 = $pluginManager->get(Baz::class, $creationOptions);
+        $plugin2 = $pluginManager->get(Baz::class);
+
+        $this->assertSame($creationOptions, $plugin1->options);
+        $this->assertNull($plugin2->options);
+    }
+
+    public function testAnyFactoryNoOptionsResetsCreationOptions()
+    {
+        /** @var $pluginManager AbstractPluginManager */
+        $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
+        $pluginManager->setFactory(Baz::class, BazFactory::class);
         $pluginManager->setShared(Baz::class, false);
         $creationOptions = ['key1' => 'value1'];
         $plugin1 = $pluginManager->get(Baz::class, $creationOptions);
