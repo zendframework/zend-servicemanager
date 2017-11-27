@@ -93,7 +93,7 @@ class ServiceManager implements ServiceLocatorInterface
     protected $factories = [];
 
     /**
-     * @var Initializer\InitializerInterface[]
+     * @var Initializer\InitializerInterface[]|callable[]
      */
     protected $initializers = [];
 
@@ -577,7 +577,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Instantiate initializers for to avoid checks during service construction.
      *
-     * @param string[]|callable[]|Initializer\InitializerInterface[] $initializers
+     * @param string[]|Initializer\InitializerInterface[]|callable[] $initializers
      *
      * @return void
      */
