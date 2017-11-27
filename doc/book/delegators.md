@@ -114,7 +114,7 @@ class BuzzerDelegatorFactory implements DelegatorFactoryInterface
     public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null)
     {
         $realBuzzer   = call_user_func($callback);
-        $eventManager = $serviceLocator->get('EventManager');
+        $eventManager = $container->get('EventManager');
 
         $eventManager->attach('buzz', function () { echo "Stare at the art!\n"; });
 
