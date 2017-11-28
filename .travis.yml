@@ -5,9 +5,10 @@ language: php
 cache:
   directories:
     - $HOME/.composer/cache
+
 env:
   global:
-    - COMPOSER_ARGS="--no-interaction"
+    - COMPOSER_ARGS="--no-interaction --no-plugins"
     - COVERAGE_DEPS="satooshi/php-coveralls"
 
 matrix:
@@ -24,10 +25,13 @@ matrix:
       env:
         - DEPS=latest
     - php: 7.2
+      env:
         - DEPS=lowest
     - php: 7.2
+      env:
         - DEPS=locked
     - php: 7.2
+      env:
         - DEPS=latest
 
 before_install:
@@ -42,11 +46,11 @@ install:
 
 script:
   - if [[ $TEST_COVERAGE == 'true' ]]; then composer test-coverage ; else composer test ; fi
-  - if [[ $CHECK_CS == 'true' ]]; then composer cs-check ; fi
+  - if [[ $BENCHMARKS == 'true' ]]; then vendor/bin/phpbench run --revs=2 --iterations=2 --report=aggregate ; fi
+  - if [[ $CS_CHECK == 'true' ]]; then composer cs-check ; fi
 
 after_script:
   - if [[ $TEST_COVERAGE == 'true' ]]; then travis_retry composer upload-coverage ; fi
 
 notifications:
   email: false
-
