@@ -214,9 +214,9 @@
 <p>You can simplify the process of creating factories by registering
 <code>Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory</code> with your service
 manager instance. This allows you to define services using a configuration map,
-rather than having to create separate factories for each of your services. </p>
+rather than having to create separate factories for each of your services.</p>
 <h2 id="enabling-the-configabstractfactory">Enabling the ConfigAbstractFactory</h2>
-<p>Enable the <code>ConfigAbstractFactory</code> in the same way that you would enable 
+<p>Enable the <code>ConfigAbstractFactory</code> in the same way that you would enable
 any other abstract factory.</p>
 <p>Programmatically:</p>
 <pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager();
@@ -269,7 +269,7 @@ return [
     ConfigAbstractFactory::class =&gt; [
         MyInvokableClass::class =&gt; [],
         MySimpleClass::class =&gt; [
-            Logger::class,          
+            Logger::class,
         ],
         Logger::class =&gt; [
             Handler::class,
@@ -325,7 +325,7 @@ return [
         'factories' =&gt; [
             Adapter::class =&gt; AdapterFactory::class, // normal factory not using above config
         ],
-    ],    
+    ],
 ],</code></pre>
 
 <hr />
