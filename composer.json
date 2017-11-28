@@ -3,6 +3,10 @@
     "description": "Factory-Driven Dependency Injection Container",
     "license": "BSD-3-Clause",
     "keywords": [
+        "di",
+        "dic",
+        "dependency-injection",
+        "psr-11",
         "zf",
         "zendframework",
         "servicemanager",
