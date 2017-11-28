@@ -39,7 +39,7 @@ class ValidatorPluginManager extends AbstractPluginManager
         if ($instance instanceof Foo || $instance instanceof Bar) {
             return;
         }
-    
+
         throw new InvalidServiceException('This is not a valid service!');
     }
 }
