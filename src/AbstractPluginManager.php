@@ -11,6 +11,7 @@ namespace Zend\ServiceManager;
 
 use Interop\Container\ContainerInterface;
 use Exception as BaseException;
+use ReflectionMethod;
 
 /**
  * ServiceManager implementation for managing plugins
@@ -356,13 +357,38 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
             $factory = reset($callable);
         }
 
-        // duck-type MutableCreationOptionsInterface for forward compatibility
-        if (isset($factory)
+        if ($factory instanceof Factory\InvokableFactory) {
+            // InvokableFactory::setCreationOptions has a different signature than
+            // MutableCreationOptionsInterface; allows null value.
+            $options = is_array($this->creationOptions) && ! empty($this->creationOptions)
+                ? $this->creationOptions
+                : null;
+            $factory->setCreationOptions($options);
+        } elseif ($factory instanceof MutableCreationOptionsInterface) {
+            // MutableCreationOptionsInterface expects an array, always; pass an
+            // empty array for lack of creation options.
+            $options = is_array($this->creationOptions) && ! empty($this->creationOptions)
+                ? $this->creationOptions
+                : [];
+            $factory->setCreationOptions($options);
+        } elseif (isset($factory)
             && method_exists($factory, 'setCreationOptions')
         ) {
-            $factory->setCreationOptions(is_array($this->creationOptions) ? $this->creationOptions : []);
-        } elseif ($factory instanceof Factory\InvokableFactory) {
-            $factory->setCreationOptions(null);
+            // duck-type MutableCreationOptionsInterface for forward compatibility
+
+            $options = $this->creationOptions;
+
+            // If we have empty creation options, we have to find out if a default
+            // value is present and use that; otherwise, we should use an empty
+            // array, as that's the standard type-hint.
+            if (! is_array($options) || empty($options)) {
+                $r = new ReflectionMethod($factory, 'setCreationOptions');
+                $params = $r->getParameters();
+                $optionsParam = array_shift($params);
+                $options = $optionsParam->isDefaultValueAvailable() ? $optionsParam->getDefaultValue() : [];
+            }
+
+            $factory->setCreationOptions($options);
         }
 
         return parent::createServiceViaCallback($callable, $cName, $rName);

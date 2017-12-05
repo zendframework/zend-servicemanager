@@ -209,8 +209,8 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @group 205
+     * @codingStandardsIgnoreStart
      */
-    // @codingStandardsIgnoreStart
     public function testRetrievingServicesViaFactoryThatUsesCreationOptionsShouldReturnNewInstanceEveryTimeOptionsAreProvided()
     {
         // @codingStandardsIgnoreEnd
@@ -450,5 +450,17 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
         $options = ['option' => 'b'];
         $object = $pluginManager->get('foo', $options);
         $this->assertEquals($options, $object->getOptions());
+    }
+
+    public function testIfCreationOptionsAreEmptySetThemThemToNullWhenCreatingAService()
+    {
+        // @codingStandardsIgnoreEnd
+        /** @var $pluginManager AbstractPluginManager */
+        $pluginManager = $this->getMockForAbstractClass('Zend\ServiceManager\AbstractPluginManager');
+        $pluginManager->setFactory(Baz::class, FactoryUsingCreationOptions::class);
+        $pluginManager->setShared(Baz::class, false);
+        $plugin = $pluginManager->get(Baz::class);
+
+        $this->assertNull($plugin->options);
     }
 }
