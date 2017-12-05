@@ -23,11 +23,11 @@ class FactoryUsingCreationOptions implements FactoryInterface
     }
 
     /**
-     * @param array $creationOptions
+     * @param array|null $creationOptions
      *
      * @return void
      */
-    public function setCreationOptions(array $creationOptions)
+    public function setCreationOptions(array $creationOptions = null)
     {
         $this->creationOptions = $creationOptions;
     }
