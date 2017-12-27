@@ -284,7 +284,8 @@ class ServiceManagerTest extends TestCase
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
     }
 
-    public function testShouldNotShareAliasesWhichAreNotConfiguredToBeShared() {
+    public function testShouldNotShareAliasesWhichAreNotConfiguredToBeShared()
+    {
         $config =
         [
             'factories' =>
