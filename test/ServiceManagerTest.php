@@ -285,7 +285,8 @@ class ServiceManagerTest extends TestCase
     }
 
     public function testShouldNotShareAliasesWhichAreNotConfiguredToBeShared() {
-        $config =            [
+        $config =
+        [
             'factories' =>
             [
                 \stdClass::class => InvokableFactory::class,
