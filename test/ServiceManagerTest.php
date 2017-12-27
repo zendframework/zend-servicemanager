@@ -283,4 +283,40 @@ class ServiceManagerTest extends TestCase
         $serviceManager = new SimpleServiceManager($config);
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
     }
+
+    public function testShouldNotShareAliasesWhichAreNotConfiguredToBeShared() {
+        $config =            [
+            'factories' =>
+            [
+                \stdClass::class => InvokableFactory::class,
+            ],
+            'aliases' =>
+            [
+                'alias' => \stdClass::class,
+            ],
+            'shared_by_default' => false,
+            'shared' => [
+                \stdClass::class => true,
+            ]
+        ];
+        $sm = new ServiceManager($config);
+        $service = $sm->get(\stdClass::class);
+        $alias1 = $sm->get('alias');
+        $alias2 = $sm->get('alias');
+        $msg = '';
+        // to have all errors displayed, allthough
+        // rest is skipped when first assertion fails
+        if ($service === $alias1) {
+            $msg .= "service === alias1 but should be !==\n";
+        }
+        if ($service === $alias2) {
+            $msg .= "service === alias2 but should be !==\n";
+        }
+        if ($alias1 === $alias2) {
+            $msg .= "alias1 === alias2 but should be !==\n";
+        }
+        self::assertNotSame($service, $alias1, $msg);
+        self::assertNotSame($alias1, $alias2, $msg);
+        self::assertNotSame($service, $alias2, $msg);
+    }
 }
