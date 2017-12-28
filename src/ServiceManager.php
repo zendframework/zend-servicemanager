@@ -203,7 +203,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         // Cache it for later, if it is supposed to be shared.
         if (($this->sharedByDefault && ! isset($this->shared[$name]))
-                || (isset($this->shared[$name]) && $this->shared[$name])) {
+            || (isset($this->shared[$name]) && $this->shared[$name])) {
             $this->services[$name] = $object;
         }
 
