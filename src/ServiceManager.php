@@ -185,16 +185,15 @@ class ServiceManager implements ServiceLocatorInterface
 
         $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
 
-        // Determine if the alias shoudld be shared
-        $shareAlias = $requestedName !== $name
-            && (($this->sharedByDefault && ! isset($this->shared[$requestedName]))
-            || (isset($this->shared[$requestedName]) && $this->shared[$requestedName]));
-
         // Next, if the alias should be shared, and we have cached the resolved
-        // service, use it.
-        if ($shareAlias && isset($this->services[$name])) {
-            $this->services[$requestedName] = $this->services[$name];
-            return $this->services[$name];
+        // service, use it. If we don't have it, create it.
+        if ($requestedName !== $name
+            && (($this->sharedByDefault && ! isset($this->shared[$requestedName]))
+            || (isset($this->shared[$requestedName]) && $this->shared[$requestedName])))
+        {
+            $this->services[$requestedName] =
+                isset($this->services[$name]) ? $this->services[$name] : $this->doCreate($name);
+            return $this->services[$requestedName];
         }
 
         // At this point, we need to create the instance; we use the resolved
@@ -203,14 +202,8 @@ class ServiceManager implements ServiceLocatorInterface
 
         // Cache it for later, if it is supposed to be shared.
         if (($this->sharedByDefault && ! isset($this->shared[$name]))
-            || (isset($this->shared[$name]) && $this->shared[$name])
-        ) {
+            || (isset($this->shared[$name]) && $this->shared[$name])) {
             $this->services[$name] = $object;
-        }
-
-        // Also do so for aliases; this allows sharing based on service name used.
-        if ($shareAlias) {
-            $this->services[$requestedName] = $object;
         }
 
         return $object;

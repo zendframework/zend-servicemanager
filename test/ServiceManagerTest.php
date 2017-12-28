@@ -297,7 +297,8 @@ class ServiceManagerTest extends TestCase
                 'alias' => \stdClass::class,
             ],
             'shared_by_default' => false,
-            'shared' => [
+            'shared' =>
+            [
                 \stdClass::class => true,
             ]
         ];
