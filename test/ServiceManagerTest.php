@@ -16,6 +16,7 @@ use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * @covers \Zend\ServiceManager\ServiceManager
@@ -282,5 +283,54 @@ class ServiceManagerTest extends TestCase
         ];
         $serviceManager = new SimpleServiceManager($config);
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
+    }
+
+    public function testShouldNotShareAliasesWhichAreNotConfiguredToBeShared()
+    {
+        $sm = new ServiceManager(
+            [
+                'factories' =>
+                [
+                    \stdClass::class => InvokableFactory::class,
+                ],
+                'aliases' =>
+                [
+                    'alias' => \stdClass::class,
+                ],
+                'shared_by_default' => false,
+                'shared' =>
+                [
+                    \stdClass::class => true,
+                ],
+            ]
+        );
+        self::assertNotSame($sm->get('alias'), $sm->get('alias'));
+    }
+
+    public function testCreateNonSharedAliasServiceFromDirectlyDefinedService()
+    {
+        $sm = new ServiceManager(
+            [
+                'services' =>
+                [
+                    \stdClass::class => new \stdClass(),
+                ],
+                'aliases' =>
+                [
+                    'alias' => \stdClass::class,
+                ],
+                'shared_by_default' => false,
+                'shared' =>
+                [
+                    \stdClass::class => true,
+                ],
+            ]
+        );
+        // Obviously the service manager has to have a factory for
+        // each service which is configured not to be shared
+        // As a delicate detail this applies to alias services as
+        // well if the alias is configured not to be shared
+        self::expectException(ServiceNotFoundException::class);
+        $sm->get('alias');
     }
 }
