@@ -286,25 +286,23 @@ class ServiceManagerTest extends TestCase
 
     public function testShouldNotShareAliasesWhichAreNotConfiguredToBeShared()
     {
-        $config =
-        [
-            'factories' =>
+        $sm = new ServiceManager(
             [
-                \stdClass::class => InvokableFactory::class,
-            ],
-            'aliases' =>
-            [
-                'alias' => \stdClass::class,
-            ],
-            'shared_by_default' => false,
-            'shared' =>
-            [
-                \stdClass::class => true,
+                'factories' =>
+                [
+                    \stdClass::class => InvokableFactory::class,
+                ],
+                'aliases' =>
+                [
+                    'alias' => \stdClass::class,
+                ],
+                'shared_by_default' => false,
+                'shared' =>
+                [
+                    \stdClass::class => true,
+                ],
             ]
-        ];
-        $sm = new ServiceManager($config);
-        $alias1 = $sm->get('alias');
-        $alias2 = $sm->get('alias');
-        self::assertNotSame($alias1, $alias2);
+        );
+        self::assertNotSame($sm->get('alias'), $sm->get('alias'));
     }
 }
