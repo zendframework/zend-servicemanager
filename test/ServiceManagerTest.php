@@ -288,9 +288,9 @@ class ServiceManagerTest extends TestCase
     {
         $config =
         [
-            'services' =>
+            'factories' =>
             [
-                \stdClass::class => new \stdClass(),
+                \stdClass::class => InvokableFactory::class,
             ],
             'aliases' =>
             [
