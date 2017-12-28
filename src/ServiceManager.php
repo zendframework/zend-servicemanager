@@ -175,34 +175,33 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function get($name)
     {
-        {
-            $requestedName = $name;
+        $requestedName = $name;
 
-            // We start by checking if we have cached the requested service (this
-            // is the fastest method).
+        // We start by checking if we have cached the requested service (this
+        // is the fastest method).
         if (isset($this->services[$requestedName])) {
             return $this->services[$requestedName];
         }
 
-            $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+        $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
 
-            // Determine if the alias shoudld be shared
-            $shareAlias = $requestedName !== $name
-                && (($this->sharedByDefault && ! isset($this->shared[$requestedName]))
-                || (isset($this->shared[$requestedName]) && $this->shared[$requestedName]));
+        // Determine if the alias shoudld be shared
+        $shareAlias = $requestedName !== $name
+            && (($this->sharedByDefault && ! isset($this->shared[$requestedName]))
+            || (isset($this->shared[$requestedName]) && $this->shared[$requestedName]));
 
-            // Next, if the alias should be shared, and we have cached the resolved
-            // service, use it.
+        // Next, if the alias should be shared, and we have cached the resolved
+        // service, use it.
         if ($shareAlias && isset($this->services[$name])) {
             $this->services[$requestedName] = $this->services[$name];
             return $this->services[$name];
         }
 
-            // At this point, we need to create the instance; we use the resolved
-            // name for that.
-            $object = $this->doCreate($name);
+        // At this point, we need to create the instance; we use the resolved
+        // name for that.
+        $object = $this->doCreate($name);
 
-            // Cache it for later, if it is supposed to be shared.
+        // Cache it for later, if it is supposed to be shared.
         if (($this->sharedByDefault && ! isset($this->shared[$name]))
                 || (isset($this->shared[$name]) && $this->shared[$name])) {
             $this->services[$name] = $object;
@@ -213,8 +212,7 @@ class ServiceManager implements ServiceLocatorInterface
             $this->services[$requestedName] = $object;
         }
 
-            return $object;
-        }
+        return $object;
     }
 
     /**
