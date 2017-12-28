@@ -189,7 +189,8 @@ class ServiceManager implements ServiceLocatorInterface
         // service, use it. If it is not cached, create it.
         if (($requestedName !== $name
             && (($this->sharedByDefault && ! isset($this->shared[$requestedName]))
-                || (isset($this->shared[$requestedName]) && $this->shared[$requestedName])))) {
+                || (isset($this->shared[$requestedName]) && $this->shared[$requestedName]))))
+        {
             $this->services[$requestedName] =
                 isset($this->services[$name]) ? $this->services[$name] : $this->doCreate($name);
             return $this->services[$requestedName];
