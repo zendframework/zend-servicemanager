@@ -181,20 +181,16 @@ class ServiceManager implements ServiceLocatorInterface
             return $this->services[$name];
         }
 
-        // Service is not in the cache.
         // Determine if the service should be shared
         $sharedService = ($this->sharedByDefault && ! isset($this->shared[$name])
             || (isset($this->shared[$name]) && $this->shared[$name]));
 
         $resolvedName = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
 
-        // this can only be true if $name !== $resolvedName
-        // $serviceAvailable can only become true, if the
-        // requested service is an alias
+        // Can only become true, if the requested service is an alias
         $serviceAvailable = isset($this->services[$resolvedName]);
 
-        // If the alias is configured as shared service,
-        // we are done.
+        // If the alias is configured as shared service, we are done.
         if ($serviceAvailable && $sharedService) {
             $this->services[$name] = $this->services[$resolvedName];
             return $this->services[$resolvedName];
@@ -211,8 +207,8 @@ class ServiceManager implements ServiceLocatorInterface
             $object = $this->doCreate($resolvedName);
         } catch (ServiceNotFoundException $e) {
             if ($serviceAvailable) {
-                // At this point we have an alias which not configured to
-                // be shared, we do not have a factory, but we have a
+                // At this point we have an alias which is configured not
+                // to get shared, we do not have a factory, but we have a
                 // shared service which we use as template and clone
                 // the non shared alias service.
                 return clone $this->services[$resolvedName];
@@ -227,7 +223,7 @@ class ServiceManager implements ServiceLocatorInterface
             $this->services[$resolvedName] = $object;
         }
 
-        // Do the same with an alias, if it is supposed to be shared
+        // Also do so for aliases, this allows sharing based on service name used.
         if (($resolvedName !== $name) && $sharedService) {
             $this->services[$name] = $object;
         }
