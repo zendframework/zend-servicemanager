@@ -297,10 +297,10 @@ class ServiceManagerTest extends TestCase
                 [
                     'alias' => \stdClass::class,
                 ],
-                'shared_by_default' => false,
                 'shared' =>
                 [
                     \stdClass::class => true,
+                    'alias' => false,
                 ],
             ]
         );
@@ -326,11 +326,6 @@ class ServiceManagerTest extends TestCase
                 ],
             ]
         );
-        // Obviously the service manager has to have a factory for
-        // each service which is configured not to be shared
-        // As a delicate detail this applies to alias services as
-        // well if the alias is configured not to be shared
-        self::expectException(ServiceNotFoundException::class);
-        $sm->get('alias');
+        self::assertNotSame($sm->get('alias'), $sm->get('alias'));
     }
 }

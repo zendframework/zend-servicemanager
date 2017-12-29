@@ -97,7 +97,7 @@ class ServiceManager implements ServiceLocatorInterface
     private $resolvedAliases = [];
 
     /**
-     * A list of already loaded services (this act as a local cache)
+     * A list of already loaded services (configuration)
      *
      * @var array
      */
@@ -175,41 +175,61 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function get($name)
     {
-        $requestedName = $name;
-
         // We start by checking if we have cached the requested service (this
         // is the fastest method).
-        if (isset($this->services[$requestedName])) {
-            return $this->services[$requestedName];
-        }
-
-        $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
-
-        // Determine if the alias shoudld be shared
-        $shareAlias = $requestedName !== $name
-            && (($this->sharedByDefault && ! isset($this->shared[$requestedName]))
-            || (isset($this->shared[$requestedName]) && $this->shared[$requestedName]));
-
-        // Next, if the alias should be shared, and we have cached the resolved
-        // service, use it.
-        if ($shareAlias && isset($this->services[$name])) {
-            $this->services[$requestedName] = $this->services[$name];
+        if (isset($this->services[$name])) {
             return $this->services[$name];
         }
 
-        // At this point, we need to create the instance; we use the resolved
-        // name for that.
-        $object = $this->doCreate($name);
+        // Service is not in the cache.
+        // Determine if the service should be shared
+        $sharedService = ($this->sharedByDefault && ! isset($this->shared[$name])
+            || (isset($this->shared[$name]) && $this->shared[$name]));
 
-        // Cache it for later, if it is supposed to be shared.
-        if (($this->sharedByDefault && ! isset($this->shared[$name]))
-            || (isset($this->shared[$name]) && $this->shared[$name])) {
-            $this->services[$name] = $object;
+        $resolvedName = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+
+        // this can only be true if $name !== $resolvedName
+        // $serviceAvailable can only become true, if the
+        // requested service is an alias
+        $serviceAvailable = isset($this->services[$resolvedName]);
+
+        // If the alias is configured as shared service,
+        // we are done.
+        if ($serviceAvailable && $sharedService) {
+            $this->services[$name] = $this->services[$resolvedName];
+            return $this->services[$resolvedName];
         }
 
-        // Also do so for aliases; this allows sharing based on service name used.
-        if ($shareAlias) {
-            $this->services[$requestedName] = $object;
+        // At this point, we can have a shared service available
+        // which fits an alias but latter is not configured as shared
+        // Or we have a request which should be satisfiable by a
+        // factory.
+
+        // We need to find out if we have a factory. We use the
+        // resolved name for that. If we have, we create the instance.
+        try {
+            $object = $this->doCreate($resolvedName);
+        } catch (ServiceNotFoundException $e) {
+            if ($serviceAvailable) {
+                // At this point we have an alias which not configured to
+                // be shared, we do not have a factory, but we have a
+                // shared service which we use as template and clone
+                // the non shared alias service.
+                return clone $this->services[$resolvedName];
+            }
+            // There is a configuration issue.
+            throw($e);
+        }
+
+        // Cache the object for later, if it is supposed to be shared.
+        if (($this->sharedByDefault && ! isset($this->shared[$resolvedName])
+            || (isset($this->shared[$resolvedName]) && $this->shared[$resolvedName]))) {
+            $this->services[$resolvedName] = $object;
+        }
+
+        // Do the same with an alias, if it is supposed to be shared
+        if (($resolvedName !== $name) && $sharedService) {
+            $this->services[$name] = $object;
         }
 
         return $object;
