@@ -14,9 +14,12 @@ use stdClass;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
+use ZendTest\ServiceManager\TestAsset\Car;
+use ZendTest\ServiceManager\TestAsset\CarFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use ZendTest\ServiceManager\TestAsset\OffRoaderFactory;
+use ZendTest\ServiceManager\TestAsset\OffRoader;
 
 /**
  * @covers \Zend\ServiceManager\ServiceManager
@@ -285,47 +288,120 @@ class ServiceManagerTest extends TestCase
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
     }
 
-    public function testShouldNotShareAliasesWhichAreNotConfiguredToBeShared()
-    {
-        $sm = new ServiceManager(
-            [
-                'factories' =>
-                [
-                    \stdClass::class => InvokableFactory::class,
-                ],
-                'aliases' =>
-                [
-                    'alias' => \stdClass::class,
-                ],
-                'shared' =>
-                [
-                    \stdClass::class => true,
-                    'alias' => false,
-                ],
-            ]
-        );
-        self::assertNotSame($sm->get('alias'), $sm->get('alias'));
-    }
-
-    public function testCreateNonSharedAliasServiceFromDirectlyDefinedService()
+    public function testCreateAliasedServices()
     {
         $sm = new ServiceManager(
             [
                 'services' =>
                 [
-                    \stdClass::class => new \stdClass(),
+                    Car::class => new Car(),
+                    Car::class . 'noFactory' => new Car()
+                ],
+                'factories' =>
+                [
+                    Car::class => CarFactory::class,
+                    OffRoader::class => OffRoaderFactory::class,
                 ],
                 'aliases' =>
                 [
-                    'alias' => \stdClass::class,
+                     // not shared (see 'shared' below)
+                    'alias1' => Car::class . 'noFactory',
+                    // shared by default (see 'shared' below)
+                    'alias2' => Car::class . 'noFactory',
+                    // not shared (see 'shared' below)
+                    'alias3' => Car::class,
+                    // shared (see 'shared' below)
+                    'alias4' => OffRoader::class,
                 ],
-                'shared_by_default' => false,
                 'shared' =>
                 [
-                    \stdClass::class => true,
+                    Car::class  => true,
+                    'alias1'    => false,
+                    'alias2'    => true,
+                    'alias3'    => false,
+                    'alias4'    => true,
                 ],
             ]
         );
-        self::assertNotSame($sm->get('alias'), $sm->get('alias'));
+        // non-alias requests (retrieved directly from services member array)
+        $service1 = $sm->get(Car::class);
+        $service2 = $sm->get(Car::class);
+
+        // service1 and service2 both should not claim to be a clone
+        self::assertSame($service1->classifier, 'I am not a clone, honestly.');
+        self::assertSame($service2->classifier, 'I am not a clone, honestly.');
+        // service1 and service2 should reference the same object
+        self::assertSame($service1, $service2);
+        // both should be an immediate Car instance
+        self::assertSame(get_class($service1), Car::class);
+        self::assertSame(get_class($service2), Car::class);
+
+
+        // non-shared alias requests (should be created via clone)
+        $alias11 = $sm->get('alias1');
+        $alias12 = $sm->get('alias1');
+        // non-shared alias services should both be Cars
+        self::assertSame(get_class($alias11), Car::class);
+        self::assertSame(get_class($alias12), Car::class);
+        // non-shared alias services should be tagged as clones
+        self::assertSame($alias11->classifier, 'I am a cloned car, believe me.');
+        self::assertSame($alias12->classifier, 'I am a cloned car, believe me.');
+        // non-shared alias services should be different objects
+        self::assertNotSame($alias11, $alias12);
+        // both non-shared aliases should be different from the shared service
+        self::assertNotSame($alias11, $sm->get(Car::class . 'noFactory'));
+        self::assertNotSame($alias12, $sm->get(Car::class . 'noFactory'));
+
+        // shared alias requests (should be retrieved via services member array)
+        $alias21 = $sm->get('alias2');
+        $alias22 = $sm->get('alias2');
+        // shared alias services should both be Cars
+        self::assertSame(get_class($alias21), Car::class);
+        self::assertSame(get_class($alias22), Car::class);
+        // shared alias services should not claim to be clones
+        self::assertSame($alias21->classifier, 'I am not a clone, honestly.');
+        self::assertSame($alias22->classifier, 'I am not a clone, honestly.');
+        // shared alias services should be the same object
+        self::assertSame($alias21, $alias22);
+        // shared alias services should be idsentical to the shared service
+        self::assertSame($alias21, $sm->get(Car::class . 'noFactory'));
+
+        // mixed alias requests
+        $alias1 = $sm->get('alias1');
+        $alias2 = $sm->get('alias2');
+        // alias services should make different claims
+        // (both of the next two asserts are redundant, I know)
+        self::assertSame($alias1->classifier, 'I am a cloned car, believe me.');
+        self::assertSame($alias2->classifier, 'I am not a clone, honestly.');
+        // shared alias services should be the same object
+        self::assertNotSame($alias1, $alias2);
+
+        // non-shared alias request with factory
+        $alias31 = $sm->get('alias3');
+        $alias32 = $sm->get('alias3');
+        // both should be ClonedCars
+        self::assertSame(get_class($alias31), Car::class);
+        self::assertSame(get_class($alias32), Car::class);
+        // both should be produced by the CarFactory
+        self::assertSame($alias31->classifier, 'I was created by a car factory, no diesel issues, I promise');
+        self::assertSame($alias32->classifier, 'I was created by a car factory, no diesel issues, I promise');
+        // both should be different objects
+        self::assertNotSame($alias31, $alias32);
+
+        // shared alias request with factory (here is quirks somewhere)
+        $alias41 = $sm->get('alias4');
+        $alias42 = $sm->get('alias4');
+        // both should be ClonedCars
+        self::assertSame(get_class($alias41), Car::class);
+        self::assertSame(get_class($alias42), Car::class);
+        // both should be produced by the CarFactory
+        self::assertSame($alias41->classifier, 'I am a factory produced offroader.');
+        // Retrieve the shared service directly and modify the classifier
+        // to proof that the second call does not invoke the OffRoaderFactory.
+        $sm->get(OffRoader::class)->classifier = 'I am a shared offroader.';
+        self::assertSame($alias42->classifier, 'I am a shared offroader.');
+        // both should be different objects
+        self::assertSame($alias41, $alias42);
+        self::assertSame($alias41, $sm->get(OffRoader::class));
     }
 }
