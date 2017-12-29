@@ -327,7 +327,7 @@ class ServiceManagerTest extends TestCase
         $service1 = $sm->get(Car::class);
         $service2 = $sm->get(Car::class);
 
-        // service1 and service2 both should not claim to be a clone
+        // service1 and service2 both should not claim to be clones
         self::assertSame($service1->classifier, 'I am not a clone, honestly.');
         self::assertSame($service2->classifier, 'I am not a clone, honestly.');
         // service1 and service2 should reference the same object
@@ -379,7 +379,7 @@ class ServiceManagerTest extends TestCase
         // non-shared alias request with factory
         $alias31 = $sm->get('alias3');
         $alias32 = $sm->get('alias3');
-        // both should be ClonedCars
+        // both should be Cars
         self::assertSame(get_class($alias31), Car::class);
         self::assertSame(get_class($alias32), Car::class);
         // both should be produced by the CarFactory
@@ -388,10 +388,10 @@ class ServiceManagerTest extends TestCase
         // both should be different objects
         self::assertNotSame($alias31, $alias32);
 
-        // shared alias request with factory (here is quirks somewhere)
+        // shared alias request with factory
         $alias41 = $sm->get('alias4');
         $alias42 = $sm->get('alias4');
-        // both should be ClonedCars
+        // both should be Cars
         self::assertSame(get_class($alias41), Car::class);
         self::assertSame(get_class($alias42), Car::class);
         // both should be produced by the CarFactory
