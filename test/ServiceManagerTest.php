@@ -16,6 +16,7 @@ use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
 
 /**
  * @covers \Zend\ServiceManager\ServiceManager
@@ -282,5 +283,46 @@ class ServiceManagerTest extends TestCase
         ];
         $serviceManager = new SimpleServiceManager($config);
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
+    }
+
+    public function testSharedSettingForAliasesShouldBeHonored()
+    {
+        $sm = new ServiceManager(
+            [
+                'services' =>
+                [
+                    \stdClass::class => new \stdClass(),
+                    \stdClass::class . '-noFactory' => new \stdClass(),
+                ],
+                'factories' =>
+                [
+                    \stdClass::class => InvokableFactory::class,
+                ],
+                'aliases' =>
+                [
+                    'alias1' => \stdClass::class,
+                    'alias2' => \stdClass::class,
+                    'alias3' => \stdClass::class . '-noFactory',
+                ],
+                'shared' =>
+                [
+                    \stdClass::class  => true,
+                    'alias1'    => true,
+                    'alias2'    => false,
+                    'alias3'    => false,
+                ],
+            ]
+        );
+
+        $service = $sm->get(\stdClass::class);
+        $alias1 = $sm->get('alias1');
+        self::assertSame($alias1, $service);
+        $alias21 = $sm->get('alias2');
+        $alias22 = $sm->get('alias2');
+        self::assertNotSame($alias21, $service);
+        self::assertNotSame($alias22, $service);
+        self::assertNotSame($alias21, $alias22);
+        self::expectException(ServiceNotFoundException::class);
+        $alias3 = $sm->get('alias3');
     }
 }

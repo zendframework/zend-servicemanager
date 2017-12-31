@@ -175,45 +175,52 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function get($name)
     {
-        $requestedName = $name;
-
         // We start by checking if we have cached the requested service (this
         // is the fastest method).
-        if (isset($this->services[$requestedName])) {
-            return $this->services[$requestedName];
-        }
-
-        $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
-
-        // Next, if the alias should be shared, and we have cached the resolved
-        // service, use it.
-        if ($requestedName !== $name
-            && (! isset($this->shared[$requestedName]) || $this->shared[$requestedName])
-            && isset($this->services[$name])
-        ) {
-            $this->services[$requestedName] = $this->services[$name];
+        if (isset($this->services[$name])) {
             return $this->services[$name];
         }
 
-        // At this point, we need to create the instance; we use the resolved
-        // name for that.
-        $object = $this->doCreate($name);
+        // Determine if the service should be shared
+        $sharedService = ($this->sharedByDefault && ! isset($this->shared[$name])
+            || (isset($this->shared[$name]) && $this->shared[$name]));
 
-        // Cache it for later, if it is supposed to be shared.
-        if (($this->sharedByDefault && ! isset($this->shared[$name]))
-            || (isset($this->shared[$name]) && $this->shared[$name])
-        ) {
+        // We achieve better performance if we can let all alias
+        // considerations out
+        if (empty($this->resolvedAliases)) {
+            $object = $this->doCreate($name);
+
+            // Cache the object for later, if it is supposed to be shared.
+            if (($sharedService)) {
+                $this->services[$name] = $object;
+            }
+            return $object;
+        }
+
+        // Here we have to deal with requests which may be aliases
+        $resolvedName = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+
+        // Can only become true, if the requested service is an shared alias
+        $sharedAlias = $sharedService && isset($this->services[$resolvedName]);
+        // If the alias is configured as shared service, we are done.
+        if ($sharedAlias) {
+            $this->services[$name] = $this->services[$resolvedName];
+            return $this->services[$resolvedName];
+        }
+
+        // At this point we have to create the object. We use the
+        // resolved name for that.
+        $object = $this->doCreate($resolvedName);
+
+        // Cache the object for later, if it is supposed to be shared.
+        if (($sharedService)) {
+            $this->services[$resolvedName] = $object;
+        }
+        // Also do so for aliases, this allows sharing based on service name used.
+        // $serviceAvailable is true if and only if we have an alias
+        if ($sharedAlias) {
             $this->services[$name] = $object;
         }
-
-        // Also do so for aliases; this allows sharing based on service name used.
-        if ($requestedName !== $name
-            && (($this->sharedByDefault && ! isset($this->shared[$requestedName]))
-                || (isset($this->shared[$requestedName]) && $this->shared[$requestedName]))
-        ) {
-            $this->services[$requestedName] = $object;
-        }
-
         return $object;
     }
 
@@ -232,11 +239,10 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function has($name)
     {
-        $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
         $found = isset($this->services[$name]) || isset($this->factories[$name]);
 
         if ($found) {
-            return $found;
+            return true;
         }
 
         // Check abstract factories
@@ -244,6 +250,18 @@ class ServiceManager implements ServiceLocatorInterface
             if ($abstractFactory->canCreate($this->creationContext, $name)) {
                 return true;
             }
+        }
+
+        // late alias resolution ensures that this function
+        // performs better for configurations without aliases
+        // In the particular case of has() service resolution precedence
+        // can get savely ignored. It is not important, what we have.
+        // All the user asks is if we have something.
+        $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+        $found = isset($services[$name]) || isset($this->factories[$name]);
+
+        if ($found) {
+            return true;
         }
 
         return false;
