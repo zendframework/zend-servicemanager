@@ -53,13 +53,6 @@ class ServiceManager implements ServiceLocatorInterface
     protected $aliases = [];
 
     /**
-     * Flag indicating whether alias resolution is enabled or disabled
-     *
-     * @var boolean     true by default for BC
-     */
-    protected $enableAliases = true;
-
-    /**
      * Whether or not changes may be made to this instance.
      *
      * @param bool
@@ -194,7 +187,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         // We achieve better performance if we can let all alias
         // considerations out
-        if (! $this->enableAliases) {
+        if (empty($this->resolvedAliases)) {
             $object = $this->doCreate($name);
 
             // Cache the object for later, if it is supposed to be shared.
@@ -203,41 +196,21 @@ class ServiceManager implements ServiceLocatorInterface
             }
             return $object;
         }
-        // code would end here without alias support
 
-        // Here we have to deal with entries which can be a factory,
-        // an abstract factory or an alias
+        // Here we have to deal with requests which may be aliases
         $resolvedName = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
 
-        // Can only become true, if the requested service is an alias
-        // We will reuse $serviceAvailable as isAlias at the bottom
-        $serviceAvailable = isset($this->services[$resolvedName]);
+        // Can only become true, if the requested service is an shared alias
+        $sharedAlias = $sharedService && isset($this->services[$resolvedName]);
         // If the alias is configured as shared service, we are done.
-        if ($serviceAvailable && $sharedService) {
+        if ($sharedAlias) {
             $this->services[$name] = $this->services[$resolvedName];
             return $this->services[$resolvedName];
         }
 
-        // At this point, we can have a shared service available
-        // which fits an alias but latter is not configured as shared
-        // Or we have a request which should be satisfiable by a
-        // factory.
-
-        // We need to find out if we have a factory. We use the
-        // resolved name for that. If we have, we create the instance.
-        try {
-            $object = $this->doCreate($resolvedName);
-        } catch (ServiceNotFoundException $e) {
-            if ($serviceAvailable) {
-                // At this point we have an alias which is configured not
-                // to get shared, we do not have a factory, but we have a
-                // shared service which we use as template and clone
-                // the non shared alias service.
-                return clone $this->services[$resolvedName];
-            }
-            // There is a configuration issue.
-            throw($e);
-        }
+        // At this point we have to create the object. We use the
+        // resolved name for that.
+        $object = $this->doCreate($resolvedName);
 
         // Cache the object for later, if it is supposed to be shared.
         if (($sharedService)) {
@@ -245,7 +218,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
         // Also do so for aliases, this allows sharing based on service name used.
         // $serviceAvailable is true if and only if we have an alias
-        if ($serviceAvailable && $sharedService) {
+        if ($sharedAlias) {
             $this->services[$name] = $object;
         }
         return $object;
@@ -256,10 +229,8 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function build($name, array $options = null)
     {
-        if ($this->enableAliases) {
-            $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
-        }
         // We never cache when using "build"
+        $name = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
         return $this->doCreate($name, $options);
     }
 
@@ -276,21 +247,13 @@ class ServiceManager implements ServiceLocatorInterface
 
         // late alias resolution ensures that this function
         // performs better for configurations without aliases
-
         // In the particular case of has() service resolution precedence
-        // can get savely ignored. They just ask, if we have it. They do not
-        // ask what we would deliver if they wanted to get(). So this ordering
-        // does nothing but speed up configurations aliases.
+        // can get savely ignored.
+        $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+        $found = isset($services[$name]) || isset($this->factories[$name]);
 
-        // If you do not need aliases at all, you can get a small additional
-        // speed gain by setting enable_aliases to false.
-        if ($this->enableAliases) {
-            $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
-            $found = isset($services[$name]) || isset($this->factories[$name]);
-
-            if ($found) {
-                return true;
-            }
+        if ($found) {
+            return true;
         }
 
         // Check abstract factories
@@ -402,13 +365,7 @@ class ServiceManager implements ServiceLocatorInterface
             $this->sharedByDefault = $config['shared_by_default'];
         }
 
-        if (isset($config['enable_aliases'])) {
-            $this->enableAliases = $config['enable_aliases'];
-        }
-
-        // We completely ignore alias configurations if we are
-        // not supposed to support them
-        if ($this->enableAliases && isset($config['aliases'])) {
+        if (isset($config['aliases'])) {
             $this->configureAliases($config['aliases']);
         } elseif (! $this->configured && ! empty($this->aliases)) {
             $this->resolveAliases($this->aliases);
@@ -443,9 +400,6 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function configureAliases(array $aliases)
     {
-        if (! $this->enableAliases) {
-            return;
-        }
 
         if (! $this->configured) {
             $this->aliases = $aliases + $this->aliases;
@@ -477,13 +431,6 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setAlias($alias, $target)
     {
-        if (! $this->enableAliases) {
-            trigger_error(sprintf(
-                'Alias setting via %s is disabled; please use enable_aliases setting to enable alias handling.',
-                __METHOD__
-            ), E_USER_NOTICE);
-            return;
-        }
         $this->configure(['aliases' => [$alias => $target]]);
     }
 
@@ -684,10 +631,6 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function resolveAliases(array $aliases)
     {
-        // We completely ignore aliases if aliases are not enabled.
-        if (! $this->enableAliases) {
-            return;
-        }
         foreach ($aliases as $alias => $service) {
             $visited = [];
             $name    = $alias;
