@@ -180,26 +180,26 @@ class ServiceManager implements ServiceLocatorInterface
         if (isset($this->services[$name])) {
             return $this->services[$name];
         }
-
+        
         // Determine if the service should be shared
         $sharedService = ($this->sharedByDefault && ! isset($this->shared[$name])
             || (isset($this->shared[$name]) && $this->shared[$name]));
-
+        
         // We achieve better performance if we can let all alias
         // considerations out
         if (empty($this->resolvedAliases)) {
             $object = $this->doCreate($name);
-
+            
             // Cache the object for later, if it is supposed to be shared.
             if (($sharedService)) {
                 $this->services[$name] = $object;
             }
             return $object;
         }
-
+        
         // Here we have to deal with requests which may be aliases
         $resolvedName = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
-
+        
         // Can only become true, if the requested service is an shared alias
         $sharedAlias = $sharedService && isset($this->services[$resolvedName]);
         // If the alias is configured as shared service, we are done.
@@ -207,11 +207,11 @@ class ServiceManager implements ServiceLocatorInterface
             $this->services[$name] = $this->services[$resolvedName];
             return $this->services[$resolvedName];
         }
-
+        
         // At this point we have to create the object. We use the
         // resolved name for that.
         $object = $this->doCreate($resolvedName);
-
+        
         // Cache the object for later, if it is supposed to be shared.
         if (($sharedService)) {
             $this->services[$resolvedName] = $object;
@@ -223,7 +223,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
         return $object;
     }
-
+    
     /**
      * {@inheritDoc}
      */
@@ -239,10 +239,11 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function has($name)
     {
+        $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
         $found = isset($this->services[$name]) || isset($this->factories[$name]);
 
         if ($found) {
-            return true;
+            return $found;
         }
 
         // Check abstract factories
@@ -250,18 +251,6 @@ class ServiceManager implements ServiceLocatorInterface
             if ($abstractFactory->canCreate($this->creationContext, $name)) {
                 return true;
             }
-        }
-
-        // late alias resolution ensures that this function
-        // performs better for configurations without aliases
-        // In the particular case of has() service resolution precedence
-        // can get savely ignored. It is not important, what we have.
-        // All the user asks is if we have something.
-        $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
-        $found = isset($services[$name]) || isset($this->factories[$name]);
-
-        if ($found) {
-            return true;
         }
 
         return false;
