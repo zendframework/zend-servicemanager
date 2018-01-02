@@ -277,7 +277,7 @@ class ServiceManager implements ServiceLocatorInterface
 			return true;
 		}
 
-        // Check abstract factories
+        // Check abstract factories next
         foreach ($this->abstractFactories as $abstractFactory) {
             if ($abstractFactory->canCreate($this->creationContext, $name)) {
                 return true;
@@ -707,12 +707,6 @@ class ServiceManager implements ServiceLocatorInterface
                 return $options === null ? new $invokable() : new $invokable($options);
             }
         } else {
-            // PHP 5.6 fails on 'class::method' callables unless we explode them:
-            if (PHP_MAJOR_VERSION < 7
-                && is_string($factory) && strpos($factory, '::') !== false
-            ) {
-                $factory = explode('::', $factory);
-            }
             return $factory($this->creationContext, $name, $options);
         }
 
