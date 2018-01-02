@@ -221,6 +221,7 @@ class ServiceManager implements ServiceLocatorInterface
         if ($sharedAlias) {
             $this->services[$name] = $object;
         }
+
         return $object;
     }
 
