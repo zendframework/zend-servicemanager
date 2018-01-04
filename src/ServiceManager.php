@@ -248,22 +248,28 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function has($name)
     {
-        $name  = $this->resolvedAliases[$name] ?? $name;
-        $found = isset($this->services[$name]) || isset($this->factories[$name]);
-
-        if ($found) {
-            return $found;
+        // Check services and factories first to speedup the most common requests
+        if (isset($this->services[$name]) || isset($this->factories[$name])) {
+            return true;
         }
 
-        // Check abstract factories
+        // Check abstract factories next
         foreach ($this->abstractFactories as $abstractFactory) {
             if ($abstractFactory->canCreate($this->creationContext, $name)) {
                 return true;
             }
         }
 
-        return false;
-    }
+        // If $name is no alias, we are done
+        if (! isset($this->resolvedAliases[$name])) {
+            return false;
+        }
+
+        // Finally check aliases
+        $name = $this->resolvedAliases[$name];
+        return isset($this->services[$name]) || isset($this->factories[$name]);
+
+     }
 
     /**
      * Indicate whether or not the instance is immutable.
@@ -684,7 +690,12 @@ class ServiceManager implements ServiceLocatorInterface
             if ($lazyLoaded) {
                 $this->factories[$name] = $factory;
             }
-
+            // PHP 5.6 fails on 'class::method' callables unless we explode them:
+            if (PHP_MAJOR_VERSION < 7
+                && is_string($factory) && strpos($factory, '::') !== false
+            ) {
+                $factory = explode('::', $factory);
+            }
             return $factory;
         }
 
