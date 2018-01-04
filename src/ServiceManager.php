@@ -268,8 +268,7 @@ class ServiceManager implements ServiceLocatorInterface
         // Finally check aliases
         $name = $this->resolvedAliases[$name];
         return isset($this->services[$name]) || isset($this->factories[$name]);
-
-     }
+    }
 
     /**
      * Indicate whether or not the instance is immutable.
