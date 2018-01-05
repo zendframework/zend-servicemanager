@@ -59,7 +59,9 @@ class SetNewServicesBench
         $this->sm = new ServiceManager($config);
     }
 
-
+    /**
+     * @todo @link https://github.com/phpbench/phpbench/issues/304
+     */
     public function benchSetService()
     {
         $sm = clone $this->sm;
