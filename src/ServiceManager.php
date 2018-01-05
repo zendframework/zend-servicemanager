@@ -436,6 +436,9 @@ class ServiceManager implements ServiceLocatorInterface
     public function setAlias($alias, $target)
     {
         $this->validate($alias);
+
+        $this->aliases[$alias] = $target;
+
         if (isset($this->resolvedAliases[$target])) {
             $target = $this->resolvedAliases[$target];
         }
