@@ -443,7 +443,6 @@ class ServiceManager implements ServiceLocatorInterface
         if (in_array($alias, $this->resolvedAliases)) {
             $r = array_intersect($this->resolvedAliases, [ $alias ]);
             foreach($r as $name => $service) {
-                print($name." ".$service. " ".$target."\n");
                 $this->resolvedAliases[$name] = $target;
             }
         }
