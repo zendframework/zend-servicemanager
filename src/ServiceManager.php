@@ -28,7 +28,6 @@ use function array_merge_recursive;
 use function class_exists;
 use function get_class;
 use function gettype;
-use function implode;
 use function is_callable;
 use function is_object;
 use function is_string;
@@ -191,43 +190,50 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function get($name)
     {
-        $requestedName = $name;
-
         // We start by checking if we have cached the requested service (this
         // is the fastest method).
-        if (isset($this->services[$requestedName])) {
-            return $this->services[$requestedName];
-        }
-
-        $name = $this->resolvedAliases[$name] ?? $name;
-
-        // Next, if the alias should be shared, and we have cached the resolved
-        // service, use it.
-        if ($requestedName !== $name
-            && (! isset($this->shared[$requestedName]) || $this->shared[$requestedName])
-            && isset($this->services[$name])
-        ) {
-            $this->services[$requestedName] = $this->services[$name];
+        if (isset($this->services[$name])) {
             return $this->services[$name];
         }
 
-        // At this point, we need to create the instance; we use the resolved
-        // name for that.
-        $object = $this->doCreate($name);
+        // Determine if the service should be shared
+        $sharedService = isset($this->shared[$name]) ? $this->shared[$name] : $this->sharedByDefault;
 
-        // Cache it for later, if it is supposed to be shared.
-        if (($this->sharedByDefault && ! isset($this->shared[$name]))
-            || (isset($this->shared[$name]) && $this->shared[$name])
-        ) {
-            $this->services[$name] = $object;
+        // We achieve better performance if we can let all alias
+        // considerations out
+        if (empty($this->resolvedAliases)) {
+            $object = $this->doCreate($name);
+
+            // Cache the object for later, if it is supposed to be shared.
+            if (($sharedService)) {
+                $this->services[$name] = $object;
+            }
+            return $object;
         }
 
-        // Also do so for aliases; this allows sharing based on service name used.
-        if ($requestedName !== $name
-            && (($this->sharedByDefault && ! isset($this->shared[$requestedName]))
-                || (isset($this->shared[$requestedName]) && $this->shared[$requestedName]))
-        ) {
-            $this->services[$requestedName] = $object;
+        // Here we have to deal with requests which may be aliases
+        $resolvedName = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+
+        // Can only become true, if the requested service is an shared alias
+        $sharedAlias = $sharedService && isset($this->services[$resolvedName]);
+        // If the alias is configured as shared service, we are done.
+        if ($sharedAlias) {
+            $this->services[$name] = $this->services[$resolvedName];
+            return $this->services[$resolvedName];
+        }
+
+        // At this point we have to create the object. We use the
+        // resolved name for that.
+        $object = $this->doCreate($resolvedName);
+
+        // Cache the object for later, if it is supposed to be shared.
+        if (($sharedService)) {
+            $this->services[$resolvedName] = $object;
+        }
+        // Also do so for aliases, this allows sharing based on service name used.
+        // $serviceAvailable is true if and only if we have an alias
+        if ($sharedAlias) {
+            $this->services[$name] = $object;
         }
 
         return $object;
@@ -327,7 +333,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function configure(array $config)
     {
-        $this->validateOverrides($config);
+        $this->validateConfig($config);
 
         if (isset($config['services'])) {
             $this->services = $config['services'] + $this->services;
@@ -453,7 +459,8 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setFactory($name, $factory)
     {
-        $this->configure(['factories' => [$name => $factory]]);
+        $this->validate($name);
+        $this->factories[$name] = $factory;
     }
 
     /**
@@ -475,7 +482,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function addAbstractFactory($factory)
     {
-        $this->configure(['abstract_factories' => [$factory]]);
+        $this->resolveAbstractFactory($factory);
     }
 
     /**
@@ -508,7 +515,8 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setService($name, $service)
     {
-        $this->configure(['services' => [$name => $service]]);
+        $this->validate($name);
+        $this->services[$name] = $service;
     }
 
     /**
@@ -519,7 +527,51 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setShared($name, $flag)
     {
-        $this->configure(['shared' => [$name => (bool) $flag]]);
+        $this->validate($name);
+        $this->shared[$name] = (bool) $flag;
+    }
+
+    private function resolveAbstractFactory($abstractFactory)
+    {
+        if (\is_string($abstractFactory) && \class_exists($abstractFactory)) {
+            //Cached string
+            if (! isset($this->cachedAbstractFactories[$abstractFactory])) {
+                $this->cachedAbstractFactories[$abstractFactory] = new $abstractFactory();
+            }
+
+            $abstractFactory = $this->cachedAbstractFactories[$abstractFactory];
+        }
+
+        if ($abstractFactory instanceof Factory\AbstractFactoryInterface) {
+            $abstractFactoryObjHash = \spl_object_hash($abstractFactory);
+            $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
+            return;
+        }
+
+        // Error condition; let's find out why.
+
+        // If we still have a string, we have a class name that does not resolve
+        if (\is_string($abstractFactory)) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'An invalid abstract factory was registered; resolved to class "%s" ' .
+                    'which does not exist; please provide a valid class name resolving ' .
+                    'to an implementation of %s',
+                    $abstractFactory,
+                    AbstractFactoryInterface::class
+                )
+            );
+        }
+
+        // Otherwise, we have an invalid type.
+        throw new InvalidArgumentException(
+            sprintf(
+                'An invalid abstract factory was registered. Expected an instance of "%s", ' .
+                'but "%s" was received',
+                AbstractFactoryInterface::class,
+                (is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory))
+            )
+        );
     }
 
     /**
@@ -532,46 +584,52 @@ class ServiceManager implements ServiceLocatorInterface
     private function resolveAbstractFactories(array $abstractFactories)
     {
         foreach ($abstractFactories as $abstractFactory) {
-            if (\is_string($abstractFactory) && \class_exists($abstractFactory)) {
-                //Cached string
-                if (! isset($this->cachedAbstractFactories[$abstractFactory])) {
-                    $this->cachedAbstractFactories[$abstractFactory] = new $abstractFactory();
-                }
+            $this->resolveAbstractFactory($abstractFactory);
+        }
+    }
 
-                $abstractFactory = $this->cachedAbstractFactories[$abstractFactory];
-            }
+    /**
+     * Instantiate initializers for to avoid checks during service construction.
+     *
+     * @param string[]|Initializer\InitializerInterface[]|callable[] $initializers
+     *
+     * @return void
+     */
+    private function resolveInitializer($initializer)
+    {
+        if (\is_string($initializer) && \class_exists($initializer)) {
+            $initializer = new $initializer();
+        }
 
-            if ($abstractFactory instanceof Factory\AbstractFactoryInterface) {
-                $abstractFactoryObjHash = \spl_object_hash($abstractFactory);
-                $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
-                continue;
-            }
+        if (\is_callable($initializer)) {
+            $this->initializers[] = $initializer;
+            return;
+        }
 
-            // Error condition; let's find out why.
+        // Error condition; let's find out why.
 
-            // If we still have a string, we have a class name that does not resolve
-            if (\is_string($abstractFactory)) {
-                throw new InvalidArgumentException(
-                    sprintf(
-                        'An invalid abstract factory was registered; resolved to class "%s" ' .
-                        'which does not exist; please provide a valid class name resolving ' .
-                        'to an implementation of %s',
-                        $abstractFactory,
-                        AbstractFactoryInterface::class
-                    )
-                );
-            }
-
-            // Otherwise, we have an invalid type.
+        if (\is_string($initializer)) {
             throw new InvalidArgumentException(
                 sprintf(
-                    'An invalid abstract factory was registered. Expected an instance of "%s", ' .
-                    'but "%s" was received',
-                    AbstractFactoryInterface::class,
-                    (is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory))
+                    'An invalid initializer was registered; resolved to class or function "%s" ' .
+                    'which does not exist; please provide a valid function name or class ' .
+                    'name resolving to an implementation of %s',
+                    $initializer,
+                    Initializer\InitializerInterface::class
                 )
             );
         }
+
+        // Otherwise, we have an invalid type.
+        throw new InvalidArgumentException(
+            sprintf(
+                'An invalid initializer was registered. Expected a callable, or an instance of ' .
+                '(or string class name resolving to) "%s", ' .
+                'but "%s" was received',
+                Initializer\InitializerInterface::class,
+                (is_object($initializer) ? get_class($initializer) : gettype($initializer))
+            )
+        );
     }
 
     /**
@@ -584,39 +642,7 @@ class ServiceManager implements ServiceLocatorInterface
     private function resolveInitializers(array $initializers)
     {
         foreach ($initializers as $initializer) {
-            if (\is_string($initializer) && \class_exists($initializer)) {
-                $initializer = new $initializer();
-            }
-
-            if (\is_callable($initializer)) {
-                $this->initializers[] = $initializer;
-                continue;
-            }
-
-            // Error condition; let's find out why.
-
-            if (\is_string($initializer)) {
-                throw new InvalidArgumentException(
-                    sprintf(
-                        'An invalid initializer was registered; resolved to class or function "%s" ' .
-                        'which does not exist; please provide a valid function name or class ' .
-                        'name resolving to an implementation of %s',
-                        $initializer,
-                        Initializer\InitializerInterface::class
-                    )
-                );
-            }
-
-            // Otherwise, we have an invalid type.
-            throw new InvalidArgumentException(
-                sprintf(
-                    'An invalid initializer was registered. Expected a callable, or an instance of ' .
-                    '(or string class name resolving to) "%s", ' .
-                    'but "%s" was received',
-                    Initializer\InitializerInterface::class,
-                    (is_object($initializer) ? get_class($initializer) : gettype($initializer))
-                )
-            );
+            $this->resolveInitializer($initializer);
         }
     }
 
@@ -888,86 +914,101 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Determine if one or more services already exist in the container.
+     * Determine if a service instance for a given name already exists,
+     * and if it exists, determine if is it allowed to get overriden.
      *
-     * If the allow override flag is true or it's first time configured,
-     * this method does nothing.
+     * Validation in the context of this class means, that for
+     * a given service name we do not have a service instance
+     * in the cache OR override is explicitly allowed.
      *
-     * Otherwise, it checks against each of the following service types,
-     * if present, and validates that none are defining services that
-     * already exist; if they do, it raises an exception indicating
-     * modification is not allowed.
+     * @param string $service
+     * @throws ContainerModificationsNotAllowedException if the
+     *     provided service name is invalid.
+     */
+    private function validate($service)
+    {
+        // Important: Next three lines must kept equal to the three
+        // lines of validateArray (see below) which are marked as code
+        // duplicate!
+        if (! isset($this->services[$service]) ?: $this->allowOverride) {
+            return;
+        }
+        throw new ContainerModificationsNotAllowedException(sprintf(
+            'The container does not allow to replace/update a service'
+            . ' with existing instances; the following '
+            . 'already exist in the container: %s',
+            $service
+        ));
+    }
+
+    /**
+     * Determine if a service instance for any of the provided array's
+     * keys already exists, and if it exists, determine if is it allowed
+     * to get overriden.
+     *
+     * Validation in the context of this class means, that for
+     * a given service name we do not have a service instance
+     * in the cache OR override is explicitly allowed.
+     *
+     * @param string[] $services
+     * @param string $type Type of service being checked.
+     * @throws ContainerModificationsNotAllowedException if any
+     *     array keys is invalid.
+     */
+    private function validateArray(array $services)
+    {
+        $keys = \array_keys($services);
+        foreach ($keys as $service) {
+            // This is a code duplication from validate (see above).
+            // validate is almost a one liner, so we reproduce it
+            // here for the sake of performance of aggregated service
+            // manager configurations (we save the overhead the function
+            // call would produce)
+            //
+            // Important: Next three lines MUST kept equal to the first
+            // three lines of validate!
+            if (! isset($this->services[$service]) ?: $this->allowOverride) {
+                return;
+            }
+            throw new ContainerModificationsNotAllowedException(sprintf(
+                'The container does not allow to replace/update a service'
+                . ' with existing instances; the following '
+                . 'already exist in the container: %s',
+                $service
+            ));
+        }
+    }
+
+    /**
+     * Determine if a service for any name provided by a service
+     * manager configuration(services, aliases, factories, ...)
+     * already exists, and if it exists, determine if is it allowed
+     * to get overriden.
+     *
+     * Validation in the context of this class means, that for
+     * a given service name we do not have a service instance
+     * in the cache OR override is explicitly allowed.
      *
      * @param array $config
-     * @throws ContainerModificationsNotAllowedException if any services
-     *     provided already have instances available.
+     * @throws ContainerModificationsNotAllowedException if any
+     *     service key is invalid.
      */
-    private function validateOverrides(array $config)
+    private function validateConfig(array $config)
     {
         if ($this->allowOverride || ! $this->configured) {
             return;
         }
 
-        if (isset($config['services'])) {
-            $this->validateOverrideSet(\array_keys($config['services']), 'service');
-        }
+        $sections = ['services', 'aliases', 'invokables', 'factories', 'delegators', 'shared'];
 
-        if (isset($config['aliases'])) {
-            $this->validateOverrideSet(\array_keys($config['aliases']), 'alias');
-        }
-
-        if (isset($config['invokables'])) {
-            $this->validateOverrideSet(\array_keys($config['invokables']), 'invokable class');
-        }
-
-        if (isset($config['factories'])) {
-            $this->validateOverrideSet(\array_keys($config['factories']), 'factory');
-        }
-
-        if (isset($config['delegators'])) {
-            $this->validateOverrideSet(\array_keys($config['delegators']), 'delegator');
-        }
-
-        if (isset($config['shared'])) {
-            $this->validateOverrideSet(\array_keys($config['shared']), 'sharing rule');
-        }
-
-        if (isset($config['lazy_services']['class_map'])) {
-            $this->validateOverrideSet(\array_keys($config['lazy_services']['class_map']), 'lazy service');
-        }
-    }
-
-    /**
-     * Determine if one or more services already exist for a given type.
-     *
-     * Loops through the provided service names, checking if any have current
-     * service instances; if not, it returns, but otherwise, it raises an
-     * exception indicating modification is not allowed.
-     *
-     * @param string[] $services
-     * @param string $type Type of service being checked.
-     * @throws ContainerModificationsNotAllowedException if any services
-     *     provided already have instances available.
-     */
-    private function validateOverrideSet(array $services, $type)
-    {
-        $detected = [];
-        foreach ($services as $service) {
-            if (isset($this->services[$service])) {
-                $detected[] = $service;
+        foreach ($sections as $section) {
+            if (isset($config[$section])) {
+                $this->validateArray($config[$section]);
             }
         }
 
-        if (empty($detected)) {
-            return;
+        if (isset($config['lazy_services']['class_map'])) {
+            $this->validateArray($config['lazy_services']['class_map']);
         }
-
-        throw new ContainerModificationsNotAllowedException(sprintf(
-            'An updated/new %s is not allowed, as the container does not allow '
-            . 'changes for services with existing instances; the following '
-            . 'already exist in the container: %s',
-            $type,
-            implode(', ', $detected)
-        ));
     }
 }
