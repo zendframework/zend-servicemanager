@@ -420,7 +420,6 @@ class ServiceManager implements ServiceLocatorInterface
     {
         $this->validate($alias);
         $this->doSetAlias($alias, $target);
-
     }
 
     /**
@@ -963,8 +962,8 @@ class ServiceManager implements ServiceLocatorInterface
                     'to an implementation of %s',
                     $abstractFactory,
                     AbstractFactoryInterface::class
-                    )
-                );
+                )
+            );
         }
 
         // Otherwise, we have an invalid type.
@@ -974,7 +973,7 @@ class ServiceManager implements ServiceLocatorInterface
                 'but "%s" was received',
                 AbstractFactoryInterface::class,
                 (is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory))
-                )
-            );
+            )
+        );
     }
 }
