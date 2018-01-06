@@ -923,13 +923,13 @@ class ServiceManager implements ServiceLocatorInterface
 
     /**
      * Instantiate abstract factories for to avoid checks during service construction.
-     * 
+     *
      * @todo: To construct to avoid is not really an optimization, it's lazyness
      * AbstractFactories are shared services. Make sure that has() is guarded against
      * numerical parameters. Handle AbstractFactories as any other shared services.
-     * 
+     *
      * @todo: Implement a has() and get() logic which unifies the several arrays
-     * It is not necessary to isset(blah) several times on a request.
+     * It is a desaster to isset(blah) several times on each request.
      *
      * @param string[]|Factory\AbstractFactoryInterface[] $abstractFactories
      *
