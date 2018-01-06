@@ -22,7 +22,6 @@ use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
-use function array_intersect_key;
 use function array_keys;
 use function array_merge;
 use function array_merge_recursive;
@@ -380,8 +379,6 @@ class ServiceManager implements ServiceLocatorInterface
         if (! empty($config['aliases'])) {
             $this->aliases = $config['aliases'] + $this->aliases;
             $this->mapAliasesToTargets();
-        } elseif (! $this->configured && ! empty($this->aliases)) {
-            $this->mapAliasesToTargets();
         }
 
         if (isset($config['shared_by_default'])) {
@@ -398,11 +395,7 @@ class ServiceManager implements ServiceLocatorInterface
         // For abstract factories and initializers, we always directly
         // instantiate them to avoid checks during service construction.
         if (isset($config['abstract_factories'])) {
-            $abstractFactories = $config['abstract_factories'];
-            // $key not needed, but foreach is faster than foreach + array_values.
-            foreach ($abstractFactories as $key => $abstractFactory) {
-                $this->resolveAbstractFactoryInstance($abstractFactory);
-            }
+            $this->resolveAbstractFactories($config['abstract_factories'];);
         }
 
         if (isset($config['initializers'])) {
@@ -671,33 +664,7 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Resolve aliases to their canonical service names.
-     *
-     * @param string[] $aliases
-     *
-     * @returns void
-     */
-    private function resolveAliases(array $aliases)
-    {
-        foreach ($aliases as $alias => $service) {
-            $visited = [];
-            $name    = $alias;
-
-            while (isset($this->aliases[$name])) {
-                if (isset($visited[$name])) {
-                    throw CyclicAliasException::fromAliasesMap($aliases);
-                }
-
-                $visited[$name] = true;
-                $name           = $this->aliases[$name];
-            }
-
-            $this->resolvedAliases[$alias] = $name;
-        }
-    }
-
-    /**
-     * Get a factory for the given service name and create an object using
+     * Find a factory for the given service name and create an object using
      * that factory or create invokable if service is invokable
      *
      * @param  string $name
@@ -1084,5 +1051,86 @@ class ServiceManager implements ServiceLocatorInterface
                 $tagged[$alias] = true;
             }
         }
+    }
+
+    /**
+     * Assuming that the alias name is valid (see above) resolve/add it.
+     *
+     * @param string $alias
+     * @param string $target
+     */
+    private function doSetAlias($alias, $target)
+    {
+        $this->aliases[$alias] = $target;
+        $this->resolvedAliases[$alias] =
+            isset($this->resolvedAliases[$target]) ? $this->resolvedAliases[$target] : $target;
+
+        if ($alias === $this->resolvedAliases[$alias]) {
+            throw CyclicAliasException::fromAliasesMap([$alias]);
+        }
+
+        if (in_array($alias, $this->resolvedAliases)) {
+            $r = array_intersect($this->resolvedAliases, [ $alias ]);
+            foreach ($r as $name => $service) {
+                $this->resolvedAliases[$name] = $target;
+            }
+        }
+    }
+
+    /**
+     * Instantiate abstract factories for to avoid checks during service construction.
+     * 
+     * @todo: To construct to avoid is not really an optimization, it's lazyness
+     * AbstractFactories are shared services. Make sure that has() is guarded against
+     * numerical parameters. Handle AbstractFactories as any other shared services.
+     * 
+     * @todo: Implement a has() and get() logic which unifies the several arrays
+     * It is not necessary to isset(blah) several times on a request.
+     *
+     * @param string[]|Factory\AbstractFactoryInterface[] $abstractFactories
+     *
+     * @return void
+     */
+    private function doAddAbstractFactory($abstractFactory)
+    {
+        if (\is_string($abstractFactory) && \class_exists($abstractFactory)) {
+            //Cached string
+            if (! isset($this->cachedAbstractFactories[$abstractFactory])) {
+                $this->cachedAbstractFactories[$abstractFactory] = new $abstractFactory();
+            }
+
+            $abstractFactory = $this->cachedAbstractFactories[$abstractFactory];
+        }
+
+        if ($abstractFactory instanceof Factory\AbstractFactoryInterface) {
+            $abstractFactoryObjHash = \spl_object_hash($abstractFactory);
+            $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
+            return;
+        }
+
+        // Error condition; let's find out why.
+
+        // If we still have a string, we have a class name that does not resolve
+        if (\is_string($abstractFactory)) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'An invalid abstract factory was registered; resolved to class "%s" ' .
+                    'which does not exist; please provide a valid class name resolving ' .
+                    'to an implementation of %s',
+                    $abstractFactory,
+                    AbstractFactoryInterface::class
+                    )
+                );
+        }
+
+        // Otherwise, we have an invalid type.
+        throw new InvalidArgumentException(
+            sprintf(
+                'An invalid abstract factory was registered. Expected an instance of "%s", ' .
+                'but "%s" was received',
+                AbstractFactoryInterface::class,
+                (is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory))
+                )
+            );
     }
 }
