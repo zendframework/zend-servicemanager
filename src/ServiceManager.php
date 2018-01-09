@@ -282,7 +282,7 @@ class ServiceManager implements ServiceLocatorInterface
 			return true;
 		}
 
-        // Check abstract factories next
+        // Check abstract factories
         foreach ($this->abstractFactories as $abstractFactory) {
             if ($abstractFactory->canCreate($this->creationContext, $name)) {
                 return true;
