@@ -217,8 +217,8 @@ class ServiceManager implements ServiceLocatorInterface
         $sharedService = isset($this->shared[$name]) ? $this->shared[$name] : $this->sharedByDefault;
 
         // We achieve better performance if we can let all alias
-        // considerations out.
-        if (! $this->aliases) {
+        // considerations out
+        if (empty($this->aliases)) {
             $object = $this->doCreate($name);
 
             // Cache the object for later, if it is supposed to be shared.
@@ -1061,18 +1061,17 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function doSetAlias($alias, $target)
     {
-        $this->aliases[$alias] = $target;
-        $this->resolvedAliases[$alias] =
-            isset($this->resolvedAliases[$target]) ? $this->resolvedAliases[$target] : $target;
+        $this->aliases[$alias] =
+            isset($this->aliases[$target]) ? $this->aliases[$target] : $target;
 
-        if ($alias === $this->resolvedAliases[$alias]) {
-            throw CyclicAliasException::fromAliasesMap([$alias]);
+        if ($alias === $this->aliases[$alias]) {
+            throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
         }
 
-        if (in_array($alias, $this->resolvedAliases)) {
-            $r = array_intersect($this->resolvedAliases, [ $alias ]);
+        if (in_array($alias, $this->aliases)) {
+            $r = array_intersect($this->aliases, [ $alias ]);
             foreach ($r as $name => $service) {
-                $this->resolvedAliases[$name] = $target;
+                $this->aliases[$name] = $target;
             }
         }
     }
