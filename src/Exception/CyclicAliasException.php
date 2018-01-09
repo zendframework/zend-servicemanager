@@ -11,6 +11,7 @@ use function sprintf;
 
 class CyclicAliasException extends InvalidArgumentException
 {
+    public static $cycle;
     /**
      * @param string   conflicting alias key
      * @param string[] $aliases map of referenced services, indexed by alias name (string)
@@ -19,16 +20,24 @@ class CyclicAliasException extends InvalidArgumentException
      */
     public static function fromCyclicAlias($alias, $aliases)
     {
-        $msg = $alias;
+        $cycle = $alias;
         $cursor = $alias;
-        while($aliases[$cursor] !== $alias) {
+        while (isset($aliases[$cursor]) && $aliases[$cursor] !== $alias) {
             $cursor = $aliases[$cursor];
-            $msg .= ' -> '. $cursor;
+            $cycle .= ' -> '. $cursor;
         }
-        $msg .= ' -> ' . $alias . PHP_EOL;
+        $cycle .= ' -> ' . $alias . "\n";
+
+        // for testing
+        self::$cycle = $cycle;
         return new self(sprintf(
             "A cycle was detected within the aliases defintions:\n%s",
-            $msg
-            ));
+            $cycle
+        ));
+    }
+
+    public function getCycle()
+    {
+        return self::$cycle;
     }
 }

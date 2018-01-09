@@ -105,10 +105,10 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private $lazyServicesDelegator;
 
-    /**
-     * @var string[]
-     */
-    private $resolvedAliases = [];
+//     /**
+//      * @var string[]
+//      */
+//     private $resolvedAliases = [];
 
     /**
      * A list of already loaded services (this act as a local cache)
@@ -200,7 +200,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         // We achieve better performance if we can let all alias
         // considerations out
-        if (empty($this->resolvedAliases)) {
+        if (empty($this->aliases)) {
             $object = $this->doCreate($name);
 
             // Cache the object for later, if it is supposed to be shared.
@@ -211,7 +211,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         // Here we have to deal with requests which may be aliases
-        $resolvedName = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
+        $resolvedName = isset($this->aliases[$name]) ? $this->aliases[$name] : $name;
 
         // Can only become true, if the requested service is an shared alias
         $sharedAlias = $sharedService && isset($this->services[$resolvedName]);
@@ -244,7 +244,7 @@ class ServiceManager implements ServiceLocatorInterface
     public function build($name, array $options = null)
     {
         // We never cache when using "build"
-        $name = $this->resolvedAliases[$name] ?? $name;
+        $name = $this->aliases[$name] ?? $name;
         return $this->doCreate($name, $options);
     }
 
@@ -253,7 +253,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function has($name)
     {
-        $name  = $this->resolvedAliases[$name] ?? $name;
+        $name  = $this->aliases[$name] ?? $name;
         $found = isset($this->services[$name]) || isset($this->factories[$name]);
 
         if ($found) {
@@ -904,18 +904,17 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function doSetAlias($alias, $target)
     {
-        $this->aliases[$alias] = $target;
-        $this->resolvedAliases[$alias] =
-            isset($this->resolvedAliases[$target]) ? $this->resolvedAliases[$target] : $target;
+        $this->aliases[$alias] =
+            isset($this->aliases[$target]) ? $this->aliases[$target] : $target;
 
-        if ($alias === $this->resolvedAliases[$alias]) {
-            throw CyclicAliasException::fromAliasesMap([$alias]);
+        if ($alias === $this->aliases[$alias]) {
+            throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
         }
 
-        if (in_array($alias, $this->resolvedAliases)) {
-            $r = array_intersect($this->resolvedAliases, [ $alias ]);
+        if (in_array($alias, $this->aliases)) {
+            $r = array_intersect($this->aliases, [ $alias ]);
             foreach ($r as $name => $service) {
-                $this->resolvedAliases[$name] = $target;
+                $this->aliases[$name] = $target;
             }
         }
     }
