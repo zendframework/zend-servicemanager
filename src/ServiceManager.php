@@ -253,21 +253,26 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function has($name)
     {
-        $name  = $this->aliases[$name] ?? $name;
-        $found = isset($this->services[$name]) || isset($this->factories[$name]);
-
-        if ($found) {
-            return $found;
+        // Check services and factories first to speedup the most common requests
+        if (isset($this->services[$name]) || isset($this->factories[$name])) {
+            return true;
         }
 
-        // Check abstract factories
+        // Check abstract factories next
         foreach ($this->abstractFactories as $abstractFactory) {
             if ($abstractFactory->canCreate($this->creationContext, $name)) {
                 return true;
             }
         }
 
-        return false;
+        // If $name is no alias, we are done
+        if (! isset($this->aliases[$name])) {
+            return false;
+        }
+
+        // Finally check aliases
+        $resolvedName = $this->aliases[$name];
+        return isset($this->services[$resolvedName]) || isset($this->factories[$resolvedName]);
     }
 
     /**
