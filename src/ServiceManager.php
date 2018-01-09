@@ -266,8 +266,10 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         // Finally check aliases
-        $resolvedName = $this->resolvedAliases[$name];
-        return isset($this->services[$resolvedName]) || isset($this->factories[$resolvedName]);
+        $name = $this->resolvedAliases[$name];
+        return isset($this->services[$name]) || isset($this->factories[$name]);
+
+        return false;
     }
 
     /**
