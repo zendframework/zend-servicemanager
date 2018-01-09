@@ -520,7 +520,6 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @param string[]|Initializer\InitializerInterface[]|callable[] $initializers
      *
-     * @return void
      */
     private function resolveInitializer($initializer)
     {
@@ -904,15 +903,21 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function doSetAlias($alias, $target)
     {
+        // $target is either an alias or something else
+        // if it is an alias, resolve it
         $this->aliases[$alias] =
             isset($this->aliases[$target]) ? $this->aliases[$target] : $target;
 
+        // a self-referencing alias indicates a cycle
         if ($alias === $this->aliases[$alias]) {
             throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
         }
 
+        // finally we have to check if existing incomplete alias definitions
+        // exist which can get resolved by the new alias
         if (in_array($alias, $this->aliases)) {
             $r = array_intersect($this->aliases, [ $alias ]);
+            // found some, resolve them
             foreach ($r as $name => $service) {
                 $this->aliases[$name] = $target;
             }
