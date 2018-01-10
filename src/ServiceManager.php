@@ -22,6 +22,7 @@ use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
+<<<<<<< HEAD
 use function array_keys;
 use function array_merge;
 use function array_merge_recursive;
@@ -614,8 +615,8 @@ class ServiceManager implements ServiceLocatorInterface
 
         if (is_string($initializer)) {
             throw new InvalidArgumentException(sprintf(
-                'An invalid initializer was registered; resolved to class or function "%s" ' 
-                . 'which does not exist; please provide a valid function name or class ' 
+                'An invalid initializer was registered; resolved to class or function "%s" '
+                . 'which does not exist; please provide a valid function name or class '
                 . 'name resolving to an implementation of %s',
                 $initializer,
                 Initializer\InitializerInterface::class
@@ -624,8 +625,8 @@ class ServiceManager implements ServiceLocatorInterface
 
         // Otherwise, we have an invalid type.
         throw new InvalidArgumentException(sprintf(
-            'An invalid initializer was registered. Expected a callable, or an instance of ' 
-            . '(or string class name resolving to) "%s", ' 
+            'An invalid initializer was registered. Expected a callable, or an instance of '
+            . '(or string class name resolving to) "%s", '
             . 'but "%s" was received',
             Initializer\InitializerInterface::class,
             (is_object($initializer) ? get_class($initializer) : gettype($initializer))
@@ -947,38 +948,6 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Determine if a service instance for any of the provided array's
-     * keys already exists, and if it exists, determine if is it allowed
-     * to get overriden.
-     *
-     * Validation in the context of this class means, that for
-     * a given service name we do not have a service instance
-     * in the cache OR override is explicitly allowed.
-     *
-     * @param string[] $services
-     * @param string $type Type of service being checked.
-     * @throws ContainerModificationsNotAllowedException if any
-     *     array keys is invalid.
-     */
-    private function validateArray(array $services)
-    {
-        foreach (array_keys($services) as $service) {
-            // This is a code duplication from validateServiceName (see above).
-            // validateServiceName is almost a one liner, so we reproduce it
-            // here for the sake of performance of aggregated service
-            // manager configurations (we save the overhead the function
-            // call would produce)
-            //
-            // Important: Next three lines MUST kept equal to the first
-            // three lines of validate!
-            if (! isset($this->services[$service]) ?: $this->allowOverride) {
-                return;
-            }
-            throw new ContainerModificationsNotAllowedException($service);
-        }
-    }
-
-    /**
      * Assuming that all provided alias keys are valid resolve them.
      *
      * This function maps $this->aliases in place.
@@ -1060,6 +1029,40 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
+     * Assuming that all provided alias keys are valid resolve them.
+     *
+     * This as an adaptation of Tarjan's strongly connected components
+     * algorithm. We detect cycles as well reduce the graph so that
+     * each alias key gets associated with the resolved service.
+     *
+     * @param string[][] array of alias definitions
+     */
+    private function mapAliasesToTargets($aliases)
+    {
+        $tagged = [];
+        foreach ($aliases as $alias => $target) {
+            if (! isset($tagged[$alias])) {
+                $tCursor = $aliases[$alias];
+                $aCursor = $alias;
+                $stack = [];
+                while (isset($aliases[$tCursor])) {
+                    $stack[] = $aCursor;
+                    $aCursor = $tCursor;
+                    if (isset($tagged[$aCursor])) {
+                        throw CyclicAliasException::fromCyclicAlias($alias, $aliases);
+                    }
+                    $tagged[$aCursor] = true;
+                    $tCursor = $aliases[$tCursor];
+                }
+                foreach ($stack as $alias) {
+                    $aliases[$alias] = $tCursor;
+                }
+            }
+        }
+        $this->aliases = $aliases;
+    }
+
+    /**
      * Instantiate abstract factories in order to avoid checks during service construction.
      *
      * @param string[]|Factory\AbstractFactoryInterface[] $abstractFactories
@@ -1088,8 +1091,8 @@ class ServiceManager implements ServiceLocatorInterface
         // If we still have a string, we have a class name that does not resolve
         if (is_string($abstractFactory)) {
             throw new InvalidArgumentException(sprintf(
-                'An invalid abstract factory was registered; resolved to class "%s" ' 
-                . 'which does not exist; please provide a valid class name resolving ' 
+                'An invalid abstract factory was registered; resolved to class "%s" '
+                . 'which does not exist; please provide a valid class name resolving '
                 . 'to an implementation of %s',
                 $abstractFactory,
                 AbstractFactoryInterface::class
@@ -1098,7 +1101,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         // Otherwise, we have an invalid type.
         throw new InvalidArgumentException(sprintf(
-            'An invalid abstract factory was registered. Expected an instance of "%s", ' 
+            'An invalid abstract factory was registered. Expected an instance of "%s", '
             . 'but "%s" was received',
             AbstractFactoryInterface::class,
             (is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory))
