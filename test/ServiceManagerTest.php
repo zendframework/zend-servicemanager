@@ -254,14 +254,10 @@ class ServiceManagerTest extends TestCase
 
         $abstractFactory
             ->method('canCreate')
-            ->withConsecutive(
-                [ $this->anything(), $this->equalTo('Alias') ],
-                [ $this->anything(), $this->equalTo('ServiceName')]
-            )
-            ->willReturnCallback(function ($context, $name) {
-                return $name === 'Alias';
-            });
-        self::assertTrue($serviceManager->has('Alias'));
+            ->with($this->anything(), 'ServiceName')
+            ->willReturn(true);
+
+        $this->assertTrue($serviceManager->has('Alias'));
     }
 
     public static function sampleFactory()

@@ -22,7 +22,6 @@ use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
-<<<<<<< HEAD
 use function array_keys;
 use function array_merge;
 use function array_merge_recursive;
