@@ -339,7 +339,7 @@ class ServiceManager implements ServiceLocatorInterface
     {
         // This is a bulk update/initial configuration
         // So we check all definitions
-        $this->validateConfig($config);
+        $this->validateServiceNameConfig($config);
 
         if (isset($config['services'])) {
             $this->services = $config['services'] + $this->services;
@@ -422,7 +422,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setAlias($alias, $target)
     {
-        $this->validate($alias);
+        $this->validateServiceName($alias);
         $this->doSetAlias($alias, $target);
     }
 
@@ -447,7 +447,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setFactory($name, $factory)
     {
-        $this->validate($name);
+        $this->validateServiceName($name);
         $this->factories[$name] = $factory;
     }
 
@@ -503,7 +503,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setService($name, $service)
     {
-        $this->validate($name);
+        $this->validateServiceName($name);
         $this->services[$name] = $service;
     }
 
@@ -515,7 +515,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setShared($name, $flag)
     {
-        $this->validate($name);
+        $this->validateServiceName($name);
         $this->shared[$name] = (bool) $flag;
     }
 
@@ -813,10 +813,10 @@ class ServiceManager implements ServiceLocatorInterface
      * @throws ContainerModificationsNotAllowedException if the
      *     provided service name is invalid.
      */
-    private function validate($service)
+    private function validateServiceName($service)
     {
         // Important: Next three lines must kept equal to the three
-        // lines of validateArray (see below) which are marked as code
+        // lines of validateServiceNameArray (see below) which are marked as code
         // duplicate!
         if (! isset($this->services[$service]) ?: $this->allowOverride) {
             return;
@@ -843,18 +843,18 @@ class ServiceManager implements ServiceLocatorInterface
      * @throws ContainerModificationsNotAllowedException if any
      *     array keys is invalid.
      */
-    private function validateArray(array $services)
+    private function validateServiceNameArray(array $services)
     {
         $keys = \array_keys($services);
         foreach ($keys as $service) {
-            // This is a code duplication from validate (see above).
-            // validate is almost a one liner, so we reproduce it
+            // This is a code duplication from validateServiceName (see above).
+            // validateServiceName is almost a one liner, so we reproduce it
             // here for the sake of performance of aggregated service
             // manager configurations (we save the overhead the function
             // call would produce)
             //
             // Important: Next three lines MUST kept equal to the first
-            // three lines of validate!
+            // three lines of validateServiceName!
             if (! isset($this->services[$service]) ?: $this->allowOverride) {
                 return;
             }
@@ -881,7 +881,7 @@ class ServiceManager implements ServiceLocatorInterface
      * @throws ContainerModificationsNotAllowedException if any
      *     service key is invalid.
      */
-    private function validateConfig(array $config)
+    private function validateServiceNameConfig(array $config)
     {
         if ($this->allowOverride || ! $this->configured) {
             return;
@@ -891,12 +891,12 @@ class ServiceManager implements ServiceLocatorInterface
 
         foreach ($sections as $section) {
             if (isset($config[$section])) {
-                $this->validateArray($config[$section]);
+                $this->validateServiceNameArray($config[$section]);
             }
         }
 
         if (isset($config['lazy_services']['class_map'])) {
-            $this->validateArray($config['lazy_services']['class_map']);
+            $this->validateServiceNameArray($config['lazy_services']['class_map']);
         }
     }
 
