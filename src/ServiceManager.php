@@ -267,7 +267,16 @@ class ServiceManager implements ServiceLocatorInterface
 
         // Finally check aliases
         $resolvedName = $this->aliases[$name];
-        return isset($this->services[$resolvedName]) || isset($this->factories[$resolvedName]);
+        if (isset($this->services[$resolvedName]) || isset($this->factories[$resolvedName])) {
+            return true;
+        }
+
+        // Check abstract factories on $resolvedName also
+        foreach ($this->abstractFactories as $abstractFactory) {
+            if ($abstractFactory->canCreate($this->creationContext, $resolvedName)) {
+                return true;
+            }
+        }
     }
 
     /**
