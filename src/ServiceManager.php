@@ -377,14 +377,10 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         if (isset($config['aliases'])) {
-            // @todo: Shouldn't that be $config['aliases'] + $this->aliases (or array_merge?)
-            // Will have to examine.
-            $aliases = $config['aliases'];
+            $this->aliases = $config['aliases'] + $this->aliases;
+            $this->mapAliasesToTargets();
         } elseif (! $this->configured && ! empty($this->aliases)) {
-            $aliases = $this->aliases;
-        }
-        if (! empty($aliases)) {
-            $this->mapAliasesToTargets($aliases);
+            $this->mapAliasesToTargets();
         }
 
         if (isset($config['shared_by_default'])) {
@@ -915,7 +911,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         // finally we have to check if existing incomplete alias definitions
         // exist which can get resolved by the new alias
-        if (in_array($alias, $this->aliases, true)) {
+        if (in_array($alias, $this->aliases)) {
             $r = array_intersect($this->aliases, [ $alias ]);
             // found some, resolve them
             foreach ($r as $name => $service) {
@@ -930,32 +926,32 @@ class ServiceManager implements ServiceLocatorInterface
      * This as an adaptation of Tarjan's strongly connected components
      * algorithm. We detect cycles as well reduce the graph so that
      * each alias key gets associated with the resolved service.
+     * This function maps $this->aliases in place.
      *
-     * @param string[][] array of alias definitions
+     * This algorithm is fast for mass updates through configure().
+     * It is not appropriate if just a single alias is added.
+     *
      */
-    private function mapAliasesToTargets($aliases)
+    private function mapAliasesToTargets()
     {
         $tagged = [];
-        foreach ($aliases as $alias => $target) {
-            if (! isset($tagged[$alias])) {
-                $tCursor = $aliases[$alias];
-                $aCursor = $alias;
-                $stack = [];
-                while (isset($aliases[$tCursor])) {
-                    $stack[] = $aCursor;
-                    $aCursor = $tCursor;
-                    if (isset($tagged[$aCursor])) {
-                        throw CyclicAliasException::fromCyclicAlias($alias, $aliases);
-                    }
-                    $tagged[$aCursor] = true;
-                    $tCursor = $aliases[$tCursor];
-                }
-                foreach ($stack as $alias) {
-                    $aliases[$alias] = $tCursor;
+        foreach ($this->aliases as $alias => $target) {
+            if (isset($tagged[$alias])) {
+                continue;
+            }
+            $tCursor = $this->aliases[$alias];
+            $aCursor = $alias;
+            $stack = [];
+            while (isset($this->aliases[$tCursor])) {
+                $tagged[$aCursor] = true;
+                $this->aliases[$aCursor] = $this->aliases[$tCursor];
+                $aCursor = $tCursor;
+                $tCursor = $this->aliases[$tCursor];
+                if ($aCursor === $tCursor) {
+                    throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
                 }
             }
         }
-        $this->aliases = $aliases;
     }
 
     /**
