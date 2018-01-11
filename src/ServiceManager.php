@@ -144,13 +144,6 @@ class ServiceManager implements ServiceLocatorInterface
     protected $sharedByDefault = true;
 
     /**
-     * Service manager was already configured?
-     *
-     * @var bool
-     */
-    protected $configured = false;
-
-    /**
      * Cached abstract factories from string.
      *
      * @var array
@@ -849,10 +842,14 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function validateServiceNames(array $config)
     {
+<<<<<<< HEAD
         // Important: Next three lines must kept equal to the three
         // lines of validateArray (see below) which are marked as code
         // duplicate!
         if (! isset($this->services[$service]) || $this->allowOverride) {
+=======
+        if ($this->allowOverride) {
+>>>>>>> Optimized performance for setInvokableClass and handling of invokables
             return;
         }
 
