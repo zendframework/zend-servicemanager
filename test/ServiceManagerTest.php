@@ -242,6 +242,11 @@ class ServiceManagerTest extends TestCase
         self::assertSame($service, $headAlias);
     }
 
+    public function emulateHas($name)
+    {
+        return $name === 'ServiceName';
+    }
+
     public function testAbstractFactoryShouldBeCheckedForResolvedAliasesInsteadOfAliasName()
     {
         $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
@@ -255,12 +260,18 @@ class ServiceManagerTest extends TestCase
             ],
         ]);
 
-        $abstractFactory
-            ->expects(self::once())
-            ->method('canCreate')
-            ->with($this->anything())
-            ->willReturn($this->equalTo('ServiceName'));
+        $valueMap = [
+            ['Alias', false],
+            ['ServiceName', true],
+        ];
 
+        $abstractFactory
+            ->method('canCreate')
+            ->withConsecutive(
+                [ $this->anything(), $this->equalTo('Alias') ],
+                [ $this->anything(), $this->equalTo('ServiceName')]
+            )
+            ->willReturn($this->returnValueMap($valueMap));
         $this->assertTrue($serviceManager->has('Alias'));
     }
 
