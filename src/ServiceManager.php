@@ -21,7 +21,6 @@ use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 
-use function \array_merge;
 use function \array_merge_recursive;
 use function \class_exists;
 use function \get_class;
@@ -132,6 +131,13 @@ class ServiceManager implements ServiceLocatorInterface
      * @var bool
      */
     protected $sharedByDefault = true;
+
+    /**
+     * Service manager was already configured?
+     *
+     * @var bool
+     */
+    protected $configured = false;
 
     /**
      * Cached abstract factories from string.
@@ -360,9 +366,8 @@ class ServiceManager implements ServiceLocatorInterface
 
         if (isset($config['aliases'])) {
             $this->aliases = $config['aliases'] + $this->aliases;
-        }
-
-        if (! empty($this->aliases)) {
+            $this->mapAliasesToTargets();
+        } elseif (! $this->configured && ! empty($this->aliases)) {
             $this->mapAliasesToTargets();
         }
 
@@ -390,6 +395,8 @@ class ServiceManager implements ServiceLocatorInterface
         if (isset($config['initializers'])) {
             $this->resolveInitializers($config['initializers']);
         }
+
+        $this->configured = true;
 
         return $this;
     }
@@ -782,7 +789,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function validateServiceNames(array $config)
     {
-        if ($this->allowOverride) {
+        if ($this->allowOverride || ! $this->configured) {
             return;
         }
 
