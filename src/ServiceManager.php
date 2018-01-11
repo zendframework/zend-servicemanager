@@ -859,7 +859,7 @@ class ServiceManager implements ServiceLocatorInterface
 
     /**
      * Assuming that the alias name is valid (see above) resolve/add it.
-     * 
+     *
      * This is done differently from bulk mapping aliases for performance reasons, as the
      * algorithms for mapping a single item efficiently are different from those of mapping
      * many.
@@ -898,8 +898,8 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * This algorithm is fast for mass updates through configure().
      * It is not appropriate if just a single alias is added.
-     * 
-     * @see mapAliasToTarget above  
+     *
+     * @see mapAliasToTarget above
      *
      */
     private function mapAliasesToTargets()
