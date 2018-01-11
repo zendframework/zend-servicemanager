@@ -859,6 +859,12 @@ class ServiceManager implements ServiceLocatorInterface
 
     /**
      * Assuming that the alias name is valid (see above) resolve/add it.
+     * 
+     * This is done differently from bulk mapping aliases for performance reasons, as the
+     * algorithms for mapping a single item efficiently are different from those of mapping
+     * many.
+     *
+     * @see mapAliasesToTargets() below
      *
      * @param string $alias
      * @param string $target
@@ -888,13 +894,12 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Assuming that all provided alias keys are valid resolve them.
      *
-     * This as an adaptation of Tarjan's strongly connected components
-     * algorithm. We detect cycles as well reduce the graph so that
-     * each alias key gets associated with the resolved service.
      * This function maps $this->aliases in place.
      *
      * This algorithm is fast for mass updates through configure().
      * It is not appropriate if just a single alias is added.
+     * 
+     * @see mapAliasToTarget above  
      *
      */
     private function mapAliasesToTargets()
@@ -906,7 +911,6 @@ class ServiceManager implements ServiceLocatorInterface
             }
             $tCursor = $this->aliases[$alias];
             $aCursor = $alias;
-            $stack = [];
             while (isset($this->aliases[$tCursor])) {
                 $tagged[$aCursor] = true;
                 $this->aliases[$aCursor] = $this->aliases[$tCursor];
