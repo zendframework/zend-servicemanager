@@ -142,13 +142,6 @@ class ServiceManager implements ServiceLocatorInterface
     protected $sharedByDefault = true;
 
     /**
-     * Service manager was already configured?
-     *
-     * @var bool
-     */
-    protected $configured = false;
-
-    /**
      * Cached abstract factories from string.
      *
      * @var array
@@ -283,7 +276,7 @@ class ServiceManager implements ServiceLocatorInterface
                 return true;
             }
         }
-	return false;
+		return false;
     }
 
     /**
@@ -374,8 +367,9 @@ class ServiceManager implements ServiceLocatorInterface
 
         if (isset($config['aliases'])) {
             $this->aliases = $config['aliases'] + $this->aliases;
-            $this->mapAliasesToTargets();
-        } elseif (! $this->configured && ! empty($this->aliases)) {
+        }
+
+        if (! empty($this->aliases)) {
             $this->mapAliasesToTargets();
         }
 
@@ -431,7 +425,11 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setInvokableClass($name, $class = null)
     {
-        $this->configure(['invokables' => [ $name => (isset($class) ? $class : $name)]]);
+        if (isset($this->services[$name]) && ! $this->allowOverride) {
+			throw new ContainerModificationsNotAllowedException($name);
+            return;
+        }
+        $this->invokables[$name] = $class ?? $name;
     }
 
     /**
@@ -823,9 +821,6 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-    }
-
-    /**
      * Determine if a service for any name provided by a service
      * manager configuration(services, aliases, factories, ...)
      * already exists, and if it exists, determine if is it allowed
@@ -841,7 +836,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function validateServiceNames(array $config)
     {
-        if ($this->allowOverride || ! $this->configured) {
+        if ($this->allowOverride) {
             return;
         }
 
