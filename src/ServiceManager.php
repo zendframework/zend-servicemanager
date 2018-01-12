@@ -57,6 +57,24 @@ class ServiceManager implements ServiceLocatorInterface
     protected $abstractFactories = [];
 
     /**
+     * When resolution of service names comes down to abstract
+     * factories, this cache is used reduce the number of calls
+     * to AbstractFactory::canCreate
+     *
+     * @var array
+     */
+    protected $abstractFactoryHasCache = [];
+
+    /**
+     * When resolution of service names comes down to abstract
+     * factories, this cache is used reduce the number of calls
+     * to AbstractFactory::canCreate
+     *
+     * @var array
+     */
+    protected $abstractFactoryHasNotCache = [];
+
+    /**
      * A list of aliases
      *
      * Should map one alias to a service name, or another alias (aliases are recursively resolved)
@@ -253,10 +271,10 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         // Check abstract factories next
-        foreach ($this->abstractFactories as $abstractFactory) {
-            if ($abstractFactory->canCreate($this->creationContext, $name)) {
-                return true;
-            }
+        // If we already asked the abstractFactories and they have it,
+        // we are done.
+        if ($this->isResolvableByAbstractFactory($name)) {
+            return true;
         }
 
         // If $name is no alias, we are done
@@ -270,12 +288,10 @@ class ServiceManager implements ServiceLocatorInterface
             return true;
         }
 
-        // Check abstract factories on $resolvedName also
-        foreach ($this->abstractFactories as $abstractFactory) {
-            if ($abstractFactory->canCreate($this->creationContext, $resolvedName)) {
-                return true;
-            }
-        }
+        // Check abstract factories on $resolvedName next
+        // If we already asked the abstractFactories and they have it,
+        // we are done.
+        return $this->isResolvableByAbstractFactory($resolvedName);
     }
 
     /**
@@ -531,6 +547,41 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
+     * We maintain two caches, one caches the service names abstract
+     * factories can resolve, and store the the particular abstract
+     * factory which can resolve the particular name.
+     *
+     * The other cache caches the requested service names which the
+     * the abstractfactories can not resolve. So we do not have to
+     * ask them again, if the same unresolvable name gets requested
+     * again.
+     *
+     * @param string    name of the service requested
+     * @return boolean  true, if resolvable, false, if not
+     */
+
+    private function isResolvableByAbstractFactory($name) {
+        if (isset($this->abstractFactoryHasCache[$name])) {
+            return true;
+        }
+
+        if (isset($this->abstractFactoryHasNotCache[$name])) {
+            return false;
+        }
+
+        // Check abstract factories on $name also
+        foreach ($this->abstractFactories as $abstractFactory) {
+            if ($abstractFactory->canCreate($this->creationContext, $name)) {
+                $this->abstractFactoryHasCache[$name] = $abstractFactory;
+                return true;
+            }
+        }
+
+        $this->abstractFactoryHasNotCache[$name] = true;
+        return false;
+    }
+
+    /**
      * Instantiate initializers for to avoid checks during service construction.
      *
      * @param string[]|Initializer\InitializerInterface[]|callable[] $initializers
@@ -577,10 +628,8 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         // Check abstract factories
-        foreach ($this->abstractFactories as $abstractFactory) {
-            if ($abstractFactory->canCreate($this->creationContext, $name)) {
-                return $abstractFactory;
-            }
+        if ($this->isResolvableByAbstractFactory($name)) {
+            return $this->abstractFactoryHasCache[$name];
         }
 
         throw new ServiceNotFoundException(sprintf(
