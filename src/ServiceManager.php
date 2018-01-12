@@ -529,50 +529,19 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @return void
      */
-    private function resolveInitializer($initializer)
-    {
-        if (is_string($initializer) && class_exists($initializer)) {
-            $initializer = new $initializer();
-        }
-
-        if (is_callable($initializer)) {
-            $this->initializers[] = $initializer;
-            return;
-        }
-
-        // Error condition; let's find out why.
-
-        if (is_string($initializer)) {
-            throw new InvalidArgumentException(sprintf(
-                'An invalid initializer was registered; resolved to class or function "%s" '
-                . 'which does not exist; please provide a valid function name or class '
-                . 'name resolving to an implementation of %s',
-                $initializer,
-                Initializer\InitializerInterface::class
-            ));
-        }
-
-        // Otherwise, we have an invalid type.
-        throw new InvalidArgumentException(sprintf(
-            'An invalid initializer was registered. Expected a callable, or an instance of '
-            . '(or string class name resolving to) "%s", '
-            . 'but "%s" was received',
-            Initializer\InitializerInterface::class,
-            (is_object($initializer) ? get_class($initializer) : gettype($initializer))
-        ));
-    }
-
-    /**
-     * Instantiate initializers for to avoid checks during service construction.
-     *
-     * @param string[]|Initializer\InitializerInterface[]|callable[] $initializers
-     *
-     * @return void
-     */
     private function resolveInitializers(array $initializers)
     {
         foreach ($initializers as $initializer) {
-            $this->resolveInitializer($initializer);
+            if (is_string($initializer) && class_exists($initializer)) {
+                $initializer = new $initializer();
+            }
+
+            if (is_callable($initializer)) {
+                $this->initializers[] = $initializer;
+                return;
+            }
+
+            throw InvalidArgumentException::fromInvalidInitializer($initializer);
         }
     }
 
@@ -947,25 +916,6 @@ class ServiceManager implements ServiceLocatorInterface
             return;
         }
 
-        // Error condition; let's find out why.
-
-        // If we still have a string, we have a class name that does not resolve
-        if (is_string($abstractFactory)) {
-            throw new InvalidArgumentException(sprintf(
-                'An invalid abstract factory was registered; resolved to class "%s" '
-                . 'which does not exist; please provide a valid class name resolving '
-                . 'to an implementation of %s',
-                $abstractFactory,
-                AbstractFactoryInterface::class
-            ));
-        }
-
-        // Otherwise, we have an invalid type.
-        throw new InvalidArgumentException(sprintf(
-            'An invalid abstract factory was registered. Expected an instance of "%s", '
-            . 'but "%s" was received',
-            AbstractFactoryInterface::class,
-            (is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory))
-        ));
+        throw InvalidArgumentException::fromInvalidAbstractFactory($abstractFactory);
     }
 }
