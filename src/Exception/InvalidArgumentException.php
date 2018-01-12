@@ -23,7 +23,7 @@ class InvalidArgumentException extends SplInvalidArgumentException implements Ex
             . '(or valid class name or function name resolving to) "%s", '
             . 'but "%s" was received',
             InitializerInterface::class,
-            (is_object($initializer) ? get_class($initializer) : gettype($initializer))
+            is_object($initializer) ? get_class($initializer) : gettype($initializer)
         ));
     }
 
@@ -33,7 +33,7 @@ class InvalidArgumentException extends SplInvalidArgumentException implements Ex
             'An invalid abstract factory was registered. Expected an instance of or a '
             . 'valid class name resolving to an implementation of "%s", but "%s" was received.',
             AbstractFactoryInterface::class,
-            (is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory))
+            is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory)
         ));
     }
 }

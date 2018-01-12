@@ -20,7 +20,7 @@ use function sprintf;
 class CyclicAliasException extends InvalidArgumentException
 {
     /**
-     * @param string   conflicting alias key
+     * @param string   $alias conflicting alias key
      * @param string[] $aliases map of referenced services, indexed by alias name (string)
      *
      * @return self
