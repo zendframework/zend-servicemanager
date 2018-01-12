@@ -548,7 +548,7 @@ trait CommonServiceLocatorBehaviorsTrait
     public function invalidInitializers()
     {
         $factories = $this->invalidFactories();
-        $factories['non-class-string'] = ['non-callable-string', 'callable or an instance of'];
+        $factories['non-class-string'] = ['non-callable-string', 'valid class name or function name'];
         return $factories;
     }
 
