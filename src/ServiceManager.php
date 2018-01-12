@@ -194,7 +194,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         // We achieve better performance if we can let all alias
         // considerations out
-        if (empty($this->aliases)) {
+        if (! $this->aliases) {
             $object = $this->doCreate($name);
 
             // Cache the object for later, if it is supposed to be shared.
@@ -364,7 +364,7 @@ class ServiceManager implements ServiceLocatorInterface
             $this->shared = $config['shared'] + $this->shared;
         }
 
-        if (isset($config['aliases'])) {
+        if (! empty($config['aliases'])) {
             $this->aliases = $config['aliases'] + $this->aliases;
             $this->mapAliasesToTargets();
         } elseif (! $this->configured && ! empty($this->aliases)) {
