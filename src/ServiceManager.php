@@ -596,8 +596,6 @@ class ServiceManager implements ServiceLocatorInterface
      * Instantiate initializers for to avoid checks during service construction.
      *
      * @param string[]|Initializer\InitializerInterface[]|callable[] $initializers
-     *
-     * @return void
      */
     private function resolveInitializers(array $initializers)
     {
