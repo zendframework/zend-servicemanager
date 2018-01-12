@@ -272,11 +272,6 @@ class ServiceManagerTest extends TestCase
         self::assertSame($service, $headAlias);
     }
 
-    public function emulateHas($name)
-    {
-        return $name === 'ServiceName';
-    }
-
     public function testAbstractFactoryShouldBeCheckedForResolvedAliasesInsteadOfAliasName()
     {
         $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
