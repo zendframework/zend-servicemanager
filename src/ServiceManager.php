@@ -341,26 +341,29 @@ class ServiceManager implements ServiceLocatorInterface
     public function configure(array $config)
     {
         // This is a bulk update/initial configuration
-        // So we check all definitions upfront
+        // So we check all definitions of the configs for
+        // services, factories, invokables, delegators,
+        // aliases, lazy_services, and shared upfront
+
         $this->validateServiceNames($config);
 
-        if (isset($config['services'])) {
+        if (! empty($config['services'])) {
             $this->services = $config['services'] + $this->services;
         }
 
-        if (isset($config['invokables']) && ! empty($config['invokables'])) {
+        if (! empty($config['invokables'])) {
             $this->createAliasesAndFactoriesForInvokables($config['invokables']);
         }
 
-        if (isset($config['factories'])) {
+        if (! empty($config['factories'])) {
             $this->factories = $config['factories'] + $this->factories;
         }
 
-        if (isset($config['delegators'])) {
+        if (! empty($config['delegators'])) {
             $this->delegators = array_merge_recursive($this->delegators, $config['delegators']);
         }
 
-        if (isset($config['shared'])) {
+        if (! empty($config['shared'])) {
             $this->shared = $config['shared'] + $this->shared;
         }
 
@@ -377,22 +380,18 @@ class ServiceManager implements ServiceLocatorInterface
 
         // If lazy service configuration was provided, reset the lazy services
         // delegator factory.
-        if (isset($config['lazy_services']) && ! empty($config['lazy_services'])) {
-            $this->lazyServices          = array_merge_recursive($this->lazyServices, $config['lazy_services']);
+        if (! empty($config['lazy_services'])) {
+            $this->lazyServices = array_merge_recursive($this->lazyServices, $config['lazy_services']);
             $this->lazyServicesDelegator = null;
         }
 
         // For abstract factories and initializers, we always directly
         // instantiate them to avoid checks during service construction.
-        if (isset($config['abstract_factories'])) {
-            $abstractFactories = $config['abstract_factories'];
-            // $key not needed, but foreach faster
-            foreach ($abstractFactories as $key => $abstractFactory) {
-                $this->resolveAbstractFactoryInstance($abstractFactory);
-            }
+        if (! empty($config['abstract_factories'])) {
+            $this->resolveAbstractFactories($config['abstract_factories']);
         }
 
-        if (isset($config['initializers'])) {
+        if (! empty($config['initializers'])) {
             $this->resolveInitializers($config['initializers']);
         }
 
@@ -457,7 +456,12 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function mapLazyService($name, $class = null)
     {
-        $this->configure(['lazy_services' => ['class_map' => [$name => $class ?: $name]]]);
+        if (! isset($this->services[$name]) || $this->allowOverride) {
+            $this->lazyServices = array_merge_recursive(['class_map' => [$name => $class ?? $name]]);
+            $this->lazyServicesDelegator = null;
+            return;
+        }
+        throw ContainerModificationsNotAllowedException::fromExistingService($name);
     }
 
     /**
@@ -467,7 +471,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function addAbstractFactory($factory)
     {
-        $this->resolveAbstractFactoryInstance($factory);
+        $this->resolveAbstractFactories([$factory]);
     }
 
     /**
@@ -479,7 +483,11 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function addDelegator($name, $factory)
     {
-        $this->configure(['delegators' => [$name => [$factory]]]);
+        if (! isset($this->services[$name]) || $this->allowOverride) {
+            $this->delegators = array_merge_recursive($this->delegators, [$name => [$factory]]);
+            return;
+        }
+        throw ContainerModificationsNotAllowedException::fromExistingService($name);
     }
 
     /**
@@ -489,7 +497,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function addInitializer($initializer)
     {
-        $this->configure(['initializers' => [$initializer]]);
+        $this->resolveInitializers([$initializer]);
     }
 
     /**
@@ -897,23 +905,25 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @return void
      */
-    private function resolveAbstractFactoryInstance($abstractFactory)
+    private function resolveAbstractFactories($abstractFactories)
     {
-        if (is_string($abstractFactory) && class_exists($abstractFactory)) {
-            // cached string
-            if (! isset($this->cachedAbstractFactories[$abstractFactory])) {
-                $this->cachedAbstractFactories[$abstractFactory] = new $abstractFactory();
+        foreach ($abstractFactories as $_ => $abstractFactory) {
+            if (is_string($abstractFactory) && class_exists($abstractFactory)) {
+                // cached string
+                if (! isset($this->cachedAbstractFactories[$abstractFactory])) {
+                    $this->cachedAbstractFactories[$abstractFactory] = new $abstractFactory();
+                }
+
+                $abstractFactory = $this->cachedAbstractFactories[$abstractFactory];
             }
 
-            $abstractFactory = $this->cachedAbstractFactories[$abstractFactory];
-        }
+            if ($abstractFactory instanceof Factory\AbstractFactoryInterface) {
+                $abstractFactoryObjHash = spl_object_hash($abstractFactory);
+                $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
+                return;
+            }
 
-        if ($abstractFactory instanceof Factory\AbstractFactoryInterface) {
-            $abstractFactoryObjHash = spl_object_hash($abstractFactory);
-            $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
-            return;
+            throw InvalidArgumentException::fromInvalidAbstractFactory($abstractFactory);
         }
-
-        throw InvalidArgumentException::fromInvalidAbstractFactory($abstractFactory);
     }
 }
