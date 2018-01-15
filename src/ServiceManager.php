@@ -890,7 +890,6 @@ class ServiceManager implements ServiceLocatorInterface
     {
         $tagged = [];
         foreach ($this->aliases as $alias => $target) {
-
             if (isset($tagged[$alias])) {
                 continue;
             }
@@ -900,8 +899,7 @@ class ServiceManager implements ServiceLocatorInterface
             if ($aCursor === $tCursor) {
                 throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
             }
-            if (!isset($this->aliases[$tCursor]))
-            {
+            if (! isset($this->aliases[$tCursor])) {
                 continue;
             }
 
@@ -916,7 +914,7 @@ class ServiceManager implements ServiceLocatorInterface
 
             $tagged[$aCursor] = true;
 
-            if (!isset($stack)) {
+            if (! isset($stack)) {
                 continue;
             }
 
