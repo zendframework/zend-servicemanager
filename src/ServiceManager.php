@@ -873,8 +873,9 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * This algorithm is an adaptated version of Tarjans Strongly
      * Connected Components. Instead of returning the strongly
-     * connected components (i.e. cycles in our case), they
-     * get eliminitated, i.e. resolved.
+     * connected components (i.e. cycles in our case), we throw.
+     * If nodes are not strongly connected (i.e. resolvable in
+     * our case), they get resolved.
      *
      * This algorithm fast for mass updates through configure().
      * It is not appropriate if just a single alias is added.
