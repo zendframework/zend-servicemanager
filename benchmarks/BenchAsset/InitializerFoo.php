@@ -19,7 +19,6 @@ class InitializerFoo implements InitializerInterface
      */
     public function __invoke(\Interop\Container\ContainerInterface $container, $instance)
     {
-
     }
 
     public function __construct($options = null)
