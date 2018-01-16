@@ -83,6 +83,32 @@ class ServiceManager implements ServiceLocatorInterface
     protected $abstractFactoryCacheEnabled = false;
 
     /**
+     * When resolution of service names comes down to abstract
+     * factories, this cache is used reduce the number of calls
+     * to AbstractFactory::canCreate
+     *
+     * @var array
+     */
+    protected $abstractFactoryHasCache = [];
+
+    /**
+     * When resolution of service names comes down to abstract
+     * factories, this cache is used reduce the number of calls
+     * to AbstractFactory::canCreate
+     *
+     * @var array
+     */
+    protected $abstractFactoryHasNotCache = [];
+
+    /**
+     * Flag indicating whether abstract factory caching is
+     * enabled or not
+     *
+     * @var boolean
+     */
+    protected $abstractFactoryCacheEnabled = false;
+
+    /**
      * A list of aliases
      *
      * Should map one alias to a service name, or another alias (aliases are recursively resolved)
@@ -416,6 +442,10 @@ class ServiceManager implements ServiceLocatorInterface
 
         if (isset($config['shared_by_default'])) {
             $this->sharedByDefault = $config['shared_by_default'];
+        }
+
+        if (isset($config['abstract_factory_cache_enabled'])) {
+            $this->abstractFactoryCacheEnabled = $config['abstract_factory_cache_enabled'];
         }
 
         if (isset($config['abstract_factory_cache_enabled'])) {
