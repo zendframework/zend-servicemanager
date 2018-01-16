@@ -249,7 +249,8 @@ class ServiceManager implements ServiceLocatorInterface
             $this->services[$resolvedName] = $object;
         }
 
-        // Also do so for aliases, this allows sharing based on service name used.
+        // Also cache under the alias name; this allows sharing based on the
+        // service name used.
         if ($sharedAlias) {
             $this->services[$name] = $object;
         }
@@ -280,7 +281,7 @@ class ServiceManager implements ServiceLocatorInterface
 			return true;
 		}
 
-        // Check abstract factories next
+        // Check abstract factories next.
         foreach ($this->abstractFactories as $abstractFactory) {
             if ($abstractFactory->canCreate($this->creationContext, $name)) {
                 return true;
@@ -685,9 +686,9 @@ class ServiceManager implements ServiceLocatorInterface
             if (! is_callable($delegatorFactory)) {
                 if (is_string($delegatorFactory)) {
                     throw new ServiceNotCreatedException(sprintf(
-                        'An invalid delegator factory was registered; resolved to class or function "%s" '
-                        . 'which does not exist; please provide a valid function name or class name resolving '
-                        . 'to an implementation of %s',
+                        'An invalid delegator factory was registered; resolved to class or function "%s"'
+                        . ' which does not exist; please provide a valid function name or class name resolving'
+                        . ' to an implementation of %s',
                         $delegatorFactory,
                         DelegatorFactoryInterface::class
                     ));
@@ -1028,7 +1029,7 @@ class ServiceManager implements ServiceLocatorInterface
     private function resolveAbstractFactoryInstance($abstractFactory)
     {
         if (is_string($abstractFactory) && class_exists($abstractFactory)) {
-            // cached string
+            // Cached string factory name
             if (! isset($this->cachedAbstractFactories[$abstractFactory])) {
                 $this->cachedAbstractFactories[$abstractFactory] = new $abstractFactory();
             }
@@ -1036,12 +1037,11 @@ class ServiceManager implements ServiceLocatorInterface
             $abstractFactory = $this->cachedAbstractFactories[$abstractFactory];
         }
 
-        if ($abstractFactory instanceof Factory\AbstractFactoryInterface) {
-            $abstractFactoryObjHash = spl_object_hash($abstractFactory);
-            $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
-            return;
+        if (! $abstractFactory instanceof Factory\AbstractFactoryInterface) {
+            throw InvalidArgumentException::fromInvalidAbstractFactory($abstractFactory);
         }
 
-        throw InvalidArgumentException::fromInvalidAbstractFactory($abstractFactory);
+        $abstractFactoryObjHash = spl_object_hash($abstractFactory);
+        $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
     }
 }
