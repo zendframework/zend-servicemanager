@@ -26,6 +26,7 @@ use function array_merge_recursive;
 use function class_exists;
 use function get_class;
 use function gettype;
+use function in_array;
 use function is_callable;
 use function is_object;
 use function is_string;
@@ -33,7 +34,6 @@ use function spl_autoload_register;
 use function spl_object_hash;
 use function sprintf;
 use function trigger_error;
-use function in_array;
 
 /**
  * Service Manager.
