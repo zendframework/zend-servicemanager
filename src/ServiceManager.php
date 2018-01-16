@@ -560,20 +560,20 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function getFactory($name)
     {
-        $factory = $this->factories[$name] ?? null;
+        if (isset($this->factories[$name])) {
+            $factory = $this->factories[$name];
 
-        $lazyLoaded = false;
-        if (is_string($factory) && class_exists($factory)) {
-            $factory = new $factory();
-            $lazyLoaded = true;
-        }
-
-        if (is_callable($factory)) {
-            if ($lazyLoaded) {
-                $this->factories[$name] = $factory;
+            if (is_callable($factory)) {
+                return $factory;
             }
 
-            return $factory;
+            if (is_string($factory) && class_exists($factory)) {
+                $factory = new $factory();
+                if (is_callable($factory)) {
+                    $this->factories[$name] = $factory;
+                    return $factory;
+                }
+            }
         }
 
         // Check abstract factories
