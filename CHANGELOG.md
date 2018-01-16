@@ -10,7 +10,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Changed
 
-- Nothing.
+- [#221](https://github.com/zendframework/zend-servicemanager/pull/221) provides
+  enormous performance improvements for each of the various mutator methods
+  (`setAlias()`, `setFactory()`, etc.), `has()` lookups, and initial
+  container configuration.
 
 ### Deprecated
 

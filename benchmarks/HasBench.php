@@ -45,14 +45,6 @@ class HasBench
                 BenchAsset\AbstractFactoryFoo::class
             ]
         ]);
-
-        // forcing initialization of all the services
-        $this->sm->get('factory1');
-        $this->sm->get('invokable1');
-        $this->sm->get('service1');
-        $this->sm->get('alias1');
-        $this->sm->get('recursiveAlias1');
-        $this->sm->get('recursiveAlias2');
     }
 
     public function benchHasFactory1()
