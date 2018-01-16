@@ -44,7 +44,7 @@ class CyclicAliasExceptionTest extends TestCase
                 [
                     'a' => 'a',
                 ],
-                "A cycle was detected within the aliases defintions:\n"
+                "A cycle was detected within the aliases definitions:\n"
                 . "a -> a\n",
             ],
             [
@@ -53,7 +53,7 @@ class CyclicAliasExceptionTest extends TestCase
                     'a' => 'b',
                     'b' => 'a'
                 ],
-                "A cycle was detected within the aliases defintions:\n"
+                "A cycle was detected within the aliases definitions:\n"
                 . "a -> b -> a\n",
             ],
             [
@@ -62,7 +62,7 @@ class CyclicAliasExceptionTest extends TestCase
                     'a' => 'b',
                     'b' => 'a'
                 ],
-                "A cycle was detected within the aliases defintions:\n"
+                "A cycle was detected within the aliases definitions:\n"
                 . "b -> a -> b\n",
             ],
             [
@@ -71,7 +71,7 @@ class CyclicAliasExceptionTest extends TestCase
                     'a' => 'b',
                     'b' => 'a',
                 ],
-                "A cycle was detected within the aliases defintions:\n"
+                "A cycle was detected within the aliases definitions:\n"
                 . "b -> a -> b\n",
             ],
             [
@@ -81,7 +81,7 @@ class CyclicAliasExceptionTest extends TestCase
                     'b' => 'c',
                     'c' => 'a',
                 ],
-                "A cycle was detected within the aliases defintions:\n"
+                "A cycle was detected within the aliases definitions:\n"
                 . "a -> b -> c -> a\n",
             ],
             [
@@ -91,7 +91,7 @@ class CyclicAliasExceptionTest extends TestCase
                     'b' => 'c',
                     'c' => 'a',
                 ],
-                "A cycle was detected within the aliases defintions:\n"
+                "A cycle was detected within the aliases definitions:\n"
                 . "b -> c -> a -> b\n",
             ],
             [
@@ -101,7 +101,7 @@ class CyclicAliasExceptionTest extends TestCase
                     'b' => 'c',
                     'c' => 'a',
                 ],
-                "A cycle was detected within the aliases defintions:\n"
+                "A cycle was detected within the aliases definitions:\n"
                 . "c -> a -> b -> c\n",
             ],
         ];
