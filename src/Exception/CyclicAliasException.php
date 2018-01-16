@@ -25,7 +25,7 @@ class CyclicAliasException extends InvalidArgumentException
      *
      * @return self
      */
-    public static function fromCyclicAlias($alias, $aliases)
+    public static function fromCyclicAlias($alias, array $aliases)
     {
         $cycle = $alias;
         $cursor = $alias;

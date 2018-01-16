@@ -8,8 +8,8 @@
 namespace Zend\ServiceManager\Exception;
 
 use InvalidArgumentException as SplInvalidArgumentException;
-use Zend\ServiceManager\Initializer\InitializerInterface;
 use Zend\ServiceManager\AbstractFactoryInterface;
+use Zend\ServiceManager\Initializer\InitializerInterface;
 
 /**
  * @inheritDoc
