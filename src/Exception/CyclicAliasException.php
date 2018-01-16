@@ -7,8 +7,40 @@
 
 namespace Zend\ServiceManager\Exception;
 
+use function array_filter;
+use function array_keys;
+use function array_map;
+use function array_values;
+use function implode;
+use function reset;
+use function serialize;
+use function sort;
+use function sprintf;
+
 class CyclicAliasException extends InvalidArgumentException
 {
+    /**
+     * @param string   $alias conflicting alias key
+     * @param string[] $aliases map of referenced services, indexed by alias name (string)
+     *
+     * @return self
+     */
+    public static function fromCyclicAlias($alias, $aliases)
+    {
+        $cycle = $alias;
+        $cursor = $alias;
+        while (isset($aliases[$cursor]) && $aliases[$cursor] !== $alias) {
+            $cursor = $aliases[$cursor];
+            $cycle .= ' -> '. $cursor;
+        }
+        $cycle .= ' -> ' . $alias . "\n";
+
+        return new self(sprintf(
+            "A cycle was detected within the aliases defintions:\n%s",
+            $cycle
+        ));
+    }
+
     /**
      * @param string[] $aliases map of referenced services, indexed by alias name (string)
      *

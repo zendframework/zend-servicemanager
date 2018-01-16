@@ -11,6 +11,17 @@ use ReflectionClass;
 use ReflectionParameter;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 
+use function array_filter;
+use function array_map;
+use function array_shift;
+use function count;
+use function implode;
+use function sprintf;
+use function str_repeat;
+use function str_replace;
+use function strrpos;
+use function substr;
+
 class FactoryCreator
 {
     const FACTORY_TEMPLATE = <<<'EOT'

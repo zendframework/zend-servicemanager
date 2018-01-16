@@ -11,11 +11,14 @@ use DateTime;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
+use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
+use Zend\ServiceManager\Exception\CyclicAliasException;
+use PHPUnit\Framework\MockObject\Invokable;
 
 /**
  * @covers \Zend\ServiceManager\ServiceManager
@@ -33,7 +36,7 @@ class ServiceManagerTest extends TestCase
     public function testServiceManagerIsAPsr11Container()
     {
         $container = $this->createContainer();
-        $this->assertInstanceOf(ContainerInterface::class, $container);
+        self::assertInstanceOf(ContainerInterface::class, $container);
     }
 
     public function testConfigurationCanBeMerged()
@@ -44,9 +47,9 @@ class ServiceManagerTest extends TestCase
             ]
         ]);
 
-        $this->assertTrue($serviceManager->has(DateTime::class));
+        self::assertTrue($serviceManager->has(DateTime::class));
         // stdClass service is inlined in SimpleServiceManager
-        $this->assertTrue($serviceManager->has(stdClass::class));
+        self::assertTrue($serviceManager->has(stdClass::class));
     }
 
     public function testConfigurationTakesPrecedenceWhenMerged()
@@ -94,13 +97,13 @@ class ServiceManagerTest extends TestCase
         ]);
 
         $instance = $serviceManager->get(stdClass::class);
-        $this->assertTrue(isset($instance->option), 'Delegator-injected option was not found');
-        $this->assertEquals(
+        self::assertTrue(isset($instance->option), 'Delegator-injected option was not found');
+        self::assertEquals(
             $config['option'],
             $instance->option,
             'Delegator-injected option does not match configuration'
         );
-        $this->assertEquals('bar', $instance->foo);
+        self::assertEquals('bar', $instance->foo);
     }
 
     public function shareProvider()
@@ -148,7 +151,7 @@ class ServiceManagerTest extends TestCase
         $a = $serviceManager->get(stdClass::class);
         $b = $serviceManager->get(stdClass::class);
 
-        $this->assertEquals($shouldBeSameInstance, $a === $b);
+        self::assertEquals($shouldBeSameInstance, $a === $b);
     }
 
     public function testMapsOneToOneInvokablesAsInvokableFactoriesInternally()
@@ -160,7 +163,7 @@ class ServiceManagerTest extends TestCase
         ];
 
         $serviceManager = new ServiceManager($config);
-        $this->assertAttributeSame([
+        self::assertAttributeSame([
             InvokableObject::class => InvokableFactory::class,
         ], 'factories', $serviceManager, 'Invokable object factory not found');
     }
@@ -174,10 +177,10 @@ class ServiceManagerTest extends TestCase
         ];
 
         $serviceManager = new ServiceManager($config);
-        $this->assertAttributeSame([
+        self::assertAttributeSame([
             'Invokable' => InvokableObject::class,
         ], 'aliases', $serviceManager, 'Alias not found for non-symmetric invokable');
-        $this->assertAttributeSame([
+        self::assertAttributeSame([
             InvokableObject::class => InvokableFactory::class,
         ], 'factories', $serviceManager, 'Factory not found for non-symmetric invokable target');
     }
@@ -200,7 +203,7 @@ class ServiceManagerTest extends TestCase
         $instance1 = $serviceManager->get('Invokable');
         $instance2 = $serviceManager->get('Invokable');
 
-        $this->assertNotSame($instance1, $instance2);
+        self::assertNotSame($instance1, $instance2);
     }
 
     public function testSharedServicesReferencingAliasShouldBeHonored()
@@ -221,7 +224,7 @@ class ServiceManagerTest extends TestCase
         $instance1 = $serviceManager->get('Invokable');
         $instance2 = $serviceManager->get('Invokable');
 
-        $this->assertNotSame($instance1, $instance2);
+        self::assertNotSame($instance1, $instance2);
     }
 
     public function testAliasToAnExplicitServiceShouldWork()
@@ -240,7 +243,7 @@ class ServiceManagerTest extends TestCase
         $service = $serviceManager->get(InvokableObject::class);
         $alias   = $serviceManager->get('Invokable');
 
-        $this->assertSame($service, $alias);
+        self::assertSame($service, $alias);
     }
 
     /**
@@ -264,8 +267,36 @@ class ServiceManagerTest extends TestCase
         $alias     = $serviceManager->get('Alias');
         $headAlias = $serviceManager->get('HeadAlias');
 
-        $this->assertSame($service, $alias);
-        $this->assertSame($service, $headAlias);
+        self::assertSame($service, $alias);
+        self::assertSame($service, $headAlias);
+    }
+
+    public function testAbstractFactoryShouldBeCheckedForResolvedAliasesInsteadOfAliasName()
+    {
+        $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
+
+        $serviceManager = new SimpleServiceManager([
+            'aliases' => [
+                'Alias' => 'ServiceName',
+            ],
+            'abstract_factories' => [
+                $abstractFactory,
+            ],
+        ]);
+
+        $valueMap = [
+            ['Alias', false],
+            ['ServiceName', true],
+        ];
+
+        $abstractFactory
+            ->method('canCreate')
+            ->withConsecutive(
+                [ $this->anything(), $this->equalTo('Alias') ],
+                [ $this->anything(), $this->equalTo('ServiceName')]
+            )
+            ->willReturn($this->returnValueMap($valueMap));
+        $this->assertTrue($serviceManager->has('Alias'));
     }
 
     public static function sampleFactory()
@@ -282,5 +313,29 @@ class ServiceManagerTest extends TestCase
         ];
         $serviceManager = new SimpleServiceManager($config);
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
+    }
+
+    public function testMinimalCyclicAliasDefinitionShouldThrow()
+    {
+        $sm = new ServiceManager();
+
+        $this->expectException(CyclicAliasException::class);
+        $sm->setAlias('alias', 'alias');
+    }
+
+    public function testCoverageDepthFirstTaggingOnRecursiveAliasDefinitions()
+    {
+        $sm = new ServiceManager([
+            'factories' => [
+                stdClass::class => InvokableFactory::class,
+            ],
+            'aliases' => [
+                'alias1' => 'alias2',
+                'alias2' => 'alias3',
+                'alias3' => stdClass::class,
+            ],
+        ]);
+        $this->assertSame($sm->get('alias1'), $sm->get('alias2'));
+        $this->assertSame($sm->get(stdClass::class), $sm->get('alias1'));
     }
 }

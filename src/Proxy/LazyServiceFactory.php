@@ -13,6 +13,8 @@ use ProxyManager\Proxy\LazyLoadingInterface;
 use Zend\ServiceManager\Exception;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 
+use function sprintf;
+
 /**
  * Delegator factory responsible of instantiating lazy loading value holder proxies of
  * given services at runtime

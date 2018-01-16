@@ -14,4 +14,13 @@ use DomainException;
  */
 class ContainerModificationsNotAllowedException extends DomainException implements ExceptionInterface
 {
+    public static function fromExistingService($service)
+    {
+        return new self(sprintf(
+            'The container does not allow to replace/update a service'
+            . ' with existing instances; the following '
+            . 'already exist in the container: %s',
+            $service
+        ));
+    }
 }

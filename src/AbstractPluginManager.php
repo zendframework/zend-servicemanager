@@ -10,6 +10,14 @@ namespace Zend\ServiceManager;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 
+use function class_exists;
+use function get_class;
+use function gettype;
+use function is_object;
+use function method_exists;
+use function sprintf;
+use function trigger_error;
+
 /**
  * Abstract plugin manager.
  *
@@ -110,6 +118,15 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
         parent::configure($config);
 
         return $this;
+    }
+
+    /**
+     * Override setService for additional plugin validation.
+     */
+    public function setService($name, $service)
+    {
+        $this->validate($service);
+        parent::setService($name, $service);
     }
 
     /**
