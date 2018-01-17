@@ -8,9 +8,13 @@
 namespace ZendTest\ServiceManager;
 
 use DateTime;
+use Interop\Container\Exception\ContainerException;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
+use Zend\ServiceManager\Exception\ServiceNotCreatedException;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
@@ -266,6 +270,34 @@ class ServiceManagerTest extends TestCase
 
         self::assertSame($service, $alias);
         self::assertSame($service, $headAlias);
+    }
+
+    public function testAbstractFactoryShouldBeCheckedForResolvedAliasesInsteadOfAliasName()
+    {
+        $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
+
+        $serviceManager = new SimpleServiceManager([
+            'aliases' => [
+                'Alias' => 'ServiceName',
+            ],
+            'abstract_factories' => [
+                $abstractFactory,
+            ],
+        ]);
+
+        $valueMap = [
+            ['Alias', false],
+            ['ServiceName', true],
+        ];
+
+        $abstractFactory
+            ->method('canCreate')
+            ->withConsecutive(
+                [ $this->anything(), $this->equalTo('Alias') ],
+                [ $this->anything(), $this->equalTo('ServiceName')]
+            )
+            ->willReturn($this->returnValueMap($valueMap));
+        $this->assertTrue($serviceManager->has('Alias'));
     }
 
     public static function sampleFactory()

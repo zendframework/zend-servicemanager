@@ -14,13 +14,11 @@ use Zend\ServiceManager\ServiceManager;
 
 /**
  * @Revs(1000)
- * @Iterations(10)
+ * @Iterations(20)
  * @Warmup(2)
  */
-class SetNewServicesBench
+class HasBench
 {
-    const NUM_SERVICES = 100;
-
     /**
      * @var ServiceManager
      */
@@ -28,63 +26,88 @@ class SetNewServicesBench
 
     public function __construct()
     {
-        $config = [
-            'factories'          => [
+        $this->sm = new ServiceManager([
+            'factories' => [
                 'factory1' => BenchAsset\FactoryFoo::class,
             ],
-            'invokables'         => [
+            'invokables' => [
                 'invokable1' => BenchAsset\Foo::class,
             ],
-            'services'           => [
+            'services' => [
                 'service1' => new \stdClass(),
             ],
-            'aliases'            => [
-                'factoryAlias1'          => 'factory1',
-                'recursiveFactoryAlias1' => 'factoryAlias1',
-                'recursiveFactoryAlias2' => 'recursiveFactoryAlias1',
+            'aliases' => [
+                'alias1'          => 'service1',
+                'recursiveAlias1' => 'alias1',
+                'recursiveAlias2' => 'recursiveAlias1',
             ],
             'abstract_factories' => [
                 BenchAsset\AbstractFactoryFoo::class
-            ],
-        ];
-
-        for ($i = 0; $i <= self::NUM_SERVICES; $i++) {
-            $config['factories']["factory_$i"] = BenchAsset\FactoryFoo::class;
-            $config['aliases']["alias_$i"]     = "service_$i";
-        }
-
-        $this->sm = new ServiceManager($config);
+            ]
+        ]);
     }
 
-    public function benchSetService()
+    public function benchHasFactory1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
-        $sm->setService('service2', new \stdClass());
+        $sm->has('factory1');
     }
 
-    public function benchSetFactory()
+    public function benchHasInvokable1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
-        $sm->setFactory('factory2', BenchAsset\FactoryFoo::class);
+        $sm->has('invokable1');
     }
 
-    public function benchSetAlias()
+    public function benchHasService1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
-        $sm->setAlias('factoryAlias2', 'factory1');
+        $sm->has('service1');
     }
 
-    public function benchSetAliasOverrided()
+    public function benchHasAlias1()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
 
-        $sm->setAlias('recursiveFactoryAlias1', 'factory1');
+        $sm->has('alias1');
+    }
+
+    public function benchHasRecursiveAlias1()
+    {
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
+        $sm = clone $this->sm;
+
+        $sm->has('recursiveAlias1');
+    }
+
+    public function benchHasRecursiveAlias2()
+    {
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
+        $sm = clone $this->sm;
+
+        $sm->has('recursiveAlias2');
+    }
+
+    public function benchHasAbstractFactory()
+    {
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
+        $sm = clone $this->sm;
+
+        $sm->has('foo');
+    }
+
+    public function benchHasNot()
+    {
+        // @todo @link https://github.com/phpbench/phpbench/issues/304
+        $sm = clone $this->sm;
+
+        $sm->has('42');
     }
 }
