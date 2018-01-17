@@ -335,6 +335,7 @@ class ServiceManager implements ServiceLocatorInterface
         // So we check all definitions of the configs for
         // services, factories, invokables, delegators,
         // aliases, lazy_services, and shared upfront
+        
         $this->validateServiceNames($config);
 
         if (! empty($config['services'])) {
