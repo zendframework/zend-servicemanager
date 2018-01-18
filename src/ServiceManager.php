@@ -393,11 +393,11 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setAlias($alias, $target)
     {
-        if (isset($this->services[$alias]) && ! $this->allowOverride) {
-            throw ContainerModificationsNotAllowedException::fromExistingService($alias);
+        if (! isset($this->services[$alias]) || $this->allowOverride) {
+            $this->mapAliasToTarget($alias, $target);
+            return;
         }
-
-        $this->mapAliasToTarget($alias, $target);
+        throw ContainerModificationsNotAllowedException::fromExistingService($alias);
     }
 
     /**
@@ -411,11 +411,11 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setInvokableClass($name, $class = null)
     {
-        if (isset($this->services[$name]) && ! $this->allowOverride) {
-            throw ContainerModificationsNotAllowedException::fromExistingService($name);
+        if (! isset($this->services[$name]) && $this->allowOverride) {
+            $this->createAliasesAndFactoriesForInvokables([$name => $class ?? $name]);
+            return;
         }
-
-        $this->createAliasesAndFactoriesForInvokables([$name => $class ?? $name]);
+        throw ContainerModificationsNotAllowedException::fromExistingService($name);
     }
 
     /**
@@ -429,25 +429,21 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setFactory($name, $factory)
     {
-        if (isset($this->services[$name]) && ! $this->allowOverride) {
-            throw ContainerModificationsNotAllowedException::fromExistingService($name);
-        }
 
         $this->factories[$name] = $factory;
     }
 
     /**
-     * Create a lazy service mapping to a class.
+     * Add a delegator for a given service.
      *
-     * @param string $name Service name to map
-     * @param null|string $class Class to which to map; if not provided, $name
-     *     will be used for the mapping.
+     * @param string $name Service name
+     * @param string|callable|Factory\DelegatorFactoryInterface $factory Delegator
+     *     factory to assign.
      */
-    public function mapLazyService($name, $class = null)
+    public function addDelegator($name, $factory)
     {
         if (! isset($this->services[$name]) || $this->allowOverride) {
-            $this->lazyServices = array_merge_recursive(['class_map' => [$name => $class ?? $name]]);
-            $this->lazyServicesDelegator = null;
+            $this->delegators = array_merge_recursive($this->delegators, [$name => [$factory]]);
             return;
         }
         throw ContainerModificationsNotAllowedException::fromExistingService($name);
@@ -465,17 +461,17 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Add a delegator for a given service.
+     * Create a lazy service mapping to a class.
      *
-     * @param string $name Service name
-     * @param string|callable|Factory\DelegatorFactoryInterface $factory Delegator
-     *     factory to assign.
+     * @param string $name Service name to map
+     * @param null|string $class Class to which to map; if not provided, $name
+     *     will be used for the mapping.
      */
-    public function addDelegator($name, $factory)
+    public function mapLazyService($name, $class = null)
     {
-        if (! isset($this->services[$name]) || $this->allowOverride) {
-            $this->delegators = array_merge_recursive($this->delegators, [$name => [$factory]]);
-            return;
+        if (! isset($this->services[$name]) ||$this->allowOverride) {
+            $this->lazyServices = array_merge_recursive(['class_map' => [$name => $class ?? $name]]);
+            $this->lazyServicesDelegator = null;
         }
         throw ContainerModificationsNotAllowedException::fromExistingService($name);
     }
@@ -500,10 +496,11 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setService($name, $service)
     {
-        if (isset($this->services[$name]) && ! $this->allowOverride) {
-            throw ContainerModificationsNotAllowedException::fromExistingService($name);
+        if (! isset($this->services[$name]) || $this->allowOverride) {
+            $this->services[$name] = $service;
+            return;
         }
-        $this->services[$name] = $service;
+        throw ContainerModificationsNotAllowedException::fromExistingService($name);
     }
 
     /**
@@ -516,11 +513,12 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setShared($name, $flag)
     {
-        if (isset($this->services[$name]) && ! $this->allowOverride) {
-            throw ContainerModificationsNotAllowedException::fromExistingService($name);
+        if (! isset($this->services[$name]) || $this->allowOverride) {
+            $this->shared[$name] = (bool) $flag;
+            return;
         }
+        throw ContainerModificationsNotAllowedException::fromExistingService($name);
 
-        $this->shared[$name] = (bool) $flag;
     }
 
     /**
