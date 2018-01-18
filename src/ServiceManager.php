@@ -411,7 +411,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setInvokableClass($name, $class = null)
     {
-        if (! isset($this->services[$name]) && $this->allowOverride) {
+        if (! isset($this->services[$name]) || $this->allowOverride) {
             $this->createAliasesAndFactoriesForInvokables([$name => $class ?? $name]);
             return;
         }
@@ -429,8 +429,11 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setFactory($name, $factory)
     {
-
-        $this->factories[$name] = $factory;
+        if (! isset($this->services[$name]) || $this->allowOverride) {
+            $this->factories[$name] = $factory;
+            return;
+        }
+        throw ContainerModificationsNotAllowedException::fromExistingService($name);
     }
 
     /**
@@ -472,6 +475,7 @@ class ServiceManager implements ServiceLocatorInterface
         if (! isset($this->services[$name]) ||$this->allowOverride) {
             $this->lazyServices = array_merge_recursive(['class_map' => [$name => $class ?? $name]]);
             $this->lazyServicesDelegator = null;
+            return;
         }
         throw ContainerModificationsNotAllowedException::fromExistingService($name);
     }
