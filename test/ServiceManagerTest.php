@@ -8,18 +8,17 @@
 namespace ZendTest\ServiceManager;
 
 use DateTime;
-use Interop\Container\Exception\ContainerException;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
+use Zend\ServiceManager\Exception\CyclicAliasException;
+use PHPUnit\Framework\MockObject\Invokable;
 
 /**
  * @covers \Zend\ServiceManager\ServiceManager
@@ -284,20 +283,13 @@ class ServiceManagerTest extends TestCase
                 $abstractFactory,
             ],
         ]);
-
-        $valueMap = [
-            ['Alias', false],
-            ['ServiceName', true],
-        ];
-
         $abstractFactory
-            ->method('canCreate')
-            ->withConsecutive(
-                [ $this->anything(), $this->equalTo('Alias') ],
-                [ $this->anything(), $this->equalTo('ServiceName')]
-            )
-            ->willReturn($this->returnValueMap($valueMap));
+        ->expects($this->once())
+        ->method('canCreate')
+        ->with($this->anything(), $this->equalTo('ServiceName'))
+        ->willReturn(true);
         $this->assertTrue($serviceManager->has('Alias'));
+        
     }
 
     public static function sampleFactory()
@@ -315,4 +307,28 @@ class ServiceManagerTest extends TestCase
         $serviceManager = new SimpleServiceManager($config);
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
     }
+
+//     public function testMinimalCyclicAliasDefinitionShouldThrow()
+//     {
+//         $sm = new ServiceManager();
+
+//         $this->expectException(CyclicAliasException::class);
+//         $sm->setAlias('alias', 'alias');
+//     }
+
+//     public function testCoverageDepthFirstTaggingOnRecursiveAliasDefinitions()
+//     {
+//         $sm = new ServiceManager([
+//             'factories' => [
+//                 stdClass::class => InvokableFactory::class,
+//             ],
+//             'aliases' => [
+//                 'alias1' => 'alias2',
+//                 'alias2' => 'alias3',
+//                 'alias3' => stdClass::class,
+//             ],
+//         ]);
+//         $this->assertSame($sm->get('alias1'), $sm->get('alias2'));
+//         $this->assertSame($sm->get(stdClass::class), $sm->get('alias1'));
+//     }
 }
