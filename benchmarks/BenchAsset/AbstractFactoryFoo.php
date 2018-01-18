@@ -7,8 +7,8 @@
 
 namespace ZendBench\ServiceManager\BenchAsset;
 
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 class AbstractFactoryFoo implements AbstractFactoryInterface
 {

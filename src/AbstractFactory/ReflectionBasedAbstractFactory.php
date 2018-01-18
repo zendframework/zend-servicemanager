@@ -13,6 +13,10 @@ use ReflectionParameter;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
+use function array_map;
+use function class_exists;
+use function sprintf;
+
 /**
  * Reflection-based factory.
  *
@@ -216,7 +220,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
         }
 
         $type = $parameter->getClass()->getName();
-        $type = isset($this->aliases[$type]) ? $this->aliases[$type] : $type;
+        $type = $this->aliases[$type] ?? $type;
 
         if (! $container->has($type)) {
             throw new ServiceNotFoundException(sprintf(
