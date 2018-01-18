@@ -874,7 +874,7 @@ class ServiceManager implements ServiceLocatorInterface
      * If nodes are not strongly connected (i.e. resolvable in
      * our case), they get resolved.
      *
-     * This algorithm fast for mass updates through configure().
+     * This algorithm is fast for mass updates through configure().
      * It is not appropriate if just a single alias is added.
      *
      * @see mapAliasToTarget above
