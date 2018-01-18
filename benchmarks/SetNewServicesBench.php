@@ -52,12 +52,12 @@ class SetNewServicesBench
             $config['invokables']['invokable_$i'] = BenchAsset\Foo::class;
             $config['delegators']['delegator_$i'] = [ DelegatorFactoryFoo::class ];
         }
-        
+
         $this->initializer = new BenchAsset\InitializerFoo();
         $this->abstractFactory = new BenchAsset\AbstractFactoryFoo();
         $this->sm = new ServiceManager($config);
     }
-        
+
 
     public function benchSetService()
     {
@@ -90,52 +90,51 @@ class SetNewServicesBench
 
         $sm->setAlias('recursiveFactoryAlias1', 'factory1');
     }
-    
+
     public function benchSetInvokableClass()
     {
-        
+
         // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
         $sm->setInvokableClass(BenchAsset\Foo::class, BenchAsset\Foo::class);
     }
-    
+
     public function benchAddDelegator()
     {
-        
+
         // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
         $sm->addDelegator(BenchAsset\Foo::class, DelegatorFactoryFoo::class);
     }
-    
+
     public function benchAddInitializerByClassName()
     {
         // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
         $sm->addInitializer(BenchAsset\InitializerFoo::class);
     }
-    
+
     public function benchAddInitializerByInstance()
     {
-        
+
         // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
         $sm->addInitializer($this->initializer);
     }
-    
+
     public function benchAddAbstractFactoryByClassName()
     {
-        
+
         // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
         $sm->addAbstractFactory(BenchAsset\AbstractFactoryFoo::class);
     }
-    
+
     public function benchAddAbstractFactoryByInstance()
     {
-        
+
         // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
         $sm->addAbstractFactory($this->abstractFactory);
     }
-    
 }
