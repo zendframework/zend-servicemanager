@@ -871,7 +871,7 @@ class ServiceManager implements ServiceLocatorInterface
      * If nodes are not strongly connected (i.e. resolvable in
      * our case), they get resolved.
      *
-     * This algorithm fast for mass updates through configure().
+     * This algorithm is fast for mass updates through configure().
      * It is not appropriate if just a single alias is added.
      *
      * @see mapAliasToTarget above
@@ -915,6 +915,22 @@ class ServiceManager implements ServiceLocatorInterface
                 if ($alias === $tCursor) {
                     throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
                 }
+                $aCursor = $tCursor;
+                $tCursor = $this->aliases[$tCursor];
+            }
+
+            $tagged[$aCursor] = true;
+
+            if (! isset($stack)) {
+                continue;
+            }
+
+            foreach ($stack as $_ => $alias) {
+                if ($alias === $tCursor) {
+                    throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
+                }
+                $this->aliases[$alias] = $tCursor;
+                $tagged[$alias] = true;
             }
 
             unset($stack);
