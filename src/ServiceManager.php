@@ -912,7 +912,7 @@ class ServiceManager implements ServiceLocatorInterface
                 continue;
             }
 
-            foreach ($stack as $_ => $alias) {
+            foreach ($stack as $alias) {
                 if ($alias === $tCursor) {
                     throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
                 }
