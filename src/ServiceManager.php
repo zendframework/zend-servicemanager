@@ -522,7 +522,6 @@ class ServiceManager implements ServiceLocatorInterface
             return;
         }
         throw ContainerModificationsNotAllowedException::fromExistingService($name);
-
     }
 
     /**
@@ -884,6 +883,7 @@ class ServiceManager implements ServiceLocatorInterface
             if ($aCursor === $tCursor) {
                 throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
             }
+
             if (! isset($this->aliases[$tCursor])) {
                 continue;
             }

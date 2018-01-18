@@ -289,7 +289,6 @@ class ServiceManagerTest extends TestCase
         ->with($this->anything(), $this->equalTo('ServiceName'))
         ->willReturn(true);
         $this->assertTrue($serviceManager->has('Alias'));
-        
     }
 
     public static function sampleFactory()
