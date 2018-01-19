@@ -949,6 +949,8 @@ class ServiceManager implements ServiceLocatorInterface
                 continue;
             }
 
+            $stack = [];
+
             while (isset($this->aliases[$tCursor])) {
                 $stack[] = $aCursor;
                 if ($aCursor === $this->aliases[$tCursor]) {
@@ -960,10 +962,6 @@ class ServiceManager implements ServiceLocatorInterface
 
             $tagged[$aCursor] = true;
 
-            if (! isset($stack)) {
-                continue;
-            }
-
             foreach ($stack as $alias) {
                 if ($alias === $tCursor) {
                     throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
@@ -971,8 +969,6 @@ class ServiceManager implements ServiceLocatorInterface
                 $this->aliases[$alias] = $tCursor;
                 $tagged[$alias] = true;
             }
-
-            unset($stack);
         }
     }
 
