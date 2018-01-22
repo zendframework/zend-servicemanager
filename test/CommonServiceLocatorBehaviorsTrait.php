@@ -855,4 +855,28 @@ trait CommonServiceLocatorBehaviorsTrait
             ],
         ]);
     }
+
+    public function testMinimalCyclicAliasDefinitionShouldThrow()
+    {
+        $sm = $this->createContainer([]);
+
+        $this->expectException(CyclicAliasException::class);
+        $sm->setAlias('alias', 'alias');
+    }
+
+    public function testCoverageDepthFirstTaggingOnRecursiveAliasDefinitions()
+    {
+        $sm = $this->createContainer([
+            'factories' => [
+                stdClass::class => InvokableFactory::class,
+            ],
+            'aliases' => [
+                'alias1' => 'alias2',
+                'alias2' => 'alias3',
+                'alias3' => stdClass::class,
+            ],
+        ]);
+        $this->assertSame($sm->get('alias1'), $sm->get('alias2'));
+        $this->assertSame($sm->get(stdClass::class), $sm->get('alias1'));
+    }
 }

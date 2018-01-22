@@ -868,6 +868,12 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * This function maps $this->aliases in place.
      *
+     * This algorithm is an adaptated version of Tarjans Strongly
+     * Connected Components. Instead of returning the strongly
+     * connected components (i.e. cycles in our case), we throw.
+     * If nodes are not strongly connected (i.e. resolvable in
+     * our case), they get resolved.
+     *
      * This algorithm is fast for mass updates through configure().
      * It is not appropriate if just a single alias is added.
      *
@@ -881,16 +887,35 @@ class ServiceManager implements ServiceLocatorInterface
             if (isset($tagged[$alias])) {
                 continue;
             }
+
             $tCursor = $this->aliases[$alias];
             $aCursor = $alias;
+            if ($aCursor === $tCursor) {
+                throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
+            }
+            if (! isset($this->aliases[$tCursor])) {
+                continue;
+            }
+
+            $stack = [];
+
             while (isset($this->aliases[$tCursor])) {
-                $tagged[$aCursor] = true;
-                $this->aliases[$aCursor] = $this->aliases[$tCursor];
-                $aCursor = $tCursor;
-                $tCursor = $this->aliases[$tCursor];
-                if ($aCursor === $tCursor) {
+                $stack[] = $aCursor;
+                if ($aCursor === $this->aliases[$tCursor]) {
                     throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
                 }
+                $aCursor = $tCursor;
+                $tCursor = $this->aliases[$tCursor];
+            }
+
+            $tagged[$aCursor] = true;
+
+            foreach ($stack as $alias) {
+                if ($alias === $tCursor) {
+                    throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
+                }
+                $this->aliases[$alias] = $tCursor;
+                $tagged[$alias] = true;
             }
         }
     }
