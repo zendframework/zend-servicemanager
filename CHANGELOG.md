@@ -29,7 +29,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#230](https://github.com/zendframework/zend-servicemanager/pull/230) fixes a
+  problem in detecting cyclic aliases, ensuring they are detected correctly.
 
 ## 3.3.1 - 2017-11-27
 
