@@ -911,7 +911,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function resolveAbstractFactories($abstractFactories)
     {
-        foreach ($abstractFactories as $_ => $abstractFactory) {
+        foreach ($abstractFactories as $abstractFactory) {
             if (is_string($abstractFactory) && class_exists($abstractFactory)) {
                 // cached string
                 if (! isset($this->cachedAbstractFactories[$abstractFactory])) {
