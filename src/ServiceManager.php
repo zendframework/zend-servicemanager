@@ -391,12 +391,12 @@ class ServiceManager implements ServiceLocatorInterface
      * @throws ContainerModificationsNotAllowedException if $alias already
      *     exists as a service and overrides are disallowed.
      */
-    public function setAlias($alias, $target)
+    public function setAlias($name, $target)
     {
-        if (isset($this->services[$alias]) && ! $this->allowOverride) {
-            throw ContainerModificationsNotAllowedException::fromExistingService($alias);
+        if (isset($this->services[$name]) && ! $this->allowOverride) {
+            throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
-        $this->mapAliasToTarget($alias, $target);
+        $this->mapAliasToTarget($name, $target);
     }
 
     /**
@@ -410,7 +410,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setInvokableClass($name, $class = null)
     {
-        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+        if (isset($this->services[$name]) && ! $this->allowOverride) {
             throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
         $this->createAliasesAndFactoriesForInvokables([$name => $class ?? $name]);
@@ -427,7 +427,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setFactory($name, $factory)
     {
-        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+        if (isset($this->services[$name]) && ! $this->allowOverride) {
             throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
         $this->factories[$name] = $factory;
@@ -442,7 +442,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function mapLazyService($name, $class = null)
     {
-        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+        if (isset($this->services[$name]) && ! $this->allowOverride) {
             throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
         $this->lazyServices = array_merge_recursive(['class_map' => [$name => $class ?? $name]]);
@@ -469,7 +469,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function addDelegator($name, $factory)
     {
-        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+        if (isset($this->services[$name]) && ! $this->allowOverride) {
             throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
         $this->delegators = array_merge_recursive($this->delegators, [$name => [$factory]]);
@@ -495,7 +495,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setService($name, $service)
     {
-        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+        if (isset($this->services[$name]) && ! $this->allowOverride) {
             throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
         $this->services[$name] = $service;
@@ -511,7 +511,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setShared($name, $flag)
     {
-        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+        if (isset($this->services[$name]) && ! $this->allowOverride) {
             throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
         $this->shared[$name] = (bool) $flag;
