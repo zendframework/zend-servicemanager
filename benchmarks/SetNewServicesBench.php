@@ -123,7 +123,7 @@ class SetNewServicesBench
     /**
      * @todo @link https://github.com/phpbench/phpbench/issues/304
      */
-   public function benchAddInitializerByInstance()
+    public function benchAddInitializerByInstance()
     {
         $sm = clone $this->sm;
         $sm->addInitializer($this->initializer);
