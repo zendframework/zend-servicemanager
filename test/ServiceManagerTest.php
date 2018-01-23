@@ -306,28 +306,4 @@ class ServiceManagerTest extends TestCase
         $serviceManager = new SimpleServiceManager($config);
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
     }
-
-//     public function testMinimalCyclicAliasDefinitionShouldThrow()
-//     {
-//         $sm = new ServiceManager();
-
-//         $this->expectException(CyclicAliasException::class);
-//         $sm->setAlias('alias', 'alias');
-//     }
-
-//     public function testCoverageDepthFirstTaggingOnRecursiveAliasDefinitions()
-//     {
-//         $sm = new ServiceManager([
-//             'factories' => [
-//                 stdClass::class => InvokableFactory::class,
-//             ],
-//             'aliases' => [
-//                 'alias1' => 'alias2',
-//                 'alias2' => 'alias3',
-//                 'alias3' => stdClass::class,
-//             ],
-//         ]);
-//         $this->assertSame($sm->get('alias1'), $sm->get('alias2'));
-//         $this->assertSame($sm->get(stdClass::class), $sm->get('alias1'));
-//     }
 }

@@ -434,18 +434,19 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Add a delegator for a given service.
+     * Create a lazy service mapping to a class.
      *
-     * @param string $name Service name
-     * @param string|callable|Factory\DelegatorFactoryInterface $factory Delegator
-     *     factory to assign.
+     * @param string $name Service name to map
+     * @param null|string $class Class to which to map; if not provided, $name
+     *     will be used for the mapping.
      */
-    public function addDelegator($name, $factory)
+    public function mapLazyService($name, $class = null)
     {
         if (isset($this->services[$alias]) && ! $this->allowOverride) {
             throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
-        $this->delegators = array_merge_recursive($this->delegators, [$name => [$factory]]);
+        $this->lazyServices = array_merge_recursive(['class_map' => [$name => $class ?? $name]]);
+        $this->lazyServicesDelegator = null;
     }
 
     /**
@@ -460,20 +461,18 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Create a lazy service mapping to a class.
+     * Add a delegator for a given service.
      *
-     * @param string $name Service name to map
-     * @param null|string $class Class to which to map; if not provided, $name
-     *     will be used for the mapping.
+     * @param string $name Service name
+     * @param string|callable|Factory\DelegatorFactoryInterface $factory Delegator
+     *     factory to assign.
      */
-    public function mapLazyService($name, $class = null)
+    public function addDelegator($name, $factory)
     {
-        if (! isset($this->services[$name]) ||$this->allowOverride) {
-            $this->lazyServices = array_merge_recursive(['class_map' => [$name => $class ?? $name]]);
-            $this->lazyServicesDelegator = null;
-            return;
+        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+            throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
-        throw ContainerModificationsNotAllowedException::fromExistingService($name);
+        $this->delegators = array_merge_recursive($this->delegators, [$name => [$factory]]);
     }
 
     /**
@@ -496,11 +495,10 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setService($name, $service)
     {
-        if (! isset($this->services[$name]) || $this->allowOverride) {
-            $this->services[$name] = $service;
-            return;
+        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+            throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
-        throw ContainerModificationsNotAllowedException::fromExistingService($name);
+        $this->services[$name] = $service;
     }
 
     /**
@@ -513,11 +511,10 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setShared($name, $flag)
     {
-        if (! isset($this->services[$name]) || $this->allowOverride) {
-            $this->shared[$name] = (bool) $flag;
-            return;
+        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+            throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
-        throw ContainerModificationsNotAllowedException::fromExistingService($name);
+        $this->shared[$name] = (bool) $flag;
     }
 
     /**
@@ -927,7 +924,7 @@ class ServiceManager implements ServiceLocatorInterface
             if ($abstractFactory instanceof Factory\AbstractFactoryInterface) {
                 $abstractFactoryObjHash = spl_object_hash($abstractFactory);
                 $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
-                return;
+                continue;
             }
 
             throw InvalidArgumentException::fromInvalidAbstractFactory($abstractFactory);
