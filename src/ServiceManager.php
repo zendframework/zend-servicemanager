@@ -393,11 +393,10 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setAlias($alias, $target)
     {
-        if (! isset($this->services[$alias]) || $this->allowOverride) {
-            $this->mapAliasToTarget($alias, $target);
-            return;
+        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+            throw ContainerModificationsNotAllowedException::fromExistingService($alias);
         }
-        throw ContainerModificationsNotAllowedException::fromExistingService($alias);
+        $this->mapAliasToTarget($alias, $target);
     }
 
     /**
@@ -411,11 +410,10 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setInvokableClass($name, $class = null)
     {
-        if (! isset($this->services[$name]) || $this->allowOverride) {
-            $this->createAliasesAndFactoriesForInvokables([$name => $class ?? $name]);
-            return;
+        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+            throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
-        throw ContainerModificationsNotAllowedException::fromExistingService($name);
+        $this->createAliasesAndFactoriesForInvokables([$name => $class ?? $name]);
     }
 
     /**
@@ -429,11 +427,10 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setFactory($name, $factory)
     {
-        if (! isset($this->services[$name]) || $this->allowOverride) {
-            $this->factories[$name] = $factory;
-            return;
+        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+            throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
-        throw ContainerModificationsNotAllowedException::fromExistingService($name);
+        $this->factories[$name] = $factory;
     }
 
     /**
@@ -445,11 +442,10 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function addDelegator($name, $factory)
     {
-        if (! isset($this->services[$name]) || $this->allowOverride) {
-            $this->delegators = array_merge_recursive($this->delegators, [$name => [$factory]]);
-            return;
+        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+            throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
-        throw ContainerModificationsNotAllowedException::fromExistingService($name);
+        $this->delegators = array_merge_recursive($this->delegators, [$name => [$factory]]);
     }
 
     /**
