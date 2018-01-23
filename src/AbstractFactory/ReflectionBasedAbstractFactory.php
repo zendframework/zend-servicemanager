@@ -154,7 +154,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
     private function resolveParameterWithoutConfigService(ContainerInterface $container, $requestedName)
     {
         /**
-         * @param ReflectionClass $parameter
+         * @param ReflectionParameter $parameter
          * @return mixed
          * @throws ServiceNotFoundException If type-hinted parameter cannot be
          *   resolved to a service in the container.
@@ -177,7 +177,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
     private function resolveParameterWithConfigService(ContainerInterface $container, $requestedName)
     {
         /**
-         * @param ReflectionClass $parameter
+         * @param ReflectionParameter $parameter
          * @return mixed
          * @throws ServiceNotFoundException If type-hinted parameter cannot be
          *   resolved to a service in the container.
@@ -193,7 +193,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
     /**
      * Logic common to all parameter resolution.
      *
-     * @param ReflectionClass $parameter
+     * @param ReflectionParameter $parameter
      * @param ContainerInterface $container
      * @param string $requestedName
      * @return mixed

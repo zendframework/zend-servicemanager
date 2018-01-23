@@ -923,7 +923,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Instantiate abstract factories in order to avoid checks during service construction.
      *
-     * @param string[]|Factory\AbstractFactoryInterface[] $abstractFactories
+     * @param string|Factory\AbstractFactoryInterface $abstractFactory
      *
      * @return void
      */
