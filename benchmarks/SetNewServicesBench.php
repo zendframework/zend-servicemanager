@@ -11,6 +11,7 @@ use PhpBench\Benchmark\Metadata\Annotations\Iterations;
 use PhpBench\Benchmark\Metadata\Annotations\Revs;
 use PhpBench\Benchmark\Metadata\Annotations\Warmup;
 use Zend\ServiceManager\ServiceManager;
+use ZendBench\ServiceManager\BenchAsset\DelegatorFactoryFoo;
 
 /**
  * @Revs(1000)
@@ -61,79 +62,87 @@ class SetNewServicesBench
 
     public function benchSetService()
     {
-        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
-
         $sm->setService('service2', new \stdClass());
     }
 
+    /**
+     * @todo @link https://github.com/phpbench/phpbench/issues/304
+     */
     public function benchSetFactory()
     {
-        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
-
         $sm->setFactory('factory2', BenchAsset\FactoryFoo::class);
     }
 
+    /**
+     * @todo @link https://github.com/phpbench/phpbench/issues/304
+     */
     public function benchSetAlias()
     {
-        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
-
         $sm->setAlias('factoryAlias2', 'factory1');
     }
 
+    /**
+     * @todo @link https://github.com/phpbench/phpbench/issues/304
+     */
     public function benchOverrideAlias()
     {
-        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
-
         $sm->setAlias('recursiveFactoryAlias1', 'factory1');
     }
 
+    /**
+     * @todo @link https://github.com/phpbench/phpbench/issues/304
+     */
     public function benchSetInvokableClass()
     {
-
-        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
         $sm->setInvokableClass(BenchAsset\Foo::class, BenchAsset\Foo::class);
     }
 
+    /**
+     * @todo @link https://github.com/phpbench/phpbench/issues/304
+     */
     public function benchAddDelegator()
     {
-
-        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
         $sm->addDelegator(BenchAsset\Foo::class, DelegatorFactoryFoo::class);
     }
 
+    /**
+     * @todo @link https://github.com/phpbench/phpbench/issues/304
+     */
     public function benchAddInitializerByClassName()
     {
-        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
         $sm->addInitializer(BenchAsset\InitializerFoo::class);
     }
 
-    public function benchAddInitializerByInstance()
+    /**
+     * @todo @link https://github.com/phpbench/phpbench/issues/304
+     */
+   public function benchAddInitializerByInstance()
     {
-
-        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
         $sm->addInitializer($this->initializer);
     }
 
+    /**
+     * @todo @link https://github.com/phpbench/phpbench/issues/304
+     */
     public function benchAddAbstractFactoryByClassName()
     {
-
-        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
         $sm->addAbstractFactory(BenchAsset\AbstractFactoryFoo::class);
     }
 
+    /**
+     * @todo @link https://github.com/phpbench/phpbench/issues/304
+     */
     public function benchAddAbstractFactoryByInstance()
     {
-
-        // @todo @link https://github.com/phpbench/phpbench/issues/304
         $sm = clone $this->sm;
         $sm->addAbstractFactory($this->abstractFactory);
     }
