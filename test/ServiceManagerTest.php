@@ -8,18 +8,17 @@
 namespace ZendTest\ServiceManager;
 
 use DateTime;
-use Interop\Container\Exception\ContainerException;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
+use Zend\ServiceManager\Exception\CyclicAliasException;
+use PHPUnit\Framework\MockObject\Invokable;
 
 /**
  * @covers \Zend\ServiceManager\ServiceManager
@@ -284,19 +283,11 @@ class ServiceManagerTest extends TestCase
                 $abstractFactory,
             ],
         ]);
-
-        $valueMap = [
-            ['Alias', false],
-            ['ServiceName', true],
-        ];
-
         $abstractFactory
-            ->method('canCreate')
-            ->withConsecutive(
-                [ $this->anything(), $this->equalTo('Alias') ],
-                [ $this->anything(), $this->equalTo('ServiceName')]
-            )
-            ->willReturn($this->returnValueMap($valueMap));
+        ->expects($this->once())
+        ->method('canCreate')
+        ->with($this->anything(), $this->equalTo('ServiceName'))
+        ->willReturn(true);
         $this->assertTrue($serviceManager->has('Alias'));
     }
 
