@@ -29,6 +29,7 @@ use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
 use function call_user_func_array;
 use function restore_error_handler;
 use function set_error_handler;
+use ZendTest\ServiceManager\TestAsset\SampleFactory;
 
 trait CommonServiceLocatorBehaviorsTrait
 {
@@ -878,5 +879,129 @@ trait CommonServiceLocatorBehaviorsTrait
         ]);
         $this->assertSame($sm->get('alias1'), $sm->get('alias2'));
         $this->assertSame($sm->get(stdClass::class), $sm->get('alias1'));
+    }
+
+    /**
+     * The particular test procedure called by
+     * testConsistencyOverInternalStates
+     *
+     * This test calls build()/get() and in between has() 3 times for
+     * the given service name.
+     * It asserts that sm continues to have (has) a service, asserts
+     * that the built services each reference an object different
+     * from all other objects, and asserts that the services got
+     * reference the same object.
+     *
+     * @see testConsistencyOverInternalStates
+     *
+     * @param ContainerInterface $smTemplate
+     * @param string $name
+     * @param array[] string $test
+     */
+    protected function checkConsistencyOverInternalStates($smTemplate, $name, $test)
+    {
+        $sm = clone $smTemplate;
+        $object['get'] = [];
+        $object['build'] = [];
+
+        // call get()/build() and store the retrieved
+        // objects in $object['get'] or $object['build']
+        // respectively
+        foreach ($test as $method) {
+            $object[$method][] = $sm->$method($name);
+            $this->assertTrue($sm->has($name));
+        }
+
+        // if there is more than one object in $object['get']
+        // compare all to the first
+        $nrShared = count($object['get']);
+        for ($i = 1; $i < $nrShared; $i++) {
+            $this->assertSame($object['get'][0], $object['get'][$i]);
+        }
+        // objects from object['build'] have to be different
+        // from all other objects
+        foreach ($object['build'] as $idx1 => $nonSharedObj) {
+            foreach ($object['get'] as $sharedObj) {
+                $this->assertNotSame($nonSharedObj, $sharedObj);
+            }
+            foreach ($object['build'] as $idx2 => $nonSharedObj2) {
+                if ($idx1 !== $idx2) {
+                    $this->assertNotSame($nonSharedObj, $nonSharedObj2);
+                }
+            }
+        }
+    }
+
+    /**
+     * The ServiceManager can change internal state on calls to get,
+     * build or has, latter not currently. Possible state changes
+     * are caching a factory, registering a service produced by
+     * a factory, ...
+     *
+     * This tests performs three consecutive calls to build/get for
+     * each registered service to push the service manager through
+     * all internal states, thereby verifying that build/get/has
+     * remain stable through the internal states.
+     *
+     * @see testConsistencyOverInternalStates below
+     *
+     * @param ContainerInterface $smTemplate
+     * @param string $name
+     * @param array[] string $test
+     */
+    public function testConsistencyOverInternalStates()
+    {
+        $config = [
+            'factories' => [
+                'factory' => SampleFactory::class,
+                'service' => function ($container, $requestedName, array $options = null) {
+                    return new stdClass();
+                },
+                ],
+                'invokables' => [
+                    'invokable' => InvokableObject::class,
+                ],
+                'services' => [
+                    'service' => new stdClass(),
+                ],
+                'aliases' => [
+                    'serviceAlias'          => 'service',
+                    'invokableAlias'        => 'invokable',
+                    'factoryAlias'          => 'factory',
+                    'abstractFactoryAlias'  => stdClass::class
+                ],
+                'abstract_factories' => [
+                    SimpleAbstractFactory::class,
+                ]
+                ];
+
+        $smTemplate = $this->createContainer($config);
+
+        // produce all 3-tuples of 'build' and 'get'
+        $methods = ['get', 'build'];
+        foreach ($methods as $method1) {
+            foreach ($methods as $method2) {
+                foreach ($methods as $method3) {
+                    $tests[] = [$method1, $method2, $method3];
+                }
+            }
+        }
+
+        // To allow changes to the config above
+        // $names is not hard coded
+        $names = array_merge(
+            $config['factories'],
+            $config['invokables'],
+            $config['services'],
+            $config['aliases']
+        );
+        $names[stdClass::class] = true;
+
+        foreach ($names as $name => $_) {
+            foreach ($tests as $test) {
+                $sm = clone $smTemplate;
+                $this->checkConsistencyOverInternalStates($smTemplate, $name, $test);
+            }
+        }
     }
 }
