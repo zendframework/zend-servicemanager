@@ -902,6 +902,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $object['get'] = [];
         $object['build'] = [];
 
+
         // call get()/build() and store the retrieved
         // objects in $object['get'] or $object['build']
         // respectively
