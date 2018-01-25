@@ -900,19 +900,18 @@ trait CommonServiceLocatorBehaviorsTrait
      * @param string $name
      * @param array[] string $test
      */
-    public function testConsistencyOverInternalStates($smTemplate, $name, $test)
+    public function testConsistencyOverInternalStates($smTemplate, $name, $test, $sharedByDefault)
     {
         $sm = clone $smTemplate;
         $object['get'] = [];
         $object['build'] = [];
-
 
         // call get()/build() and store the retrieved
         // objects in $object['get'] or $object['build']
         // respectively
         foreach ($test as $method) {
             $obj = $sm->$method($name);
-            $object[$method][] = $obj;
+            $object[$sharedByDefault ? $method : 'build'][] = $obj;
             $this->assertNotNull($obj);
             $this->assertTrue($sm->has($name));
         }
@@ -944,7 +943,7 @@ trait CommonServiceLocatorBehaviorsTrait
      */
     public function provideConsistencyOverInternalStatesTests()
     {
-        $config = [
+        $config1 = [
             'factories' => [
                 // to allow build('service')
                 'service' => function ($container, $requestedName, array $options = null) {
@@ -953,30 +952,36 @@ trait CommonServiceLocatorBehaviorsTrait
                 'factory' => SampleFactory::class,
                 'delegator' => SampleFactory::class,
              ],
-            'delegators' => [
-                'delegator' => [
-                    PassthroughDelegatorFactory::class
-                ],
-            ],
+             'delegators' => [
+                 'delegator' => [
+                     PassthroughDelegatorFactory::class
+                 ],
+             ],
             'invokables' => [
                 'invokable' => InvokableObject::class,
             ],
             'services' => [
                 'service' => new stdClass(),
             ],
-            'aliases' => [
+             'aliases' => [
                 'serviceAlias'          => 'service',
                 'invokableAlias'        => 'invokable',
                 'factoryAlias'          => 'factory',
                 'abstractFactoryAlias'  => 'foo',
                 'delegatorAlias'        => 'delegator',
-            ],
+             ],
             'abstract_factories' => [
                 AbstractFactoryFoo::class
             ]
         ];
+        $config2 = $config1;
+        $config2['shared_by_default'] = false;
 
-        $smTemplate = $this->createContainer($config);
+        $configs = [ $config1, $config2 ];
+
+        foreach ($configs as $config) {
+            $smTemplates[] = $this->createContainer($config);
+        }
 
         // produce all 3-tuples of 'build' and 'get'
         $methods = ['get', 'build'];
@@ -996,13 +1001,16 @@ trait CommonServiceLocatorBehaviorsTrait
             $config['services'],
             $config['aliases'],
             $config['delegators']
-            ));
+        ));
         $names[] = 'foo';
 
-        foreach ($names as $name) {
-            foreach ($callSequences as $callSequence) {
-                $sm = clone $smTemplate;
-                $tests[] = [$smTemplate, $name, $callSequence];
+        foreach ($configs as $config) {
+            $smTemplate = $this->createContainer($config);
+            foreach ($names as $name) {
+                foreach ($callSequences as $callSequence) {
+                    $sm = clone $smTemplate;
+                    $tests[] = [$smTemplate, $name, $callSequence, $config['shared_by_default'] ?? true];
+                }
             }
         }
         return $tests;
