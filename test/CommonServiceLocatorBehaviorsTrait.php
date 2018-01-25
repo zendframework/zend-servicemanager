@@ -931,17 +931,9 @@ trait CommonServiceLocatorBehaviorsTrait
     }
 
     /**
-     * The ServiceManager can change internal state on calls to get,
-     * build or has, latter not currently. Possible state changes
-     * are caching a factory, registering a service produced by
-     * a factory, ...
+     * Data provider
      *
-     * This tests performs three consecutive calls to build/get for
-     * each registered service to push the service manager through
-     * all internal states, thereby verifying that build/get/has
-     * remain stable through the internal states.
-     *
-     * @see testConsistencyOverInternalStates below
+     * @see testConsistencyOverInternalStates above
      *
      * @param ContainerInterface $smTemplate
      * @param string $name
