@@ -31,6 +31,7 @@ use function restore_error_handler;
 use function set_error_handler;
 use ZendTest\ServiceManager\TestAsset\SampleFactory;
 use ZendTest\ServiceManager\TestAsset\AbstractFactoryFoo;
+use ZendTest\ServiceManager\TestAsset\PassthroughDelegatorFactory;
 
 trait CommonServiceLocatorBehaviorsTrait
 {
@@ -910,7 +911,9 @@ trait CommonServiceLocatorBehaviorsTrait
         // objects in $object['get'] or $object['build']
         // respectively
         foreach ($test as $method) {
-            $object[$method][] = $sm->$method($name);
+            $obj = $sm->$method($name);
+            $object[$method][] = $obj;
+            $this->assertNotNull($obj);
             $this->assertTrue($sm->has($name));
         }
 
@@ -943,27 +946,35 @@ trait CommonServiceLocatorBehaviorsTrait
     {
         $config = [
             'factories' => [
-                'factory' => SampleFactory::class,
+                // to allow build('service')
                 'service' => function ($container, $requestedName, array $options = null) {
                     return new stdClass();
                 },
+                'factory' => SampleFactory::class,
+                'delegator' => SampleFactory::class,
+             ],
+            'delegators' => [
+                'delegator' => [
+                    PassthroughDelegatorFactory::class
                 ],
-                'invokables' => [
-                    'invokable' => InvokableObject::class,
-                ],
-                'services' => [
-                    'service' => new stdClass(),
-                ],
-                'aliases' => [
-                    'serviceAlias'          => 'service',
-                    'invokableAlias'        => 'invokable',
-                    'factoryAlias'          => 'factory',
-                    'abstractFactoryAlias'  => 'foo'
-                ],
-                'abstract_factories' => [
-                    AbstractFactoryFoo::class
-                ]
-                ];
+            ],
+            'invokables' => [
+                'invokable' => InvokableObject::class,
+            ],
+            'services' => [
+                'service' => new stdClass(),
+            ],
+            'aliases' => [
+                'serviceAlias'          => 'service',
+                'invokableAlias'        => 'invokable',
+                'factoryAlias'          => 'factory',
+                'abstractFactoryAlias'  => 'foo',
+                'delegatorAlias'        => 'delegator',
+            ],
+            'abstract_factories' => [
+                AbstractFactoryFoo::class
+            ]
+        ];
 
         $smTemplate = $this->createContainer($config);
 
@@ -983,8 +994,9 @@ trait CommonServiceLocatorBehaviorsTrait
             $config['factories'],
             $config['invokables'],
             $config['services'],
-            $config['aliases']
-        ));
+            $config['aliases'],
+            $config['delegators']
+            ));
         $names[] = 'foo';
 
         foreach ($names as $name) {
