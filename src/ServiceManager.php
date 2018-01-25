@@ -133,13 +133,6 @@ class ServiceManager implements ServiceLocatorInterface
     protected $sharedByDefault = true;
 
     /**
-     * Service manager was already configured?
-     *
-     * @var bool
-     */
-    protected $configured = false;
-
-    /**
      * Cached abstract factories from string.
      *
      * @var array
@@ -157,6 +150,28 @@ class ServiceManager implements ServiceLocatorInterface
     public function __construct(array $config = [])
     {
         $this->creationContext = $this;
+
+        if (! empty($this->abstractFactories)) {
+            $this->resolveAbstractFactories($this->abstractFactories);
+        }
+
+        if (! empty($this->initializers)) {
+            $this->resolveInitializers($this->initializers);
+        }
+
+        if (! empty($this->invokables)) {
+            $this->createAliasesAndFactoriesForInvokables($this->invokables);
+        }
+
+        if (! empty($this->aliases)) {
+            if (! empty($config['aliases'])) {
+                $this->aliases = $config['aliases'] + $this->aliases;
+                // to prevent that alias resolution happens again in
+                // configure()
+                unset($config['aliases']);
+            }
+            $this->mapAliasesToTargets();
+        }
         $this->configure($config);
     }
 
@@ -330,30 +345,28 @@ class ServiceManager implements ServiceLocatorInterface
         // so we check all definitions up front.
         $this->validateServiceNames($config);
 
-        if (isset($config['services'])) {
+        if (! empty($config['services'])) {
             $this->services = $config['services'] + $this->services;
         }
 
-        if (isset($config['invokables']) && ! empty($config['invokables'])) {
+        if (! empty($config['invokables'])) {
             $this->createAliasesAndFactoriesForInvokables($config['invokables']);
         }
 
-        if (isset($config['factories'])) {
+        if (! empty($config['factories'])) {
             $this->factories = $config['factories'] + $this->factories;
         }
 
-        if (isset($config['delegators'])) {
+        if (! empty($config['delegators'])) {
             $this->delegators = array_merge_recursive($this->delegators, $config['delegators']);
         }
 
-        if (isset($config['shared'])) {
+        if (! empty($config['shared'])) {
             $this->shared = $config['shared'] + $this->shared;
         }
 
         if (! empty($config['aliases'])) {
             $this->aliases = $config['aliases'] + $this->aliases;
-            $this->mapAliasesToTargets();
-        } elseif (! $this->configured && ! empty($this->aliases)) {
             $this->mapAliasesToTargets();
         }
 
@@ -363,7 +376,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         // If lazy service configuration was provided, reset the lazy services
         // delegator factory.
-        if (isset($config['lazy_services']) && ! empty($config['lazy_services'])) {
+        if (! empty($config['lazy_services'])) {
             $this->lazyServices          = array_merge_recursive($this->lazyServices, $config['lazy_services']);
             $this->lazyServicesDelegator = null;
         }
@@ -374,12 +387,9 @@ class ServiceManager implements ServiceLocatorInterface
             $this->resolveAbstractFactories($config['abstract_factories']);
         }
 
-        if (isset($config['initializers'])) {
+        if (! empty($config['initializers'])) {
             $this->resolveInitializers($config['initializers']);
         }
-
-        $this->configured = true;
-
         return $this;
     }
 
@@ -751,10 +761,11 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function validateServiceNames(array $config)
     {
-        if ($this->allowOverride || ! $this->configured) {
+        if ($this->allowOverride) {
             return;
         }
 
+        // we repeat the test for each array to avoid function call overhead
         if (isset($config['services'])) {
             foreach ($config['services'] as $service => $_) {
                 if (isset($this->services[$service]) && ! $this->allowOverride) {
@@ -826,22 +837,25 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function mapAliasToTarget($alias, $target)
     {
+        // localize to avoid continous dereferencing
+        $aliases = &$this->aliases;
+
         // $target is either an alias or something else
         // if it is an alias, resolve it
-        $this->aliases[$alias] = $this->aliases[$target] ?? $target;
+        $aliases[$alias] = $aliases[$target] ?? $target;
 
         // a self-referencing alias indicates a cycle
-        if ($alias === $this->aliases[$alias]) {
-            throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
+        if ($alias === $aliases[$alias]) {
+            throw CyclicAliasException::fromCyclicAlias($alias, $aliases);
         }
 
         // finally we have to check if existing incomplete alias definitions
         // exist which can get resolved by the new alias
-        if (in_array($alias, $this->aliases)) {
-            $r = array_intersect($this->aliases, [ $alias ]);
+        if (in_array($alias, $aliases)) {
+            $r = array_intersect($aliases, [ $alias ]);
             // found some, resolve them
-            foreach ($r as $name => $service) {
-                $this->aliases[$name] = $target;
+            foreach ($r as $name => $_) {
+                $aliases[$name] = $target;
             }
         }
     }
@@ -865,40 +879,44 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function mapAliasesToTargets()
     {
+        // localize to avoid continous dereferencing
+        $aliases = &$this->aliases;
+
         $tagged = [];
-        foreach ($this->aliases as $alias => $target) {
+
+        foreach ($aliases as $alias => $target) {
             if (isset($tagged[$alias])) {
                 continue;
             }
 
-            $tCursor = $this->aliases[$alias];
+            $tCursor = $aliases[$alias];
             $aCursor = $alias;
             if ($aCursor === $tCursor) {
-                throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
+                throw CyclicAliasException::fromCyclicAlias($alias, $aliases);
             }
 
-            if (! isset($this->aliases[$tCursor])) {
+            if (! isset($aliases[$tCursor])) {
                 continue;
             }
 
             $stack = [];
 
-            while (isset($this->aliases[$tCursor])) {
+            while (isset($aliases[$tCursor])) {
                 $stack[] = $aCursor;
-                if ($aCursor === $this->aliases[$tCursor]) {
-                    throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
+                if ($aCursor === $aliases[$tCursor]) {
+                    throw CyclicAliasException::fromCyclicAlias($alias, $aliases);
                 }
                 $aCursor = $tCursor;
-                $tCursor = $this->aliases[$tCursor];
+                $tCursor = $aliases[$tCursor];
             }
 
             $tagged[$aCursor] = true;
 
             foreach ($stack as $alias) {
                 if ($alias === $tCursor) {
-                    throw CyclicAliasException::fromCyclicAlias($alias, $this->aliases);
+                    throw CyclicAliasException::fromCyclicAlias($alias, $aliases);
                 }
-                $this->aliases[$alias] = $tCursor;
+                $aliases[$alias] = $tCursor;
                 $tagged[$alias] = true;
             }
         }
