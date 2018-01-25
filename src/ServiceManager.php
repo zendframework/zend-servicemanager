@@ -895,10 +895,6 @@ class ServiceManager implements ServiceLocatorInterface
                 throw CyclicAliasException::fromCyclicAlias($alias, $aliases);
             }
 
-            if (! isset($aliases[$tCursor])) {
-                continue;
-            }
-
             $stack = [];
 
             while (isset($aliases[$tCursor])) {
