@@ -900,7 +900,7 @@ trait CommonServiceLocatorBehaviorsTrait
      * @param string $name
      * @param array[] string $test
      */
-    public function testConsistencyOverInternalStates($smTemplate, $name, $test, $sharedByDefault)
+    public function testConsistencyOverInternalStates($smTemplate, $name, $test, $shared)
     {
         $sm = clone $smTemplate;
         $object['get'] = [];
@@ -911,7 +911,7 @@ trait CommonServiceLocatorBehaviorsTrait
         // respectively
         foreach ($test as $method) {
             $obj = $sm->$method($name);
-            $object[$sharedByDefault ? $method : 'build'][] = $obj;
+            $object[$shared ? $method : 'build'][] = $obj;
             $this->assertNotNull($obj);
             $this->assertTrue($sm->has($name));
         }
@@ -922,11 +922,11 @@ trait CommonServiceLocatorBehaviorsTrait
         }
         // objects from object['build'] have to be different
         // from all other objects
-        foreach ($object['build'] as $idx1 => $nonSharedObj) {
-            $this->assertNotContains($nonSharedObj, $object['get']);
+        foreach ($object['build'] as $idx1 => $nonSharedObj1) {
+            $this->assertNotContains($nonSharedObj1, $object['get']);
             foreach ($object['build'] as $idx2 => $nonSharedObj2) {
                 if ($idx1 !== $idx2) {
-                    $this->assertNotSame($nonSharedObj, $nonSharedObj2);
+                    $this->assertNotSame($nonSharedObj1, $nonSharedObj2);
                 }
             }
         }
@@ -983,7 +983,11 @@ trait CommonServiceLocatorBehaviorsTrait
             $smTemplates[] = $this->createContainer($config);
         }
 
-        // produce all 3-tuples of 'build' and 'get'
+        // produce all 3-tuples of 'build' and 'get', i.e.
+        //
+        // [['get', 'get', 'get'], ['get', 'get', 'build'], ...
+        // ['build', 'build', 'build']]
+        //
         $methods = ['get', 'build'];
         foreach ($methods as $method1) {
             foreach ($methods as $method2) {
@@ -993,23 +997,36 @@ trait CommonServiceLocatorBehaviorsTrait
             }
         }
 
-        // To allow changes to the config above
-        // $names is not hard coded
-        $names = array_keys(array_merge(
-            $config['factories'],
-            $config['invokables'],
-            $config['services'],
-            $config['aliases'],
-            $config['delegators']
-        ));
-        $names[] = 'foo';
-
         foreach ($configs as $config) {
             $smTemplate = $this->createContainer($config);
-            foreach ($names as $name) {
+
+            // setup sharing, services are always shared
+            $names = array_fill_keys(array_keys($config['services']), true);
+
+            // initialize the other keys with shared_by_default
+            // and merge them
+            $names = array_merge(array_fill_keys(array_keys(array_merge(
+                $config['factories'],
+                $config['invokables'],
+                $config['aliases'],
+                $config['delegators']
+            )), $config['shared_by_default'] ?? true), $names);
+
+            // add the key resolved by the abstract factory
+            $names['foo'] = $config['shared_by_default'] ?? true;
+
+            // adjust shared setting for individual keys from
+            // $shared array if present
+            if (! empty($config['shared'])) {
+                foreach ($config['shared'] as $name => $shared) {
+                    $names[$name] = $shared;
+                }
+            }
+
+            foreach ($names as $name => $shared) {
                 foreach ($callSequences as $callSequence) {
                     $sm = clone $smTemplate;
-                    $tests[] = [$smTemplate, $name, $callSequence, $config['shared_by_default'] ?? true];
+                    $tests[] = [$smTemplate, $name, $callSequence, $shared];
                 }
             }
         }
