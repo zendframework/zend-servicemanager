@@ -16,8 +16,13 @@ class PassthroughDelegatorFactory implements DelegatorFactoryInterface
      * {@inheritDoc}
      * @see \Zend\ServiceManager\Factory\DelegatorFactoryInterface::__invoke()
      */
-    public function __invoke(\Interop\Container\ContainerInterface $container, $name, callable $callback, array $options = null)
-    {
+    public function __invoke(
+        \Interop\Container\ContainerInterface $container,
+        $name,
+        callable $callback,
+        array $options = null
+    ) {
+
         return call_user_func($callback);
     }
 }
