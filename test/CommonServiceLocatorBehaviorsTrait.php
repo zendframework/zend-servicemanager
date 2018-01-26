@@ -29,6 +29,7 @@ use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
 use function call_user_func_array;
 use function restore_error_handler;
 use function set_error_handler;
+use ZendTest\ServiceManager\TestAsset\PreconfiguredServiceManager;
 
 trait CommonServiceLocatorBehaviorsTrait
 {
@@ -878,5 +879,33 @@ trait CommonServiceLocatorBehaviorsTrait
         ]);
         $this->assertSame($sm->get('alias1'), $sm->get('alias2'));
         $this->assertSame($sm->get(stdClass::class), $sm->get('alias1'));
+    }
+
+    public function testMemberPreConfigurationGetsApplied()
+    {
+        $sm = new PreconfiguredServiceManager();
+
+        // will return true if $services array is properly setup
+        $this->assertTrue($sm->has('service'));
+
+        // will be true if $aliases array is properly setup and
+        // recursive alias resolution works
+        $this->assertTrue($sm->has('alias1'));
+
+        // will be true if $aliases array is properly setup and
+        // simple alias resolution works
+        $this->assertTrue($sm->has('alias2'));
+
+        // will be true if factory array is properly setup
+        $this->assertTrue($sm->has('delegator'));
+
+        // will be true if factory array is properly setup
+        $this->assertTrue($sm->has('factory'));
+
+        // will succeed if invokable is properly set up
+        $this->assertTrue($sm->has('invokable'));
+
+        // will succeed if abstract factory is available
+        $this->assertTrue($sm->has('foo'));
     }
 }
