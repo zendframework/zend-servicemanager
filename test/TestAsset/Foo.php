@@ -10,9 +10,15 @@ namespace ZendTest\ServiceManager\TestAsset;
 class Foo
 {
     protected $options;
+    public $initializerPresent = false;
 
     public function __construct($options = null)
     {
         $this->options = $options;
+    }
+
+    public function assertInitializer()
+    {
+        $this->initializerPresent = true;
     }
 }

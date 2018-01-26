@@ -151,26 +151,24 @@ class ServiceManager implements ServiceLocatorInterface
     {
         $this->creationContext = $this;
 
-        if (! empty($this->abstractFactories)) {
-            $this->resolveAbstractFactories($this->abstractFactories);
+        if (! empty($config['aliases'])) {
+            $this->aliases = $config['aliases'] + $this->aliases;
+            // to prevent that alias resolution happens again in
+            // configure()
+            unset($config['aliases']);
         }
+        $this->mapAliasesToTargets();
 
         if (! empty($this->initializers)) {
-            $this->resolveInitializers($this->initializers);
+            $this->resolveInitializers($this->initializers, true);
+        }
+
+        if (! empty($this->abstractFactories)) {
+            $this->resolveAbstractFactories($this->abstractFactories, true);
         }
 
         if (! empty($this->invokables)) {
             $this->createAliasesAndFactoriesForInvokables($this->invokables);
-        }
-
-        if (! empty($this->aliases)) {
-            if (! empty($config['aliases'])) {
-                $this->aliases = $config['aliases'] + $this->aliases;
-                // to prevent that alias resolution happens again in
-                // configure()
-                unset($config['aliases']);
-            }
-            $this->mapAliasesToTargets();
         }
         $this->configure($config);
     }
@@ -384,11 +382,11 @@ class ServiceManager implements ServiceLocatorInterface
         // For abstract factories and initializers, we always directly
         // instantiate them to avoid checks during service construction.
         if (! empty($config['abstract_factories'])) {
-            $this->resolveAbstractFactories($config['abstract_factories']);
+            $this->resolveAbstractFactories($config['abstract_factories'], false);
         }
 
         if (! empty($config['initializers'])) {
-            $this->resolveInitializers($config['initializers']);
+            $this->resolveInitializers($config['initializers'], false);
         }
         return $this;
     }
@@ -531,9 +529,17 @@ class ServiceManager implements ServiceLocatorInterface
      * Instantiate initializers for to avoid checks during service construction.
      *
      * @param string[]|Initializer\InitializerInterface[]|callable[] $initializers
+     * @param boolean $constructing
+     *
      */
-    private function resolveInitializers(array $initializers)
+    private function resolveInitializers(array $initializers, $constructing = false)
     {
+        // necessary because the $initializers argument may be
+        // $this->initializers (ServiceManager construction, see __construct)
+        if ($constructing) {
+            unset($this->initializers);
+        }
+
         foreach ($initializers as $initializer) {
             if (is_string($initializer) && class_exists($initializer)) {
                 $initializer = new $initializer();
@@ -922,9 +928,16 @@ class ServiceManager implements ServiceLocatorInterface
      * Instantiate abstract factories in order to avoid checks during service construction.
      *
      * @param string[]|Factory\AbstractFactoryInterface[] $abstractFactories
+     * @param boolean $constructing
      */
-    private function resolveAbstractFactories($abstractFactories)
+    private function resolveAbstractFactories($abstractFactories, $constructing = false)
     {
+        // necessary because the $abstractFactories argument may be
+        // $this->abstractFactories (ServiceManager construction, see __construct)
+        if ($constructing) {
+            unset($this->abstractFactories);
+        }
+
         foreach ($abstractFactories as $abstractFactory) {
             if (is_string($abstractFactory) && class_exists($abstractFactory)) {
                 // cached string
