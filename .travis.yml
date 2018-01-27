@@ -24,6 +24,11 @@ matrix:
         - TEST_COVERAGE=true
     - php: 7.1
       env:
+        - DEPS=locked
+        - MUTATION=true
+        - TEST_COVERAGE=true
+    - php: 7.1
+      env:
         - DEPS=latest
     - php: 7.2
       env:
@@ -43,12 +48,14 @@ install:
   - if [[ $DEPS == 'latest' ]]; then travis_retry composer update $COMPOSER_ARGS ; fi
   - if [[ $DEPS == 'lowest' ]]; then travis_retry composer update --prefer-lowest --prefer-stable $COMPOSER_ARGS ; fi
   - if [[ $TEST_COVERAGE == 'true' ]]; then travis_retry composer require --dev $COMPOSER_ARGS $COVERAGE_DEPS ; fi
+  - if [[ $MUTATION == 'true' ]]; then wget https://github.com/infection/infection/releases/download/0.7.0/infection.phar; && wget https://github.com/infection/infection/releases/download/0.7.0/infection.phar.pubkey && chmod +x infection.phar fi
   - stty cols 120 && composer show
 
 script:
   - if [[ $TEST_COVERAGE == 'true' ]]; then composer test-coverage ; else composer test ; fi
   - if [[ $BENCHMARKS == 'true' ]]; then vendor/bin/phpbench run --revs=2 --iterations=2 --report=aggregate ; fi
   - if [[ $CS_CHECK == 'true' ]]; then composer cs-check ; fi
+  - if [[ $MUTATION == 'true' ]]; then - ./infection.phar --min-msi=90 --threads=4; fi
 
 after_script:
   - if [[ $TEST_COVERAGE == 'true' ]]; then vendor/bin/php-coveralls -v ; fi
