@@ -434,5 +434,57 @@ class ServiceManagerTest extends TestCase
         // but not by delegator
         self::assertObjectNotHasAttribute('delegatorTag', $object2);
         self::assertInstanceOf(InvokableObject::class, $object2);
+	}
+	
+	public function testResolvedAliasFromAbstractFactory()
+    {
+        $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
+
+        $serviceManager = new SimpleServiceManager([
+            'aliases' => [
+                'Alias' => 'ServiceName',
+            ],
+            'abstract_factories' => [
+                $abstractFactory,
+            ],
+        ]);
+
+        $abstractFactory
+            ->expects($this->any())
+            ->method('canCreate')
+            ->withConsecutive(
+                [ $this->anything(), $this->equalTo('Alias') ],
+                [ $this->anything(), $this->equalTo('ServiceName')]
+            )
+            ->will(self::returnCallback(
+                function ($context, $name) {
+                    return $name === 'ServiceName';
+                }
+            ));
+        $this->assertTrue($serviceManager->has('Alias'));
+    }
+
+    public function testResolvedAliasNoMatchingAbstractFactoryReturnsFalse()
+    {
+        $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
+
+        $serviceManager = new SimpleServiceManager([
+            'aliases' => [
+                'Alias' => 'ServiceName',
+            ],
+            'abstract_factories' => [
+                $abstractFactory,
+            ],
+        ]);
+
+        $abstractFactory
+            ->expects($this->any())
+            ->method('canCreate')
+            ->withConsecutive(
+                [ $this->anything(), $this->equalTo('Alias') ],
+                [ $this->anything(), $this->equalTo('ServiceName')]
+            )
+            ->willReturn(false);
+        $this->assertFalse($serviceManager->has('Alias'));
     }
 }
