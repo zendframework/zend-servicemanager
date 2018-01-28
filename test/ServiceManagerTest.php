@@ -310,6 +310,7 @@ class ServiceManagerTest extends TestCase
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
     }
 
+
     public function testResolvedAliasFromAbstractFactory()
     {
         $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
