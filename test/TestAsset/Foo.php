@@ -14,6 +14,5 @@ class Foo
     public function __construct($options = null)
     {
         $this->options = $options;
-
     }
 }

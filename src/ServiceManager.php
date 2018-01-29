@@ -20,6 +20,7 @@ use Zend\ServiceManager\Exception\CyclicAliasException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Service Manager.
@@ -249,7 +250,7 @@ class ServiceManager implements ServiceLocatorInterface
     public function has($name)
     {
         $name  = isset($this->resolvedAliases[$name]) ? $this->resolvedAliases[$name] : $name;
-        $found = isset($this->services[$name]) || isset($this->factories[$name]);
+        $found = isset($this->services[$name]) || isset($this->factories[$name]) || isset($this->invokables[$name]);
 
         if ($found) {
             return $found;
@@ -333,19 +334,8 @@ class ServiceManager implements ServiceLocatorInterface
             $this->services = $config['services'] + $this->services;
         }
 
-        if (isset($config['invokables']) && ! empty($config['invokables'])) {
-            $aliases   = $this->createAliasesForInvokables($config['invokables']);
-            $factories = $this->createFactoriesForInvokables($config['invokables']);
-
-            if (! empty($aliases)) {
-                $config['aliases'] = (isset($config['aliases']))
-                    ? array_merge($config['aliases'], $aliases)
-                    : $aliases;
-            }
-
-            $config['factories'] = (isset($config['factories']))
-                ? array_merge($config['factories'], $factories)
-                : $factories;
+        if (! empty($config['invokables'])) {
+            $this->invokables = $config['invokables'] + $this->invokables;
         }
 
         if (isset($config['factories'])) {
@@ -441,7 +431,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setInvokableClass($name, $class = null)
     {
-        $this->configure(['invokables' => [$name => $class ?: $name]]);
+        $this->configure(['invokables' => [ $name => $class ?? $name]]);
     }
 
     /**
@@ -677,7 +667,7 @@ class ServiceManager implements ServiceLocatorInterface
      * @return callable
      * @throws ServiceNotFoundException
      */
-    private function getFactory($name)
+    private function getFactory(&$name)
     {
         $factory = isset($this->factories[$name]) ? $this->factories[$name] : null;
 
@@ -698,7 +688,11 @@ class ServiceManager implements ServiceLocatorInterface
                 $factory = explode('::', $factory);
             }
             return $factory;
+        } elseif (isset($this->invokables[$name])) {
+            $name = $this->invokables[$name];
+            return new InvokableFactory();
         }
+
 
         // Check abstract factories
         foreach ($this->abstractFactories as $abstractFactory) {
@@ -851,52 +845,6 @@ class ServiceManager implements ServiceLocatorInterface
         );
 
         return $this->lazyServicesDelegator;
-    }
-
-    /**
-     * Create aliases for invokable classes.
-     *
-     * If an invokable service name does not match the class it maps to, this
-     * creates an alias to the class (which will later be mapped as an
-     * invokable factory).
-     *
-     * @param array $invokables
-     * @return array
-     */
-    private function createAliasesForInvokables(array $invokables)
-    {
-        $aliases = [];
-        foreach ($invokables as $name => $class) {
-            if ($name === $class) {
-                continue;
-            }
-            $aliases[$name] = $class;
-        }
-        return $aliases;
-    }
-
-    /**
-     * Create invokable factories for invokable classes.
-     *
-     * If an invokable service name does not match the class it maps to, this
-     * creates an invokable factory entry for the class name; otherwise, it
-     * creates an invokable factory for the entry name.
-     *
-     * @param array $invokables
-     * @return array
-     */
-    private function createFactoriesForInvokables(array $invokables)
-    {
-        $factories = [];
-        foreach ($invokables as $name => $class) {
-            if ($name === $class) {
-                $factories[$name] = Factory\InvokableFactory::class;
-                continue;
-            }
-
-            $factories[$class] = Factory\InvokableFactory::class;
-        }
-        return $factories;
     }
 
     /**
