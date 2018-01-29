@@ -7,6 +7,7 @@
 
 namespace ZendTest\ServiceManager\AbstractFactory;
 
+use ArrayAccess;
 use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
@@ -155,5 +156,21 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
         );
         self::assertInstanceOf(TestAsset\ClassWithScalarDependencyDefiningDefaultValue::class, $instance);
         self::assertEquals('bar', $instance->foo);
+    }
+
+    /**
+     * @see https://github.com/zendframework/zend-servicemanager/issues/239
+     */
+    public function testFactoryWillUseDefaultValueForTypeHintedArgument()
+    {
+        $this->container->has('config')->willReturn(false);
+        $this->container->has(ArrayAccess::class)->willReturn(false);
+        $factory = new ReflectionBasedAbstractFactory();
+        $instance = $factory(
+            $this->container->reveal(),
+            TestAsset\ClassWithTypehintedDefaultValue::class
+        );
+        $this->assertInstanceOf(TestAsset\ClassWithTypehintedDefaultValue::class, $instance);
+        $this->assertNull($instance->value);
     }
 }

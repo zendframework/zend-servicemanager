@@ -32,6 +32,31 @@ All notable changes to this project will be documented in this file, in reverse 
 - [#230](https://github.com/zendframework/zend-servicemanager/pull/230) fixes a
   problem in detecting cyclic aliases, ensuring they are detected correctly.
 
+## 3.3.2 - TBD
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- [#243](https://github.com/zendframework/zend-servicemanager/pull/243) provides
+  a fix to the `ReflectionBasedAbstractFactory` to resolve type-hinted arguments
+  with default values to their default values if no matching type is found in
+  the container.
+
 ## 3.3.1 - 2017-11-27
 
 ### Added
