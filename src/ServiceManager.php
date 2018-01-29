@@ -159,11 +159,15 @@ class ServiceManager implements ServiceLocatorInterface
         $this->creationContext = $this;
 
         if (! empty($this->initializers)) {
-            $this->resolveInitializers($this->initializers, true);
+            // null indicates that $this->initializers
+            // should be used for configuration
+            $this->resolveInitializers(null);
         }
 
         if (! empty($this->abstractFactories)) {
-            $this->resolveAbstractFactories($this->abstractFactories, true);
+            // null indicates that $this->abstractFactories
+            // should be used for configuration
+            $this->resolveAbstractFactories(null);
         }
 
         $this->configure($config);
@@ -519,9 +523,10 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @return void
      */
-    private function resolveAbstractFactories(array $abstractFactories, $constructing = false)
+    private function resolveAbstractFactories(array $abstractFactories = null)
     {
-        if ($constructing) {
+        if ($abstractFactories === null) {
+            $abstractFactories = $this->abstractFactories;
             unset($this->abstractFactories);
         }
 
@@ -575,9 +580,10 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @return void
      */
-    private function resolveInitializers(array $initializers, $constructing = false)
+    private function resolveInitializers(array $initializers = null)
     {
-        if ($constructing) {
+        if ($initializers === null) {
+            $initializers = $this->initializers;
             unset($this->initializers);
         }
         foreach ($initializers as $initializer) {
