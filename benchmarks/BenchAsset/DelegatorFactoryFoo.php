@@ -18,7 +18,6 @@ class DelegatorFactoryFoo implements DelegatorFactoryInterface
      */
     public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null)
     {
-        $foo = call_user_func($callback);
-        return $foo;
+        return $callback;
     }
 }
