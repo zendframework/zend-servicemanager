@@ -167,11 +167,15 @@ class ServiceManager implements ServiceLocatorInterface
         $this->creationContext = $this;
 
         if (! empty($this->initializers)) {
-            $this->resolveInitializers($this->initializers, true);
+            // null indicates that $this->initializers
+            // should be used for configuration
+            $this->resolveInitializers(null);
         }
 
         if (! empty($this->abstractFactories)) {
-            $this->resolveAbstractFactories($this->abstractFactories, true);
+            // null indicates that $this->abstractFactories
+            // should be used for configuration
+            $this->resolveAbstractFactories(null);
         }
 
         $this->configure($config);
@@ -530,7 +534,6 @@ class ServiceManager implements ServiceLocatorInterface
     {
         if (isset($this->services[$name]) && ! $this->allowOverride) {
             throw ContainerModificationsNotAllowedException::fromExistingService($name);
-
 		$this->configure(['shared' => [$name => (bool) $flag]]);
     }
 
@@ -539,9 +542,10 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @param string[]|Initializer\InitializerInterface[]|callable[] $initializers
      */
-    private function resolveInitializers(array $initializers, $constructing = false)
+    private function resolveInitializers(array $initializers = null)
     {
-        if ($constructing) {
+        if ($initializers === null) {
+            $initializers = $this->initializers;
             unset($this->initializers);
         }
         foreach ($initializers as $initializer) {
