@@ -149,6 +149,15 @@ class ServiceManager implements ServiceLocatorInterface
     public function __construct(array $config = [])
     {
         $this->creationContext = $this;
+
+        if (! empty($this->initializers)) {
+            $this->resolveInitializers($this->initializers);
+        }
+
+        if (! empty($this->abstractFactories)) {
+            $this->resolveAbstractFactories($this->abstractFactories);
+        }
+
         $this->configure($config);
     }
 
@@ -513,8 +522,12 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @return void
      */
-    private function resolveAbstractFactories(array $abstractFactories)
+    private function resolveAbstractFactories(array $abstractFactories, $constructing = false)
     {
+        if ($constructing) {
+            unset($this->abstractfactories);
+        }
+
         foreach ($abstractFactories as $abstractFactory) {
             if (is_string($abstractFactory) && class_exists($abstractFactory)) {
                 //Cached string
@@ -565,8 +578,11 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @return void
      */
-    private function resolveInitializers(array $initializers)
+    private function resolveInitializers(array $initializers, $constructing = false)
     {
+        if ($constructing) {
+            unset($this->initializers);
+        }
         foreach ($initializers as $initializer) {
             if (is_string($initializer) && class_exists($initializer)) {
                 $initializer = new $initializer();
