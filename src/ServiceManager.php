@@ -408,12 +408,12 @@ class ServiceManager implements ServiceLocatorInterface
      * @throws ContainerModificationsNotAllowedException if $alias already
      *     exists as a service and overrides are disallowed.
      */
-    public function setAlias($name, $target)
+    public function setAlias($alias, $target)
     {
-        if (isset($this->services[$name]) && ! $this->allowOverride) {
-            throw ContainerModificationsNotAllowedException::fromExistingService($name);
+        if (isset($this->services[$alias]) && ! $this->allowOverride) {
+            throw ContainerModificationsNotAllowedException::fromExistingService($alias);
         }
-        $this->mapAliasToTarget($name, $target);
+        $this->mapAliasToTarget($alias, $target);
     }
 
     /**
@@ -586,6 +586,9 @@ class ServiceManager implements ServiceLocatorInterface
 
             return $factory;
         } elseif (isset($this->invokables[$name])) {
+            // The little trick to pass $name by reference to
+            // getFactory was necessary to enable late resolution
+            // of invokables here.
             $name = $this->invokables[$name];
             return new InvokableFactory();
         }
