@@ -33,6 +33,7 @@ use function spl_autoload_register;
 use function spl_object_hash;
 use function sprintf;
 use function trigger_error;
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 /**
  * Service Manager.
@@ -88,6 +89,13 @@ class ServiceManager implements ServiceLocatorInterface
      * @var string[]|callable[]
      */
     protected $factories = [];
+
+    /**
+     * A list of invokable classes
+     *
+     * @var string[]|callable[]
+     */
+    protected $invokables = [];
 
     /**
      * @var Initializer\InitializerInterface[]|callable[]
@@ -171,9 +179,6 @@ class ServiceManager implements ServiceLocatorInterface
             $this->resolveAbstractFactories(null);
         }
 
-        if (! empty($this->invokables)) {
-            $this->createAliasesAndFactoriesForInvokables($this->invokables);
-        }
         $this->configure($config);
     }
 
@@ -268,7 +273,7 @@ class ServiceManager implements ServiceLocatorInterface
     {
         $resolvedName = $this->aliases[$name] ?? $name;
         // Check services and factories first to speedup the most common requests.
-        if (isset($this->services[$resolvedName]) || isset($this->factories[$resolvedName])) {
+        if (isset($this->services[$resolvedName]) || isset($this->factories[$resolvedName]) || isset($this->invokables[$resolvedName])) {
             return true;
         }
 
@@ -352,7 +357,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         if (! empty($config['invokables'])) {
-            $this->createAliasesAndFactoriesForInvokables($config['invokables']);
+            $this->invokables = $config['invokables'] + $this->invokables;
         }
 
         if (! empty($config['factories'])) {
@@ -425,7 +430,7 @@ class ServiceManager implements ServiceLocatorInterface
         if (isset($this->services[$name]) && ! $this->allowOverride) {
             throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
-        $this->createAliasesAndFactoriesForInvokables([$name => $class ?? $name]);
+        $this->invokables[$name] = $class ?? $name;
     }
 
     /**
@@ -564,7 +569,7 @@ class ServiceManager implements ServiceLocatorInterface
      * @return callable
      * @throws ServiceNotFoundException
      */
-    private function getFactory($name)
+    private function getFactory(&$name)
     {
         $factory = $this->factories[$name] ?? null;
 
@@ -580,6 +585,9 @@ class ServiceManager implements ServiceLocatorInterface
             }
 
             return $factory;
+        } elseif (isset($this->invokables[$name])) {
+            $name = $this->invokables[$name];
+            return new InvokableFactory();
         }
 
         // Check abstract factories
