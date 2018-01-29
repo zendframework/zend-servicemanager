@@ -16,7 +16,9 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
+use ZendTest\ServiceManager\TestAsset\Foo;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
+use ZendTest\ServiceManager\TestAsset\PreconfiguredServiceManager;
 use ZendTest\ServiceManager\TestAsset\SampleFactory;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
 use ZendTest\ServiceManager\TestAsset\TaggingDelegatorFactory;
@@ -272,6 +274,53 @@ class ServiceManagerTest extends TestCase
         ];
         $serviceManager = new SimpleServiceManager($config);
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
+    }
+
+    public function testMemberBasedConfigurationGetsApplied()
+    {
+        $sm = new PreconfiguredServiceManager();
+
+        // will be true if $aliases array is properly setup and
+        // recursive alias resolution works
+        $this->assertTrue($sm->has('alias1'));
+        $this->assertInstanceOf(stdClass::class, $sm->get('alias1'));
+
+        // will be true if $aliases array is properly setup and
+        // simple alias resolution works
+        $this->assertTrue($sm->has('alias2'));
+        $this->assertInstanceOf(stdClass::class, $sm->get('alias2'));
+
+        // will return true if $services array is properly setup
+        $this->assertTrue($sm->has('service'));
+        $this->assertInstanceOf(stdClass::class, $sm->get('service'));
+
+        // will be true if factory array is properly setup
+        $this->assertTrue($sm->has('delegator'));
+        $this->assertInstanceOf(InvokableObject::class, $sm->get('delegator'));
+
+        // will be true if initializer is present
+        $this->assertTrue($sm->get('delegator')->initializerPresent);
+
+        // will be true if factory array is properly setup
+        $this->assertTrue($sm->has('factory'));
+        $this->assertInstanceOf(InvokableObject::class, $sm->get('factory'));
+
+        // will be true if initializer is present
+        $this->assertTrue($sm->get('factory')->initializerPresent);
+
+        // will succeed if invokable is properly set up
+        $this->assertTrue($sm->has('invokable'));
+        $this->assertInstanceOf(stdClass::class, $sm->get('invokable'));
+
+        // will be true if initializer is present
+        $this->assertTrue($sm->get('invokable')->initializerPresent);
+
+        // will succeed if abstract factory is available
+        $this->assertTrue($sm->has('foo'));
+        $this->assertInstanceOf(Foo::class, $sm->get('foo'));
+
+        // will be true if initializer is present
+        $this->assertTrue($sm->get('foo')->initializerPresent);
     }
 
     public function testInvokablesShouldNotOverrideFactoriesAndDelegators()
