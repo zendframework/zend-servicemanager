@@ -166,7 +166,9 @@ class ServiceManager implements ServiceLocatorInterface
             unset($config['aliases']);
         }
 
-        $this->mapAliasesToTargets();
+        if (! empty($this->aliases)) {
+            $this->mapAliasesToTargets();
+        }
 
         if (! empty($this->initializers)) {
             // null indicates resolveInitializers to initialize
