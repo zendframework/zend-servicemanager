@@ -431,7 +431,7 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function setInvokableClass($name, $class = null)
     {
-        $this->configure(['invokables' => [ $name => ($class ?? $name)]]);
+        $this->configure(['invokables' => [ $name => (isset($class) ? $class : $name)]]);
     }
 
     /**
