@@ -18,6 +18,7 @@ use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
 use PHPUnit\Framework\MockObject\Invokable;
+use ZendTest\ServiceManager\TestAsset\SampleFactory;
 
 /**
  * @covers \Zend\ServiceManager\ServiceManager
@@ -304,5 +305,46 @@ class ServiceManagerTest extends TestCase
         ];
         $serviceManager = new SimpleServiceManager($config);
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
+    }
+
+    public function testInvokablesShouldNotOverrideFactoriesAndDelegators()
+    {
+        $sm = new ServiceManager([
+            'factories' => [
+                // produce InvokableObject
+                'factory1' => SampleFactory::class,
+                'factory2' => SampleFactory::class,
+            ],
+            'delegators' => [
+                'factory1' => [
+                    // produce tagged invokable object
+                    TaggingDelegatorFactory::class,
+                ]
+            ]
+        ]);
+
+        $object1 = $sm->build('factory1');
+        // assert delegated object is produced by delegator factory
+        $this->assertTrue(isset($object1->delegatorTag));
+        $this->assertInstanceOf(InvokableObject::class, $object1);
+
+
+        $object2 = $sm->build('factory2');
+        // assert delegated object is produced by SampleFactory
+        $this->assertFalse(isset($object2->delegatorTag));
+        $this->assertInstanceOf(InvokableObject::class, $object2);
+
+        $sm->setInvokableClass('factory1', stdClass::class);
+        $sm->setInvokableClass('factory2', stdClass::class);
+
+        $object1 = $sm->build('factory1');
+        // assert delegated object is still produced by delegator factory
+        $this->assertTrue(isset($object1->delegatorTag));
+        $this->assertInstanceOf(InvokableObject::class, $object1);
+
+        $object2 = $sm->build('factory2');
+        // assert delegated object is still produced by SampleFactory
+        $this->assertFalse(isset($object2->delegatorTag));
+        $this->assertInstanceOf(InvokableObject::class, $object2);
     }
 }
