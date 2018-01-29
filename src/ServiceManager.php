@@ -20,6 +20,7 @@ use Zend\ServiceManager\Exception\CyclicAliasException;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 use function array_merge_recursive;
 use function class_exists;
@@ -265,10 +266,12 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function has($name)
     {
-        // Check services and factories first to speedup the most common requests.
-        if (isset($this->services[$name]) || isset($this->factories[$name])) {
-            return true;
-        }
+        $name  = isset($this->aliases[$name]) ? $this->aliases[$name] : $name;
+        if (isset($this->services[$name]) 
+			|| isset($this->factories[$name]) 
+			|| isset($this->invokables[$name])) 
+		{
+			return true;
 
         // Check abstract factories next.
         foreach ($this->abstractFactories as $abstractFactory) {
@@ -276,25 +279,6 @@ class ServiceManager implements ServiceLocatorInterface
                 return true;
             }
         }
-
-        // If $name is not an alias, we are done.
-        if (! isset($this->aliases[$name])) {
-            return false;
-        }
-
-        // Check aliases.
-        $resolvedName = $this->aliases[$name];
-        if (isset($this->services[$resolvedName]) || isset($this->factories[$resolvedName])) {
-            return true;
-        }
-
-        // Check abstract factories on the $resolvedName as well.
-        foreach ($this->abstractFactories as $abstractFactory) {
-            if ($abstractFactory->canCreate($this->creationContext, $resolvedName)) {
-                return true;
-            }
-        }
-
         return false;
     }
 
@@ -368,8 +352,8 @@ class ServiceManager implements ServiceLocatorInterface
             $this->services = $config['services'] + $this->services;
         }
 
-        if (isset($config['invokables']) && ! empty($config['invokables'])) {
-            $this->createAliasesAndFactoriesForInvokables($config['invokables']);
+        if (! empty($config['invokables'])) {
+            $this->invokables = $config['invokables'] + $this->invokables;
         }
 
         if (isset($config['factories'])) {
@@ -452,8 +436,7 @@ class ServiceManager implements ServiceLocatorInterface
         if (isset($this->services[$name]) && ! $this->allowOverride) {
             throw ContainerModificationsNotAllowedException::fromExistingService($name);
         }
-
-        $this->createAliasesAndFactoriesForInvokables([$name => $class ?? $name]);
+		$this->invokables[$name] = $class ?? $name;
     }
 
     /**
@@ -582,7 +565,7 @@ class ServiceManager implements ServiceLocatorInterface
      * @return callable
      * @throws ServiceNotFoundException
      */
-    private function getFactory($name)
+    private function getFactory(&$name)
     {
         $factory = $this->factories[$name] ?? null;
 
@@ -598,7 +581,11 @@ class ServiceManager implements ServiceLocatorInterface
             }
 
             return $factory;
+        } elseif (isset($this->invokables[$name])) {
+            $name = $this->invokables[$name];
+            return new InvokableFactory();
         }
+
 
         // Check abstract factories
         foreach ($this->abstractFactories as $abstractFactory) {
@@ -754,29 +741,10 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Create aliases and factories for invokable classes.
+     * Determine if one or more services already exist in the container.
      *
-     * If an invokable service name does not match the class it maps to, this
-     * creates an alias to the class (which will later be mapped as an
-     * invokable factory).
-     *
-     * @param array $invokables
-     */
-    private function createAliasesAndFactoriesForInvokables(array $invokables)
-    {
-        foreach ($invokables as $name => $class) {
-            $this->factories[$class] = Factory\InvokableFactory::class;
-            if ($name !== $class) {
-                $this->aliases[$name] = $class;
-            }
-        }
-    }
-
-    /**
-     * Determine if a service for any name provided by a service
-     * manager configuration(services, aliases, factories, ...)
-     * already exists, and if it exists, determine if is it allowed
-     * to get overriden.
+     * If the allow override flag is true or it's first time configured,
+     * this method does nothing.
      *
      * Validation in the context of this class means, that for
      * a given service name we do not have a service instance

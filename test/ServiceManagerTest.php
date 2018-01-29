@@ -19,6 +19,8 @@ use ZendTest\ServiceManager\TestAsset\Foo;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\PreconfiguredServiceManager;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
+use ZendTest\ServiceManager\TestAsset\SampleFactory;
+use ZendTest\ServiceManager\TestAsset\TaggingDelegatorFactory;
 
 /**
  * @covers \Zend\ServiceManager\ServiceManager
@@ -154,40 +156,6 @@ class ServiceManagerTest extends TestCase
         self::assertEquals($shouldBeSameInstance, $a === $b);
     }
 
-    public function testMapsOneToOneInvokablesAsInvokableFactoriesInternally()
-    {
-        $config = [
-            'invokables' => [
-                InvokableObject::class => InvokableObject::class,
-            ],
-        ];
-
-        $serviceManager = new ServiceManager($config);
-        self::assertAttributeSame([
-            InvokableObject::class => InvokableFactory::class,
-        ], 'factories', $serviceManager, 'Invokable object factory not found');
-    }
-
-    public function testMapsNonSymmetricInvokablesAsAliasPlusInvokableFactory()
-    {
-        $config = [
-            'invokables' => [
-                'Invokable' => InvokableObject::class,
-            ],
-        ];
-
-        $serviceManager = new ServiceManager($config);
-        self::assertAttributeSame([
-            'Invokable' => InvokableObject::class,
-        ], 'aliases', $serviceManager, 'Alias not found for non-symmetric invokable');
-        self::assertAttributeSame([
-            InvokableObject::class => InvokableFactory::class,
-        ], 'factories', $serviceManager, 'Factory not found for non-symmetric invokable target');
-    }
-
-    /**
-     * @depends testMapsNonSymmetricInvokablesAsAliasPlusInvokableFactory
-     */
     public function testSharedServicesReferencingInvokableAliasShouldBeHonored()
     {
         $config = [
@@ -363,5 +331,46 @@ class ServiceManagerTest extends TestCase
             ->willReturn(false);
 
         self::assertFalse($serviceManager->has('Alias'));
+    }
+
+    public function testInvokablesShouldNotOverrideFactoriesAndDelegators()
+    {
+        $sm = new ServiceManager([
+            'factories' => [
+                // produce InvokableObject
+                'factory1' => SampleFactory::class,
+                'factory2' => SampleFactory::class,
+            ],
+            'delegators' => [
+                'factory1' => [
+                    // produce tagged invokable object
+                    TaggingDelegatorFactory::class,
+                ]
+            ]
+        ]);
+
+        $object1 = $sm->build('factory1');
+        // assert delegated object is produced by delegator factory
+        $this->assertTrue(isset($object1->delegatorTag));
+        $this->assertInstanceOf(InvokableObject::class, $object1);
+
+
+        $object2 = $sm->build('factory2');
+        // assert delegated object is produced by SampleFactory
+        $this->assertFalse(isset($object2->delegatorTag));
+        $this->assertInstanceOf(InvokableObject::class, $object2);
+
+        $sm->setInvokableClass('factory1', stdClass::class);
+        $sm->setInvokableClass('factory2', stdClass::class);
+
+        $object1 = $sm->build('factory1');
+        // assert delegated object is still produced by delegator factory
+        $this->assertTrue(isset($object1->delegatorTag));
+        $this->assertInstanceOf(InvokableObject::class, $object1);
+
+        $object2 = $sm->build('factory2');
+        // assert delegated object is still produced by SampleFactory
+        $this->assertFalse(isset($object2->delegatorTag));
+        $this->assertInstanceOf(InvokableObject::class, $object2);
     }
 }
