@@ -27,6 +27,9 @@ All notable changes to this project will be documented in this file, in reverse 
   with default values to their default values if no matching type is found in
   the container.
 
+- [#233](https://github.com/zendframework/zend-servicemanager/pull/233) fixes a
+  number of parameter annotations to reflect the actual types used.
+
 ## 3.3.1 - 2017-11-27
 
 ### Added
