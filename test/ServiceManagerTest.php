@@ -320,7 +320,6 @@ class ServiceManagerTest extends TestCase
 
         // same problem with invokables
         // see next commit
-
         // will succeed if invokable is properly set up
 //         $this->assertTrue($sm->has('invokable'));
 //         $this->assertInstanceOf(stdClass::class, $sm->get('invokable'));
