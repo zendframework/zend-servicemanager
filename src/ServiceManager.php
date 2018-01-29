@@ -165,6 +165,7 @@ class ServiceManager implements ServiceLocatorInterface
             // configure()
             unset($config['aliases']);
         }
+
         $this->mapAliasesToTargets();
 
         if (! empty($this->initializers)) {
@@ -538,7 +539,6 @@ class ServiceManager implements ServiceLocatorInterface
      * Instantiate initializers for to avoid checks during service construction.
      *
      * @param string[]|Initializer\InitializerInterface[]|callable[] $initializers
-     * @param boolean $constructing
      *
      */
     private function resolveInitializers(array $initializers = null)
@@ -942,7 +942,6 @@ class ServiceManager implements ServiceLocatorInterface
      * Instantiate abstract factories in order to avoid checks during service construction.
      *
      * @param string[]|Factory\AbstractFactoryInterface[] $abstractFactories
-     * @param boolean $constructing
      */
     private function resolveAbstractFactories(array $abstractFactories = null)
     {
