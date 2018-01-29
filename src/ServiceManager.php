@@ -160,11 +160,15 @@ class ServiceManager implements ServiceLocatorInterface
         $this->mapAliasesToTargets();
 
         if (! empty($this->initializers)) {
-            $this->resolveInitializers($this->initializers, true);
+            // null indicates resolveInitializers to initialize
+            // from $this->initializers
+            $this->resolveInitializers(null);
         }
 
         if (! empty($this->abstractFactories)) {
-            $this->resolveAbstractFactories($this->abstractFactories, true);
+            // null indicates resolveAbstractFactory to initialize
+            // from $this->abstractFactories
+            $this->resolveAbstractFactories(null);
         }
 
         if (! empty($this->invokables)) {
@@ -382,11 +386,11 @@ class ServiceManager implements ServiceLocatorInterface
         // For abstract factories and initializers, we always directly
         // instantiate them to avoid checks during service construction.
         if (! empty($config['abstract_factories'])) {
-            $this->resolveAbstractFactories($config['abstract_factories'], false);
+            $this->resolveAbstractFactories($config['abstract_factories']);
         }
 
         if (! empty($config['initializers'])) {
-            $this->resolveInitializers($config['initializers'], false);
+            $this->resolveInitializers($config['initializers']);
         }
         return $this;
     }
@@ -532,11 +536,10 @@ class ServiceManager implements ServiceLocatorInterface
      * @param boolean $constructing
      *
      */
-    private function resolveInitializers(array $initializers, $constructing = false)
+    private function resolveInitializers(array $initializers = null)
     {
-        // necessary because the $initializers argument may be
-        // $this->initializers (ServiceManager construction, see __construct)
-        if ($constructing) {
+        if ($initializers === null) {
+            $initializers = $this->initializers;
             unset($this->initializers);
         }
 
@@ -930,11 +933,10 @@ class ServiceManager implements ServiceLocatorInterface
      * @param string[]|Factory\AbstractFactoryInterface[] $abstractFactories
      * @param boolean $constructing
      */
-    private function resolveAbstractFactories($abstractFactories, $constructing = false)
+    private function resolveAbstractFactories(array $abstractFactories = null)
     {
-        // necessary because the $abstractFactories argument may be
-        // $this->abstractFactories (ServiceManager construction, see __construct)
-        if ($constructing) {
+        if ($abstractFactories === null) {
+            $abstractFactories = $this->abstractFactories;
             unset($this->abstractFactories);
         }
 
