@@ -15,7 +15,9 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
+use ZendTest\ServiceManager\TestAsset\Foo;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
+use ZendTest\ServiceManager\TestAsset\PreconfiguredServiceManager;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
 
 /**
