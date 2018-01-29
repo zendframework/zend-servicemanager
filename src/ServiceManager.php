@@ -161,12 +161,11 @@ class ServiceManager implements ServiceLocatorInterface
 
         if (! empty($config['aliases'])) {
             $this->aliases = $config['aliases'] + $this->aliases;
+            $this->mapAliasesToTargets();
             // to prevent that alias resolution happens again in
             // configure()
             unset($config['aliases']);
-        }
-
-        if (! empty($this->aliases)) {
+        } elseif (! empty($this->aliases)) {
             $this->mapAliasesToTargets();
         }
 
