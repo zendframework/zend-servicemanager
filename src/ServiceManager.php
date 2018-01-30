@@ -269,7 +269,9 @@ class ServiceManager implements ServiceLocatorInterface
     {
         $resolvedName = $this->aliases[$name] ?? $name;
         // Check services and factories first to speedup the most common requests.
-        if (isset($this->services[$resolvedName]) || isset($this->factories[$resolvedName]) || isset($this->invokables[$resolvedName])) {
+        if (isset($this->services[$resolvedName])
+            || isset($this->factories[$resolvedName])
+            || isset($this->invokables[$resolvedName])) {
             return true;
         }
 
