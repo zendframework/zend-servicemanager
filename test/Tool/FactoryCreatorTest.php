@@ -32,23 +32,29 @@ class FactoryCreatorTest extends TestCase
     {
         $className = InvokableObject::class;
         $factory = file_get_contents(__DIR__ . '/../TestAsset/factories/InvokableObject.php');
+        $factory = str_replace(PHP_EOL, "\n", $factory);
+        $createFactory = str_replace(PHP_EOL, "\n", $this->factoryCreator->createFactory($className));
 
-        self::assertEquals($factory, $this->factoryCreator->createFactory($className));
+        self::assertEquals($factory, $createFactory);
     }
 
     public function testCreateFactoryCreatesForSimpleDependencies()
     {
         $className = SimpleDependencyObject::class;
         $factory = file_get_contents(__DIR__. '/../TestAsset/factories/SimpleDependencyObject.php');
+        $factory = str_replace(PHP_EOL, "\n", $factory);
+        $createFactory = str_replace(PHP_EOL, "\n", $this->factoryCreator->createFactory($className));
 
-        self::assertEquals($factory, $this->factoryCreator->createFactory($className));
+        self::assertEquals($factory, $createFactory);
     }
 
     public function testCreateFactoryCreatesForComplexDependencies()
     {
         $className = ComplexDependencyObject::class;
         $factory = file_get_contents(__DIR__. '/../TestAsset/factories/ComplexDependencyObject.php');
+        $factory = str_replace(PHP_EOL, "\n", $factory);
+        $createFactory = str_replace(PHP_EOL, "\n", $this->factoryCreator->createFactory($className));
 
-        self::assertEquals($factory, $this->factoryCreator->createFactory($className));
+        self::assertEquals($factory, $createFactory);
     }
 }

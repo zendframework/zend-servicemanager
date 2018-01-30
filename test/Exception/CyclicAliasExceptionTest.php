@@ -28,7 +28,9 @@ class CyclicAliasExceptionTest extends TestCase
         $exception = CyclicAliasException::fromAliasesMap($aliases);
 
         self::assertInstanceOf(CyclicAliasException::class, $exception);
-        self::assertSame($expectedMessage, $exception->getMessage());
+        $expectedMessage = str_replace(PHP_EOL, "\n", $expectedMessage);
+        $message = str_replace(PHP_EOL, "\n", $exception->getMessage());
+        self::assertSame($expectedMessage, $message);
     }
 
     /**
