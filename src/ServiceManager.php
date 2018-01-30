@@ -393,7 +393,7 @@ class ServiceManager implements ServiceLocatorInterface
                 }
             }
             // Assuming that we are allowed to override services registered above (which is the
-            // behaviour before this PR
+            // behaviour yet)
             if (! empty($config['aliases'])) {
                 foreach ($config['aliases'] as $alias => $target) {
                     if (isset($this->services[$alias])) {
