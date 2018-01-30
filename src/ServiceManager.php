@@ -159,13 +159,7 @@ class ServiceManager implements ServiceLocatorInterface
     {
         $this->creationContext = $this;
 
-        if (! empty($config['aliases'])) {
-            $this->aliases = $config['aliases'] + $this->aliases;
-            $this->mapAliasesToTargets();
-            // to prevent that alias resolution happens again in
-            // configure()
-            unset($config['aliases']);
-        } elseif (! empty($this->aliases)) {
+        if (! empty($this->aliases)) {
             $this->mapAliasesToTargets();
         }
 
@@ -350,44 +344,123 @@ class ServiceManager implements ServiceLocatorInterface
      */
     public function configure(array $config)
     {
-        // This is a bulk update/initial configuration,
-        // so we check all definitions up front.
-        $this->validateServiceNames($config);
+        $allowOverride = empty($this->services) || $this->allowOverride;
 
-        if (! empty($config['services'])) {
-            $this->services = $config['services'] + $this->services;
+        if ($allowOverride) {
+                // This is the fast track. We can just merge.
+            if (! empty($config['services'])) {
+                $this->services = $config['services'] + $this->services;
+            }
+            if (! empty($config['aliases'])) {
+                $this->aliases = $config['aliases'] + $this->aliases;
+                $this->mapAliasesToTargets();
+            }
+            if (! empty($config['delegators'])) {
+                $this->delegators = array_merge_recursive($this->delegators, $config['delegators']);
+            }
+            if (! empty($config['factories'])) {
+                $this->factories = $config['factories'] + $this->factories;
+            }
+            if (! empty($config['invokables'])) {
+                $this->invokables = $config['invokables'] + $this->invokables;
+            }
+            if (! empty($config['shared'])) {
+                $this->shared = $config['shared'] + $this->shared;
+            }
+            if (! empty($config['lazy_services']['class_map'])) {
+                $this->lazyServices['class_map'] = $this->lazyServices['class_map']
+                    ? $config['lazy_services']['class_map'] + $this->lazyServices['class_map']
+                    : $config['lazy_services']['class_map'];
+                $this->lazyServicesDelegator = null;
+                // we merge the rest of lazy_services later
+                unset($config['lazy_services']['class_map']);
+            }
+        } else {
+            if (! empty($config['services'])) {
+                foreach ($config['services'] as $name => $service) {
+                    // If allowOverride was false, we are here because $this->services was not empty, so
+                    // so checking $this->services only is sufficient obviusly.
+                    // If $this->services was not empty, we are here, because $this->allowOverride was false,
+                    // so checking $this->services only is sufficient, too.
+                    if (isset($this->services[$name])) {
+                        throw ContainerModificationsNotAllowedException::fromExistingService($name);
+                    }
+                    // @todo: Question is, if we are allowed to overwrite services
+                    // registered in this loop from within the following clauses of this else
+                    // branch or if this new services should become override protected immediately
+                    // if $this->allowOverride is false.
+                    $this->services[$name] = $service;
+                }
+            }
+            // Assuming that we are allowed to override services registered above (which is the
+            // behaviour before this PR
+            if (! empty($config['aliases'])) {
+                foreach ($config['aliases'] as $alias => $target) {
+                    if (isset($this->services[$alias])) {
+                        throw ContainerModificationsNotAllowedException::fromExistingService($alias);
+                    }
+                    $this->aliases[$alias] = $target;
+                }
+                $this->mapAliasesToTargets();
+            }
+            if (! empty($config['delegators'])) {
+                foreach ($config['delegators'] as $name => $delegator) {
+                    if (isset($this->services[$name])) {
+                        throw ContainerModificationsNotAllowedException::fromExistingService($name);
+                    }
+                }
+                $this->delegators = array_merge_recursive($config['delegators'], $this->delegators);
+            }
+            if (! empty($config['factories'])) {
+                foreach ($config['factories'] as $name => $factory) {
+                    if (isset($this->services[$name])) {
+                        throw ContainerModificationsNotAllowedException::fromExistingService($name);
+                    }
+                    $this->factories[$name] = $factory;
+                }
+            }
+            if (! empty($config['invokables'])) {
+                foreach ($config['invokables'] as $name => $service) {
+                    if (isset($this->services[$name])) {
+                        throw ContainerModificationsNotAllowedException::fromExistingService($name);
+                    }
+                    $this->invokables[$name] = $service;
+                }
+            }
+
+            if (! empty($config['shared'])) {
+                foreach ($config['shared'] as $name => $shared) {
+                    if (isset($this->services[$name])) {
+                        throw ContainerModificationsNotAllowedException::fromExistingService($name);
+                    }
+                    $this->shared[$name] = $shared;
+                }
+            }
+            // If lazy service configuration was provided, reset the lazy services
+            // delegator factory.
+            if (! empty($config['lazy_services']['class_map'])) {
+                foreach ($config['lazy_services']['class_map'] as $name => $service) {
+                    if (isset($this->services[$name])) {
+                        throw ContainerModificationsNotAllowedException::fromExistingService($name);
+                    }
+                    $this->lazyServices['class_map'][$name] = $service;
+                }
+                $this->lazyServicesDelegator = null;
+                // we merge the rest of lazy_services later
+                unset($config['lazy_services']['class_map']);
+            }
         }
-
-        if (! empty($config['invokables'])) {
-            $this->invokables = $config['invokables'] + $this->invokables;
+        // we merge the rest of supplied lazy_services if present
+        if (! empty($config['lazy_services'])) {
+            $this->lazyServices = $config['lazy_services'] + $this->lazyServices;
         }
-
-        if (! empty($config['factories'])) {
-            $this->factories = $config['factories'] + $this->factories;
-        }
-
-        if (! empty($config['delegators'])) {
-            $this->delegators = array_merge_recursive($this->delegators, $config['delegators']);
-        }
-
-        if (! empty($config['shared'])) {
-            $this->shared = $config['shared'] + $this->shared;
-        }
-
-        if (! empty($config['aliases'])) {
-            $this->aliases = $config['aliases'] + $this->aliases;
-            $this->mapAliasesToTargets();
-        }
-
+        // @todo: Should that not be forbidden if allowOverride is false
+        // and the shareability of existing services is affected?
+        // To handle that case explicitely would be pro forma only
+        // (i.e. effort for nothing, but possibly better readability), because
+        // existing shared services remain shared regardless of this setting.
         if (isset($config['shared_by_default'])) {
             $this->sharedByDefault = $config['shared_by_default'];
-        }
-
-        // If lazy service configuration was provided, reset the lazy services
-        // delegator factory.
-        if (! empty($config['lazy_services'])) {
-            $this->lazyServices          = array_merge_recursive($this->lazyServices, $config['lazy_services']);
-            $this->lazyServicesDelegator = null;
         }
 
         // For abstract factories and initializers, we always directly
@@ -767,84 +840,6 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Determine if a service for any name provided by a service
-     * manager configuration(services, aliases, factories, ...)
-     * already exists, and if it exists, determine if is it allowed
-     * to get overriden.
-     *
-     * Validation in the context of this class means, that for
-     * a given service name we do not have a service instance
-     * in the cache OR override is explicitly allowed.
-     *
-     * @param array $config
-     * @throws ContainerModificationsNotAllowedException if any
-     *     service key is invalid.
-     */
-    private function validateServiceNames(array $config)
-    {
-        if ($this->allowOverride) {
-            return;
-        }
-
-        // we repeat the test for each array to avoid function call overhead
-        if (isset($config['services'])) {
-            foreach ($config['services'] as $service => $_) {
-                if (isset($this->services[$service]) && ! $this->allowOverride) {
-                    throw ContainerModificationsNotAllowedException::fromExistingService($service);
-                }
-            }
-        }
-
-        if (isset($config['aliases'])) {
-            foreach ($config['aliases'] as $service => $_) {
-                if (isset($this->services[$service]) && ! $this->allowOverride) {
-                    throw ContainerModificationsNotAllowedException::fromExistingService($service);
-                }
-            }
-        }
-
-        if (isset($config['invokables'])) {
-            foreach ($config['invokables'] as $service => $_) {
-                if (isset($this->services[$service]) && ! $this->allowOverride) {
-                    throw ContainerModificationsNotAllowedException::fromExistingService($service);
-                }
-            }
-        }
-
-        if (isset($config['factories'])) {
-            foreach ($config['factories'] as $service => $_) {
-                if (isset($this->services[$service]) && ! $this->allowOverride) {
-                    throw ContainerModificationsNotAllowedException::fromExistingService($service);
-                }
-            }
-        }
-
-        if (isset($config['delegators'])) {
-            foreach ($config['delegators'] as $service => $_) {
-                if (isset($this->services[$service]) && ! $this->allowOverride) {
-                    throw ContainerModificationsNotAllowedException::fromExistingService($service);
-                }
-            }
-        }
-
-        if (isset($config['shared'])) {
-            foreach ($config['shared'] as $service => $_) {
-                if (isset($this->services[$service]) && ! $this->allowOverride) {
-                    throw ContainerModificationsNotAllowedException::fromExistingService($service);
-                }
-            }
-        }
-
-        if (isset($config['lazy_services']['class_map'])) {
-            foreach ($config['lazy_services']['class_map'] as $service => $_) {
-                if (isset($this->services[$service]) && ! $this->allowOverride) {
-                    throw ContainerModificationsNotAllowedException::fromExistingService($service);
-                }
-            }
-        }
-    }
-
-    /**
      * Assuming that the alias name is valid (see above) resolve/add it.
      *
      * This is done differently from bulk mapping aliases for performance reasons, as the
@@ -910,12 +905,12 @@ class ServiceManager implements ServiceLocatorInterface
                 continue;
             }
 
-            $tCursor = $aliases[$alias];
-            $aCursor = $alias;
-            if ($aCursor === $tCursor) {
+            if ($alias === $target) {
                 throw CyclicAliasException::fromCyclicAlias($alias, $aliases);
             }
 
+            $tCursor = $target;
+            $aCursor = $alias;
             $stack = [];
 
             while (isset($aliases[$tCursor])) {
