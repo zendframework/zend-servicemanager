@@ -454,11 +454,7 @@ class ServiceManager implements ServiceLocatorInterface
         if (! empty($config['lazy_services'])) {
             $this->lazyServices = $config['lazy_services'] + $this->lazyServices;
         }
-        // @todo: Should that not be forbidden if allowOverride is false
-        // and the shareability of existing services is affected?
-        // To handle that case explicitely would be pro forma only
-        // (i.e. effort for nothing, but possibly better readability), because
-        // existing shared services remain shared regardless of this setting.
+
         if (isset($config['shared_by_default'])) {
             $this->sharedByDefault = $config['shared_by_default'];
         }
