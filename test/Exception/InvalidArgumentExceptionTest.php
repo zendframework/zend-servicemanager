@@ -26,8 +26,9 @@ class InvalidArgumentExceptionTest extends TestCase
         $this->assertSame(
             'An invalid initializer was registered. Expected a valid function name, '
             . 'class name, a callable or an instance of "'. InitializerInterface::class
-            . '", but "stdClass" was received.'
-            , $exception->getMessage());
+            . '", but "stdClass" was received.',
+            $exception->getMessage()
+        );
 
         // because the named constructor does not check if classes or functions exist
         // or the argument is_callable or an instance of InitializerInterface
