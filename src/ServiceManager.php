@@ -370,7 +370,7 @@ class ServiceManager implements ServiceLocatorInterface
                 $this->shared = $config['shared'] + $this->shared;
             }
             if (! empty($config['lazy_services']['class_map'])) {
-                $this->lazyServices['class_map'] = $this->lazyServices['class_map']
+                $this->lazyServices['class_map'] = isset($this->lazyServices['class_map'])
                     ? $config['lazy_services']['class_map'] + $this->lazyServices['class_map']
                     : $config['lazy_services']['class_map'];
                 $this->lazyServicesDelegator = null;
