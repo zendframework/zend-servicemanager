@@ -382,6 +382,8 @@ class ServiceManager implements ServiceLocatorInterface
                     // so checking $this->services only is sufficient obviously.
                     // If $this->services was not empty, we are here because $this->allowOverride was false,
                     // so checking $this->services only is sufficient, also.
+                    // If this->service was not empty and allowOverride was false we are in the trivial case,
+                    // so checking $this->services only sufficient, also
                     if (isset($this->services[$name])) {
                         throw ContainerModificationsNotAllowedException::fromExistingService($name);
                     }
@@ -392,8 +394,10 @@ class ServiceManager implements ServiceLocatorInterface
                     $this->services[$name] = $service;
                 }
             }
-            // Assuming that we are allowed to override services registered above (which is the
-            // behaviour yet)
+            // Assuming that the services registered above need override protection also, we continue
+            // protecting the newly registered services from the loop above like the services we already
+            // knew before configure() was called. This behaviour is different from the implementation
+            // before, but all tests pass.
             if (! empty($config['aliases'])) {
                 foreach ($config['aliases'] as $alias => $target) {
                     if (isset($this->services[$alias])) {
@@ -409,6 +413,7 @@ class ServiceManager implements ServiceLocatorInterface
                         throw ContainerModificationsNotAllowedException::fromExistingService($name);
                     }
                 }
+                // @todo: resolve that within the loop
                 $this->delegators = array_merge_recursive($config['delegators'], $this->delegators);
             }
             if (! empty($config['factories'])) {
