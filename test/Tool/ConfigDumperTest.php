@@ -331,6 +331,7 @@ class ConfigDumperTest extends TestCase
         file_put_contents($file, $formatted);
         $test = include($file);
         unlink($file);
+        $test = str_replace(PHP_EOL, "\n", $test);
 
         $this->assertEquals($test, $config);
     }
