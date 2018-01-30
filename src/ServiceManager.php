@@ -384,8 +384,6 @@ class ServiceManager implements ServiceLocatorInterface
                     // so checking $this->services only is sufficient obviously.
                     // If $this->services was not empty, we are here because $this->allowOverride was false,
                     // so checking $this->services only is sufficient, also.
-                    // If this->service was not empty and allowOverride was false we are in the trivial case,
-                    // so checking $this->services only is sufficient, also
                     if (isset($this->services[$name])) {
                         throw ContainerModificationsNotAllowedException::fromExistingService($name);
                     }
