@@ -822,25 +822,6 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Create aliases and factories for invokable classes.
-     *
-     * If an invokable service name does not match the class it maps to, this
-     * creates an alias to the class (which will later be mapped as an
-     * invokable factory).
-     *
-     * @param array $invokables
-     */
-    private function createAliasesAndFactoriesForInvokables(array $invokables)
-    {
-        foreach ($invokables as $name => $class) {
-            $this->factories[$class] = Factory\InvokableFactory::class;
-            if ($name !== $class) {
-                $this->aliases[$name] = $class;
-            }
-        }
-    }
-
-    /**
      * Assuming that the alias name is valid (see above) resolve/add it.
      *
      * This is done differently from bulk mapping aliases for performance reasons, as the
