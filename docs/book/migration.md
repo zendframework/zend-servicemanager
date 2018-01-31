@@ -436,7 +436,7 @@ To update this for version 3 compatibility, you will add the methods
 them, and update the existing methods to proxy to the new methods:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -474,7 +474,7 @@ the migration artifacts:
 From our example above, we would update the class to read as follows:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface; // <-- note the change!
 
 class LenientAbstractFactory implements AbstractFactoryInterface
@@ -562,7 +562,7 @@ To prepare this for version 3, we'd implement the `__invoke()` signature from
 version 3, and modify `createDelegatorWithName()` to proxy to it:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\DelegatorFactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -591,7 +591,7 @@ the migration artifacts:
 From our example above, we would update the class to read as follows:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface; // <-- note the change!
 
 class ObserverAttachmentDelegator implements DelegatorFactoryInterface
@@ -674,7 +674,7 @@ To prepare this for version 3, we'd implement the `__invoke()` signature from
 version 3, and modify `createService()` to proxy to it:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -706,7 +706,7 @@ the migration artifacts:
 From our example above, we would update the class to read as follows:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface; // <-- note the change!
 
 class FooFactory implements FactoryInterface
@@ -808,7 +808,7 @@ To prepare this for version 3, we'd implement the `__invoke()` signature from
 version 3, and modify `initialize()` to proxy to it:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -839,7 +839,7 @@ the migration artifacts:
 From our example above, we would update the class to read as follows:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Initializer\InitializerInterface; // <-- note the change!
 
 class FooInitializer implements InitializerInterface

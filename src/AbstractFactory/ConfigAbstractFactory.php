@@ -25,7 +25,7 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
      *
      * {@inheritdoc}
      */
-    public function canCreate(\Interop\Container\ContainerInterface $container, $requestedName)
+    public function canCreate(\Psr\Container\ContainerInterface $container, $requestedName)
     {
         if (! $container->has('config') || ! \array_key_exists(self::class, $container->get('config'))) {
             return false;
@@ -39,7 +39,7 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(\Interop\Container\ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(\Psr\Container\ContainerInterface $container, $requestedName, array $options = null)
     {
         if (! $container->has('config')) {
             throw new ServiceNotCreatedException('Cannot find a config array in the container');

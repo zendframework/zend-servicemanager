@@ -12,16 +12,9 @@ namespace Zend\ServiceManager;
  *
  * Implementations should update to implement only Zend\ServiceManager\Factory\DelegatorFactoryInterface.
  *
- * If upgrading from v2, take the following steps:
+ * If upgrading from v3, take the following steps:
  *
- * - rename the method `createDelegatorWithName()` to `__invoke()`, and:
- *   - rename the `$serviceLocator` argument to `$container`, and change the
- *     typehint to `Interop\Container\ContainerInterface`
- *   - merge the `$name` and `$requestedName` arguments
- *   - add the `callable` typehint to the `$callback` argument
- *   - add the optional `array $options = null` argument as a final argument
- * - create a `createDelegatorWithName()` method as defined in this interface, and have it
- *   proxy to `__invoke()`, passing `$requestedName` as the second argument.
+ * - change the typehint from `Interop\Container\ContainerInterface` to `Psr\Container\ContainerInterface`.
  *
  * Once you have tested your code, you can then update your class to only implement
  * Zend\ServiceManager\Factory\DelegatorFactoryInterface, and remove the `createDelegatorWithName()`

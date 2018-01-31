@@ -8,7 +8,7 @@
 namespace ZendTest\ServiceManager;
 
 use DateTime;
-use Interop\Container\Exception\ContainerException;
+use Psr\Container\ContainerExceptionInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;

@@ -7,7 +7,7 @@
 
 namespace ZendTest\ServiceManager\Proxy;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;

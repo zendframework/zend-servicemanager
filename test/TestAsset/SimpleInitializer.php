@@ -7,7 +7,7 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use stdClass;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 

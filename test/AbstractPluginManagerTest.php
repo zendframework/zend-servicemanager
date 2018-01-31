@@ -7,7 +7,7 @@
 
 namespace ZendTest\ServiceManager;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Zend\ServiceManager\ConfigInterface;
