@@ -95,7 +95,7 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @var string[]|callable[]
      */
-    private $invokables = [];
+    protected $invokables = [];
 
     /**
      * @var Initializer\InitializerInterface[]|callable[]
