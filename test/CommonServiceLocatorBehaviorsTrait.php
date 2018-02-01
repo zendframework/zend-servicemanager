@@ -29,6 +29,9 @@ use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
 use function call_user_func_array;
 use function restore_error_handler;
 use function set_error_handler;
+use ZendTest\ServiceManager\TestAsset\SampleFactory;
+use ZendTest\ServiceManager\TestAsset\AbstractFactoryFoo;
+use ZendTest\ServiceManager\TestAsset\PassthroughDelegatorFactory;
 
 trait CommonServiceLocatorBehaviorsTrait
 {
@@ -878,5 +881,155 @@ trait CommonServiceLocatorBehaviorsTrait
         ]);
         $this->assertSame($sm->get('alias1'), $sm->get('alias2'));
         $this->assertSame($sm->get(stdClass::class), $sm->get('alias1'));
+    }
+
+    /**
+     * The ServiceManager can change internal state on calls to get,
+     * build or has, latter not currently. Possible state changes
+     * are caching a factory, registering a service produced by
+     * a factory, ...
+     *
+     * This tests performs three consecutive calls to build/get for
+     * each registered service to push the service manager through
+     * all internal states, thereby verifying that build/get/has
+     * remain stable through the internal states.
+     *
+     * @dataProvider provideConsistencyOverInternalStatesTests
+     *
+     * @param ContainerInterface $smTemplate
+     * @param string $name
+     * @param array[] string $test
+     */
+    public function testConsistencyOverInternalStates($smTemplate, $name, $test, $shared)
+    {
+        $sm = clone $smTemplate;
+        $object['get'] = [];
+        $object['build'] = [];
+
+        // call get()/build() and store the retrieved
+        // objects in $object['get'] or $object['build']
+        // respectively
+        foreach ($test as $method) {
+            $obj = $sm->$method($name);
+            $object[$shared ? $method : 'build'][] = $obj;
+            $this->assertNotNull($obj);
+            $this->assertTrue($sm->has($name));
+        }
+
+        // compares the first to the first also, but ok
+        foreach ($object['get'] as $sharedObj) {
+            $this->assertSame($object['get'][0], $sharedObj);
+        }
+        // objects from object['build'] have to be different
+        // from all other objects
+        foreach ($object['build'] as $idx1 => $nonSharedObj1) {
+            $this->assertNotContains($nonSharedObj1, $object['get']);
+            foreach ($object['build'] as $idx2 => $nonSharedObj2) {
+                if ($idx1 !== $idx2) {
+                    $this->assertNotSame($nonSharedObj1, $nonSharedObj2);
+                }
+            }
+        }
+    }
+
+    /**
+     * Data provider
+     *
+     * @see testConsistencyOverInternalStates above
+     *
+     * @param ContainerInterface $smTemplate
+     * @param string $name
+     * @param string[] $test
+     */
+    public function provideConsistencyOverInternalStatesTests()
+    {
+        $config1 = [
+            'factories' => [
+                // to allow build('service')
+                'service' => function ($container, $requestedName, array $options = null) {
+                    return new stdClass();
+                },
+                'factory' => SampleFactory::class,
+                'delegator' => SampleFactory::class,
+             ],
+             'delegators' => [
+                 'delegator' => [
+                     PassthroughDelegatorFactory::class
+                 ],
+             ],
+            'invokables' => [
+                'invokable' => InvokableObject::class,
+            ],
+            'services' => [
+                'service' => new stdClass(),
+            ],
+             'aliases' => [
+                'serviceAlias'          => 'service',
+                'invokableAlias'        => 'invokable',
+                'factoryAlias'          => 'factory',
+                'abstractFactoryAlias'  => 'foo',
+                'delegatorAlias'        => 'delegator',
+             ],
+            'abstract_factories' => [
+                AbstractFactoryFoo::class
+            ]
+        ];
+        $config2 = $config1;
+        $config2['shared_by_default'] = false;
+
+        $configs = [ $config1, $config2 ];
+
+        foreach ($configs as $config) {
+            $smTemplates[] = $this->createContainer($config);
+        }
+
+        // produce all 3-tuples of 'build' and 'get', i.e.
+        //
+        // [['get', 'get', 'get'], ['get', 'get', 'build'], ...
+        // ['build', 'build', 'build']]
+        //
+        $methods = ['get', 'build'];
+        foreach ($methods as $method1) {
+            foreach ($methods as $method2) {
+                foreach ($methods as $method3) {
+                    $callSequences[] = [$method1, $method2, $method3];
+                }
+            }
+        }
+
+        foreach ($configs as $config) {
+            $smTemplate = $this->createContainer($config);
+
+            // setup sharing, services are always shared
+            $names = array_fill_keys(array_keys($config['services']), true);
+
+            // initialize the other keys with shared_by_default
+            // and merge them
+            $names = array_merge(array_fill_keys(array_keys(array_merge(
+                $config['factories'],
+                $config['invokables'],
+                $config['aliases'],
+                $config['delegators']
+            )), $config['shared_by_default'] ?? true), $names);
+
+            // add the key resolved by the abstract factory
+            $names['foo'] = $config['shared_by_default'] ?? true;
+
+            // adjust shared setting for individual keys from
+            // $shared array if present
+            if (! empty($config['shared'])) {
+                foreach ($config['shared'] as $name => $shared) {
+                    $names[$name] = $shared;
+                }
+            }
+
+            foreach ($names as $name => $shared) {
+                foreach ($callSequences as $callSequence) {
+                    $sm = clone $smTemplate;
+                    $tests[] = [$smTemplate, $name, $callSequence, $shared];
+                }
+            }
+        }
+        return $tests;
     }
 }
