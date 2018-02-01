@@ -666,10 +666,10 @@ class ServiceManager implements ServiceLocatorInterface
 
     /**
      * Get a factory for the given service name and create an object using
-     * that factory
+     * that factory or create invokable if service is invokable
      *
      * @param  string $name
-     * @return callable
+     * @return object
      * @throws ServiceNotFoundException
      */
     private function createObjectThroughFactory($name, array $options = null)
