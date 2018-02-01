@@ -288,7 +288,7 @@ class ServiceManagerTest extends TestCase
                 [ $this->anything(), $this->equalTo('Alias') ],
                 [ $this->anything(), $this->equalTo('ServiceName')]
             )
-            ->willReturnCallback(function($context, $name) {
+            ->willReturnCallback(function ($context, $name) {
                 return $name === 'Alias';
             });
         $this->assertTrue($serviceManager->has('Alias'));
