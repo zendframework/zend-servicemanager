@@ -32,7 +32,7 @@ interface InitializerInterface extends Initializer\InitializerInterface
     /**
      * Initialize
      *
-     * @param $instance
+     * @param mixed $instance
      * @param ServiceLocatorInterface $serviceLocator
      * @return mixed
      */

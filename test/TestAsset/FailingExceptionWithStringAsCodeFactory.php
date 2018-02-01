@@ -15,7 +15,7 @@ class FailingExceptionWithStringAsCodeFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, string $requestedName, array $options = null)
     {
         throw new ExceptionWithStringAsCode('There is an error');
     }

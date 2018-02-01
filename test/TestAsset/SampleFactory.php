@@ -13,7 +13,7 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 class SampleFactory implements FactoryInterface
 {
 
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, string $requestedName, array $options = null)
     {
         return new InvokableObject();
     }

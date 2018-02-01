@@ -110,7 +110,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
      *
      * @return DispatchableInterface
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, string $requestedName, array $options = null)
     {
         $reflectionClass = new ReflectionClass($requestedName);
 
@@ -136,7 +136,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function canCreate(ContainerInterface $container, $requestedName)
+    public function canCreate(ContainerInterface $container, string $requestedName): bool
     {
         return class_exists($requestedName);
     }
@@ -146,12 +146,8 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
      *
      * Returns a callback for resolving a parameter to a value, but without
      * allowing mapping array `$config` arguments to the `config` service.
-     *
-     * @param ContainerInterface $container
-     * @param string $requestedName
-     * @return callable
      */
-    private function resolveParameterWithoutConfigService(ContainerInterface $container, $requestedName)
+    private function resolveParameterWithoutConfigService(ContainerInterface $container, string $requestedName): callable
     {
         /**
          * @param ReflectionParameter $parameter
@@ -169,12 +165,8 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
      *
      * Unlike resolveParameter(), this version will detect `$config` array
      * arguments and have them return the 'config' service.
-     *
-     * @param ContainerInterface $container
-     * @param string $requestedName
-     * @return callable
      */
-    private function resolveParameterWithConfigService(ContainerInterface $container, $requestedName)
+    private function resolveParameterWithConfigService(ContainerInterface $container, string $requestedName): callable
     {
         /**
          * @param ReflectionParameter $parameter
@@ -193,14 +185,11 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
     /**
      * Logic common to all parameter resolution.
      *
-     * @param ReflectionParameter $parameter
-     * @param ContainerInterface $container
-     * @param string $requestedName
      * @return mixed
      * @throws ServiceNotFoundException If type-hinted parameter cannot be
      *   resolved to a service in the container.
      */
-    private function resolveParameter(ReflectionParameter $parameter, ContainerInterface $container, $requestedName)
+    private function resolveParameter(ReflectionParameter $parameter, ContainerInterface $container, string $requestedName)
     {
         if ($parameter->isArray()) {
             return [];

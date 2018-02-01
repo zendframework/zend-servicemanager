@@ -20,10 +20,8 @@ class CyclicAliasExceptionTest extends TestCase
      * @dataProvider cyclicAliasProvider
      *
      * @param string   $alias, conflicting alias key
-     * @param string[] $aliases
-     * @param string   $expectedMessage
      */
-    public function testFromCyclicAlias($alias, array $aliases, $expectedMessage)
+    public function testFromCyclicAlias(string $alias, array $aliases, string $expectedMessage)
     {
         $exception = CyclicAliasException::fromCyclicAlias($alias, $aliases);
 
@@ -36,7 +34,7 @@ class CyclicAliasExceptionTest extends TestCase
      *
      * @return string[][]|string[][][]
      */
-    public function cyclicAliasProvider()
+    public function cyclicAliasProvider(): array
     {
         return [
             [
@@ -113,7 +111,7 @@ class CyclicAliasExceptionTest extends TestCase
      * @param string[] $aliases
      * @param string   $expectedMessage
      */
-    public function testFromAliasesMap(array $aliases, $expectedMessage)
+    public function testFromAliasesMap(array $aliases, string $expectedMessage)
     {
         $exception = CyclicAliasException::fromAliasesMap($aliases);
 
@@ -124,7 +122,7 @@ class CyclicAliasExceptionTest extends TestCase
     /**
      * @return string[][]|string[][][]
      */
-    public function aliasesProvider()
+    public function aliasesProvider(): array
     {
         return [
             'empty set' => [

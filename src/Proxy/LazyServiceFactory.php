@@ -10,9 +10,9 @@ namespace Zend\ServiceManager\Proxy;
 use Interop\Container\ContainerInterface;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\Proxy\LazyLoadingInterface;
+use ProxyManager\Proxy\VirtualProxyInterface;
 use Zend\ServiceManager\Exception;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
-
 use function sprintf;
 
 /**
@@ -24,7 +24,7 @@ use function sprintf;
 final class LazyServiceFactory implements DelegatorFactoryInterface
 {
     /**
-     * @var \ProxyManager\Factory\LazyLoadingValueHolderFactory
+     * @var LazyLoadingValueHolderFactory
      */
     private $proxyFactory;
 
@@ -47,9 +47,9 @@ final class LazyServiceFactory implements DelegatorFactoryInterface
     /**
      * {@inheritDoc}
      *
-     * @return \ProxyManager\Proxy\VirtualProxyInterface
+     * @return VirtualProxyInterface
      */
-    public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null)
+    public function __invoke(ContainerInterface $container, string $name, callable $callback, array $options = null): VirtualProxyInterface
     {
         $initializer = function (&$wrappedInstance, LazyLoadingInterface $proxy) use ($callback) {
             $proxy->setProxyInitializer(null);

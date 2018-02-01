@@ -56,13 +56,9 @@ EOC;
     }
 
     /**
-     * @param array $config
-     * @param string $className
-     * @param bool $ignoreUnresolved
-     * @return array
      * @throws InvalidArgumentException for invalid $className
      */
-    public function createDependencyConfig(array $config, $className, $ignoreUnresolved = false)
+    public function createDependencyConfig(array $config, string $className, bool $ignoreUnresolved = false): array
     {
         $this->validateClassName($className);
 
@@ -125,35 +121,24 @@ EOC;
      * @throws InvalidArgumentException if class name is not a string or does
      *     not exist.
      */
-    private function validateClassName($className)
+    private function validateClassName(string $className): void
     {
-        if (! is_string($className)) {
-            throw new InvalidArgumentException('Class name must be a string, ' . gettype($className) . ' given');
-        }
-
         if (! class_exists($className) && ! interface_exists($className)) {
             throw new InvalidArgumentException('Cannot find class or interface with name ' . $className);
         }
     }
 
-    /**
-     * @param array $config
-     * @param string $className
-     * @return array
-     */
-    private function createInvokable(array $config, $className)
+    private function createInvokable(array $config, string $className): array
     {
         $config[ConfigAbstractFactory::class][$className] = [];
         return $config;
     }
 
     /**
-     * @param array $config
-     * @return array
      * @throws InvalidArgumentException if ConfigAbstractFactory configuration
      *     value is not an array.
      */
-    public function createFactoryMappingsFromConfig(array $config)
+    public function createFactoryMappingsFromConfig(array $config): array
     {
         if (! array_key_exists(ConfigAbstractFactory::class, $config)) {
             return $config;
@@ -173,12 +158,7 @@ EOC;
         return $config;
     }
 
-    /**
-     * @param array $config
-     * @param string $className
-     * @return array
-     */
-    public function createFactoryMappings(array $config, $className)
+    public function createFactoryMappings(array $config, string $className): array
     {
         $this->validateClassName($className);
 
@@ -193,11 +173,7 @@ EOC;
         return $config;
     }
 
-    /**
-     * @param array $config
-     * @return string
-     */
-    public function dumpConfigFile(array $config)
+    public function dumpConfigFile(array $config): string
     {
         $prepared = $this->prepareConfig($config);
         return sprintf(
@@ -208,12 +184,7 @@ EOC;
         );
     }
 
-    /**
-     * @param array|Traversable $config
-     * @param int $indentLevel
-     * @return string
-     */
-    private function prepareConfig($config, $indentLevel = 1)
+    private function prepareConfig(iterable $config, int $indentLevel = 1): string
     {
         $indent = str_repeat(' ', $indentLevel * 4);
         $entries = [];
@@ -238,9 +209,8 @@ EOC;
 
     /**
      * @param string|int|null $key
-     * @return null|string
      */
-    private function createConfigKey($key)
+    private function createConfigKey($key): ?string
     {
         if (is_string($key) && class_exists($key)) {
             return sprintf('\\%s::class', $key);
@@ -255,10 +225,8 @@ EOC;
 
     /**
      * @param mixed $value
-     * @param int $indentLevel
-     * @return string
      */
-    private function createConfigValue($value, $indentLevel)
+    private function createConfigValue($value, int $indentLevel): string
     {
         if (is_array($value) || $value instanceof Traversable) {
             return $this->prepareConfig($value, $indentLevel + 1);

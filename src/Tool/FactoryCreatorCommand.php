@@ -7,9 +7,9 @@
 
 namespace Zend\ServiceManager\Tool;
 
+use stdClass;
 use Zend\ServiceManager\Exception;
 use Zend\Stdlib\ConsoleHelper;
-
 use function array_shift;
 use function class_exists;
 use function in_array;
@@ -48,11 +48,7 @@ EOH;
      */
     private $scriptName;
 
-    /**
-     * @param string $scriptName
-     * @param ConsoleHelper $helper
-     */
-    public function __construct($scriptName = self::DEFAULT_SCRIPT_NAME, ConsoleHelper $helper = null)
+    public function __construct(string $scriptName = self::DEFAULT_SCRIPT_NAME, ConsoleHelper $helper = null)
     {
         $this->scriptName = $scriptName;
         $this->helper = $helper ?: new ConsoleHelper();
@@ -62,7 +58,7 @@ EOH;
      * @param array $args Argument list, minus script name
      * @return int Exit status
      */
-    public function __invoke(array $args)
+    public function __invoke(array $args): int
     {
         $arguments = $this->parseArgs($args);
 
@@ -97,11 +93,7 @@ EOH;
         return 0;
     }
 
-    /**
-     * @param array $args
-     * @return \stdClass
-     */
-    private function parseArgs(array $args)
+    private function parseArgs(array $args): stdClass
     {
         if (! $args) {
             return $this->createArguments(self::COMMAND_HELP);
@@ -129,7 +121,7 @@ EOH;
      * @param resource $resource Defaults to STDOUT
      * @return void
      */
-    private function help($resource = STDOUT)
+    private function help($resource = STDOUT): void
     {
         $this->helper->writeLine(sprintf(
             self::HELP_TEMPLATE,
@@ -138,12 +130,10 @@ EOH;
     }
 
     /**
-     * @param string $command
      * @param string|null $class Name of class to reflect.
      * @param string|null $error Error message, if any.
-     * @return \stdClass
      */
-    private function createArguments($command, $class = null, $error = null)
+    private function createArguments(string $command, string $class = null, string $error = null): stdClass
     {
         return (object) [
             'command' => $command,

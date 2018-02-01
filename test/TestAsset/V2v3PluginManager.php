@@ -33,7 +33,7 @@ class V2v3PluginManager extends AbstractPluginManager
     protected $sharedByDefault = false;
 
 
-    public function validate($plugin)
+    public function validate($plugin): void
     {
         if ($plugin instanceof $this->instanceOf) {
             return;

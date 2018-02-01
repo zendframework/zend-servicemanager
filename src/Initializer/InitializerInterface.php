@@ -24,5 +24,5 @@ interface InitializerInterface
      * @param  object             $instance
      * @return void
      */
-    public function __invoke(ContainerInterface $container, $instance);
+    public function __invoke(ContainerInterface $container, $instance): void;
 }

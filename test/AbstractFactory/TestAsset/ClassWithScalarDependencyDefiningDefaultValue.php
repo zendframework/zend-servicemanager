@@ -11,10 +11,7 @@ class ClassWithScalarDependencyDefiningDefaultValue
 {
     public $foo;
 
-    /**
-     * @param string $foo
-     */
-    public function __construct($foo = 'bar')
+    public function __construct(string $foo = 'bar')
     {
         $this->foo = $foo;
     }

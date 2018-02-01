@@ -30,5 +30,5 @@ interface ServiceLocatorInterface extends
      *     to create the instance.
      * @throws ContainerExceptionInterface if any other error occurs
      */
-    public function build($name, array $options = null);
+    public function build(string $name, array $options = null);
 }

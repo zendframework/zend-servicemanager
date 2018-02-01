@@ -14,7 +14,7 @@ class LenientPluginManager extends AbstractPluginManager
     /**
      * Allow anything to be considered valid.
      */
-    public function validate($instance)
+    public function validate($instance): void
     {
         return;
     }

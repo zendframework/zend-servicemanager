@@ -68,7 +68,7 @@ class Config implements ConfigInterface
     public function __construct(array $config = [])
     {
         // Only merge keys we're interested in
-        foreach (\array_keys($config) as $key) {
+        foreach (array_keys($config) as $key) {
             if (! isset($this->allowedKeys[$key])) {
                 unset($config[$key]);
             }
@@ -79,7 +79,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function configureServiceManager(ServiceManager $serviceManager)
+    public function configureServiceManager(ServiceManager $serviceManager): ServiceManager
     {
         return $serviceManager->configure($this->config);
     }
@@ -87,7 +87,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->config;
     }
@@ -98,17 +98,17 @@ class Config implements ConfigInterface
      *
      * @link https://github.com/zendframework/zend-servicemanager/pull/68
      */
-    private function merge(array $a, array $b)
+    private function merge(array $a, array $b): array
     {
         foreach ($b as $key => $value) {
             if ($value instanceof MergeReplaceKeyInterface) {
                 $a[$key] = $value->getData();
-            } elseif (isset($a[$key]) || \array_key_exists($key, $a)) {
+            } elseif (isset($a[$key]) || array_key_exists($key, $a)) {
                 if ($value instanceof MergeRemoveKey) {
                     unset($a[$key]);
-                } elseif (\is_int($key)) {
+                } elseif (is_int($key)) {
                     $a[] = $value;
-                } elseif (\is_array($value) && \is_array($a[$key])) {
+                } elseif (is_array($value) && is_array($a[$key])) {
                     $a[$key] = $this->merge($a[$key], $value);
                 } else {
                     $a[$key] = $value;

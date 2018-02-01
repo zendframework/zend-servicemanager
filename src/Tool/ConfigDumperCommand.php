@@ -7,9 +7,9 @@
 
 namespace Zend\ServiceManager\Tool;
 
+use stdClass;
 use Zend\ServiceManager\Exception;
 use Zend\Stdlib\ConsoleHelper;
-
 use function array_shift;
 use function class_exists;
 use function dirname;
@@ -60,10 +60,7 @@ EOH;
      */
     private $scriptName;
 
-    /**
-     * @param string $scriptName
-     */
-    public function __construct($scriptName = self::DEFAULT_SCRIPT_NAME, ConsoleHelper $helper = null)
+    public function __construct(string $scriptName = self::DEFAULT_SCRIPT_NAME, ConsoleHelper $helper = null)
     {
         $this->scriptName = $scriptName;
         $this->helper = $helper ?: new ConsoleHelper();
@@ -73,7 +70,7 @@ EOH;
      * @param array $args Argument list, minus script name
      * @return int Exit status
      */
-    public function __invoke(array $args)
+    public function __invoke(array $args): int
     {
         $arguments = $this->parseArgs($args);
 
@@ -117,11 +114,7 @@ EOH;
         return 0;
     }
 
-    /**
-     * @param array $args
-     * @return \stdClass
-     */
-    private function parseArgs(array $args)
+    private function parseArgs(array $args): stdClass
     {
         if (! $args) {
             return $this->createHelpArgument();
@@ -186,7 +179,7 @@ EOH;
      * @param resource $resource Defaults to STDOUT
      * @return void
      */
-    private function help($resource = STDOUT)
+    private function help($resource = STDOUT): void
     {
         $this->helper->writeLine(sprintf(
             self::HELP_TEMPLATE,
@@ -201,9 +194,9 @@ EOH;
      * @param array $config Parsed configuration.
      * @param string $class Name of class to reflect.
      * @param bool $ignoreUnresolved If to ignore classes with unresolved direct dependencies.
-     * @return \stdClass
+     * @return stdClass
      */
-    private function createArguments($command, $configFile, $config, $class, $ignoreUnresolved)
+    private function createArguments(string $command, string $configFile, array $config, string $class, bool $ignoreUnresolved): stdClass
     {
         return (object) [
             'command'          => $command,
@@ -214,11 +207,7 @@ EOH;
         ];
     }
 
-    /**
-     * @param string $message
-     * @return \stdClass
-     */
-    private function createErrorArgument($message)
+    private function createErrorArgument(string $message): stdClass
     {
         return (object) [
             'command' => self::COMMAND_ERROR,
@@ -226,10 +215,7 @@ EOH;
         ];
     }
 
-    /**
-     * @return \stdClass
-     */
-    private function createHelpArgument()
+    private function createHelpArgument(): stdClass
     {
         return (object) [
             'command' => self::COMMAND_HELP,
