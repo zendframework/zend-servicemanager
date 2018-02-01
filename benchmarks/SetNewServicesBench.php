@@ -50,8 +50,8 @@ class SetNewServicesBench
             $config['factories']["factory_$i"] = BenchAsset\FactoryFoo::class;
             $config['aliases']["alias_$i"]     = "service_$i";
             $config['abstract_factories'][] = BenchAsset\AbstractFactoryFoo::class;
-            $config['invokables']['invokable_$i'] = BenchAsset\Foo::class;
-            $config['delegators']['delegator_$i'] = [ DelegatorFactoryFoo::class ];
+            $config['invokables']["invokable_$i"] = BenchAsset\Foo::class;
+            $config['delegators']["delegator_$i"] = [ DelegatorFactoryFoo::class ];
         }
 
         $this->initializer = new BenchAsset\InitializerFoo();
