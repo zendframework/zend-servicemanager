@@ -280,12 +280,11 @@ class ServiceManagerTest extends TestCase
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
     }
 
-
     public function testResolvedAliasFromAbstractFactory()
     {
         $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
-
-        $serviceManager = new SimpleServiceManager([
+        
+		$serviceManager = new SimpleServiceManager([
             'aliases'            => [
                 'Alias' => 'ServiceName',
             ],
@@ -306,7 +305,7 @@ class ServiceManagerTest extends TestCase
             }));
 
         self::assertTrue($serviceManager->has('Alias'));
-    }
+	}
 
     public function testResolvedAliasNoMatchingAbstractFactoryReturnsFalse()
     {
@@ -333,6 +332,72 @@ class ServiceManagerTest extends TestCase
         self::assertFalse($serviceManager->has('Alias'));
     }
 
+	public function testMemberBasedAliasConfugrationGetsApplied()
+    {
+        $sm = new PreconfiguredServiceManager();
+
+        // simple alias resolution works
+        self::assertTrue($sm->has('alias2'));
+        self::assertInstanceOf(stdClass::class, $sm->get('alias2'));
+        // will be true if initializer is present
+        self::assertObjectHasAttribute('initializerPresent', $sm->get('alias2'));
+	}
+
+    public function testMemberBasedRecursiveAliasConfugrationGetsApplied()
+    {
+        $sm = new PreconfiguredServiceManager();
+
+        // recursive alias resolution works
+        self::assertTrue($sm->has('alias1'));
+        self::assertInstanceOf(stdClass::class, $sm->get('alias1'));
+        // will be true if initializer is present
+        self::assertObjectHasAttribute('initializerPresent', $sm->get('alias1'));
+    }
+
+    public function testMemberBasedServiceConfugrationGetsApplied()
+    {
+        $sm = new PreconfiguredServiceManager();
+
+        // will return true if $services array is properly setup
+        self::assertTrue($sm->has('service'));
+        self::assertInstanceOf(stdClass::class, $sm->get('service'));
+    }
+
+    public function testMemberBasedDelegatorConfugrationGetsApplied()
+    {
+        $sm = new PreconfiguredServiceManager();
+
+        // will be true if factory array is properly setup
+        self::assertTrue($sm->has('delegator'));
+        self::assertInstanceOf(InvokableObject::class, $sm->get('delegator'));
+
+        // will be true if initializer is present
+        self::assertObjectHasAttribute('initializerPresent', $sm->get('delegator'));
+    }
+
+    public function testMemberBasedFactoryConfugrationGetsApplied()
+    {
+        $sm = new PreconfiguredServiceManager();
+        self::assertTrue($sm->has('factory'));
+        // will be true if initializer is present
+        self::assertObjectHasAttribute('initializerPresent', $sm->get('factory'));
+    }
+
+    public function testMemberBasedInvokableConfigurationGetsApplied()
+    {
+        $sm = new PreconfiguredServiceManager();
+        self::assertTrue($sm->has('invokable'));
+        self::assertObjectHasAttribute('initializerPresent', $sm->get('invokable'));
+    }
+
+    public function testMemberBasedAbstractFactoryConfigurationGetsApplied()
+    {
+        $sm = new PreconfiguredServiceManager();
+        self::assertTrue($sm->has('foo'));
+        // will be true if initializer is present
+        self::assertObjectHasAttribute('initializerPresent', $sm->get('foo'));
+
+
     public function testInvokablesShouldNotOverrideFactoriesAndDelegators()
     {
         $sm = new ServiceManager([
@@ -351,26 +416,27 @@ class ServiceManagerTest extends TestCase
 
         $object1 = $sm->build('factory1');
         // assert delegated object is produced by delegator factory
-        $this->assertTrue(isset($object1->delegatorTag));
-        $this->assertInstanceOf(InvokableObject::class, $object1);
+        self::assertObjectHasAttribute('delegatorTag', $object1);
+        self::assertInstanceOf(InvokableObject::class, $object1);
 
 
         $object2 = $sm->build('factory2');
         // assert delegated object is produced by SampleFactory
-        $this->assertFalse(isset($object2->delegatorTag));
-        $this->assertInstanceOf(InvokableObject::class, $object2);
+        self::assertObjectNotHasAttribute('delegatorTag', $object2);
+        self::assertInstanceOf(InvokableObject::class, $object2);
 
         $sm->setInvokableClass('factory1', stdClass::class);
         $sm->setInvokableClass('factory2', stdClass::class);
 
         $object1 = $sm->build('factory1');
         // assert delegated object is still produced by delegator factory
-        $this->assertTrue(isset($object1->delegatorTag));
-        $this->assertInstanceOf(InvokableObject::class, $object1);
+        self::assertObjectHasAttribute('delegatorTag', $object1);
+        self::assertInstanceOf(InvokableObject::class, $object1);
 
         $object2 = $sm->build('factory2');
-        // assert delegated object is still produced by SampleFactory
-        $this->assertFalse(isset($object2->delegatorTag));
-        $this->assertInstanceOf(InvokableObject::class, $object2);
+        // assert delegated object is still produced by SampleFactor
+        // but not by delegator
+        self::assertObjectNotHasAttribute('delegatorTag', $object2);
+        self::assertInstanceOf(InvokableObject::class, $object2);
     }
 }
