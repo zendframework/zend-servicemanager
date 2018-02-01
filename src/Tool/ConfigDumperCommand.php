@@ -12,7 +12,6 @@ use Zend\Stdlib\ConsoleHelper;
 
 use function array_shift;
 use function class_exists;
-use function count;
 use function dirname;
 use function file_exists;
 use function file_put_contents;
