@@ -7,16 +7,16 @@ Develop:
 [![Build Status](https://secure.travis-ci.org/mxc-commons/mxc-servicemanager.svg?branch=develop)](https://secure.travis-ci.org/mxc-commons/mxc-servicemanager)
 [![Coverage Status](https://coveralls.io/repos/github/mxc-commons/mxc-servicemanager/badge.svg?branch=develop)](https://coveralls.io/github/mxc-commons/mxc-servicemanager?branch=develop)
 
-The Service Locator design pattern is implemented by the `Zend\ServiceManager`
-component. The Service Locator is a service/object locator, tasked with
-retrieving other objects.
+This is a component fully compatible to zend-servicemanager. Compatibility to
+zend-servicemanager is main design paradigm. This pacackage was introduced to
+deliver major progress to the users early.
 
 - File issues at https://github.com/mxc-commons/mxc-servicemanager/issues
 - [Online documentation of zend-servicemanager](https://docs.zendframework.com/zend-servicemanager)
 
 ## Benchmarks
 
-We provide scripts for benchmarking zend-servicemanager using the
+There are scripts provided for benchmarking zend-servicemanager using the
 [PHPBench](https://github.com/phpbench/phpbench) framework; these can be
 found in the `benchmarks/` directory.
 
