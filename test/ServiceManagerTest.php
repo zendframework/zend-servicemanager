@@ -8,12 +8,9 @@
 namespace ZendTest\ServiceManager;
 
 use DateTime;
-use Interop\Container\Exception\ContainerException;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
@@ -285,18 +282,15 @@ class ServiceManagerTest extends TestCase
             ],
         ]);
 
-        $valueMap = [
-            ['Alias', false],
-            ['ServiceName', true],
-        ];
-
         $abstractFactory
             ->method('canCreate')
             ->withConsecutive(
                 [ $this->anything(), $this->equalTo('Alias') ],
                 [ $this->anything(), $this->equalTo('ServiceName')]
             )
-            ->willReturn($this->returnValueMap($valueMap));
+            ->willReturnCallback(function ($context, $name) {
+                return $name === 'Alias';
+            });
         $this->assertTrue($serviceManager->has('Alias'));
     }
 
@@ -314,5 +308,57 @@ class ServiceManagerTest extends TestCase
         ];
         $serviceManager = new SimpleServiceManager($config);
         $this->assertEquals(stdClass::class, get_class($serviceManager->get(stdClass::class)));
+    }
+
+    public function testResolvedAliasFromAbstractFactory()
+    {
+        $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
+
+        $serviceManager = new SimpleServiceManager([
+            'aliases'            => [
+                'Alias' => 'ServiceName',
+            ],
+            'abstract_factories' => [
+                $abstractFactory,
+            ],
+        ]);
+
+        $abstractFactory
+            ->expects(self::any())
+            ->method('canCreate')
+            ->withConsecutive(
+                [self::anything(), 'Alias'],
+                [self::anything(), 'ServiceName']
+            )
+            ->will(self::returnCallback(function ($context, $name) {
+                return $name === 'ServiceName';
+            }));
+
+        self::assertTrue($serviceManager->has('Alias'));
+    }
+
+    public function testResolvedAliasNoMatchingAbstractFactoryReturnsFalse()
+    {
+        $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
+
+        $serviceManager = new SimpleServiceManager([
+            'aliases'            => [
+                'Alias' => 'ServiceName',
+            ],
+            'abstract_factories' => [
+                $abstractFactory,
+            ],
+        ]);
+
+        $abstractFactory
+            ->expects(self::any())
+            ->method('canCreate')
+            ->withConsecutive(
+                [self::anything(), 'Alias'],
+                [self::anything(), 'ServiceName']
+            )
+            ->willReturn(false);
+
+        self::assertFalse($serviceManager->has('Alias'));
     }
 }

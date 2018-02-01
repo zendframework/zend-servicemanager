@@ -278,6 +278,8 @@ class ServiceManager implements ServiceLocatorInterface
                 return true;
             }
         }
+
+        return false;
     }
 
     /**
