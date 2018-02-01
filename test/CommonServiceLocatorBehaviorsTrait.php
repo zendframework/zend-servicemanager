@@ -644,7 +644,6 @@ trait CommonServiceLocatorBehaviorsTrait
         $container = $this->createContainer();
         $container->setInvokableClass('foo', stdClass::class);
         self::assertTrue($container->has('foo'));
-        self::assertTrue($container->has(stdClass::class));
         $foo = $container->get('foo');
         self::assertInstanceOf(stdClass::class, $foo);
     }
