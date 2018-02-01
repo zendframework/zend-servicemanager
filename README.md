@@ -7,9 +7,8 @@ Develop:
 [![Build Status](https://secure.travis-ci.org/mxc-commons/mxc-servicemanager.svg?branch=develop)](https://secure.travis-ci.org/mxc-commons/mxc-servicemanager)
 [![Coverage Status](https://coveralls.io/repos/github/mxc-commons/mxc-servicemanager/badge.svg?branch=develop)](https://coveralls.io/github/mxc-commons/mxc-servicemanager?branch=develop)
 
-This is a component fully compatible to zend-servicemanager. Compatibility to
-zend-servicemanager is main design paradigm. This pacackage was introduced to
-deliver major progress to the users early.
+Compatibility to zend-servicemanager is main design paradigm of this component.
+This pacackage was introduced to deliver major progress early.
 
 - File issues at https://github.com/mxc-commons/mxc-servicemanager/issues
 - [Online documentation of zend-servicemanager](https://docs.zendframework.com/zend-servicemanager)
