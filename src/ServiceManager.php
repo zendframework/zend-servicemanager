@@ -649,40 +649,44 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Get a factory for the given service name
+     * Get a factory for the given service name and create an object using
+     * that factory or create invokable if service is invokable
      *
      * @param  string $name
-     * @return callable
+     * @return object
      * @throws ServiceNotFoundException
      */
-    private function getFactory(&$name)
+    private function createObjectThroughFactory($name, array $options = null)
     {
-        $factory = $this->factories[$name] ?? null;
+        $factory = isset($this->factories[$name]) ? $this->factories[$name] : null;
 
-        $lazyLoaded = false;
         if (is_string($factory) && class_exists($factory)) {
             $factory = new $factory();
-            $lazyLoaded = true;
-        }
-
-        if (is_callable($factory)) {
-            if ($lazyLoaded) {
+            if (is_callable($factory)) {
                 $this->factories[$name] = $factory;
             }
+            return $factory($this->creationContext, $name, $options);
+        }
 
-            return $factory;
-        } elseif (isset($this->invokables[$name])) {
-            // The little trick to pass $name by reference to
-            // getFactory was necessary to enable late resolution
-            // of invokables here.
-            $name = $this->invokables[$name];
-            return new InvokableFactory();
+        if (! is_callable($factory)) {
+            if (isset($this->invokables[$name])) {
+                $invokable = $this->invokables[$name];
+                return $options === null ? new $invokable() : new $invokable($options);
+            }
+        } else {
+            // PHP 5.6 fails on 'class::method' callables unless we explode them:
+            if (PHP_MAJOR_VERSION < 7
+                && is_string($factory) && strpos($factory, '::') !== false
+            ) {
+                $factory = explode('::', $factory);
+            }
+            return $factory($this->creationContext, $name, $options);
         }
 
         // Check abstract factories
         foreach ($this->abstractFactories as $abstractFactory) {
             if ($abstractFactory->canCreate($this->creationContext, $name)) {
-                return $abstractFactory;
+                return $abstractFactory($this->creationContext, $name, $options);
             }
         }
 
@@ -701,8 +705,7 @@ class ServiceManager implements ServiceLocatorInterface
     {
         $creationCallback = function () use ($name, $options) {
             // Code is inlined for performance reason, instead of abstracting the creation
-            $factory = $this->getFactory($name);
-            return $factory($this->creationContext, $name, $options);
+            return $this->createObjectThroughFactory($name, $options);
         };
 
         foreach ($this->delegators[$name] as $index => $delegatorFactory) {
@@ -761,9 +764,7 @@ class ServiceManager implements ServiceLocatorInterface
     {
         try {
             if (! isset($this->delegators[$resolvedName])) {
-                // Let's create the service by fetching the factory
-                $factory = $this->getFactory($resolvedName);
-                $object  = $factory($this->creationContext, $resolvedName, $options);
+                $object  = $this->createObjectThroughFactory($resolvedName, $options);
             } else {
                 $object = $this->createDelegatorFromName($resolvedName, $options);
             }
