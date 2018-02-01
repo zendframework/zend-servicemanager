@@ -12,21 +12,9 @@ namespace Zend\ServiceManager;
  *
  * Implementations should update to implement only Zend\ServiceManager\Factory\AbstractFactoryInterface.
  *
- * If upgrading from v2, take the following steps:
+ * If upgrading from v3, take the following steps:
  *
- * - rename the method `canCreateServiceWithName()` to `canCreate()`, and:
- *   - rename the `$serviceLocator` argument to `$container`, and change the
- *     typehint to `Interop\Container\ContainerInterface`
- *   - merge the `$name` and `$requestedName` arguments
- * - rename the method `createServiceWithName()` to `__invoke()`, and:
- *   - rename the `$serviceLocator` argument to `$container`, and change the
- *     typehint to `Interop\Container\ContainerInterface`
- *   - merge the `$name` and `$requestedName` arguments
- *   - add the optional `array $options = null` argument.
- * - create a `canCreateServiceWithName()` method as defined in this interface, and have it
- *   proxy to `canCreate()`, passing `$requestedName` as the second argument.
- * - create a `createServiceWithName()` method as defined in this interface, and have it
- *   proxy to `__invoke()`, passing `$requestedName` as the second argument.
+ * - change the typehint from `Interop\Container\ContainerInterface` to `Psr\Container\ContainerInterface`
  *
  * Once you have tested your code, you can then update your class to only implement
  * Zend\ServiceManager\Factory\AbstractFactoryInterface, and remove the `canCreateServiceWithName()`

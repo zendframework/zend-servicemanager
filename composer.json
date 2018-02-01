@@ -22,7 +22,6 @@
     },
     "require": {
         "php": "^7.1",
-        "container-interop/container-interop": "^1.2",
         "psr/container": "^1.0",
         "zendframework/zend-stdlib": "^3.1"
     },
@@ -34,7 +33,6 @@
         "zendframework/zend-coding-standard": "~1.0.0"
     },
     "provide": {
-        "container-interop/container-interop-implementation": "^1.2",
         "psr/container-implementation": "^1.0"
     },
     "suggest": {

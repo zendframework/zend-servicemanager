@@ -7,7 +7,7 @@
 
 namespace Zend\ServiceManager;
 
-use Interop\Container\Exception\ContainerException;
+use Psr\Container\ContainerExceptionInterface;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 
 /**
@@ -24,7 +24,7 @@ interface PluginManagerInterface extends ServiceLocatorInterface
      * @return void
      * @throws InvalidServiceException If created instance does not respect the
      *     constraint on type imposed by the plugin manager
-     * @throws ContainerException if any other error occurs
+     * @throws ContainerExceptionInterface if any other error occurs
      */
     public function validate($instance);
 }

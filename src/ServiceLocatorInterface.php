@@ -7,16 +7,13 @@
 
 namespace Zend\ServiceManager;
 
-use Interop\Container\ContainerInterface as InteropContainerInterface;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\ContainerInterface as PsrContainerInterface;
+use Psr\Container\ContainerExceptionInterfaceInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Interface for service locator
  */
-interface ServiceLocatorInterface extends
-    PsrContainerInterface,
-    InteropContainerInterface
+interface ServiceLocatorInterface extends ContainerInterface
 {
     /**
      * Build a service by its name, using optional options (such services are NEVER cached).
@@ -28,7 +25,7 @@ interface ServiceLocatorInterface extends
      *     factory could be found to create the instance.
      * @throws Exception\ServiceNotCreatedException If factory/delegator fails
      *     to create the instance.
-     * @throws ContainerExceptionInterface if any other error occurs
+     * @throws ContainerExceptionInterfaceInterface if any other error occurs
      */
     public function build($name, array $options = null);
 }

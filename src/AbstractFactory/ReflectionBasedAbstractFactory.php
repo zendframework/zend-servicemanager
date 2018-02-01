@@ -7,7 +7,7 @@
 
 namespace Zend\ServiceManager\AbstractFactory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionParameter;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;

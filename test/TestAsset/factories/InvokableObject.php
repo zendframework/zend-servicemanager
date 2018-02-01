@@ -2,7 +2,7 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 

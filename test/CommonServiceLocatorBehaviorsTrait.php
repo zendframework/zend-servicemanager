@@ -8,7 +8,7 @@
 namespace ZendTest\ServiceManager;
 
 use DateTime;
-use Interop\Container\Exception\ContainerException;
+use Psr\Container\ContainerExceptionInterface;
 use ReflectionProperty;
 use stdClass;
 use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
@@ -572,7 +572,7 @@ trait CommonServiceLocatorBehaviorsTrait
     public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {
         $serviceManager = $this->createContainer();
-        $this->expectException(ContainerException::class);
+        $this->expectException(ContainerExceptionInterface::class);
         $this->expectExceptionMessage('Unable to resolve');
         $serviceManager->get('Some\Unknown\Service');
     }
