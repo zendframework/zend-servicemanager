@@ -244,7 +244,7 @@ class ServiceManagerTest extends TestCase
         $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
 
         $serviceManager = new SimpleServiceManager([
-            'aliases' => [
+            'aliases'            => [
                 'Alias' => 'ServiceName',
             ],
             'abstract_factories' => [
@@ -441,7 +441,7 @@ class ServiceManagerTest extends TestCase
         $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
 
         $serviceManager = new SimpleServiceManager([
-            'aliases' => [
+            'aliases'            => [
                 'Alias' => 'ServiceName',
             ],
             'abstract_factories' => [
@@ -450,18 +450,17 @@ class ServiceManagerTest extends TestCase
         ]);
 
         $abstractFactory
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('canCreate')
             ->withConsecutive(
-                [ $this->anything(), $this->equalTo('Alias') ],
-                [ $this->anything(), $this->equalTo('ServiceName')]
+                [self::anything(), 'Alias'],
+                [self::anything(), 'ServiceName']
             )
-            ->will(self::returnCallback(
-                function ($context, $name) {
-                    return $name === 'ServiceName';
-                }
-            ));
-        $this->assertTrue($serviceManager->has('Alias'));
+            ->will(self::returnCallback(function ($context, $name) {
+                return $name === 'ServiceName';
+            }));
+
+        self::assertTrue($serviceManager->has('Alias'));
     }
 
     public function testResolvedAliasNoMatchingAbstractFactoryReturnsFalse()
@@ -478,13 +477,14 @@ class ServiceManagerTest extends TestCase
         ]);
 
         $abstractFactory
-            ->expects($this->any())
+            ->expects(self::any())
             ->method('canCreate')
             ->withConsecutive(
-                [ $this->anything(), $this->equalTo('Alias') ],
-                [ $this->anything(), $this->equalTo('ServiceName')]
+                [self::anything(), 'Alias'],
+                [self::anything(), 'ServiceName']
             )
             ->willReturn(false);
-        $this->assertFalse($serviceManager->has('Alias'));
+
+        self::assertFalse($serviceManager->has('Alias'));
     }
 }
