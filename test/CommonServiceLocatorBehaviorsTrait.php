@@ -541,7 +541,7 @@ trait CommonServiceLocatorBehaviorsTrait
     public function invalidInitializers()
     {
         $factories = $this->invalidFactories();
-        $factories['non-class-string'] = ['non-callable-string', 'valid function name or class name'];
+        $factories['non-class-string'] = ['non-callable-string', 'valid function name, class name'];
         return $factories;
     }
 
@@ -640,7 +640,6 @@ trait CommonServiceLocatorBehaviorsTrait
         $container = $this->createContainer();
         $container->setInvokableClass('foo', stdClass::class);
         $this->assertTrue($container->has('foo'));
-        $this->assertTrue($container->has(stdClass::class));
         $foo = $container->get('foo');
         $this->assertInstanceOf(stdClass::class, $foo);
     }
