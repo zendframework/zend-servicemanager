@@ -141,6 +141,16 @@ class ServiceManager implements ServiceLocatorInterface
     protected $sharedByDefault = true;
 
     /**
+     * ServiceManager was already configured?
+     * Maintened for bc also we don't rely on it
+     * any more
+     *
+     * @var bool
+     */
+    protected $configured = false;
+
+
+    /**
      * Cached abstract factories from string.
      *
      * @var array
@@ -176,6 +186,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         $this->configure($config);
+        $this->configured = true;
     }
 
     /**
