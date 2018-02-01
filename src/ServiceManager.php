@@ -179,7 +179,6 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         $this->configure($config);
-        $this->configured = true;
     }
 
     /**
@@ -404,7 +403,7 @@ class ServiceManager implements ServiceLocatorInterface
         if (isset($config['initializers'])) {
             $this->resolveInitializers($config['initializers']);
         }
-
+        $this->configured = true;
         return $this;
     }
 
@@ -545,7 +544,7 @@ class ServiceManager implements ServiceLocatorInterface
     {
         if ($initializers === null) {
             $initializers = $this->initializers;
-            unset($this->initializers);
+            $this->initializers = [];
         }
         foreach ($initializers as $initializer) {
             if (is_string($initializer) && class_exists($initializer)) {
