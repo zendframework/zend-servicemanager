@@ -253,10 +253,10 @@ class ServiceManagerTest extends TestCase
             ],
         ]);
         $abstractFactory
-        ->expects($this->once())
-        ->method('canCreate')
-        ->with($this->anything(), $this->equalTo('ServiceName'))
-        ->willReturn(true);
+            ->expects($this->once())
+            ->method('canCreate')
+            ->with($this->anything(), $this->equalTo('ServiceName'))
+            ->willReturn(true);
         $this->assertTrue($serviceManager->has('Alias'));
     }
 
