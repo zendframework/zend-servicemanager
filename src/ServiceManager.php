@@ -173,20 +173,13 @@ class ServiceManager implements ServiceLocatorInterface
             $this->mapAliasesToTargets();
         }
 
-        if (! empty($this->initializers)) {
-            // null indicates resolveInitializers to initialize
-            // from $this->initializers
-            $this->resolveInitializers(null);
-        }
+        $config['initializers'] = array_merge($this->initializers, $config['initializers'] ?? []);
+        $this->initializers = [];
 
-        if (! empty($this->abstractFactories)) {
-            // null indicates resolveAbstractFactory to initialize
-            // from $this->abstractFactories
-            $this->resolveAbstractFactories(null);
-        }
+        $config['abstract_factories'] = array_merge($this->abstractFactories, $config['abstract_factories'] ?? []);
+        $this->abstractFactories = [];
 
         $this->configure($config);
-        $this->configured = true;
     }
 
     /**
@@ -405,10 +398,12 @@ class ServiceManager implements ServiceLocatorInterface
                     $this->services[$name] = $service;
                 }
             }
-            // Assuming that the services registered above need override protection also, we continue
+            // Assuming that the services registered above need override protection immediately, we continue
             // protecting the newly registered services from the loop above like the services we already
             // knew before configure() was called. This behaviour is different from the implementation
             // before, but all tests pass.
+            // If the old behaviour should get maintained, I would simply move the foreach($config['services'])
+            // loop to the end of the else branch.
             if (! empty($config['aliases'])) {
                 foreach ($config['aliases'] as $alias => $target) {
                     if (isset($this->services[$alias])) {
@@ -484,6 +479,9 @@ class ServiceManager implements ServiceLocatorInterface
         if (! empty($config['initializers'])) {
             $this->resolveInitializers($config['initializers']);
         }
+
+        $this->configured = true;
+
         return $this;
     }
 
@@ -627,13 +625,8 @@ class ServiceManager implements ServiceLocatorInterface
      * @param string[]|Initializer\InitializerInterface[]|callable[] $initializers
      *
      */
-    private function resolveInitializers(array $initializers = null)
+    private function resolveInitializers(array $initializers)
     {
-        if ($initializers === null) {
-            $initializers = $this->initializers;
-            unset($this->initializers);
-        }
-
         foreach ($initializers as $initializer) {
             if (is_string($initializer) && class_exists($initializer)) {
                 $initializer = new $initializer();
@@ -927,13 +920,8 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @param string[]|Factory\AbstractFactoryInterface[] $abstractFactories
      */
-    private function resolveAbstractFactories(array $abstractFactories = null)
+    private function resolveAbstractFactories(array $abstractFactories)
     {
-        if ($abstractFactories === null) {
-            $abstractFactories = $this->abstractFactories;
-            unset($this->abstractFactories);
-        }
-
         foreach ($abstractFactories as $abstractFactory) {
             if (is_string($abstractFactory) && class_exists($abstractFactory)) {
                 // cached string
