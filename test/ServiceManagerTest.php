@@ -371,8 +371,6 @@ class ServiceManagerTest extends TestCase
         // assert delegated object is still produced by SampleFactor
         // but not by delegator
         $this->assertObjectNotHasAttribute('delegatorTag', $object2);
-
-//        $this->assertFalse(isset($object2->delegatorTag));
         $this->assertInstanceOf(InvokableObject::class, $object2);
     }
 }
