@@ -23,8 +23,8 @@ class InvalidArgumentException extends SplInvalidArgumentException implements Ex
     public static function fromInvalidInitializer($initializer)
     {
         return new self(sprintf(
-            'An invalid initializer was registered. Expected a callable or an'
-            . ' instance of "%s"; received "%s"',
+            'An invalid initializer was registered. Expected a valid function name, '
+            . 'class name, a callable or an instance of "%s", but "%s" was received.',
             InitializerInterface::class,
             is_object($initializer) ? get_class($initializer) : gettype($initializer)
         ));

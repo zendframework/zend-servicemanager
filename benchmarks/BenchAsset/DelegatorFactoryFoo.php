@@ -5,24 +5,19 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager\TestAsset;
+namespace ZendBench\ServiceManager\BenchAsset;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 
-class PassthroughDelegatorFactory implements DelegatorFactoryInterface
+class DelegatorFactoryFoo implements DelegatorFactoryInterface
 {
     /**
      * {@inheritDoc}
      * @see \Zend\ServiceManager\Factory\DelegatorFactoryInterface::__invoke()
      */
-    public function __invoke(
-        \Interop\Container\ContainerInterface $container,
-        $name,
-        callable $callback,
-        array $options = null
-    ) {
-
-        return call_user_func($callback);
+    public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null)
+    {
+        return $callback($options);
     }
 }

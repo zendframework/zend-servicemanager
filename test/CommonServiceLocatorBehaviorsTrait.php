@@ -19,19 +19,19 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use ZendTest\ServiceManager\TestAsset\AbstractFactoryFoo;
 use ZendTest\ServiceManager\TestAsset\CallTimesAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingExceptionWithStringAsCodeFactory;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
+use ZendTest\ServiceManager\TestAsset\PassthroughDelegatorFactory;
+use ZendTest\ServiceManager\TestAsset\SampleFactory;
 use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
 
 use function call_user_func_array;
 use function restore_error_handler;
 use function set_error_handler;
-use ZendTest\ServiceManager\TestAsset\SampleFactory;
-use ZendTest\ServiceManager\TestAsset\AbstractFactoryFoo;
-use ZendTest\ServiceManager\TestAsset\PassthroughDelegatorFactory;
 
 trait CommonServiceLocatorBehaviorsTrait
 {
@@ -132,7 +132,7 @@ trait CommonServiceLocatorBehaviorsTrait
         ]);
 
         $object = $serviceManager->get(stdClass::class);
-        self::assertInstanceOf(stdClass::class, $object);
+        $this->assertInstanceOf(stdClass::class, $object);
     }
 
     public function testCanCreateServiceWithAbstractFactory()
@@ -548,7 +548,7 @@ trait CommonServiceLocatorBehaviorsTrait
     public function invalidInitializers()
     {
         $factories = $this->invalidFactories();
-        $factories['non-class-string'] = ['non-callable-string', 'callable or an instance of'];
+        $factories['non-class-string'] = ['non-callable-string', 'valid function name, class name'];
         return $factories;
     }
 
@@ -569,9 +569,6 @@ trait CommonServiceLocatorBehaviorsTrait
         ]);
     }
 
-    /**
-     * @covers \Zend\ServiceManager\ServiceManager::getFactory
-     */
     public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {
         $serviceManager = $this->createContainer();
@@ -644,7 +641,6 @@ trait CommonServiceLocatorBehaviorsTrait
         $container = $this->createContainer();
         $container->setInvokableClass('foo', stdClass::class);
         self::assertTrue($container->has('foo'));
-        self::assertTrue($container->has(stdClass::class));
         $foo = $container->get('foo');
         self::assertInstanceOf(stdClass::class, $foo);
     }
@@ -951,25 +947,25 @@ trait CommonServiceLocatorBehaviorsTrait
                 },
                 'factory' => SampleFactory::class,
                 'delegator' => SampleFactory::class,
-             ],
-             'delegators' => [
-                 'delegator' => [
-                     PassthroughDelegatorFactory::class
-                 ],
-             ],
+            ],
+            'delegators' => [
+                'delegator' => [
+                   PassthroughDelegatorFactory::class,
+                ],
+            ],
             'invokables' => [
                 'invokable' => InvokableObject::class,
             ],
             'services' => [
                 'service' => new stdClass(),
             ],
-             'aliases' => [
+            'aliases' => [
                 'serviceAlias'          => 'service',
                 'invokableAlias'        => 'invokable',
                 'factoryAlias'          => 'factory',
                 'abstractFactoryAlias'  => 'foo',
                 'delegatorAlias'        => 'delegator',
-             ],
+            ],
             'abstract_factories' => [
                 AbstractFactoryFoo::class
             ]
