@@ -1,29 +1,33 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager;
+namespace MxcTest\ServiceManager;
 
 use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Zend\ServiceManager\ConfigInterface;
-use Zend\ServiceManager\Exception\InvalidArgumentException;
-use Zend\ServiceManager\Exception\InvalidServiceException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\ServiceManager;
-use ZendTest\ServiceManager\TestAsset\InvokableObject;
-use ZendTest\ServiceManager\TestAsset\SimplePluginManager;
-use ZendTest\ServiceManager\TestAsset\V2v3PluginManager;
+use Mxc\ServiceManager\ConfigInterface;
+use Mxc\ServiceManager\Exception\InvalidArgumentException;
+use Mxc\ServiceManager\Exception\InvalidServiceException;
+use Mxc\ServiceManager\Exception\ServiceNotFoundException;
+use Mxc\ServiceManager\Factory\AbstractFactoryInterface;
+use Mxc\ServiceManager\Factory\FactoryInterface;
+use Mxc\ServiceManager\Factory\InvokableFactory;
+use Mxc\ServiceManager\ServiceManager;
+use MxcTest\ServiceManager\TestAsset\InvokableObject;
+use MxcTest\ServiceManager\TestAsset\SimplePluginManager;
+use MxcTest\ServiceManager\TestAsset\V2v3PluginManager;
+
+use function get_class;
+use function restore_error_handler;
+use function set_error_handler;
 
 /**
- * @covers \Zend\ServiceManager\AbstractPluginManager
+ * @covers \Mxc\ServiceManager\AbstractPluginManager
  */
 class AbstractPluginManagerTest extends TestCase
 {
@@ -57,7 +61,7 @@ class AbstractPluginManagerTest extends TestCase
 
         $object = $pluginManager->get(InvokableObject::class);
 
-        $this->assertInstanceOf(InvokableObject::class, $object);
+        self::assertInstanceOf(InvokableObject::class, $object);
     }
 
     public function testValidateInstance()
@@ -95,9 +99,9 @@ class AbstractPluginManagerTest extends TestCase
 
         $first  = $pluginManager->get(InvokableObject::class);
         $second = $pluginManager->get(InvokableObject::class);
-        $this->assertInstanceOf(InvokableObject::class, $first);
-        $this->assertInstanceOf(InvokableObject::class, $second);
-        $this->assertSame($first, $second);
+        self::assertInstanceOf(InvokableObject::class, $first);
+        self::assertInstanceOf(InvokableObject::class, $second);
+        self::assertSame($first, $second);
     }
 
     public function shareByDefaultSettings()
@@ -127,9 +131,9 @@ class AbstractPluginManagerTest extends TestCase
 
         $first  = $pluginManager->get(InvokableObject::class, $options);
         $second = $pluginManager->get(InvokableObject::class, $options);
-        $this->assertInstanceOf(InvokableObject::class, $first);
-        $this->assertInstanceOf(InvokableObject::class, $second);
-        $this->assertNotSame($first, $second);
+        self::assertInstanceOf(InvokableObject::class, $first);
+        self::assertInstanceOf(InvokableObject::class, $second);
+        self::assertNotSame($first, $second);
     }
 
     /**
@@ -164,19 +168,19 @@ class AbstractPluginManagerTest extends TestCase
         ]);
 
         $instance = $pluginManager->get(stdClass::class);
-        $this->assertTrue(isset($instance->option), 'Delegator-injected option was not found');
-        $this->assertEquals(
+        self::assertTrue(isset($instance->option), 'Delegator-injected option was not found');
+        self::assertEquals(
             $config['option'],
             $instance->option,
             'Delegator-injected option does not match configuration'
         );
-        $this->assertEquals('bar', $instance->foo);
+        self::assertEquals('bar', $instance->foo);
     }
 
     /**
      * Overrides the method in the CommonServiceLocatorBehaviorsTrait, due to behavior differences.
      *
-     * @covers \Zend\ServiceManager\AbstractPluginManager::get
+     * @covers \Mxc\ServiceManager\AbstractPluginManager::get
      */
     public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {
@@ -192,21 +196,21 @@ class AbstractPluginManagerTest extends TestCase
     public function testCallingSetServiceLocatorSetsCreationContextWithDeprecationNotice()
     {
         set_error_handler(function ($errno, $errstr) {
-            $this->assertEquals(E_USER_DEPRECATED, $errno);
+            self::assertEquals(E_USER_DEPRECATED, $errno);
         }, E_USER_DEPRECATED);
         $pluginManager = new TestAsset\LenientPluginManager();
         restore_error_handler();
 
-        $this->assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
+        self::assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
         $serviceManager = new ServiceManager();
 
         set_error_handler(function ($errno, $errstr) {
-            $this->assertEquals(E_USER_DEPRECATED, $errno);
+            self::assertEquals(E_USER_DEPRECATED, $errno);
         }, E_USER_DEPRECATED);
         $pluginManager->setServiceLocator($serviceManager);
         restore_error_handler();
 
-        $this->assertAttributeSame($serviceManager, 'creationContext', $pluginManager);
+        self::assertAttributeSame($serviceManager, 'creationContext', $pluginManager);
     }
 
     /**
@@ -215,11 +219,11 @@ class AbstractPluginManagerTest extends TestCase
     public function testPassingNoInitialConstructorArgumentSetsPluginManagerAsCreationContextWithDeprecationNotice()
     {
         set_error_handler(function ($errno, $errstr) {
-            $this->assertEquals(E_USER_DEPRECATED, $errno);
+            self::assertEquals(E_USER_DEPRECATED, $errno);
         }, E_USER_DEPRECATED);
         $pluginManager = new TestAsset\LenientPluginManager();
         restore_error_handler();
-        $this->assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
+        self::assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
     }
 
     /**
@@ -231,12 +235,12 @@ class AbstractPluginManagerTest extends TestCase
         $config->toArray()->willReturn([]);
 
         set_error_handler(function ($errno, $errstr) {
-            $this->assertEquals(E_USER_DEPRECATED, $errno);
+            self::assertEquals(E_USER_DEPRECATED, $errno);
         }, E_USER_DEPRECATED);
         $pluginManager = new TestAsset\LenientPluginManager($config->reveal());
         restore_error_handler();
 
-        $this->assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
+        self::assertAttributeSame($pluginManager, 'creationContext', $pluginManager);
     }
 
     public function invalidConstructorArguments()
@@ -273,12 +277,12 @@ class AbstractPluginManagerTest extends TestCase
         $config->toArray()->willReturn(['services' => [__CLASS__ => $this]]);
 
         set_error_handler(function ($errno, $errstr) {
-            $this->assertEquals(E_USER_DEPRECATED, $errno);
+            self::assertEquals(E_USER_DEPRECATED, $errno);
         }, E_USER_DEPRECATED);
         $pluginManager = new TestAsset\LenientPluginManager($config->reveal(), ['services' => [__CLASS__ => []]]);
         restore_error_handler();
 
-        $this->assertSame($this, $pluginManager->get(__CLASS__));
+        self::assertSame($this, $pluginManager->get(__CLASS__));
     }
 
     /**
@@ -288,7 +292,7 @@ class AbstractPluginManagerTest extends TestCase
     public function testAutoInvokableServicesAreNotKnownBeforeRetrieval()
     {
         $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
-        $this->assertFalse($pluginManager->has(TestAsset\InvokableObject::class));
+        self::assertFalse($pluginManager->has(TestAsset\InvokableObject::class));
     }
 
     /**
@@ -299,7 +303,7 @@ class AbstractPluginManagerTest extends TestCase
     {
         $pluginManager = new TestAsset\SimplePluginManager(new ServiceManager());
         $invokable = $pluginManager->get(TestAsset\InvokableObject::class);
-        $this->assertInstanceOf(TestAsset\InvokableObject::class, $invokable);
+        self::assertInstanceOf(TestAsset\InvokableObject::class, $invokable);
     }
 
     /**
@@ -322,7 +326,7 @@ class AbstractPluginManagerTest extends TestCase
         $assertionCalled = false;
         $instance = (object) [];
         $assertion = function ($plugin) use ($instance, &$assertionCalled) {
-            $this->assertSame($instance, $plugin);
+            self::assertSame($instance, $plugin);
             $assertionCalled = true;
         };
         $pluginManager = new TestAsset\V2ValidationPluginManager(new ServiceManager());
@@ -330,15 +334,15 @@ class AbstractPluginManagerTest extends TestCase
 
         $errorHandlerCalled = false;
         set_error_handler(function ($errno, $errmsg) use (&$errorHandlerCalled) {
-            $this->assertEquals(E_USER_DEPRECATED, $errno);
-            $this->assertContains('3.0', $errmsg);
+            self::assertEquals(E_USER_DEPRECATED, $errno);
+            self::assertContains('3.0', $errmsg);
             $errorHandlerCalled = true;
         }, E_USER_DEPRECATED);
         $pluginManager->validate($instance);
         restore_error_handler();
 
-        $this->assertTrue($assertionCalled, 'Assertion was not called by validatePlugin!');
-        $this->assertTrue($errorHandlerCalled, 'Error handler was not triggered by validatePlugin!');
+        self::assertTrue($assertionCalled, 'Assertion was not called by validatePlugin!');
+        self::assertTrue($errorHandlerCalled, 'Error handler was not triggered by validatePlugin!');
     }
 
     public function testSetServiceShouldRaiseExceptionForInvalidPlugin()
@@ -371,12 +375,12 @@ class AbstractPluginManagerTest extends TestCase
         $abstractFactory->__invoke($serviceManager, 'foo', null)
             ->willReturn(new InvokableObject());
         $pluginManager->addAbstractFactory($abstractFactory->reveal());
-        $this->assertInstanceOf(InvokableObject::class, $pluginManager->get('foo'));
+        self::assertInstanceOf(InvokableObject::class, $pluginManager->get('foo'));
     }
 
     public function testAliasPropertyResolves()
     {
         $pluginManager = new V2v3PluginManager(new ServiceManager());
-        $this->assertInstanceOf(InvokableObject::class, $pluginManager->get('foo'));
+        self::assertInstanceOf(InvokableObject::class, $pluginManager->get('foo'));
     }
 }

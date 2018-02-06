@@ -13,7 +13,7 @@ constructor. The following keys are:
 - `initializers`: a list of callable or initializers that are run whenever a service has been created.
 - `shared`: associative array that map a service name to a boolean, in order to
   indicate the service manager if it should cache or not a service created
-  through the `get` method, independant of the `shared_by_default` setting.
+  through the `get` method, independent of the `shared_by_default` setting.
 - `lazy_services`: configuration for the lazy service proxy manager, and a class
   map of service:class pairs that will act as lazy services; see the
   [lazy services documentation](lazy-services.md) for more details.
@@ -23,7 +23,7 @@ constructor. The following keys are:
 Here is an example of how you could configure a service manager:
 
 ```php
-use Zend\ServiceManager\ServiceManager;
+use Mxc\ServiceManager\ServiceManager;
 
 $serviceManager = new ServiceManager([
     'services'           => [],
@@ -38,14 +38,14 @@ $serviceManager = new ServiceManager([
 ## Factories
 
 A factory is any callable or any class that implements the interface
-`Zend\ServiceManager\Factory\FactoryInterface`.
+`Mxc\ServiceManager\Factory\FactoryInterface`.
 
 Service manager components provide a default factory that can be used to create
 objects that do not have any dependencies:
 
 ```php
-use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\ServiceManager;
+use Mxc\ServiceManager\Factory\InvokableFactory;
+use Mxc\ServiceManager\ServiceManager;
 use stdClass;
 
 $serviceManager = new ServiceManager([
@@ -55,14 +55,14 @@ $serviceManager = new ServiceManager([
 ]);
 ```
 
-> This mechanism replaces the `invokables` key that was used in Zend Framework 2.
+> This mechanism replaces the `invokables` key that was used in Mxc Framework 2.
 
 As said before, a factory can also be a callable, to create more complex objects:
 
 ```php
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\ServiceManager;
+use Mxc\ServiceManager\Factory\InvokableFactory;
+use Mxc\ServiceManager\ServiceManager;
 use stdClass;
 
 $serviceManager = new ServiceManager([
@@ -163,7 +163,7 @@ common creation pattern.
 
 An abstract factory must be registered inside the service manager, and is
 checked if no factory can create an object. Each abstract factory must
-implement `Zend\ServiceManager\Factory\AbstractFactoryInterface`:
+implement `Mxc\ServiceManager\Factory\AbstractFactoryInterface`:
 
 ```php
 // In MyAbstractFactory.php:
@@ -225,8 +225,8 @@ An alias can also be mapped to another alias (it will be resolved recursively).
 For instance:
 
 ```php
-use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\ServiceManager;
+use Mxc\ServiceManager\Factory\InvokableFactory;
+use Mxc\ServiceManager\ServiceManager;
 use stdClass;
 
 $serviceManager = new ServiceManager([
@@ -258,7 +258,7 @@ refactoring, as most modern IDEs can refactor class names specified using the
 ## Initializers
 
 An initializer is any callable or any class that implements the interface
-`Zend\ServiceManager\Initializer\InitializerInterface`. Initializers are
+`Mxc\ServiceManager\Initializer\InitializerInterface`. Initializers are
 executed for each service the first time they are created, and can be used to
 inject additional dependencies.
 
@@ -269,7 +269,7 @@ For instance, if we'd want to automatically inject the dependency
 ```php
 use Interop\Container\ContainerInterface;
 use stdClass;
-use Zend\ServiceManager\ServiceManager;
+use Mxc\ServiceManager\ServiceManager;
 
 $serviceManager = new ServiceManager([
     'initializers' => [
@@ -284,7 +284,7 @@ $serviceManager = new ServiceManager([
 ```
 
 Alternately, you can create a class that implements
-`Zend\ServiceManager\Initializer\InitializerInterface`, and pass it to the
+`Mxc\ServiceManager\Initializer\InitializerInterface`, and pass it to the
 `initializers` array:
 
 ```php
@@ -305,7 +305,7 @@ class MyInitializer implements InitializerInterface
 
 use Interop\Container\ContainerInterface;
 use stdClass;
-use Zend\ServiceManager\ServiceManager;
+use Mxc\ServiceManager\ServiceManager;
 
 $serviceManager = new ServiceManager([
     'initializers' => [
@@ -423,7 +423,7 @@ So far, we have covered examples where services are created through factories
 Occasionally you may need to pass additional options that act as a "context".
 For instance, we could have a `StringLengthValidator` service registered.
 However, this validator can have multiple options, such as `min` and `max`.
-Because this is dependant on the caller context (or might even be retrieved
+Because this is dependent on the caller context (or might even be retrieved
 from a database, for instance), the factory cannot know what options to give
 when constructing the validator.
 
@@ -498,7 +498,7 @@ following methods:
   `$class`; if the latter is not provided, `$name` is used for both sides of
   the map.
 - `addAbstractFactory($factory)`, where `$factory` can be either a
-  `Zend\ServiceManager\Factory\AbstractFactoryInterface` instance or the name
+  `Mxc\ServiceManager\Factory\AbstractFactoryInterface` instance or the name
   of a class implementing the interface.
 - `addDelegator($name, $factory)`, where `$factory` can be either a callable
   delegator factory, or the name of a delegator factory class to use.
@@ -511,7 +511,7 @@ following methods:
 As examples:
 
 ```php
-use Zend\ServiceManager\ServiceManager;
+use Mxc\ServiceManager\ServiceManager;
 
 $serviceManager = new ServiceManager([
     'factories' => [

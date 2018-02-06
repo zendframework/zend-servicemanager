@@ -1,15 +1,15 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager;
+namespace Mxc\ServiceManager;
 
-use Psr\Container\ContainerInterface as PsrContainerInterface;
-use Psr\Container\ContainerExceptionInterface;
 use Interop\Container\ContainerInterface as InteropContainerInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface as PsrContainerInterface;
 
 /**
  * Interface for service locator

@@ -1,10 +1,10 @@
 <?php
 
-namespace ZendTest\ServiceManager\TestAsset;
+namespace MxcTest\ServiceManager\TestAsset;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
-use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
+use Mxc\ServiceManager\Factory\FactoryInterface;
+use MxcTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
 class SimpleDependencyObjectFactory implements FactoryInterface
 {
@@ -16,6 +16,6 @@ class SimpleDependencyObjectFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new SimpleDependencyObject($container->get(\ZendTest\ServiceManager\TestAsset\InvokableObject::class));
+        return new SimpleDependencyObject($container->get(\MxcTest\ServiceManager\TestAsset\InvokableObject::class));
     }
 }

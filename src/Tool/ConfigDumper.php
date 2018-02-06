@@ -1,18 +1,34 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016-2017 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2016-2017 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Tool;
+namespace Mxc\ServiceManager\Tool;
 
 use Interop\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionParameter;
 use Traversable;
-use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
-use Zend\ServiceManager\Exception\InvalidArgumentException;
+use Mxc\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+use Mxc\ServiceManager\Exception\InvalidArgumentException;
+
+use function array_filter;
+use function array_key_exists;
+use function class_exists;
+use function date;
+use function get_class;
+use function gettype;
+use function implode;
+use function interface_exists;
+use function is_array;
+use function is_int;
+use function is_null;
+use function is_string;
+use function sprintf;
+use function str_repeat;
+use function var_export;
 
 class ConfigDumper
 {

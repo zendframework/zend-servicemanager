@@ -1,10 +1,10 @@
 <?php
 
-namespace ZendTest\ServiceManager\TestAsset;
+namespace MxcTest\ServiceManager\TestAsset;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
-use ZendTest\ServiceManager\TestAsset\InvokableObject;
+use Mxc\ServiceManager\Factory\FactoryInterface;
+use MxcTest\ServiceManager\TestAsset\InvokableObject;
 
 class InvokableObjectFactory implements FactoryInterface
 {

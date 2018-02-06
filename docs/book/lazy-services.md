@@ -1,6 +1,6 @@
 # Lazy Services
 
-`Zend\ServiceManager` can use [delegator factories](delegators.md) to generate
+`Mxc\ServiceManager` can use [delegator factories](delegators.md) to generate
 "lazy" references to your services.
 
 Lazy services are [proxies](http://en.wikipedia.org/wiki/Proxy_pattern) that
@@ -24,7 +24,7 @@ object is really needed.
 
 ## Setup
 
-`Zend\ServiceManager\Proxy\LazyServiceFactory` is a [delegator factory](delegators.md)
+`Mxc\ServiceManager\Proxy\LazyServiceFactory` is a [delegator factory](delegators.md)
 capable of generating lazy loading proxies for your services.
 
 The lazy service facilities depend on [ProxyManager](https://github.com/Ocramius/ProxyManager);
@@ -63,11 +63,11 @@ instead of real services:
 
 ```php
 use MyApp\Buzzer;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\Proxy\LazyServiceFactory;
-use Zend\ServiceManager\ServiceManager;
+use Mxc\ServiceManager\Factory\InvokableFactory;
+use Mxc\ServiceManager\Proxy\LazyServiceFactory;
+use Mxc\ServiceManager\ServiceManager;
 
-$serviceManager = new \Zend\ServiceManager\ServiceManager([
+$serviceManager = new \Mxc\ServiceManager\ServiceManager([
     'factories' => [
         Buzzer::class             => InvokableFactory::class,
     ],
@@ -115,7 +115,7 @@ echo $buzzer->buzz();
 
 ## Configuration
 
-This is the config structure expected by `Zend\ServiceManager\Proxy\LazyServiceFactory`,
+This is the config structure expected by `Mxc\ServiceManager\Proxy\LazyServiceFactory`,
 in the `lazy_services` key passed in the service manager configuration:
 
 ```php

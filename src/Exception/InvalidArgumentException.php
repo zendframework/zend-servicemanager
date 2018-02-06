@@ -1,17 +1,46 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Exception;
+namespace Mxc\ServiceManager\Exception;
 
 use InvalidArgumentException as SplInvalidArgumentException;
+use Mxc\ServiceManager\AbstractFactoryInterface;
+use Mxc\ServiceManager\Initializer\InitializerInterface;
 
 /**
  * @inheritDoc
  */
 class InvalidArgumentException extends SplInvalidArgumentException implements ExceptionInterface
 {
+    /**
+     * @param mixed $initializer
+     * @return self
+     */
+    public static function fromInvalidInitializer($initializer)
+    {
+        return new self(sprintf(
+            'An invalid initializer was registered. Expected a valid function name, '
+            . 'class name, a callable or an instance of "%s", but "%s" was received.',
+            InitializerInterface::class,
+            is_object($initializer) ? get_class($initializer) : gettype($initializer)
+        ));
+    }
+
+    /**
+     * @param mixed $abstractFactory
+     * @return self
+     */
+    public static function fromInvalidAbstractFactory($abstractFactory)
+    {
+        return new self(sprintf(
+            'An invalid abstract factory was registered. Expected an instance of or a valid'
+            . ' class name resolving to an implementation of "%s", but "%s" was received.',
+            AbstractFactoryInterface::class,
+            is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory)
+        ));
+    }
 }

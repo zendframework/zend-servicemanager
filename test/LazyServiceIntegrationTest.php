@@ -1,11 +1,11 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager;
+namespace MxcTest\ServiceManager;
 
 use PHPUnit\Framework\TestCase;
 use ProxyManager\Autoloader\AutoloaderInterface;
@@ -14,15 +14,30 @@ use RecursiveIteratorIterator;
 use RecursiveRegexIterator;
 use RegexIterator;
 use stdClass;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\Proxy\LazyServiceFactory;
-use Zend\ServiceManager\ServiceManager;
-use ZendTest\ServiceManager\TestAsset\InvokableObject;
+use Mxc\ServiceManager\Exception\ServiceNotCreatedException;
+use Mxc\ServiceManager\Exception\ServiceNotFoundException;
+use Mxc\ServiceManager\Factory\InvokableFactory;
+use Mxc\ServiceManager\Proxy\LazyServiceFactory;
+use Mxc\ServiceManager\ServiceManager;
+use MxcTest\ServiceManager\TestAsset\InvokableObject;
+
+use function array_filter;
+use function closedir;
+use function get_class;
+use function is_dir;
+use function is_file;
+use function iterator_to_array;
+use function mkdir;
+use function opendir;
+use function readdir;
+use function rmdir;
+use function spl_autoload_functions;
+use function spl_autoload_unregister;
+use function sys_get_temp_dir;
+use function unlink;
 
 /**
- * @covers \Zend\ServiceManager\ServiceManager
+ * @covers \Mxc\ServiceManager\ServiceManager
  */
 class LazyServiceIntegrationTest extends TestCase
 {
@@ -30,7 +45,7 @@ class LazyServiceIntegrationTest extends TestCase
 
     public function setUp()
     {
-        $this->proxyDir = sys_get_temp_dir() . '/zend-servicemanager-proxy';
+        $this->proxyDir = sys_get_temp_dir() . '/Mxc-servicemanager-proxy';
         if (! is_dir($this->proxyDir)) {
             mkdir($this->proxyDir);
         }
@@ -81,18 +96,18 @@ class LazyServiceIntegrationTest extends TestCase
     {
         $message = $message ?: 'Expected empty proxy directory; found files';
         // AssertEquals instead AssertEmpty because the first one prints the list of files.
-        $this->assertEquals([], iterator_to_array($this->listProxyFiles()), $message);
+        self::assertEquals([], iterator_to_array($this->listProxyFiles()), $message);
     }
 
     public function assertProxyFileWritten($message = '')
     {
         $message = $message ?: 'Expected ProxyManager to write at least one class file; none found';
         // AssertNotEquals instead AssertNotEmpty because the first one prints the list of files.
-        $this->assertNotEquals([], iterator_to_array($this->listProxyFiles()), $message);
+        self::assertNotEquals([], iterator_to_array($this->listProxyFiles()), $message);
     }
 
     /**
-     * @covers \Zend\ServiceManager\ServiceManager::createLazyServiceDelegatorFactory
+     * @covers \Mxc\ServiceManager\ServiceManager::createLazyServiceDelegatorFactory
      */
     public function testCanUseLazyServiceFactoryFactoryToCreateLazyServiceFactoryToActAsDelegatorToCreateLazyService()
     {
@@ -121,12 +136,12 @@ class LazyServiceIntegrationTest extends TestCase
         $this->assertProxyFileWritten();
 
         // Test we got a usable proxy
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             InvokableObject::class,
             $instance,
             'Service returned does not extend ' . InvokableObject::class
         );
-        $this->assertContains(
+        self::assertContains(
             'TestAssetProxy',
             get_class($instance),
             'Service returned does not contain expected namespace'
@@ -134,19 +149,19 @@ class LazyServiceIntegrationTest extends TestCase
 
         // Test proxying works as expected
         $options = $instance->getOptions();
-        $this->assertInternalType(
+        self::assertInternalType(
             'array',
             $options,
             'Expected an array of options'
         );
-        $this->assertEquals(['foo' => 'bar'], $options, 'Options returned do not match configuration');
+        self::assertEquals(['foo' => 'bar'], $options, 'Options returned do not match configuration');
 
         $proxyAutoloadFunctions = $this->getRegisteredProxyAutoloadFunctions();
-        $this->assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
+        self::assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
     }
 
     /**
-     * @covers \Zend\ServiceManager\ServiceManager::createLazyServiceDelegatorFactory
+     * @covers \Mxc\ServiceManager\ServiceManager::createLazyServiceDelegatorFactory
      */
     public function testMissingClassMapRaisesExceptionOnAttemptToRetrieveLazyService()
     {
@@ -168,7 +183,7 @@ class LazyServiceIntegrationTest extends TestCase
     }
 
     /**
-     * @covers \Zend\ServiceManager\ServiceManager::createLazyServiceDelegatorFactory
+     * @covers \Mxc\ServiceManager\ServiceManager::createLazyServiceDelegatorFactory
      */
     public function testWillNotGenerateProxyClassFilesByDefault()
     {
@@ -196,12 +211,12 @@ class LazyServiceIntegrationTest extends TestCase
         $this->assertProxyDirEmpty('Expected proxy directory to remain empty when write_proxy_files disabled');
 
         // Test we got a usable proxy
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             InvokableObject::class,
             $instance,
             'Service returned does not extend ' . InvokableObject::class
         );
-        $this->assertContains(
+        self::assertContains(
             'TestAssetProxy',
             get_class($instance),
             'Service returned does not contain expected namespace'
@@ -209,15 +224,15 @@ class LazyServiceIntegrationTest extends TestCase
 
         // Test proxying works as expected
         $options = $instance->getOptions();
-        $this->assertInternalType(
+        self::assertInternalType(
             'array',
             $options,
             'Expected an array of options'
         );
-        $this->assertEquals(['foo' => 'bar'], $options, 'Options returned do not match configuration');
+        self::assertEquals(['foo' => 'bar'], $options, 'Options returned do not match configuration');
 
         $proxyAutoloadFunctions = $this->getRegisteredProxyAutoloadFunctions();
-        $this->assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
+        self::assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
     }
 
     public function testOnlyOneProxyAutoloaderItsRegisteredOnSubsequentCalls()
@@ -241,20 +256,20 @@ class LazyServiceIntegrationTest extends TestCase
 
         $container = new ServiceManager($config);
         $instance  = $container->build(InvokableObject::class, ['foo' => 'bar']);
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             InvokableObject::class,
             $instance,
             'Service returned does not extend ' . InvokableObject::class
         );
         $instance  = $container->build(stdClass::class, ['foo' => 'bar']);
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             stdClass::class,
             $instance,
             'Service returned does not extend ' . stdClass::class
         );
 
         $proxyAutoloadFunctions = $this->getRegisteredProxyAutoloadFunctions();
-        $this->assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
+        self::assertCount(1, $proxyAutoloadFunctions, 'Only 1 proxy autoloader should be registered');
     }
 
     public function testRaisesServiceNotFoundExceptionIfRequestedLazyServiceIsNotInClassMap()

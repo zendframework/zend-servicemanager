@@ -1,26 +1,31 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016-2017 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2016-2017 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager\Tool;
+namespace MxcTest\ServiceManager\Tool;
 
 use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
-use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
-use Zend\ServiceManager\Exception\InvalidArgumentException;
-use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\Tool\ConfigDumper;
-use ZendTest\ServiceManager\TestAsset\ClassDependingOnAnInterface;
-use ZendTest\ServiceManager\TestAsset\DoubleDependencyObject;
-use ZendTest\ServiceManager\TestAsset\FailingFactory;
-use ZendTest\ServiceManager\TestAsset\InvokableObject;
-use ZendTest\ServiceManager\TestAsset\ObjectWithObjectScalarDependency;
-use ZendTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
-use ZendTest\ServiceManager\TestAsset\SecondComplexDependencyObject;
-use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
+use Mxc\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+use Mxc\ServiceManager\Exception\InvalidArgumentException;
+use Mxc\ServiceManager\Factory\FactoryInterface;
+use Mxc\ServiceManager\Tool\ConfigDumper;
+use MxcTest\ServiceManager\TestAsset\ClassDependingOnAnInterface;
+use MxcTest\ServiceManager\TestAsset\DoubleDependencyObject;
+use MxcTest\ServiceManager\TestAsset\FailingFactory;
+use MxcTest\ServiceManager\TestAsset\InvokableObject;
+use MxcTest\ServiceManager\TestAsset\ObjectWithObjectScalarDependency;
+use MxcTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
+use MxcTest\ServiceManager\TestAsset\SecondComplexDependencyObject;
+use MxcTest\ServiceManager\TestAsset\SimpleDependencyObject;
+
+use function file_put_contents;
+use function sys_get_temp_dir;
+use function tempnam;
+use function unlink;
 
 class ConfigDumperTest extends TestCase
 {
@@ -36,16 +41,16 @@ class ConfigDumperTest extends TestCase
 
     public function testCreateDependencyConfigExceptsIfClassNameIsNotString()
     {
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Class name must be a string, integer given');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Class name must be a string, integer given');
         $this->dumper->createDependencyConfig([], 42);
     }
 
     public function testCreateDependencyConfigExceptsIfClassDoesNotExist()
     {
         $className = 'Dirk\Gentley\Holistic\Detective\Agency';
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Cannot find class or interface with name ' . $className);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cannot find class or interface with name ' . $className);
         $this->dumper->createDependencyConfig([], $className);
     }
 
@@ -92,12 +97,12 @@ class ConfigDumperTest extends TestCase
 
     public function testCreateDependencyConfigWithoutTypeHintedParameterExcepts()
     {
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage(
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
             'Cannot create config for constructor argument "aName", '
             . 'it has no type hint, or non-class/interface type hint'
         );
-        $config = $this->dumper->createDependencyConfig(
+        $this->dumper->createDependencyConfig(
             [ConfigAbstractFactory::class => []],
             ObjectWithScalarDependency::class
         );
@@ -105,8 +110,8 @@ class ConfigDumperTest extends TestCase
 
     public function testCreateDependencyConfigWithContainerAndNoServiceWithoutTypeHintedParameterExcepts()
     {
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage(
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
             'Cannot create config for constructor argument "aName", '
             . 'it has no type hint, or non-class/interface type hint'
         );
@@ -117,7 +122,7 @@ class ConfigDumperTest extends TestCase
 
         $dumper = new ConfigDumper($container->reveal());
 
-        $config = $dumper->createDependencyConfig(
+        $dumper->createDependencyConfig(
             [ConfigAbstractFactory::class => []],
             ObjectWithScalarDependency::class
         );
@@ -209,16 +214,16 @@ class ConfigDumperTest extends TestCase
 
     public function testCreateFactoryMappingsExceptsIfClassNameIsNotString()
     {
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Class name must be a string, integer given');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Class name must be a string, integer given');
         $this->dumper->createFactoryMappings([], 42);
     }
 
     public function testCreateFactoryMappingsExceptsIfClassDoesNotExist()
     {
         $className = 'Dirk\Gentley\Holistic\Detective\Agency';
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Cannot find class or interface with name ' . $className);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cannot find class or interface with name ' . $className);
         $this->dumper->createFactoryMappings([], $className);
     }
 
@@ -265,8 +270,8 @@ class ConfigDumperTest extends TestCase
 
     public function testCreateFactoryMappingsFromConfigExceptsWhenConfigNotArray()
     {
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage(
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
             'Config key for ' . ConfigAbstractFactory::class . ' should be an array, boolean given'
         );
 
@@ -319,20 +324,20 @@ class ConfigDumperTest extends TestCase
     public function testDumpConfigFileReturnsContentsForConfigFileUsingUsingClassNotationAndShortArrays(array $config)
     {
         $formatted = $this->dumper->dumpConfigFile($config);
-        $this->assertContains(
-            '<' . "?php\n/**\n * This file generated by Zend\ServiceManager\Tool\ConfigDumper.\n",
+        self::assertContains(
+            '<' . "?php\n/**\n * This file generated by Mxc\ServiceManager\Tool\ConfigDumper.\n",
             $formatted
         );
 
-        $this->assertNotContains('array(', $formatted);
-        $this->assertContains('::class', $formatted);
+        self::assertNotContains('array(', $formatted);
+        self::assertContains('::class', $formatted);
 
         $file = tempnam(sys_get_temp_dir(), 'ZSCLI');
         file_put_contents($file, $formatted);
-        $test = include($file);
+        $test = include $file;
         unlink($file);
 
-        $this->assertEquals($test, $config);
+        self::assertEquals($test, $config);
     }
 
     public function testWillDumpConfigForClassDependingOnInterfaceButOmitInterfaceConfig()

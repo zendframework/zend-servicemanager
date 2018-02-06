@@ -1,6 +1,6 @@
 # Console Tools
 
-Starting in 3.2.0, zend-servicemanager began shipping with console tools. This
+Starting in 3.2.0, Mxc-servicemanager began shipping with console tools. This
 document details each.
 
 ## generate-deps-for-config-factory
@@ -70,5 +70,5 @@ $ ./vendor/bin/generate-factory-for-class \
 > "Application\\Model\\AlbumModel" > ./module/Application/src/Model/AlbumModelFactory.php
 ```
 
-The class generated implements `Zend\ServiceManager\Factory\FactoryInterface`,
+The class generated implements `Mxc\ServiceManager\Factory\FactoryInterface`,
 and is generated within the same namespace as the originating class.

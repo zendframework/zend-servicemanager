@@ -1,21 +1,21 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager\AbstractFactory;
+namespace MxcTest\ServiceManager\AbstractFactory;
 
 use ArrayObject;
 use PHPUnit\Framework\TestCase;
-use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\ServiceManager;
-use ZendTest\ServiceManager\TestAsset\ComplexDependencyObject;
-use ZendTest\ServiceManager\TestAsset\InvokableObject;
-use ZendTest\ServiceManager\TestAsset\SecondComplexDependencyObject;
-use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
+use Mxc\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+use Mxc\ServiceManager\Exception\ServiceNotCreatedException;
+use Mxc\ServiceManager\ServiceManager;
+use MxcTest\ServiceManager\TestAsset\ComplexDependencyObject;
+use MxcTest\ServiceManager\TestAsset\InvokableObject;
+use MxcTest\ServiceManager\TestAsset\SecondComplexDependencyObject;
+use MxcTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
 class ConfigAbstractFactoryTest extends TestCase
 {
@@ -184,8 +184,8 @@ class ConfigAbstractFactoryTest extends TestCase
     {
         $abstractFactory = new ConfigAbstractFactory();
         $serviceManager = new ServiceManager();
-        self::expectException(ServiceNotCreatedException::class);
-        self::expectExceptionMessage('Cannot find a config array in the container');
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionMessage('Cannot find a config array in the container');
 
         $abstractFactory($serviceManager, 'Dirk_Gently');
     }
@@ -195,8 +195,8 @@ class ConfigAbstractFactoryTest extends TestCase
         $abstractFactory = new ConfigAbstractFactory();
         $serviceManager = new ServiceManager();
         $serviceManager->setService('config', []);
-        self::expectException(ServiceNotCreatedException::class);
-        self::expectExceptionMessage('Cannot find a `' . ConfigAbstractFactory::class . '` key in the config array');
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionMessage('Cannot find a `' . ConfigAbstractFactory::class . '` key in the config array');
 
         $abstractFactory($serviceManager, 'Dirk_Gently');
     }
@@ -206,8 +206,8 @@ class ConfigAbstractFactoryTest extends TestCase
         $abstractFactory = new ConfigAbstractFactory();
         $serviceManager = new ServiceManager();
         $serviceManager->setService('config', 'Holistic');
-        self::expectException(ServiceNotCreatedException::class);
-        self::expectExceptionMessage('Config must be an array');
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionMessage('Config must be an array');
 
         $abstractFactory($serviceManager, 'Dirk_Gently');
     }
@@ -222,8 +222,8 @@ class ConfigAbstractFactoryTest extends TestCase
                 ConfigAbstractFactory::class => 'Detective_Agency'
             ]
         );
-        self::expectException(ServiceNotCreatedException::class);
-        self::expectExceptionMessage('Dependencies config must exist and be an array');
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionMessage('Dependencies config must exist and be an array');
 
         $abstractFactory($serviceManager, 'Dirk_Gently');
     }
@@ -238,8 +238,8 @@ class ConfigAbstractFactoryTest extends TestCase
                 ConfigAbstractFactory::class => [],
             ]
         );
-        self::expectException(ServiceNotCreatedException::class);
-        self::expectExceptionMessage('Dependencies config must exist and be an array');
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionMessage('Dependencies config must exist and be an array');
 
         $abstractFactory($serviceManager, 'Dirk_Gently');
     }
@@ -256,8 +256,8 @@ class ConfigAbstractFactoryTest extends TestCase
                 ],
             ]
         );
-        self::expectException(ServiceNotCreatedException::class);
-        self::expectExceptionMessage('Dependencies config must exist and be an array');
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionMessage('Dependencies config must exist and be an array');
 
         $abstractFactory($serviceManager, 'Dirk_Gently');
     }
@@ -279,8 +279,8 @@ class ConfigAbstractFactoryTest extends TestCase
                 ],
             ]
         );
-        self::expectException(ServiceNotCreatedException::class);
-        self::expectExceptionMessage(
+        $this->expectException(ServiceNotCreatedException::class);
+        $this->expectExceptionMessage(
             'Service message must be an array of strings, ["string","string","string","integer"] given'
         );
 

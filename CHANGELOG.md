@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 4.0.0 - TBD
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- [#221](https://github.com/Mxcframework/Mxc-servicemanager/pull/221) provides
+  enormous performance improvements for each of the various mutator methods
+  (`setAlias()`, `setFactory()`, etc.), `has()` lookups, and initial
+  container configuration.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- [#197](https://github.com/Mxcframework/Mxc-servicemanager/pull/197) drops
+  support for PHP versions prior to 7.1.
+
+- [#193](https://github.com/Mxcframework/Mxc-servicemanager/pull/193) drops
+  support for HHVM.
+
+### Fixed
+
+- [#230](https://github.com/Mxcframework/Mxc-servicemanager/pull/230) fixes a
+  problem in detecting cyclic aliases, ensuring they are detected correctly.
+
 ## 3.3.2 - 2018-01-29
 
 ### Added
@@ -22,20 +52,20 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#243](https://github.com/zendframework/zend-servicemanager/pull/243) provides
+- [#243](https://github.com/Mxcframework/Mxc-servicemanager/pull/243) provides
   a fix to the `ReflectionBasedAbstractFactory` to resolve type-hinted arguments
   with default values to their default values if no matching type is found in
   the container.
 
-- [#233](https://github.com/zendframework/zend-servicemanager/pull/233) fixes a
+- [#233](https://github.com/Mxcframework/Mxc-servicemanager/pull/233) fixes a
   number of parameter annotations to reflect the actual types used.
 
 ## 3.3.1 - 2017-11-27
 
 ### Added
 
-- [#201](https://github.com/zendframework/zend-servicemanager/pull/201) and
-  [#202](https://github.com/zendframework/zend-servicemanager/pull/202) add
+- [#201](https://github.com/Mxcframework/Mxc-servicemanager/pull/201) and
+  [#202](https://github.com/Mxcframework/Mxc-servicemanager/pull/202) add
   support for PHP versions 7.1 and 7.2.
 
 ### Deprecated
@@ -48,7 +78,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#206](https://github.com/zendframework/zend-servicemanager/pull/206) fixes an
+- [#206](https://github.com/Mxcframework/Mxc-servicemanager/pull/206) fixes an
   issue where by callables in `Class::method` notation were not being honored
   under PHP 5.6.
 
@@ -56,10 +86,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#180](https://github.com/zendframework/zend-servicemanager/pull/180) adds
+- [#180](https://github.com/Mxcframework/Mxc-servicemanager/pull/180) adds
   explicit support for PSR-11 (ContainerInterface) by requiring
   container-interop at a minimum version of 1.2.0, and adding a requirement on
-  psr/container 1.0. `Zend\ServiceManager\ServiceLocatorInterface` now
+  psr/container 1.0. `Mxc\ServiceManager\ServiceLocatorInterface` now
   explicitly extends the `ContainerInterface` from both projects.
   
   Factory interfaces still typehint against the container-interop variant, as
@@ -83,7 +113,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#176](https://github.com/zendframework/zend-servicemanager/pull/176) adds
+- [#176](https://github.com/Mxcframework/Mxc-servicemanager/pull/176) adds
   the options `-i` or `--ignore-unresolved` to the shipped
   `generate-deps-for-config-factory` command. This flag allows it to build
   configuration for classes resolved by the `ConfigAbstractFactory` that
@@ -99,7 +129,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#174](https://github.com/zendframework/zend-servicemanager/pull/174) updates
+- [#174](https://github.com/Mxcframework/Mxc-servicemanager/pull/174) updates
   the `ConfigAbstractFactory` to allow the `config` service to be either an
   `array` or an `ArrayObject`; previously, only `array` was supported.
 
@@ -107,24 +137,24 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#146](https://github.com/zendframework/zend-servicemanager/pull/146) adds
-  `Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory`, which enables a
+- [#146](https://github.com/Mxcframework/Mxc-servicemanager/pull/146) adds
+  `Mxc\ServiceManager\AbstractFactory\ConfigAbstractFactory`, which enables a
   configuration-based approach to providing class dependencies when all
   dependencies are services known to the `ServiceManager`. Please see
   [the documentation](doc/book/config-abstract-factory.md) for details.
-- [#154](https://github.com/zendframework/zend-servicemanager/pull/154) adds
-  `Zend\ServiceManager\Tool\ConfigDumper`, which will introspect a given class
+- [#154](https://github.com/Mxcframework/Mxc-servicemanager/pull/154) adds
+  `Mxc\ServiceManager\Tool\ConfigDumper`, which will introspect a given class
   to determine dependencies, and then create configuration for
-  `Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory`, merging it with
+  `Mxc\ServiceManager\AbstractFactory\ConfigAbstractFactory`, merging it with
   the provided configuration file. It also adds a vendor binary,
   `generate-deps-for-config-factory`, for generating these from the command
   line.
-- [#154](https://github.com/zendframework/zend-servicemanager/pull/154) adds
-  `Zend\ServiceManager\Tool\FactoryCreator`, which will introspect a given class
+- [#154](https://github.com/Mxcframework/Mxc-servicemanager/pull/154) adds
+  `Mxc\ServiceManager\Tool\FactoryCreator`, which will introspect a given class
   and generate a factory for it. It also adds a vendor binary,
   `generate-factory-for-class`, for generating these from the command line.
-- [#153](https://github.com/zendframework/zend-servicemanager/pull/153) adds
-  `Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory`. This
+- [#153](https://github.com/Mxcframework/Mxc-servicemanager/pull/153) adds
+  `Mxc\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory`. This
   class may be used as either a mapped factory or an abstract factory, and will
   use reflection in order to determine which dependencies to use from the
   container when instantiating the requested service, with the following rules:
@@ -133,7 +163,7 @@ All notable changes to this project will be documented in this file, in reverse 
     `config` service, if present.
   - All other array values will be provided an empty array.
   - Class/interface typehints will be pulled from the container.
-- [#150](https://github.com/zendframework/zend-servicemanager/pull/150) adds
+- [#150](https://github.com/Mxcframework/Mxc-servicemanager/pull/150) adds
   a "cookbook" section to the documentation, with an initial document detailing
   the pros and cons of abstract factory usage.
 
@@ -147,7 +177,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#106](https://github.com/zendframework/zend-servicemanager/pull/106) adds
+- [#106](https://github.com/Mxcframework/Mxc-servicemanager/pull/106) adds
   detection of multiple attempts to register the same instance or named abstract
   factory, using a previous instance when detected. You may still use multiple
   discrete instances, however.
@@ -168,7 +198,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#167](https://github.com/zendframework/zend-servicemanager/pull/167) fixes
+- [#167](https://github.com/Mxcframework/Mxc-servicemanager/pull/167) fixes
   how exception codes are provided to ServiceNotCreatedException. Previously,
   the code was provided as-is. However, some PHP internal exception classes,
   notably PDOException, can sometimes return other values (such as strings),
@@ -191,7 +221,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#136](https://github.com/zendframework/zend-servicemanager/pull/136) removes
+- [#136](https://github.com/Mxcframework/Mxc-servicemanager/pull/136) removes
   several imports to classes in subnamespaces within the `ServiceManager`
   classfile, removing potential name resolution conflicts that occurred in edge
   cases when testing.
@@ -200,16 +230,16 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#103](https://github.com/zendframework/zend-servicemanager/pull/103) Allowing
+- [#103](https://github.com/Mxcframework/Mxc-servicemanager/pull/103) Allowing
   installation of `ocramius/proxy-manager` `^2.0` together with
-  `zendframework/zend-servicemanager`.
-- [#103](https://github.com/zendframework/zend-servicemanager/pull/103) Disallowing
+  `Mxcframework/Mxc-servicemanager`.
+- [#103](https://github.com/Mxcframework/Mxc-servicemanager/pull/103) Disallowing
   test failures when running tests against PHP `7.0.*`.
-- [#113](https://github.com/zendframework/zend-servicemanager/pull/113) Improved performance
+- [#113](https://github.com/Mxcframework/Mxc-servicemanager/pull/113) Improved performance
   when dealing with registering aliases and factories via `ServiceManager#setFactory()` and
   `ServiceManager#setAlias()`
-- [#120](https://github.com/zendframework/zend-servicemanager/pull/120) The
-  `zendframework/zend-servicemanager` component now provides a
+- [#120](https://github.com/Mxcframework/Mxc-servicemanager/pull/120) The
+  `Mxcframework/Mxc-servicemanager` component now provides a
   `container-interop/container-interop-implementation` implementation
 
 ### Deprecated
@@ -222,9 +252,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#97](https://github.com/zendframework/zend-servicemanager/pull/97) Typo corrections
+- [#97](https://github.com/Mxcframework/Mxc-servicemanager/pull/97) Typo corrections
   in the delegator factories documentation.
-- [#98](https://github.com/zendframework/zend-servicemanager/pull/98) Using coveralls ^1.0
+- [#98](https://github.com/Mxcframework/Mxc-servicemanager/pull/98) Using coveralls ^1.0
   for tracking test code coverage changes.
 
 ## 3.0.4 - TBD
@@ -249,15 +279,15 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#89](https://github.com/zendframework/zend-servicemanager/pull/89) adds
+- [#89](https://github.com/Mxcframework/Mxc-servicemanager/pull/89) adds
   cyclic alias detection to the `ServiceManager`; it now raises a
-  `Zend\ServiceManager\Exception\CyclicAliasException` when one is detected,
+  `Mxc\ServiceManager\Exception\CyclicAliasException` when one is detected,
   detailing the cycle detected.
-- [#95](https://github.com/zendframework/zend-servicemanager/pull/95) adds
+- [#95](https://github.com/Mxcframework/Mxc-servicemanager/pull/95) adds
   GitHub Pages publication automation, and moves the documentation to
-  https://zendframework.github.io/zend-servicemanager/
-- [#93](https://github.com/zendframework/zend-servicemanager/pull/93) adds
-  `Zend\ServiceManager\Test\CommonPluginManagerTrait`, which can be used to
+  https://Mxcframework.github.io/Mxc-servicemanager/
+- [#93](https://github.com/Mxcframework/Mxc-servicemanager/pull/93) adds
+  `Mxc\ServiceManager\Test\CommonPluginManagerTrait`, which can be used to
   validate that a plugin manager instance is ready for version 3.
 
 ### Deprecated
@@ -270,19 +300,19 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#90](https://github.com/zendframework/zend-servicemanager/pull/90) fixes
+- [#90](https://github.com/Mxcframework/Mxc-servicemanager/pull/90) fixes
   several examples in the configuration chapter of the documentation, ensuring
   that the signatures are correct.
-- [#92](https://github.com/zendframework/zend-servicemanager/pull/92) ensures
+- [#92](https://github.com/Mxcframework/Mxc-servicemanager/pull/92) ensures
   that alias resolution is skipped during configuration if no aliases are
-  present, and forward-ports the test from [#81](https://github.com/zendframework/zend-servicemanager/pull/81)
+  present, and forward-ports the test from [#81](https://github.com/Mxcframework/Mxc-servicemanager/pull/81)
   to validate v2/v3 compatibility for plugin managers.
 
 ## 3.0.2 - 2016-01-24
 
 ### Added
 
-- [#64](https://github.com/zendframework/zend-servicemanager/pull/64) performance optimizations
+- [#64](https://github.com/Mxcframework/Mxc-servicemanager/pull/64) performance optimizations
   when dealing with alias resolution during service manager instantiation
 
 ### Deprecated
@@ -295,14 +325,14 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#62](https://github.com/zendframework/zend-servicemanager/pull/62)
-  [#64](https://github.com/zendframework/zend-servicemanager/pull/64) corrected benchmark assets signature
-- [#72](https://github.com/zendframework/zend-servicemanager/pull/72) corrected link to the Proxy Pattern Wikipedia
+- [#62](https://github.com/Mxcframework/Mxc-servicemanager/pull/62)
+  [#64](https://github.com/Mxcframework/Mxc-servicemanager/pull/64) corrected benchmark assets signature
+- [#72](https://github.com/Mxcframework/Mxc-servicemanager/pull/72) corrected link to the Proxy Pattern Wikipedia
   page in the documentation
-- [#78](https://github.com/zendframework/zend-servicemanager/issues/78)
-  [#79](https://github.com/zendframework/zend-servicemanager/pull/79) creation context was not being correctly passed
+- [#78](https://github.com/Mxcframework/Mxc-servicemanager/issues/78)
+  [#79](https://github.com/Mxcframework/Mxc-servicemanager/pull/79) creation context was not being correctly passed
   to abstract factories when using plugin managers
-- [#82](https://github.com/zendframework/zend-servicemanager/pull/82) corrected migration guide in the DocBlock of
+- [#82](https://github.com/Mxcframework/Mxc-servicemanager/pull/82) corrected migration guide in the DocBlock of
   the `InitializerInterface`
 
 ## 3.0.1 - 2016-01-19
@@ -317,9 +347,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Removed
 
-- [#68](https://github.com/zendframework/zend-servicemanager/pull/68) removes
-  the dependency on zend-stdlib by inlining the `ArrayUtils::merge()` routine
-  as a private method of `Zend\ServiceManager\Config`.
+- [#68](https://github.com/Mxcframework/Mxc-servicemanager/pull/68) removes
+  the dependency on Mxc-stdlib by inlining the `ArrayUtils::merge()` routine
+  as a private method of `Mxc\ServiceManager\Config`.
 
 ### Fixed
 
@@ -327,9 +357,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ## 3.0.0 - 2016-01-11
 
-First stable release of version 3 of zend-servicemanager.
+First stable release of version 3 of Mxc-servicemanager.
 
-Documentation is now available at http://zend-servicemanager.rtfd.org
+Documentation is now available at http://Mxc-servicemanager.rtfd.org
 
 ### Added
 
@@ -341,7 +371,7 @@ Documentation is now available at http://zend-servicemanager.rtfd.org
   Example:
   
   ```php
-  $sm = new \Zend\ServiceManager\ServiceManager([
+  $sm = new \Mxc\ServiceManager\ServiceManager([
       'factories'  => [
           MyClassA::class => MyFactory::class,
           MyClassB::class => MyFactory::class,
@@ -356,7 +386,7 @@ Documentation is now available at http://zend-servicemanager.rtfd.org
   longer need to implement the complete `validate` method.
 
   In versions 2.x, if your plugin manager only allows creating instances that
-  implement `Zend\Validator\ValidatorInterface`, you needed to write the
+  implement `Mxc\Validator\ValidatorInterface`, you needed to write the
   following code:
 
   ```php
@@ -364,14 +394,14 @@ Documentation is now available at http://zend-servicemanager.rtfd.org
   {
     public function validate($instance)
     {
-        if ($instance instanceof \Zend\Validator\ValidatorInterface) {
+        if ($instance instanceof \Mxc\Validator\ValidatorInterface) {
             return;
         }
     
         throw new InvalidServiceException(sprintf(
             'Plugin manager "%s" expected an instance of type "%s", but "%s" was received',
              __CLASS__,
-             \Zend\Validator\ValidatorInterface::class,
+             \Mxc\Validator\ValidatorInterface::class,
              is_object($instance) ? get_class($instance) : gettype($instance)
         ));
     }
@@ -381,8 +411,8 @@ Documentation is now available at http://zend-servicemanager.rtfd.org
   In version 3, this becomes:
   
   ```php
-  use Zend\ServiceManager\AbstractPluginManager;
-  use Zend\Validator\ValidatorInterface;
+  use Mxc\ServiceManager\AbstractPluginManager;
+  use Mxc\Validator\ValidatorInterface;
   
   class MyPluginManager extends AbstractPluginManager
   {
@@ -414,7 +444,7 @@ Documentation is now available at http://zend-servicemanager.rtfd.org
 - Peering has been removed. It was a complex and rarely used feature that was
   misunderstood most of the time.
 
-- Integration with `Zend\Di` has been removed. It may be re-integrated later.
+- Integration with `Mxc\Di` has been removed. It may be re-integrated later.
 
 - `MutableCreationOptionsInterface` has been removed, as options can now be
   passed directly through factories.
@@ -429,23 +459,23 @@ v3 of the ServiceManager component is a completely rewritten, more efficient
 implementation of the service locator pattern. It includes a number of breaking
 changes, outlined in this section.
 
-- You no longer need a `Zend\ServiceManager\Config` object to configure the
+- You no longer need a `Mxc\ServiceManager\Config` object to configure the
   service manager; you can pass the configuration array directly instead.
 
   In version 2.x:
   
   ```php
-  $config = new \Zend\ServiceManager\Config([
+  $config = new \Mxc\ServiceManager\Config([
       'factories'  => [...]
   ]);
   
-  $sm = new \Zend\ServiceManager\ServiceManager($config);
+  $sm = new \Mxc\ServiceManager\ServiceManager($config);
   ```
   
   In ZF 3.x:
   
   ```php
-  $sm = new \Zend\ServiceManager\ServiceManager([
+  $sm = new \Mxc\ServiceManager\ServiceManager([
       'factories'  => [...]
   ]);
   ```
@@ -569,7 +599,7 @@ changes, outlined in this section.
 
 ### Added
 
-- [#60](https://github.com/zendframework/zend-servicemanager/pull/60) adds
+- [#60](https://github.com/Mxcframework/Mxc-servicemanager/pull/60) adds
   forward compatibility features for `AbstractPluingManager` and introduces
   `InvokableFactory` to help forward migration to version 3.
 
@@ -583,11 +613,11 @@ changes, outlined in this section.
 
 ### Fixed
 
-- [#46](https://github.com/zendframework/zend-servicemanager/pull/46) updates
+- [#46](https://github.com/Mxcframework/Mxc-servicemanager/pull/46) updates
   the exception hierarchy to inherit from the container-interop exceptions.
   This ensures that all exceptions thrown by the component follow the
   recommendations of that project.
-- [#52](https://github.com/zendframework/zend-servicemanager/pull/52) fixes
+- [#52](https://github.com/Mxcframework/Mxc-servicemanager/pull/52) fixes
   the exception message thrown by `ServiceManager::setFactory()` to remove
   references to abstract factories.
 
@@ -595,7 +625,7 @@ changes, outlined in this section.
 
 ### Added
 
-- [#4](https://github.com/zendframework/zend-servicemanager/pull/4) updates the
+- [#4](https://github.com/Mxcframework/Mxc-servicemanager/pull/4) updates the
     `ServiceManager` to [implement the container-interop interface](https://github.com/container-interop/container-interop),
     allowing interoperability with applications that consume that interface.
 
@@ -609,7 +639,7 @@ changes, outlined in this section.
 
 ### Fixed
 
-- [#3](https://github.com/zendframework/zend-servicemanager/pull/3) properly updates the
+- [#3](https://github.com/Mxcframework/Mxc-servicemanager/pull/3) properly updates the
   codebase to PHP 5.5, by taking advantage of the default closure binding
   (`$this` in a closure is the invoking object when created within a method). It
   also removes several `@requires PHP 5.4.0` annotations.

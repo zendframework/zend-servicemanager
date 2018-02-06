@@ -1,14 +1,20 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Tool;
+namespace Mxc\ServiceManager\Tool;
 
-use Zend\ServiceManager\Exception;
-use Zend\Stdlib\ConsoleHelper;
+use Mxc\ServiceManager\Exception;
+use Mxc\Stdlib\ConsoleHelper;
+
+use function array_shift;
+use function class_exists;
+use function count;
+use function in_array;
+use function sprintf;
 
 class FactoryCreatorCommand
 {
@@ -98,7 +104,7 @@ EOH;
      */
     private function parseArgs(array $args)
     {
-        if (! count($args)) {
+        if (! $args) {
             return $this->createArguments(self::COMMAND_HELP);
         }
 
