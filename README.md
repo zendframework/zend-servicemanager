@@ -68,7 +68,7 @@ This component is meant as a transparent replacement of zend-servicemanager. Som
 
 ### Via Packagist
 
-Currently Packagist does not support the provision of projects which occupy namespaces which are already occupied by existing libraries. In our case it's `Zend\ServiceManager` which is used by `zend-servicemanager`also and originally.
+Currently Packagist does not support the provision of projects which occupy namespaces which are already occupied by existing libraries. In our case it's `Zend\ServiceManager` which is used by `zend-servicemanager` also and originally.
 So we are sorry not able to support direct installation via composer without requirement for afterwards customization currently. We apologize for any inconveniences.
 
 ### Use as stand-alone component
