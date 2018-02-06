@@ -568,7 +568,7 @@ class ServiceManager implements ServiceLocatorInterface
      * @return object
      * @throws ServiceNotFoundException
      */
-    private function createObjectThroughFactory($name, array $options = null)
+    private function createServiceThroughFactory($name, array $options = null)
     {
         $factory = $this->factories[$name] ?? null;
 
@@ -611,7 +611,7 @@ class ServiceManager implements ServiceLocatorInterface
     {
         $creationCallback = function () use ($name, $options) {
             // Code is inlined for performance reason, instead of abstracting the creation
-            return $this->createObjectThroughFactory($name, $options);
+            return $this->createServiceThroughFactory($name, $options);
         };
 
         foreach ($this->delegators[$name] as $index => $delegatorFactory) {
@@ -670,7 +670,7 @@ class ServiceManager implements ServiceLocatorInterface
     {
         try {
             if (! isset($this->delegators[$resolvedName])) {
-                $object = $this->createObjectThroughFactory($resolvedName, $options);
+                $object = $this->createServiceThroughFactory($resolvedName, $options);
             } else {
                 $object = $this->createDelegatorFromName($resolvedName, $options);
             }
