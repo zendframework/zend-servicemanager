@@ -562,9 +562,6 @@ trait CommonServiceLocatorBehaviorsTrait
         ]);
     }
 
-    /**
-     * @covers \Zend\ServiceManager\ServiceManager::getFactory
-     */
     public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {
         $serviceManager = $this->createContainer();
@@ -640,7 +637,6 @@ trait CommonServiceLocatorBehaviorsTrait
         $container = $this->createContainer();
         $container->setInvokableClass('foo', stdClass::class);
         $this->assertTrue($container->has('foo'));
-        $this->assertTrue($container->has(stdClass::class));
         $foo = $container->get('foo');
         $this->assertInstanceOf(stdClass::class, $foo);
     }
