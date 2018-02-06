@@ -1,8 +1,8 @@
 # Delegators
 
-`Zend\ServiceManager` can instantiate [delegators](http://en.wikipedia.org/wiki/Delegation_pattern)
+`Mxc\ServiceManager` can instantiate [delegators](http://en.wikipedia.org/wiki/Delegation_pattern)
 of requested services, decorating them as specified in a delegate factory
-implementing the [delegator factory interface](https://github.com/zendframework/zend-servicemanager/tree/master/src/Factory/DelegatorFactoryInterface.php).
+implementing the [delegator factory interface](https://github.com/Mxcframework/Mxc-servicemanager/tree/master/src/Factory/DelegatorFactoryInterface.php).
 
 The delegate pattern is useful in cases when you want to wrap a real service in
 a [decorator](http://en.wikipedia.org/wiki/Decorator_pattern), or generally
@@ -57,7 +57,7 @@ class Buzzer
 The delegator class `BuzzerDelegator` has the following structure:
 
 ```php
-use Zend\EventManager\EventManagerInterface;
+use Mxc\EventManager\EventManagerInterface;
 
 class BuzzerDelegator extends Buzzer
 {
@@ -83,7 +83,7 @@ To use the `BuzzerDelegator`, you can run the following code:
 
 ```php
 $wrappedBuzzer = new Buzzer();
-$eventManager  = new Zend\EventManager\EventManager();
+$eventManager  = new Mxc\EventManager\EventManager();
 
 $eventManager->attach('buzz', function () { echo "Stare at the art!\n"; });
 
@@ -107,7 +107,7 @@ following:
 
 ```php
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
+use Mxc\ServiceManager\Factory\DelegatorFactoryInterface;
 
 class BuzzerDelegatorFactory implements DelegatorFactoryInterface
 {
@@ -127,10 +127,10 @@ You can then instruct the service manager to handle the service `buzzer` as a
 delegate:
 
 ```php
-use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\ServiceManager;
+use Mxc\ServiceManager\Factory\InvokableFactory;
+use Mxc\ServiceManager\ServiceManager;
 
-$serviceManager = new Zend\ServiceManager\ServiceManager([
+$serviceManager = new Mxc\ServiceManager\ServiceManager([
     'factories' => [
         Buzzer::class => InvokableFactory::class,
     ],

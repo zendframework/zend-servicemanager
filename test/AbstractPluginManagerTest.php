@@ -1,33 +1,33 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager;
+namespace MxcTest\ServiceManager;
 
 use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Zend\ServiceManager\ConfigInterface;
-use Zend\ServiceManager\Exception\InvalidArgumentException;
-use Zend\ServiceManager\Exception\InvalidServiceException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\ServiceManager;
-use ZendTest\ServiceManager\TestAsset\InvokableObject;
-use ZendTest\ServiceManager\TestAsset\SimplePluginManager;
-use ZendTest\ServiceManager\TestAsset\V2v3PluginManager;
+use Mxc\ServiceManager\ConfigInterface;
+use Mxc\ServiceManager\Exception\InvalidArgumentException;
+use Mxc\ServiceManager\Exception\InvalidServiceException;
+use Mxc\ServiceManager\Exception\ServiceNotFoundException;
+use Mxc\ServiceManager\Factory\AbstractFactoryInterface;
+use Mxc\ServiceManager\Factory\FactoryInterface;
+use Mxc\ServiceManager\Factory\InvokableFactory;
+use Mxc\ServiceManager\ServiceManager;
+use MxcTest\ServiceManager\TestAsset\InvokableObject;
+use MxcTest\ServiceManager\TestAsset\SimplePluginManager;
+use MxcTest\ServiceManager\TestAsset\V2v3PluginManager;
 
 use function get_class;
 use function restore_error_handler;
 use function set_error_handler;
 
 /**
- * @covers \Zend\ServiceManager\AbstractPluginManager
+ * @covers \Mxc\ServiceManager\AbstractPluginManager
  */
 class AbstractPluginManagerTest extends TestCase
 {
@@ -180,7 +180,7 @@ class AbstractPluginManagerTest extends TestCase
     /**
      * Overrides the method in the CommonServiceLocatorBehaviorsTrait, due to behavior differences.
      *
-     * @covers \Zend\ServiceManager\AbstractPluginManager::get
+     * @covers \Mxc\ServiceManager\AbstractPluginManager::get
      */
     public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {

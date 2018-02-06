@@ -1,22 +1,22 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016-2017 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2016-2017 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager\Tool;
+namespace MxcTest\ServiceManager\Tool;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
-use Zend\ServiceManager\Tool\ConfigDumperCommand;
-use Zend\Stdlib\ConsoleHelper;
-use ZendTest\ServiceManager\TestAsset\InvokableObject;
-use ZendTest\ServiceManager\TestAsset\ObjectWithObjectScalarDependency;
-use ZendTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
-use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
+use Mxc\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+use Mxc\ServiceManager\Tool\ConfigDumperCommand;
+use Mxc\Stdlib\ConsoleHelper;
+use MxcTest\ServiceManager\TestAsset\InvokableObject;
+use MxcTest\ServiceManager\TestAsset\ObjectWithObjectScalarDependency;
+use MxcTest\ServiceManager\TestAsset\ObjectWithScalarDependency;
+use MxcTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
 use function file_get_contents;
 use function realpath;

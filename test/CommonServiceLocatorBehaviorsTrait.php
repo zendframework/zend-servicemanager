@@ -1,30 +1,30 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2015-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2015-2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager;
+namespace MxcTest\ServiceManager;
 
 use DateTime;
 use Interop\Container\Exception\ContainerException;
 use ReflectionProperty;
 use stdClass;
-use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
-use Zend\ServiceManager\Exception\CyclicAliasException;
-use Zend\ServiceManager\Exception\InvalidArgumentException;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\Initializer\InitializerInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use ZendTest\ServiceManager\TestAsset\CallTimesAbstractFactory;
-use ZendTest\ServiceManager\TestAsset\FailingAbstractFactory;
-use ZendTest\ServiceManager\TestAsset\FailingFactory;
-use ZendTest\ServiceManager\TestAsset\FailingExceptionWithStringAsCodeFactory;
-use ZendTest\ServiceManager\TestAsset\InvokableObject;
-use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
+use Mxc\ServiceManager\Exception\ContainerModificationsNotAllowedException;
+use Mxc\ServiceManager\Exception\CyclicAliasException;
+use Mxc\ServiceManager\Exception\InvalidArgumentException;
+use Mxc\ServiceManager\Exception\ServiceNotCreatedException;
+use Mxc\ServiceManager\Factory\FactoryInterface;
+use Mxc\ServiceManager\Factory\InvokableFactory;
+use Mxc\ServiceManager\Initializer\InitializerInterface;
+use Mxc\ServiceManager\ServiceLocatorInterface;
+use MxcTest\ServiceManager\TestAsset\CallTimesAbstractFactory;
+use MxcTest\ServiceManager\TestAsset\FailingAbstractFactory;
+use MxcTest\ServiceManager\TestAsset\FailingFactory;
+use MxcTest\ServiceManager\TestAsset\FailingExceptionWithStringAsCodeFactory;
+use MxcTest\ServiceManager\TestAsset\InvokableObject;
+use MxcTest\ServiceManager\TestAsset\SimpleAbstractFactory;
 
 trait CommonServiceLocatorBehaviorsTrait
 {
@@ -389,7 +389,7 @@ trait CommonServiceLocatorBehaviorsTrait
     }
 
     /**
-     * @covers \Zend\ServiceManager\ServiceManager::configure
+     * @covers \Mxc\ServiceManager\ServiceManager::configure
      */
     public function testCanConfigureAllServiceTypes()
     {
@@ -468,7 +468,7 @@ trait CommonServiceLocatorBehaviorsTrait
     }
 
     /**
-     * @covers \Zend\ServiceManager\ServiceManager::configure
+     * @covers \Mxc\ServiceManager\ServiceManager::configure
      */
     public function testCanSpecifyAbstractFactoryUsingStringViaConfiguration()
     {
@@ -506,7 +506,7 @@ trait CommonServiceLocatorBehaviorsTrait
 
     /**
      * @dataProvider invalidAbstractFactories
-     * @covers \Zend\ServiceManager\ServiceManager::configure
+     * @covers \Mxc\ServiceManager\ServiceManager::configure
      */
     public function testPassingInvalidAbstractFactoryTypeViaConfigurationRaisesException(
         $factory,
@@ -547,7 +547,7 @@ trait CommonServiceLocatorBehaviorsTrait
 
     /**
      * @dataProvider invalidInitializers
-     * @covers \Zend\ServiceManager\ServiceManager::configure
+     * @covers \Mxc\ServiceManager\ServiceManager::configure
      */
     public function testPassingInvalidInitializerTypeViaConfigurationRaisesException(
         $initializer,
@@ -563,7 +563,7 @@ trait CommonServiceLocatorBehaviorsTrait
     }
 
     /**
-     * @covers \Zend\ServiceManager\ServiceManager::getFactory
+     * @covers \Mxc\ServiceManager\ServiceManager::getFactory
      */
     public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {
@@ -583,7 +583,7 @@ trait CommonServiceLocatorBehaviorsTrait
 
     /**
      * @dataProvider invalidDelegators
-     * @covers \Zend\ServiceManager\ServiceManager::createDelegatorFromName
+     * @covers \Mxc\ServiceManager\ServiceManager::createDelegatorFromName
      */
     public function testInvalidDelegatorShouldRaiseExceptionDuringCreation(
         $delegator,
@@ -610,7 +610,7 @@ trait CommonServiceLocatorBehaviorsTrait
 
     /**
      * @group mutation
-     * @covers \Zend\ServiceManager\ServiceManager::setAlias
+     * @covers \Mxc\ServiceManager\ServiceManager::setAlias
      */
     public function testCanInjectAliases()
     {
@@ -633,7 +633,7 @@ trait CommonServiceLocatorBehaviorsTrait
 
     /**
      * @group mutation
-     * @covers \Zend\ServiceManager\ServiceManager::setInvokableClass
+     * @covers \Mxc\ServiceManager\ServiceManager::setInvokableClass
      */
     public function testCanInjectInvokables()
     {
@@ -646,7 +646,7 @@ trait CommonServiceLocatorBehaviorsTrait
 
     /**
      * @group mutation
-     * @covers \Zend\ServiceManager\ServiceManager::setFactory
+     * @covers \Mxc\ServiceManager\ServiceManager::setFactory
      */
     public function testCanInjectFactories()
     {
@@ -663,7 +663,7 @@ trait CommonServiceLocatorBehaviorsTrait
 
     /**
      * @group mutation
-     * @covers \Zend\ServiceManager\ServiceManager::mapLazyService
+     * @covers \Mxc\ServiceManager\ServiceManager::mapLazyService
      */
     public function testCanMapLazyServices()
     {
@@ -679,7 +679,7 @@ trait CommonServiceLocatorBehaviorsTrait
 
     /**
      * @group mutation
-     * @covers \Zend\ServiceManager\ServiceManager::addAbstractFactory
+     * @covers \Mxc\ServiceManager\ServiceManager::addAbstractFactory
      */
     public function testCanInjectAbstractFactories()
     {
@@ -693,7 +693,7 @@ trait CommonServiceLocatorBehaviorsTrait
 
     /**
      * @group mutation
-     * @covers \Zend\ServiceManager\ServiceManager::addDelegator
+     * @covers \Mxc\ServiceManager\ServiceManager::addDelegator
      */
     public function testCanInjectDelegators()
     {
@@ -717,7 +717,7 @@ trait CommonServiceLocatorBehaviorsTrait
 
     /**
      * @group mutation
-     * @covers \Zend\ServiceManager\ServiceManager::addInitializer
+     * @covers \Mxc\ServiceManager\ServiceManager::addInitializer
      */
     public function testCanInjectInitializers()
     {
@@ -743,7 +743,7 @@ trait CommonServiceLocatorBehaviorsTrait
 
     /**
      * @group mutation
-     * @covers \Zend\ServiceManager\ServiceManager::setService
+     * @covers \Mxc\ServiceManager\ServiceManager::setService
      */
     public function testCanInjectServices()
     {
@@ -754,7 +754,7 @@ trait CommonServiceLocatorBehaviorsTrait
 
     /**
      * @group mutation
-     * @covers \Zend\ServiceManager\ServiceManager::setShared
+     * @covers \Mxc\ServiceManager\ServiceManager::setShared
      */
     public function testCanInjectSharingRules()
     {
@@ -840,7 +840,7 @@ trait CommonServiceLocatorBehaviorsTrait
     }
 
     /**
-     * @group zendframework/zend-servicemanager#83
+     * @group Mxcframework/Mxc-servicemanager#83
      */
     public function testCrashesOnCyclicAliases()
     {

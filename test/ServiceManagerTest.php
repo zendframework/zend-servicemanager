@@ -1,30 +1,30 @@
 <?php
 /**
- * @link      https://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2018 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      https://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2018 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager;
+namespace MxcTest\ServiceManager;
 
 use DateTime;
 use PHPUnit\Framework\MockObject\Invokable;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use Zend\ServiceManager\ServiceManager;
-use ZendTest\ServiceManager\TestAsset\Foo;
-use ZendTest\ServiceManager\TestAsset\InvokableObject;
-use ZendTest\ServiceManager\TestAsset\PreconfiguredServiceManager;
-use ZendTest\ServiceManager\TestAsset\SampleFactory;
-use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
-use ZendTest\ServiceManager\TestAsset\TaggingDelegatorFactory;
+use Mxc\ServiceManager\Factory\AbstractFactoryInterface;
+use Mxc\ServiceManager\Factory\FactoryInterface;
+use Mxc\ServiceManager\Factory\InvokableFactory;
+use Mxc\ServiceManager\ServiceManager;
+use MxcTest\ServiceManager\TestAsset\Foo;
+use MxcTest\ServiceManager\TestAsset\InvokableObject;
+use MxcTest\ServiceManager\TestAsset\PreconfiguredServiceManager;
+use MxcTest\ServiceManager\TestAsset\SampleFactory;
+use MxcTest\ServiceManager\TestAsset\SimpleServiceManager;
+use MxcTest\ServiceManager\TestAsset\TaggingDelegatorFactory;
 
 /**
- * @covers \Zend\ServiceManager\ServiceManager
+ * @covers \Mxc\ServiceManager\ServiceManager
  */
 class ServiceManagerTest extends TestCase
 {
@@ -72,8 +72,8 @@ class ServiceManagerTest extends TestCase
     }
 
     /**
-     * @covers \Zend\ServiceManager\ServiceManager::doCreate
-     * @covers \Zend\ServiceManager\ServiceManager::createDelegatorFromName
+     * @covers \Mxc\ServiceManager\ServiceManager::doCreate
+     * @covers \Mxc\ServiceManager\ServiceManager::createDelegatorFromName
      */
     public function testCanWrapCreationInDelegators()
     {
@@ -269,7 +269,7 @@ class ServiceManagerTest extends TestCase
     {
         $config = [
             'factories' => [
-                stdClass::class => 'ZendTest\ServiceManager\ServiceManagerTest::sampleFactory',
+                stdClass::class => 'MxcTest\ServiceManager\ServiceManagerTest::sampleFactory',
             ]
         ];
         $serviceManager = new SimpleServiceManager($config);

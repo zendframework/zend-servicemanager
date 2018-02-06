@@ -1,19 +1,19 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2015-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2015-2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager\Factory;
+namespace MxcTest\ServiceManager\Factory;
 
 use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use ZendTest\ServiceManager\TestAsset\InvokableObject;
+use Mxc\ServiceManager\Factory\InvokableFactory;
+use MxcTest\ServiceManager\TestAsset\InvokableObject;
 
 /**
- * @covers \Zend\ServiceManager\Factory\InvokableFactory
+ * @covers \Mxc\ServiceManager\Factory\InvokableFactory
  */
 class InvokableFactoryTest extends TestCase
 {

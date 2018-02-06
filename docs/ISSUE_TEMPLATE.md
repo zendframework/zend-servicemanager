@@ -1,5 +1,5 @@
- - [ ] I was not able to find an [open](https://github.com/zendframework/zend-servicemanager/issues?q=is%3Aopen) or [closed](https://github.com/zendframework/zend-servicemanager/issues?q=is%3Aclosed) issue matching what I'm seeing.
- - [ ] This is not a question. (Questions should be asked on [slack](https://zendframework.slack.com/) ([Signup for Slack here](https://zendframework-slack.herokuapp.com/)) or our [forums](https://discourse.zendframework.com/).)
+ - [ ] I was not able to find an [open](https://github.com/Mxcframework/Mxc-servicemanager/issues?q=is%3Aopen) or [closed](https://github.com/Mxcframework/Mxc-servicemanager/issues?q=is%3Aclosed) issue matching what I'm seeing.
+ - [ ] This is not a question. (Questions should be asked on [slack](https://Mxcframework.slack.com/) ([Signup for Slack here](https://Mxcframework-slack.herokuapp.com/)) or our [forums](https://discourse.Mxcframework.com/).)
 
 Provide a narrative description of what you are trying to accomplish.
 

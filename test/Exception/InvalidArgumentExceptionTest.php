@@ -1,20 +1,20 @@
 <?php
 /**
- * @link      https://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2018 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      https://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2018 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager\Exception;
+namespace MxcTest\ServiceManager\Exception;
 
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Zend\ServiceManager\Initializer\InitializerInterface;
-use Zend\ServiceManager\Exception\InvalidArgumentException;
-use Zend\ServiceManager\AbstractFactoryInterface;
+use Mxc\ServiceManager\Initializer\InitializerInterface;
+use Mxc\ServiceManager\Exception\InvalidArgumentException;
+use Mxc\ServiceManager\AbstractFactoryInterface;
 
 /**
- * @covers \Zend\ServiceManager\Exception\InvalidArgumentException
+ * @covers \Mxc\ServiceManager\Exception\InvalidArgumentException
  */
 class InvalidArgumentExceptionTest extends TestCase
 {

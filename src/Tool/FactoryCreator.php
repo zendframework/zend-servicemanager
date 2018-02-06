@@ -1,15 +1,15 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\Tool;
+namespace Mxc\ServiceManager\Tool;
 
 use ReflectionClass;
 use ReflectionParameter;
-use Zend\ServiceManager\Exception\InvalidArgumentException;
+use Mxc\ServiceManager\Exception\InvalidArgumentException;
 
 use function array_filter;
 use function array_map;
@@ -30,7 +30,7 @@ class FactoryCreator
 namespace %s;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Mxc\ServiceManager\Factory\FactoryInterface;
 use %s;
 
 class %sFactory implements FactoryInterface

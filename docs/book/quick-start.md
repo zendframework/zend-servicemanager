@@ -9,13 +9,13 @@ interfaces, providing interoperability with other implementations.
 The following is a "quick start" tutorial intended to get you up and running
 with the most common features of the Service manager.
 
-## 1. Install Zend Service Manager
+## 1. Install Mxc Service Manager
 
 If you haven't already, [install Composer](https://getcomposer.org). Once you
 have, you can install the service manager:
 
 ```bash
-$ composer require zendframework/zend-servicemanager
+$ composer require Mxcframework/Mxc-servicemanager
 ```
 
 ## 2. Configuring a service manager
@@ -24,8 +24,8 @@ You can now create and configure a service manager. The service manager
 constructor accepts a simple array:
 
 ```php
-use Zend\ServiceManager\ServiceManager;
-use Zend\ServiceManager\Factory\InvokableFactory;
+use Mxc\ServiceManager\ServiceManager;
+use Mxc\ServiceManager\Factory\InvokableFactory;
 use stdClass;
 
 $serviceManager = new ServiceManager([

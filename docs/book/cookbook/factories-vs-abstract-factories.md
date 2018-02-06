@@ -1,7 +1,7 @@
 # When To Use Factories vs Abstract Factories
 
-Starting with version 3, `Zend\ServiceManager\Factory\AbstractFactoryInterface`
-extends `Zend\ServiceManager\Factory\FactoryInterface`, meaning they may be used
+Starting with version 3, `Mxc\ServiceManager\Factory\AbstractFactoryInterface`
+extends `Mxc\ServiceManager\Factory\FactoryInterface`, meaning they may be used
 as either an abstract factory, or mapped to a specific service name as its
 factory.
 
@@ -37,7 +37,7 @@ regularly, this boiler-plate code can be a nuisance.
 In such situations, one or more abstract factories &mdash; such as the
 [ConfigAbstractFactory](../config-abstract-factory.md), the
 [ReflectionBasedAbstractFactory](../reflection-abstract-factory.md), or the
-[zend-mvc LazyControllerAbstractFactory](https://docs.zendframework.com/zend-mvc/cookbook/automating-controller-factories/)
+[Mxc-mvc LazyControllerAbstractFactory](https://docs.Mxcframework.com/Mxc-mvc/cookbook/automating-controller-factories/)
 &mdash; that can handle the bulk of your needs are often worthwhile, saving you
 time and effort as you code.
 

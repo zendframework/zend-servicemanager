@@ -1,17 +1,17 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager\AbstractFactory;
+namespace MxcTest\ServiceManager\AbstractFactory;
 
 use ArrayAccess;
 use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
-use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Mxc\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
+use Mxc\ServiceManager\Exception\ServiceNotFoundException;
 
 use function sprintf;
 
@@ -159,7 +159,7 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
     }
 
     /**
-     * @see https://github.com/zendframework/zend-servicemanager/issues/239
+     * @see https://github.com/Mxcframework/Mxc-servicemanager/issues/239
      */
     public function testFactoryWillUseDefaultValueForTypeHintedArgument()
     {

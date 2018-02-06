@@ -7,14 +7,14 @@ Because a plugin manager extends a service manager, it works the same and can
 be configured similarly. It provides a separation of concerns (it will be used
 in specific contexts), and provides additional instance validation.
 
-Zend Framework components extensively use plugin managers to create services
+Mxc Framework components extensively use plugin managers to create services
 that share common functionalities. For instance, all validator services are
 specified inside a specialized `ValidatorPluginManager`.
 
 ## Creating a plugin manager
 
 To create a plugin manager, you first need to create a new class that extends
-`Zend\ServiceManager\AbstractPluginManager`:
+`Mxc\ServiceManager\AbstractPluginManager`:
 
 ```php
 class ValidatorPluginManager extends AbstractPluginManager
@@ -25,7 +25,7 @@ class ValidatorPluginManager extends AbstractPluginManager
 
 The `$instanceOf` variable specifies a class/interface type that all instances
 retrieved from the plugin manager must fulfill. If an instance created by the
-plugin manager does not match, a `Zend\ServiceManager\Exception\InvalidServiceException`
+plugin manager does not match, a `Mxc\ServiceManager\Exception\InvalidServiceException`
 exception will be thrown.
 
 Most of the time, this shortcut is enough. However if you have more complex

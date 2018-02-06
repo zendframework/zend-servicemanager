@@ -1,17 +1,17 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager\AbstractFactory;
+namespace Mxc\ServiceManager\AbstractFactory;
 
 use Interop\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionParameter;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Mxc\ServiceManager\Exception\ServiceNotFoundException;
+use Mxc\ServiceManager\Factory\AbstractFactoryInterface;
 
 use function array_map;
 use function class_exists;
@@ -57,7 +57,7 @@ use function sprintf;
  *   a default value is present; if the default is present, that will be used.
  * - If a service cannot be found for a given typehint, the factory will
  *   raise an exception detailing this.
- * - Some services provided by Zend Framework components do not have
+ * - Some services provided by Mxc Framework components do not have
  *   entries based on their class name (for historical reasons); the
  *   factory allows defining a map of these class/interface names to the
  *   corresponding service name to allow them to resolve.
@@ -65,7 +65,7 @@ use function sprintf;
  * `$options` passed to the factory are ignored in all cases, as we cannot
  * make assumptions about which argument(s) they might replace.
  *
- * Based on the LazyControllerAbstractFactory from zend-mvc.
+ * Based on the LazyControllerAbstractFactory from Mxc-mvc.
  */
 class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
 {
@@ -80,8 +80,8 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
      *
      * <code>
      * [
-     *     \Zend\Filter\FilterPluginManager::class       => 'FilterManager',
-     *     \Zend\Validator\ValidatorPluginManager::class => 'ValidatorManager',
+     *     \Mxc\Filter\FilterPluginManager::class       => 'FilterManager',
+     *     \Mxc\Validator\ValidatorPluginManager::class => 'ValidatorManager',
      * ]
      * </code>
      *

@@ -1,16 +1,16 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager;
+namespace Mxc\ServiceManager;
 
 /**
  * Backwards-compatibility shim for InitializerInterface.
  *
- * Implementations should update to implement only Zend\ServiceManager\Initializer\InitializerInterface.
+ * Implementations should update to implement only Mxc\ServiceManager\Initializer\InitializerInterface.
  *
  * If upgrading from v2, take the following steps:
  *
@@ -22,10 +22,10 @@ namespace Zend\ServiceManager;
  *   proxy to `__invoke()`, passing the arguments in the new order.
  *
  * Once you have tested your code, you can then update your class to only implement
- * Zend\ServiceManager\Initializer\InitializerInterface, and remove the `initialize()`
+ * Mxc\ServiceManager\Initializer\InitializerInterface, and remove the `initialize()`
  * method.
  *
- * @deprecated Use Zend\ServiceManager\Initializer\InitializerInterface instead.
+ * @deprecated Use Mxc\ServiceManager\Initializer\InitializerInterface instead.
  */
 interface InitializerInterface extends Initializer\InitializerInterface
 {

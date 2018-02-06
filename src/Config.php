@@ -1,14 +1,14 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      http://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2016 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace Zend\ServiceManager;
+namespace Mxc\ServiceManager;
 
-use Zend\Stdlib\ArrayUtils\MergeRemoveKey;
-use Zend\Stdlib\ArrayUtils\MergeReplaceKeyInterface;
+use Mxc\Stdlib\ArrayUtils\MergeRemoveKey;
+use Mxc\Stdlib\ArrayUtils\MergeReplaceKeyInterface;
 
 use function array_key_exists;
 use function array_keys;
@@ -19,7 +19,7 @@ use function is_int;
  * Object for defining configuration and configuring an existing service manager instance.
  *
  * In order to provide configuration merging capabilities, this class implements
- * the same functionality as `Zend\Stdlib\ArrayUtils::merge()`. That routine
+ * the same functionality as `Mxc\Stdlib\ArrayUtils::merge()`. That routine
  * allows developers to specifically shape how values are merged:
  *
  * - A value which is an instance of `MergeRemoveKey` indicates the value should
@@ -28,7 +28,7 @@ use function is_int;
  *   value it contains should be used to replace any previous versions.
  *
  * These features are advanced, and not typically used. If you wish to use them,
- * you will need to require the zend-stdlib package in your application.
+ * you will need to require the Mxc-stdlib package in your application.
  */
 class Config implements ConfigInterface
 {
@@ -93,10 +93,10 @@ class Config implements ConfigInterface
     }
 
     /**
-     * Copy paste from https://github.com/zendframework/zend-stdlib/commit/26fcc32a358aa08de35625736095cb2fdaced090
+     * Copy paste from https://github.com/Mxcframework/Mxc-stdlib/commit/26fcc32a358aa08de35625736095cb2fdaced090
      * to keep compatibility with previous version
      *
-     * @link https://github.com/zendframework/zend-servicemanager/pull/68
+     * @link https://github.com/Mxcframework/Mxc-servicemanager/pull/68
      */
     private function merge(array $a, array $b)
     {

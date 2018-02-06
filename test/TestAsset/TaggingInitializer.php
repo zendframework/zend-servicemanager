@@ -1,19 +1,19 @@
 <?php
 /**
- * @link      https://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @link      https://github.com/Mxcframework/Mxc-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2018 Mxc Technologies USA Inc. (http://www.Mxc.com)
+ * @license   http://framework.Mxc.com/license/new-bsd New BSD License
  */
 
-namespace ZendTest\ServiceManager\TestAsset;
+namespace MxcTest\ServiceManager\TestAsset;
 
-use Zend\ServiceManager\Initializer\InitializerInterface;
+use Mxc\ServiceManager\Initializer\InitializerInterface;
 
 class TaggingInitializer implements InitializerInterface
 {
     /**
      * {@inheritDoc}
-     * @see \Zend\ServiceManager\TaggingInitializer\InitializerInterface::__invoke()
+     * @see \Mxc\ServiceManager\TaggingInitializer\InitializerInterface::__invoke()
      */
     public function __invoke(\Interop\Container\ContainerInterface $container, $instance)
     {
