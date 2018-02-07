@@ -15,12 +15,8 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
-use ZendTest\ServiceManager\TestAsset\Foo;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
-use ZendTest\ServiceManager\TestAsset\PreconfiguredServiceManager;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
-use ZendTest\ServiceManager\TestAsset\SampleFactory;
-use ZendTest\ServiceManager\TestAsset\TaggingDelegatorFactory;
 
 /**
  * @covers \Zend\ServiceManager\ServiceManager
@@ -156,6 +152,40 @@ class ServiceManagerTest extends TestCase
         self::assertEquals($shouldBeSameInstance, $a === $b);
     }
 
+    public function testMapsOneToOneInvokablesAsInvokableFactoriesInternally()
+    {
+        $config = [
+            'invokables' => [
+                InvokableObject::class => InvokableObject::class,
+            ],
+        ];
+
+        $serviceManager = new ServiceManager($config);
+        self::assertAttributeSame([
+            InvokableObject::class => InvokableFactory::class,
+        ], 'factories', $serviceManager, 'Invokable object factory not found');
+    }
+
+    public function testMapsNonSymmetricInvokablesAsAliasPlusInvokableFactory()
+    {
+        $config = [
+            'invokables' => [
+                'Invokable' => InvokableObject::class,
+            ],
+        ];
+
+        $serviceManager = new ServiceManager($config);
+        self::assertAttributeSame([
+            'Invokable' => InvokableObject::class,
+        ], 'aliases', $serviceManager, 'Alias not found for non-symmetric invokable');
+        self::assertAttributeSame([
+            InvokableObject::class => InvokableFactory::class,
+        ], 'factories', $serviceManager, 'Factory not found for non-symmetric invokable target');
+    }
+
+    /**
+     * @depends testMapsNonSymmetricInvokablesAsAliasPlusInvokableFactory
+     */
     public function testSharedServicesReferencingInvokableAliasShouldBeHonored()
     {
         $config = [
@@ -244,7 +274,7 @@ class ServiceManagerTest extends TestCase
         $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
 
         $serviceManager = new SimpleServiceManager([
-            'aliases'            => [
+            'aliases' => [
                 'Alias' => 'ServiceName',
             ],
             'abstract_factories' => [
@@ -277,6 +307,7 @@ class ServiceManagerTest extends TestCase
     }
 
     public function testResolvedAliasFromAbstractFactory()
+<<<<<<< HEAD
     {
         $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
         
@@ -452,8 +483,13 @@ class ServiceManagerTest extends TestCase
         $abstractFactory
             ->expects(self::any())
             ->method('canCreate')
-            ->with(self::anything(), 'ServiceName')
-            ->willReturn(true);
+            ->withConsecutive(
+                [self::anything(), 'Alias'],
+                [self::anything(), 'ServiceName']
+            )
+            ->will(self::returnCallback(function ($context, $name) {
+                return $name === 'ServiceName';
+            }));
 
         self::assertTrue($serviceManager->has('Alias'));
     }
@@ -463,7 +499,7 @@ class ServiceManagerTest extends TestCase
         $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
 
         $serviceManager = new SimpleServiceManager([
-            'aliases' => [
+            'aliases'            => [
                 'Alias' => 'ServiceName',
             ],
             'abstract_factories' => [
@@ -474,9 +510,12 @@ class ServiceManagerTest extends TestCase
         $abstractFactory
             ->expects(self::any())
             ->method('canCreate')
-            ->with(self::anything(), 'ServiceName')
-            ->willReturn(true);
+            ->withConsecutive(
+                [self::anything(), 'Alias'],
+                [self::anything(), 'ServiceName']
+            )
+            ->willReturn(false);
 
-        self::assertTrue($serviceManager->has('Alias'));
+        self::assertFalse($serviceManager->has('Alias'));
     }
 }
