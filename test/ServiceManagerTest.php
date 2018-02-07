@@ -239,31 +239,6 @@ class ServiceManagerTest extends TestCase
         self::assertSame($service, $headAlias);
     }
 
-    public function testAbstractFactoryShouldBeCheckedForResolvedAliasesInsteadOfAliasName()
-    {
-        $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
-
-        $serviceManager = new SimpleServiceManager([
-            'aliases'            => [
-                'Alias' => 'ServiceName',
-            ],
-            'abstract_factories' => [
-                $abstractFactory,
-            ],
-        ]);
-
-        $abstractFactory
-            ->method('canCreate')
-            ->withConsecutive(
-                [ $this->anything(), $this->equalTo('Alias') ],
-                [ $this->anything(), $this->equalTo('ServiceName')]
-            )
-            ->willReturnCallback(function ($context, $name) {
-                return $name === 'Alias';
-            });
-        $this->assertTrue($serviceManager->has('Alias'));
-    }
-
     public static function sampleFactory()
     {
         return new stdClass();
@@ -398,9 +373,9 @@ class ServiceManagerTest extends TestCase
         // but not by delegator
         $this->assertObjectNotHasAttribute('delegatorTag', $object2);
         $this->assertInstanceOf(InvokableObject::class, $object2);
-	}
-	
-	public function testResolvedAliasFromAbstractFactory()
+    }
+
+    public function testResolvedAliasFromAbstractFactory()
     {
         $abstractFactory = $this->createMock(AbstractFactoryInterface::class);
 
@@ -416,13 +391,8 @@ class ServiceManagerTest extends TestCase
         $abstractFactory
             ->expects(self::any())
             ->method('canCreate')
-            ->withConsecutive(
-                [self::anything(), 'Alias'],
-                [self::anything(), 'ServiceName']
-            )
-            ->will(self::returnCallback(function ($context, $name) {
-                return $name === 'ServiceName';
-            }));
+            ->with(self::anything(), 'ServiceName')
+            ->willReturn(true);
 
         self::assertTrue($serviceManager->has('Alias'));
     }
@@ -443,12 +413,9 @@ class ServiceManagerTest extends TestCase
         $abstractFactory
             ->expects(self::any())
             ->method('canCreate')
-            ->withConsecutive(
-                [self::anything(), 'Alias'],
-                [self::anything(), 'ServiceName']
-            )
-            ->willReturn(false);
+            ->with(self::anything(), 'ServiceName')
+            ->willReturn(true);
 
-        self::assertFalse($serviceManager->has('Alias'));
+        self::assertTrue($serviceManager->has('Alias'));
     }
 }
