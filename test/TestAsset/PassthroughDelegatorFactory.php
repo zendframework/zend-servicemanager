@@ -22,6 +22,6 @@ class PassthroughDelegatorFactory implements DelegatorFactoryInterface
         callable $callback,
         array $options = null
     ) {
-        return $options === null : $callback() : $callback($options);
+        return $options === null ? $callback() : $callback($options);
     }
 }

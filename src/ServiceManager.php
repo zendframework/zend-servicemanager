@@ -168,18 +168,15 @@ class ServiceManager implements ServiceLocatorInterface
     public function __construct(array $config = [])
     {
         $this->creationContext = $this;
-
-        if (! empty($this->initializers)) {
-            // null indicates that $this->initializers
-            // should be used for configuration
-            $this->resolveInitializers(null);
+        if (! empty($this->aliases)) {
+            $this->mapAliasesToTargets();
         }
 
-        if (! empty($this->abstractFactories)) {
-            // null indicates that $this->abstractFactories
-            // should be used for configuration
-            $this->resolveAbstractFactories(null);
-        }
+        $config['initializers'] = array_merge($this->initializers, $config['initializers'] ?? []);
+        $this->initializers = [];
+
+        $config['abstract_factories'] = array_merge($this->abstractFactories, $config['abstract_factories'] ?? []);
+        $this->abstractFactories = [];
 
         $this->configure($config);
     }
@@ -395,7 +392,7 @@ class ServiceManager implements ServiceLocatorInterface
         // For abstract factories and initializers, we always directly
         // instantiate them to avoid checks during service construction.
         if (isset($config['abstract_factories'])) {
-            $this->resolveAbstractFactories($config['abstract_factories'];);
+            $this->resolveAbstractFactories($config['abstract_factories']);
         }
 
         if (isset($config['initializers'])) {
@@ -531,68 +528,6 @@ class ServiceManager implements ServiceLocatorInterface
 		$this->configure(['shared' => [$name => (bool) $flag]]);
     }
 
-    private function resolveAbstractFactory($abstractFactory)
-    {
-        if (\is_string($abstractFactory) && \class_exists($abstractFactory)) {
-            //Cached string
-            if (! isset($this->cachedAbstractFactories[$abstractFactory])) {
-                $this->cachedAbstractFactories[$abstractFactory] = new $abstractFactory();
-            }
-
-            $abstractFactory = $this->cachedAbstractFactories[$abstractFactory];
-        }
-
-        if ($abstractFactory instanceof Factory\AbstractFactoryInterface) {
-            $abstractFactoryObjHash = \spl_object_hash($abstractFactory);
-            $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
-            return;
-        }
-
-        // Error condition; let's find out why.
-
-        // If we still have a string, we have a class name that does not resolve
-        if (\is_string($abstractFactory)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'An invalid abstract factory was registered; resolved to class "%s" ' .
-                    'which does not exist; please provide a valid class name resolving ' .
-                    'to an implementation of %s',
-                    $abstractFactory,
-                    AbstractFactoryInterface::class
-                )
-            );
-        }
-
-        // Otherwise, we have an invalid type.
-        throw new InvalidArgumentException(
-            sprintf(
-                'An invalid abstract factory was registered. Expected an instance of "%s", ' .
-                'but "%s" was received',
-                AbstractFactoryInterface::class,
-                (is_object($abstractFactory) ? get_class($abstractFactory) : gettype($abstractFactory))
-            )
-        );
-    }
-
-    /**
-     * Instantiate abstract factories for to avoid checks during service construction.
-     *
-     * @param string[]|Factory\AbstractFactoryInterface[] $abstractFactories
-     *
-     * @return void
-     */
-    private function resolveAbstractFactories(array $abstractFactories = null)
-    {
-        if ($abstractFactories === null) {
-            $abstractFactories = $this->abstractFactories;
-            $this->abstractFactories = [];
-        }
-
-        foreach ($abstractFactories as $abstractFactory) {
-            $this->resolveAbstractFactory($abstractFactory);
-        }
-    }
-
     /**
      * Instantiate initializers for to avoid checks during service construction.
      *
@@ -600,10 +535,6 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function resolveInitializers(array $initializers)
     {
-        if ($initializers === null) {
-            $initializers = $this->initializers;
-            $this->initializers = [];
-        }
         foreach ($initializers as $initializer) {
             if (is_string($initializer) && class_exists($initializer)) {
                 $initializer = new $initializer();
@@ -1023,25 +954,26 @@ class ServiceManager implements ServiceLocatorInterface
      * Instantiate abstract factories in order to avoid checks during service construction.
      *
      * @param string[]|Factory\AbstractFactoryInterface[] $abstractFactories
-     *
-     * @return void
      */
-    private function resolveAbstractFactoryInstance($abstractFactory)
+    private function resolveAbstractFactories(array $abstractFactories)
     {
-        if (is_string($abstractFactory) && class_exists($abstractFactory)) {
-            // Cached string factory name
-            if (! isset($this->cachedAbstractFactories[$abstractFactory])) {
-                $this->cachedAbstractFactories[$abstractFactory] = new $abstractFactory();
+        foreach ($abstractFactories as $abstractFactory) {
+            if (is_string($abstractFactory) && class_exists($abstractFactory)) {
+                // cached string
+                if (! isset($this->cachedAbstractFactories[$abstractFactory])) {
+                    $this->cachedAbstractFactories[$abstractFactory] = new $abstractFactory();
+                }
+
+                $abstractFactory = $this->cachedAbstractFactories[$abstractFactory];
             }
 
-            $abstractFactory = $this->cachedAbstractFactories[$abstractFactory];
-        }
+            if ($abstractFactory instanceof Factory\AbstractFactoryInterface) {
+                $abstractFactoryObjHash = spl_object_hash($abstractFactory);
+                $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
+                continue;
+            }
 
-        if (! $abstractFactory instanceof Factory\AbstractFactoryInterface) {
             throw InvalidArgumentException::fromInvalidAbstractFactory($abstractFactory);
         }
-
-        $abstractFactoryObjHash = spl_object_hash($abstractFactory);
-        $this->abstractFactories[$abstractFactoryObjHash] = $abstractFactory;
     }
 }
