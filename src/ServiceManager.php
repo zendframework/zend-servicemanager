@@ -373,7 +373,7 @@ class ServiceManager implements ServiceLocatorInterface
         if (! empty($config['aliases'])) {
             $this->aliases = $config['aliases'] + $this->aliases;
             $this->mapAliasesToTargets();
-        } 
+        }
 
         if (isset($config['shared_by_default'])) {
             $this->sharedByDefault = $config['shared_by_default'];
