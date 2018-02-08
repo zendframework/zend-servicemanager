@@ -569,9 +569,6 @@ trait CommonServiceLocatorBehaviorsTrait
         ]);
     }
 
-    /**
-     * @covers \Zend\ServiceManager\ServiceManager::getFactory
-     */
     public function testGetRaisesExceptionWhenNoFactoryIsResolved()
     {
         $serviceManager = $this->createContainer();
