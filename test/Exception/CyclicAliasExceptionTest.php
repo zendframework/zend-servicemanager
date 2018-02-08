@@ -26,7 +26,6 @@ class CyclicAliasExceptionTest extends TestCase
     public function testFromCyclicAlias($alias, array $aliases, $expectedMessage)
     {
         $exception = CyclicAliasException::fromCyclicAlias($alias, $aliases);
-
         self::assertInstanceOf(CyclicAliasException::class, $exception);
         self::assertSame($expectedMessage, $exception->getMessage());
     }
@@ -113,80 +112,132 @@ class CyclicAliasExceptionTest extends TestCase
      * @param string[] $aliases
      * @param string   $expectedMessage
      */
-    public function testFromCyclicAlias($alias, array $aliases, $expectedMessage)
+    public function testFromAliasesMap(array $aliases, $expectedMessage)
     {
-        $exception = CyclicAliasException::fromCyclicAlias($alias, $aliases);
+        $exception = CyclicAliasException::fromAliasesMap($aliases);
 
         self::assertInstanceOf(CyclicAliasException::class, $exception);
-        self::assertSame($expectedMessage, $exception->getCycle());
+        self::assertSame($expectedMessage, $exception->getMessage());
     }
 
     /**
-     * Test data provider for testFromCyclicAlias
-     *
      * @return string[][]|string[][][]
      */
     public function aliasesProvider()
     {
-        return
-        [
-            [
-                'a',
-                [
-                    'a' => 'a',
-                ],
-                "a -> a\n",
+        return [
+            'empty set' => [
+                [],
+                'A cycle was detected within the following aliases map:
+
+[
+
+]'
             ],
-            [
-                'a',
+            'acyclic set' => [
                 [
-                    'a' => 'b',
-                    'b' => 'a'
-                ],
-                "a -> b -> a\n",
-            ],
-            [
-                'b',
-                [
-                    'a' => 'b',
-                    'b' => 'a'
-                ],
-                "b -> a -> b\n",
-            ],
-            [
-                'b',
-                [
-                    'a' => 'b',
                     'b' => 'a',
+                    'd' => 'c',
                 ],
-                "b -> a -> b\n",
+                'A cycle was detected within the following aliases map:
+
+[
+"b" => "a"
+"d" => "c"
+]'
             ],
-            [
-                'a',
+            'acyclic self-referencing set' => [
                 [
+                    'b' => 'a',
+                    'c' => 'b',
+                    'd' => 'c',
+                ],
+                'A cycle was detected within the following aliases map:
+
+[
+"b" => "a"
+"c" => "b"
+"d" => "c"
+]'
+            ],
+            'cyclic set' => [
+                [
+                    'b' => 'a',
                     'a' => 'b',
-                    'b' => 'c',
+                ],
+                'Cycles were detected within the provided aliases:
+
+[
+"b" => "a" => "b"
+]
+
+The cycle was detected in the following alias map:
+
+[
+"b" => "a"
+"a" => "b"
+]'
+            ],
+            'cyclic set (indirect)' => [
+                [
+                    'b' => 'a',
+                    'c' => 'b',
+                    'a' => 'c',
+                ],
+                'Cycles were detected within the provided aliases:
+
+[
+"b" => "a" => "c" => "b"
+]
+
+The cycle was detected in the following alias map:
+
+[
+"b" => "a"
+"c" => "b"
+"a" => "c"
+]'
+            ],
+            'cyclic set + acyclic set' => [
+                [
+                    'b' => 'a',
+                    'a' => 'b',
+                    'd' => 'c',
+                ],
+                'Cycles were detected within the provided aliases:
+
+[
+"b" => "a" => "b"
+]
+
+The cycle was detected in the following alias map:
+
+[
+"b" => "a"
+"a" => "b"
+"d" => "c"
+]'
+            ],
+            'cyclic set + reference to cyclic set' => [
+                [
+                    'b' => 'a',
+                    'a' => 'b',
                     'c' => 'a',
                 ],
-                "a -> b -> c -> a\n",
-            ],
-            [
-                'b',
-                [
-                    'a' => 'b',
-                    'b' => 'c',
-                    'c' => 'a',
-                ],
-                "b -> c -> a -> b\n",
-            ],
-            [
-                'c',
-                [
-                    'a' => 'b',
-                    'b' => 'c',
-                    'c' => 'a',
-                ],
-                "c -> a -> b -> c\n",
+                'Cycles were detected within the provided aliases:
+
+[
+"b" => "a" => "b"
+"c" => "a" => "b" => "c"
+]
+
+The cycle was detected in the following alias map:
+
+[
+"b" => "a"
+"a" => "b"
+"c" => "a"
+]'
             ],
         ];
     }

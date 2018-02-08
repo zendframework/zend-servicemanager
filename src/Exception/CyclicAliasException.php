@@ -36,8 +36,6 @@ class CyclicAliasException extends InvalidArgumentException
 
         return new self(sprintf(
             "A cycle was detected within the aliases definitions:\n%s",
-        return new self(sprintf(
-            "A cycle was detected within the aliases defintions:\n%s",
             $cycle
         ));
     }
