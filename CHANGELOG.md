@@ -59,6 +59,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 - [#233](https://github.com/zendframework/zend-servicemanager/pull/233) fixes a
   number of parameter annotations to reflect the actual types used.
+- [#230](https://github.com/zendframework/zend-servicemanager/pull/230) fixes a
+  problem in detecting cyclic aliases, ensuring they are detected correctly.
 
 ## 3.3.1 - 2017-11-27
 
