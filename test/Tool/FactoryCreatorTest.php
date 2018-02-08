@@ -13,6 +13,8 @@ use ZendTest\ServiceManager\TestAsset\ComplexDependencyObject;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleDependencyObject;
 
+use function file_get_contents;
+
 class FactoryCreatorTest extends TestCase
 {
     /**
