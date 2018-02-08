@@ -354,7 +354,7 @@ class ServiceManager implements ServiceLocatorInterface
             $this->services = $config['services'] + $this->services;
         }
 
-        if (isset($config['invokables']) && ! empty($config['invokables'])) {
+        if (! empty($config['invokables'])) {
             $this->invokables = $config['invokables'] + $this->invokables;
         }
 
@@ -373,9 +373,7 @@ class ServiceManager implements ServiceLocatorInterface
         if (! empty($config['aliases'])) {
             $this->aliases = $config['aliases'] + $this->aliases;
             $this->mapAliasesToTargets();
-        } elseif (! $this->configured && ! empty($this->aliases)) {
-            $this->mapAliasesToTargets();
-        }
+        } 
 
         if (isset($config['shared_by_default'])) {
             $this->sharedByDefault = $config['shared_by_default'];
@@ -397,9 +395,7 @@ class ServiceManager implements ServiceLocatorInterface
         if (isset($config['initializers'])) {
             $this->resolveInitializers($config['initializers']);
         }
-
         $this->configured = true;
-
         return $this;
     }
 
@@ -552,14 +548,14 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
-     * Get a factory for the given service name and create an object using
+     * Find a factory for the given service name and create an object using
      * that factory or create invokable if service is invokable
      *
      * @param  string $name
      * @return object
      * @throws ServiceNotFoundException
      */
-    private function createObjectThroughFactory($name, array $options = null)
+    private function createServiceThroughFactory($name, array $options = null)
     {
         $factory = isset($this->factories[$name]) ? $this->factories[$name] : null;
 
@@ -601,7 +597,7 @@ class ServiceManager implements ServiceLocatorInterface
     private function createDelegatorFromName($name, array $options = null)
     {
         $creationCallback = function () use ($name, $options) {
-            return $this->createObjectThroughFactory($name, $options);
+            return $this->createServiceThroughFactory($name, $options);
         };
 
         foreach ($this->delegators[$name] as $index => $delegatorFactory) {
@@ -660,7 +656,7 @@ class ServiceManager implements ServiceLocatorInterface
     {
         try {
             if (! isset($this->delegators[$resolvedName])) {
-                $object  = $this->createObjectThroughFactory($resolvedName, $options);
+                $object = $this->createServiceThroughFactory($resolvedName, $options);
             } else {
                 $object = $this->createDelegatorFromName($resolvedName, $options);
             }
