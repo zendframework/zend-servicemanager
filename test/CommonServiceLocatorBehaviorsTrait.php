@@ -19,19 +19,19 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use ZendTest\ServiceManager\TestAsset\AbstractFactoryFoo;
 use ZendTest\ServiceManager\TestAsset\CallTimesAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingAbstractFactory;
 use ZendTest\ServiceManager\TestAsset\FailingExceptionWithStringAsCodeFactory;
 use ZendTest\ServiceManager\TestAsset\FailingFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
+use ZendTest\ServiceManager\TestAsset\PassthroughDelegatorFactory;
+use ZendTest\ServiceManager\TestAsset\SampleFactory;
 use ZendTest\ServiceManager\TestAsset\SimpleAbstractFactory;
 
 use function call_user_func_array;
 use function restore_error_handler;
 use function set_error_handler;
-use ZendTest\ServiceManager\TestAsset\SampleFactory;
-use ZendTest\ServiceManager\TestAsset\AbstractFactoryFoo;
-use ZendTest\ServiceManager\TestAsset\PassthroughDelegatorFactory;
 
 trait CommonServiceLocatorBehaviorsTrait
 {
@@ -548,7 +548,7 @@ trait CommonServiceLocatorBehaviorsTrait
     public function invalidInitializers()
     {
         $factories = $this->invalidFactories();
-        $factories['non-class-string'] = ['non-callable-string', 'callable or an instance of'];
+        $factories['non-class-string'] = ['non-callable-string', 'callable or an instance'];
         return $factories;
     }
 
@@ -644,7 +644,6 @@ trait CommonServiceLocatorBehaviorsTrait
         $container = $this->createContainer();
         $container->setInvokableClass('foo', stdClass::class);
         self::assertTrue($container->has('foo'));
-        self::assertTrue($container->has(stdClass::class));
         $foo = $container->get('foo');
         self::assertInstanceOf(stdClass::class, $foo);
     }
@@ -905,6 +904,7 @@ trait CommonServiceLocatorBehaviorsTrait
         $sm = clone $smTemplate;
         $object['get'] = [];
         $object['build'] = [];
+
 
         // call get()/build() and store the retrieved
         // objects in $object['get'] or $object['build']
