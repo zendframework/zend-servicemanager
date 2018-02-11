@@ -7,7 +7,6 @@
 
 namespace Zend\ServiceManager;
 
-use Psr\Container\ContainerExceptionInterface;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 
 /**

@@ -7,8 +7,8 @@
 
 namespace Zend\ServiceManager;
 
-use Psr\Container\ContainerInterface;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Interface for service locator

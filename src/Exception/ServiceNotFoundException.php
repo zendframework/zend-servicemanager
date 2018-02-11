@@ -7,8 +7,8 @@
 
 namespace Zend\ServiceManager\Exception;
 
-use Psr\Container\ContainerExceptionInterface;
 use InvalidArgumentException as SplInvalidArgumentException;
+use Psr\Container\ContainerExceptionInterface;
 
 /**
  * This exception is thrown when the service locator do not manage to find a

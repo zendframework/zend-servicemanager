@@ -8,7 +8,6 @@
 namespace Zend\ServiceManager\Factory;
 
 use Psr\Container\ContainerInterface;
-use Psr\Container\ContainerExceptionInterface;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 

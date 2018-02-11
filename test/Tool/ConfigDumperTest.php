@@ -7,8 +7,8 @@
 
 namespace ZendTest\ServiceManager\Tool;
 
-use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Factory\FactoryInterface;

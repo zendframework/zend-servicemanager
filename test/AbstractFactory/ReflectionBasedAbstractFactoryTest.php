@@ -8,8 +8,8 @@
 namespace ZendTest\ServiceManager\AbstractFactory;
 
 use ArrayAccess;
-use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 

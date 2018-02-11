@@ -7,8 +7,8 @@
 
 namespace ZendTest\ServiceManager\Factory;
 
-use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 
