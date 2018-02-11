@@ -8,12 +8,11 @@
 namespace Zend\ServiceManager\Exception;
 
 use InvalidArgumentException as SplInvalidArgumentException;
-use Psr\Container\ContainerExceptionInterface;
 
 /**
  * This exception is thrown when the service locator do not manage to find a
  * valid factory to create a service
  */
-class ServiceNotFoundException extends SplInvalidArgumentException implements ContainerExceptionInterface
+class ServiceNotFoundException extends SplInvalidArgumentException implements ExceptionInterface
 {
 }
