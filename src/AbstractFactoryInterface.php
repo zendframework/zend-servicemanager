@@ -16,11 +16,11 @@ namespace Zend\ServiceManager;
  *
  * - rename the method `canCreateServiceWithName()` to `canCreate()`, and:
  *   - rename the `$serviceLocator` argument to `$container`, and change the
- *     typehint to `Interop\Container\ContainerInterface`
+ *     typehint to `Psr\Container\ContainerInterface`
  *   - merge the `$name` and `$requestedName` arguments
  * - rename the method `createServiceWithName()` to `__invoke()`, and:
  *   - rename the `$serviceLocator` argument to `$container`, and change the
- *     typehint to `Interop\Container\ContainerInterface`
+ *     typehint to `Psr\Container\ContainerInterface`
  *   - merge the `$name` and `$requestedName` arguments
  *   - add the optional `array $options = null` argument.
  * - create a `canCreateServiceWithName()` method as defined in this interface, and have it

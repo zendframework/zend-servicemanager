@@ -7,7 +7,7 @@
 
 namespace Zend\ServiceManager;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 
 use function class_exists;

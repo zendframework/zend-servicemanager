@@ -3,7 +3,7 @@
 The Service Manager is a modern, fast, and easy-to-use implementation of the
 [Service Locator design pattern](https://en.wikipedia.org/wiki/Service_locator_pattern).
 The implementation implements the
-[Container Interop](https://github.com/container-interop/container-interop)
+[Psr\Container\ContainerInterface](https://github.com/psr/container)
 interfaces, providing interoperability with other implementations.
 
 The following is a "quick start" tutorial intended to get you up and running

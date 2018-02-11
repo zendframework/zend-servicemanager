@@ -60,7 +60,7 @@ $serviceManager = new ServiceManager([
 As said before, a factory can also be a callable, to create more complex objects:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use stdClass;
@@ -267,7 +267,7 @@ For instance, if we'd want to automatically inject the dependency
 `EventManagerAwareInterface`, we could create the following initializer:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use stdClass;
 use Zend\ServiceManager\ServiceManager;
 
@@ -303,7 +303,7 @@ class MyInitializer implements InitializerInterface
 
 // When creating the service manager:
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use stdClass;
 use Zend\ServiceManager\ServiceManager;
 
