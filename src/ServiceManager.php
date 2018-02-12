@@ -22,6 +22,7 @@ use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 
+use function array_intersect;
 use function array_merge_recursive;
 use function class_exists;
 use function get_class;
