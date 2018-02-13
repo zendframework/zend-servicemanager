@@ -153,7 +153,7 @@ class MyObjectFactory
 {
     public function __invoke(ContainerInterface $container, $requestedName)
     {
-        $dependency = $container(Dependency::class);
+        $dependency = $container->get(Dependency::class);
         return new $requestedName($dependency);
     }
 }
