@@ -4,7 +4,7 @@ The Service Manager component can be configured by passing an associative array 
 constructor. The following keys are:
 
 - `services`: associative array that maps a key to a service instance.
-- `invokables`: an associative array that map a key to a constructor-less service;
+- `invokables`: an associative array that maps a key to a constructor-less service;
   i.e., for services that do not require arguments to the constructor. The key and
   service name usually are the same; if they are not, the key is treated as an alias.
 - `factories`: associative array that map a key to a factory name, or any callable.
@@ -17,9 +17,9 @@ constructor. The following keys are:
 - `lazy_services`: configuration for the lazy service proxy manager, and a class
   map of service:class pairs that will act as lazy services; see the
   [lazy services documentation](lazy-services.md) for more details.
-- `shared`: associative array that map a service name to a boolean, in order to
-  indicate the service manager if it should cache or not a service created
-  through the `get` method, independent of the `shared_by_default` setting.
+- `shared`: associative array that maps a service name to a boolean, in order to
+  indicate to the service manager whether or not it should cache services it
+  creates via `get` method, independent of the `shared_by_default` setting.
 - `shared_by_default`: boolean that indicates whether services created through
   the `get` method should be cached. This is `true` by default.
 
