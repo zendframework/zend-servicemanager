@@ -11,6 +11,11 @@ use InvalidArgumentException as SplInvalidArgumentException;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\Initializer\InitializerInterface;
 
+use function get_class;
+use function gettype;
+use function is_object;
+use function sprintf;
+
 /**
  * @inheritDoc
  */
