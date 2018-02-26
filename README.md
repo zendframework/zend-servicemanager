@@ -13,7 +13,7 @@ retrieving other objects.
 
 - File issues at https://github.com/zendframework/zend-servicemanager/issues
 - [Online documentation](https://docs.zendframework.com/zend-servicemanager)
-- [Documentation source files](doc/book/)
+- [Documentation source files](docs/book/)
 
 ## Benchmarks
 
