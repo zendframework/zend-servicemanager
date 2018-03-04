@@ -866,11 +866,6 @@ class ServiceManager implements ServiceLocatorInterface
     {
         $factories = [];
         foreach ($invokables as $name => $class) {
-            if ($name === $class) {
-                $factories[$name] = Factory\InvokableFactory::class;
-                continue;
-            }
-
             $factories[$class] = Factory\InvokableFactory::class;
         }
         return $factories;
