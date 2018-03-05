@@ -11,15 +11,20 @@ use ArrayObject;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
+use function array_key_exists;
+use function array_map;
+use function array_values;
+use function is_array;
+use function json_encode;
+
 final class ConfigAbstractFactory implements AbstractFactoryInterface
 {
-
     /**
      * Factory can create the service if there is a key for it in the config
      *
      * {@inheritdoc}
      */
-    public function canCreate(\Interop\Container\ContainerInterface $container, $requestedName)
+    public function canCreate(\Psr\Container\ContainerInterface $container, $requestedName)
     {
         if (! $container->has('config') || ! array_key_exists(self::class, $container->get('config'))) {
             return false;
@@ -33,7 +38,7 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(\Interop\Container\ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(\Psr\Container\ContainerInterface $container, $requestedName, array $options = null)
     {
         if (! $container->has('config')) {
             throw new ServiceNotCreatedException('Cannot find a config array in the container');
@@ -60,8 +65,8 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
 
         $serviceDependencies = $dependencies[$requestedName];
 
-        if ($serviceDependencies !== array_values(array_map('strval', $serviceDependencies))) {
-            $problem = json_encode(array_map('gettype', $serviceDependencies));
+        if ($serviceDependencies !== array_values(array_map('\strval', $serviceDependencies))) {
+            $problem = json_encode(array_map('\gettype', $serviceDependencies));
             throw new ServiceNotCreatedException('Service message must be an array of strings, ' . $problem . ' given');
         }
 

@@ -9,9 +9,24 @@ namespace Zend\ServiceManager\Exception;
 
 use DomainException;
 
+use function sprintf;
+
 /**
  * @inheritDoc
  */
 class ContainerModificationsNotAllowedException extends DomainException implements ExceptionInterface
 {
+    /**
+     * @param string $service Name of service that already exists.
+     * @return self
+     */
+    public static function fromExistingService($service)
+    {
+        return new self(sprintf(
+            'The container does not allow replacing or updating a service'
+            . ' with existing instances; the following service'
+            . ' already exists in the container: %s',
+            $service
+        ));
+    }
 }

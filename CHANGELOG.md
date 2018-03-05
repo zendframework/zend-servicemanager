@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 4.0.0 - TBD
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- [#221](https://github.com/zendframework/zend-servicemanager/pull/221) provides
+  enormous performance improvements for each of the various mutator methods
+  (`setAlias()`, `setFactory()`, etc.), `has()` lookups, and initial
+  container configuration.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- [#197](https://github.com/zendframework/zend-servicemanager/pull/197) drops
+  support for PHP versions prior to 7.1.
+
+- [#193](https://github.com/zendframework/zend-servicemanager/pull/193) drops
+  support for HHVM.
+
+### Fixed
+
+- [#230](https://github.com/zendframework/zend-servicemanager/pull/230) fixes a
+  problem in detecting cyclic aliases, ensuring they are detected correctly.
+
 ## 3.3.2 - 2018-01-29
 
 ### Added

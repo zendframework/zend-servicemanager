@@ -7,7 +7,7 @@
 
 namespace ZendTest\ServiceManager\TestAsset;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 class FailingExceptionWithStringAsCodeFactory implements FactoryInterface
@@ -17,6 +17,6 @@ class FailingExceptionWithStringAsCodeFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        throw (new ExceptionWithStringAsCode('There is an error'));
+        throw new ExceptionWithStringAsCode('There is an error');
     }
 }

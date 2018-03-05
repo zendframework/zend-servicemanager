@@ -16,7 +16,7 @@ namespace Zend\ServiceManager;
  *
  * - rename the method `createDelegatorWithName()` to `__invoke()`, and:
  *   - rename the `$serviceLocator` argument to `$container`, and change the
- *     typehint to `Interop\Container\ContainerInterface`
+ *     typehint to `Psr\Container\ContainerInterface`
  *   - merge the `$name` and `$requestedName` arguments
  *   - add the `callable` typehint to the `$callback` argument
  *   - add the optional `array $options = null` argument as a final argument

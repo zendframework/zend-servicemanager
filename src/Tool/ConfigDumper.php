@@ -7,12 +7,28 @@
 
 namespace Zend\ServiceManager\Tool;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionParameter;
 use Traversable;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
+
+use function array_filter;
+use function array_key_exists;
+use function class_exists;
+use function date;
+use function get_class;
+use function gettype;
+use function implode;
+use function interface_exists;
+use function is_array;
+use function is_int;
+use function is_null;
+use function is_string;
+use function sprintf;
+use function str_repeat;
+use function var_export;
 
 class ConfigDumper
 {
