@@ -196,8 +196,13 @@ EOH;
      * @param bool $ignoreUnresolved If to ignore classes with unresolved direct dependencies.
      * @return stdClass
      */
-    private function createArguments(string $command, string $configFile, array $config, string $class, bool $ignoreUnresolved): stdClass
-    {
+    private function createArguments(
+        string $command,
+        string $configFile,
+        array $config,
+        string $class,
+        bool $ignoreUnresolved
+    ): stdClass {
         return (object) [
             'command'          => $command,
             'configFile'       => $configFile,

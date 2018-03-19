@@ -147,8 +147,10 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
      * Returns a callback for resolving a parameter to a value, but without
      * allowing mapping array `$config` arguments to the `config` service.
      */
-    private function resolveParameterWithoutConfigService(ContainerInterface $container, string $requestedName): callable
-    {
+    private function resolveParameterWithoutConfigService(
+        ContainerInterface $container,
+        string $requestedName
+    ): callable {
         /**
          * @param ReflectionParameter $parameter
          * @return mixed
@@ -189,8 +191,11 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
      * @throws ServiceNotFoundException If type-hinted parameter cannot be
      *   resolved to a service in the container.
      */
-    private function resolveParameter(ReflectionParameter $parameter, ContainerInterface $container, string $requestedName)
-    {
+    private function resolveParameter(
+        ReflectionParameter $parameter,
+        ContainerInterface $container,
+        string $requestedName
+    ) {
         if ($parameter->isArray()) {
             return [];
         }

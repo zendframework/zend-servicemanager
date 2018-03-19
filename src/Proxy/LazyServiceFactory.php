@@ -49,8 +49,12 @@ final class LazyServiceFactory implements DelegatorFactoryInterface
      *
      * @return VirtualProxyInterface
      */
-    public function __invoke(ContainerInterface $container, string $name, callable $callback, array $options = null): VirtualProxyInterface
-    {
+    public function __invoke(
+        ContainerInterface $container,
+        string $name,
+        callable $callback,
+        array $options = null
+    ): VirtualProxyInterface {
         $initializer = function (&$wrappedInstance, LazyLoadingInterface $proxy) use ($callback) {
             $proxy->setProxyInitializer(null);
             $wrappedInstance = $callback();
