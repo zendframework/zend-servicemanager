@@ -4,6 +4,9 @@ The Service Manager component can be configured by passing an associative array 
 constructor. The following keys are:
 
 - `services`: associative array that maps a key to a service instance.
+- `invokables`: an associative array that maps a key to a constructor-less service;
+  i.e., for services that do not require arguments to the constructor. The key and
+  service name usually are the same; if they are not, the key is treated as an alias.
 - `factories`: associative array that map a key to a factory name, or any callable.
 - `abstract_factories`: a list of abstract factories classes. An abstract
   factory is a factory that can potentially create any object, based on some
@@ -11,14 +14,14 @@ constructor. The following keys are:
 - `delegators`: an associative array that maps service keys to lists of delegator factory keys, see the [delegators documentation](delegators.md) for more details.
 - `aliases`: associative array that map a key to a service key (or another alias).
 - `initializers`: a list of callable or initializers that are run whenever a service has been created.
-- `shared`: associative array that map a service name to a boolean, in order to
-  indicate the service manager if it should cache or not a service created
-  through the `get` method, independent of the `shared_by_default` setting.
 - `lazy_services`: configuration for the lazy service proxy manager, and a class
   map of service:class pairs that will act as lazy services; see the
   [lazy services documentation](lazy-services.md) for more details.
+- `shared`: associative array that maps a service name to a boolean, in order to
+  indicate to the service manager whether or not it should cache services it
+  creates via `get` method, independent of the `shared_by_default` setting.
 - `shared_by_default`: boolean that indicates whether services created through
-  the `get` method should be cached. This is true by default.
+  the `get` method should be cached. This is `true` by default.
 
 Here is an example of how you could configure a service manager:
 
@@ -27,11 +30,15 @@ use Zend\ServiceManager\ServiceManager;
 
 $serviceManager = new ServiceManager([
     'services'           => [],
+    'invokables'         => [],
     'factories'          => [],
     'abstract_factories' => [],
     'delegators'         => [],
+    'aliases'            => [],
+    'initializers'       => [],
+    'lazy_services'      => [],
     'shared'             => [],
-    'shared_by_default'  => true
+    'shared_by_default'  => true,
 ]);
 ```
 
@@ -50,17 +57,18 @@ use stdClass;
 
 $serviceManager = new ServiceManager([
     'factories' => [
-        stdClass::class => InvokableFactory::class
-    ]
+        MyObject::class => MyObjectFactory::class,
+    ],
 ]);
 ```
 
-> This mechanism replaces the `invokables` key that was used in Zend Framework 2.
+> For invokable classes we can use `Zend\ServiceManager\Factory\InvokableFactory`
+> but for performance reasons using `invokables` configuration is recommended.
 
 As said before, a factory can also be a callable, to create more complex objects:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 use stdClass;
@@ -91,6 +99,16 @@ class MyObjectFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $dependency = $container->get(stdClass::class);
+        return new MyObject($dependency);
+    }
+}
+
+// or without implementing the interface:
+class MyObjectFactory
+{
+    public function __invoke(ContainerInterface $container, $requestedName)
+    {
+        $dependency = $container->get(Dependency::class);
         return new MyObject($dependency);
     }
 }
@@ -126,6 +144,16 @@ class MyObjectFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $dependency = $container->get(stdClass::class);
+        return new $requestedName($dependency);
+    }
+}
+
+// or without implementing the interface:
+class MyObjectFactory
+{
+    public function __invoke(ContainerInterface $container, $requestedName)
+    {
+        $dependency = $container->get(Dependency::class);
         return new $requestedName($dependency);
     }
 }
@@ -267,7 +295,7 @@ For instance, if we'd want to automatically inject the dependency
 `EventManagerAwareInterface`, we could create the following initializer:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use stdClass;
 use Zend\ServiceManager\ServiceManager;
 
@@ -303,7 +331,7 @@ class MyInitializer implements InitializerInterface
 
 // When creating the service manager:
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use stdClass;
 use Zend\ServiceManager\ServiceManager;
 

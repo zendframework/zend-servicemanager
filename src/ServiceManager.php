@@ -8,19 +8,20 @@
 namespace Zend\ServiceManager;
 
 use Exception;
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use ProxyManager\Configuration as ProxyConfiguration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\FileLocator\FileLocator;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Exception\ContainerModificationsNotAllowedException;
 use Zend\ServiceManager\Exception\CyclicAliasException;
+use Zend\ServiceManager\Exception\ExceptionInterface;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 
+use function array_intersect;
 use function array_merge_recursive;
 use function class_exists;
 use function get_class;
@@ -654,7 +655,7 @@ class ServiceManager implements ServiceLocatorInterface
      * @throws ServiceNotFoundException if unable to resolve the service.
      * @throws ServiceNotCreatedException if an exception is raised when
      *     creating a service.
-     * @throws ContainerException if any other error occurs
+     * @throws ExceptionInterface if any other error occurs
      */
     private function doCreate(string $resolvedName, array $options = null)
     {
@@ -666,7 +667,7 @@ class ServiceManager implements ServiceLocatorInterface
             } else {
                 $object = $this->createDelegatorFromName($resolvedName, $options);
             }
-        } catch (ContainerException $exception) {
+        } catch (ExceptionInterface $exception) {
             throw $exception;
         } catch (Exception $exception) {
             throw new ServiceNotCreatedException(sprintf(

@@ -7,7 +7,7 @@
 
 namespace Zend\ServiceManager\Initializer;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Interface for an initializer

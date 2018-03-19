@@ -14,7 +14,7 @@ intercept actions being performed on the delegate in an
 A delegator factory has the following signature:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 public function __invoke(
     ContainerInterface $container,
@@ -106,7 +106,7 @@ A simple delegator factory for the `buzzer` service can be implemented as
 following:
 
 ```php
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 
 class BuzzerDelegatorFactory implements DelegatorFactoryInterface

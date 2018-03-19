@@ -8,7 +8,7 @@
 namespace Zend\ServiceManager\AbstractFactory;
 
 use ArrayObject;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 

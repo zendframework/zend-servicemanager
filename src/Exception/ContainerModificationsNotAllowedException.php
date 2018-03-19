@@ -9,6 +9,8 @@ namespace Zend\ServiceManager\Exception;
 
 use DomainException;
 
+use function sprintf;
+
 /**
  * @inheritDoc
  */

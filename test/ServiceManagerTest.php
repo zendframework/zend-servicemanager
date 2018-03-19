@@ -18,6 +18,8 @@ use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimpleServiceManager;
 
+use function get_class;
+
 /**
  * @covers \Zend\ServiceManager\ServiceManager
  */

@@ -7,7 +7,7 @@
 
 namespace Zend\ServiceManager\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Factory for instantiating classes with no dependencies or which accept a single array.

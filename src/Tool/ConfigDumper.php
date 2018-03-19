@@ -7,7 +7,7 @@
 
 namespace Zend\ServiceManager\Tool;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionParameter;
 use Traversable;

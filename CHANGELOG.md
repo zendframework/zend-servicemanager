@@ -141,7 +141,7 @@ All notable changes to this project will be documented in this file, in reverse 
   `Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory`, which enables a
   configuration-based approach to providing class dependencies when all
   dependencies are services known to the `ServiceManager`. Please see
-  [the documentation](doc/book/config-abstract-factory.md) for details.
+  [the documentation](docs/book/config-abstract-factory.md) for details.
 - [#154](https://github.com/zendframework/zend-servicemanager/pull/154) adds
   `Zend\ServiceManager\Tool\ConfigDumper`, which will introspect a given class
   to determine dependencies, and then create configuration for
