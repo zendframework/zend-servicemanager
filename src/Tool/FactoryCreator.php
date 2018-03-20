@@ -49,7 +49,7 @@ class %sFactory implements FactoryInterface
 
 EOT;
 
-    public function createFactory(string $className): string
+    public function createFactory(string $className) : string
     {
         $class = $this->getClassName($className);
 
@@ -64,13 +64,13 @@ EOT;
         );
     }
 
-    private function getClassName(string $className): string
+    private function getClassName(string $className) : string
     {
         $class = substr($className, strrpos($className, '\\') + 1);
         return $class;
     }
 
-    private function getConstructorParameters(string $className): array
+    private function getConstructorParameters(string $className) : array
     {
         $reflectionClass = new ReflectionClass($className);
 
@@ -112,7 +112,7 @@ EOT;
         }, $constructorParameters);
     }
 
-    private function createArgumentString(string $className): string
+    private function createArgumentString(string $className) : string
     {
         $arguments = array_map(function ($dependency) {
             return sprintf('$container->get(\\%s::class)', $dependency);

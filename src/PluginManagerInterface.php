@@ -24,5 +24,5 @@ interface PluginManagerInterface extends ServiceLocatorInterface
      *     constraint on type imposed by the plugin manager
      * @throws ContainerException if any other error occurs
      */
-    public function validate($instance): void;
+    public function validate($instance) : void;
 }

@@ -25,7 +25,7 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
      *
      * {@inheritdoc}
      */
-    public function canCreate(ContainerInterface $container, string $requestedName): bool
+    public function canCreate(ContainerInterface $container, string $requestedName) : bool
     {
         if (! $container->has('config') || ! array_key_exists(self::class, $container->get('config'))) {
             return false;

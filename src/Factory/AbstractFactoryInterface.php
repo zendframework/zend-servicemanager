@@ -28,5 +28,5 @@ interface AbstractFactoryInterface extends FactoryInterface
      * @param  string $requestedName
      * @return bool
      */
-    public function canCreate(ContainerInterface $container, string $requestedName): bool;
+    public function canCreate(ContainerInterface $container, string $requestedName) : bool;
 }

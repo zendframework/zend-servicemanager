@@ -20,7 +20,7 @@ class AbstractFactoryFoo implements AbstractFactoryInterface
         return false;
     }
 
-    public function canCreate(ContainerInterface $container, string $requestedName): bool
+    public function canCreate(ContainerInterface $container, string $requestedName) : bool
     {
         return ($requestedName === 'foo');
     }

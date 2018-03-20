@@ -58,7 +58,7 @@ EOH;
      * @param array $args Argument list, minus script name
      * @return int Exit status
      */
-    public function __invoke(array $args): int
+    public function __invoke(array $args) : int
     {
         $arguments = $this->parseArgs($args);
 
@@ -93,7 +93,7 @@ EOH;
         return 0;
     }
 
-    private function parseArgs(array $args): stdClass
+    private function parseArgs(array $args) : stdClass
     {
         if (! $args) {
             return $this->createArguments(self::COMMAND_HELP);
@@ -121,7 +121,7 @@ EOH;
      * @param resource $resource Defaults to STDOUT
      * @return void
      */
-    private function help($resource = STDOUT): void
+    private function help($resource = STDOUT) : void
     {
         $this->helper->writeLine(sprintf(
             self::HELP_TEMPLATE,
@@ -133,7 +133,7 @@ EOH;
      * @param string|null $class Name of class to reflect.
      * @param string|null $error Error message, if any.
      */
-    private function createArguments(string $command, string $class = null, string $error = null): stdClass
+    private function createArguments(string $command, string $class = null, string $error = null) : stdClass
     {
         return (object) [
             'command' => $command,

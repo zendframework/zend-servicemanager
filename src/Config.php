@@ -79,7 +79,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function configureServiceManager(ServiceManager $serviceManager): ServiceManager
+    public function configureServiceManager(ServiceManager $serviceManager) : ServiceManager
     {
         return $serviceManager->configure($this->config);
     }
@@ -87,7 +87,7 @@ class Config implements ConfigInterface
     /**
      * @inheritdoc
      */
-    public function toArray(): array
+    public function toArray() : array
     {
         return $this->config;
     }
@@ -98,7 +98,7 @@ class Config implements ConfigInterface
      *
      * @link https://github.com/zendframework/zend-servicemanager/pull/68
      */
-    private function merge(array $a, array $b): array
+    private function merge(array $a, array $b) : array
     {
         foreach ($b as $key => $value) {
             if ($value instanceof MergeReplaceKeyInterface) {

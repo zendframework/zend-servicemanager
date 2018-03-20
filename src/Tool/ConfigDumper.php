@@ -58,7 +58,7 @@ EOC;
     /**
      * @throws InvalidArgumentException for invalid $className
      */
-    public function createDependencyConfig(array $config, string $className, bool $ignoreUnresolved = false): array
+    public function createDependencyConfig(array $config, string $className, bool $ignoreUnresolved = false) : array
     {
         $this->validateClassName($className);
 
@@ -121,14 +121,14 @@ EOC;
      * @throws InvalidArgumentException if class name is not a string or does
      *     not exist.
      */
-    private function validateClassName(string $className): void
+    private function validateClassName(string $className) : void
     {
         if (! class_exists($className) && ! interface_exists($className)) {
             throw new InvalidArgumentException('Cannot find class or interface with name ' . $className);
         }
     }
 
-    private function createInvokable(array $config, string $className): array
+    private function createInvokable(array $config, string $className) : array
     {
         $config[ConfigAbstractFactory::class][$className] = [];
         return $config;
@@ -138,7 +138,7 @@ EOC;
      * @throws InvalidArgumentException if ConfigAbstractFactory configuration
      *     value is not an array.
      */
-    public function createFactoryMappingsFromConfig(array $config): array
+    public function createFactoryMappingsFromConfig(array $config) : array
     {
         if (! array_key_exists(ConfigAbstractFactory::class, $config)) {
             return $config;
@@ -158,7 +158,7 @@ EOC;
         return $config;
     }
 
-    public function createFactoryMappings(array $config, string $className): array
+    public function createFactoryMappings(array $config, string $className) : array
     {
         $this->validateClassName($className);
 
@@ -173,7 +173,7 @@ EOC;
         return $config;
     }
 
-    public function dumpConfigFile(array $config): string
+    public function dumpConfigFile(array $config) : string
     {
         $prepared = $this->prepareConfig($config);
         return sprintf(
@@ -184,7 +184,7 @@ EOC;
         );
     }
 
-    private function prepareConfig(iterable $config, int $indentLevel = 1): string
+    private function prepareConfig(iterable $config, int $indentLevel = 1) : string
     {
         $indent = str_repeat(' ', $indentLevel * 4);
         $entries = [];
@@ -210,7 +210,7 @@ EOC;
     /**
      * @param string|int|null $key
      */
-    private function createConfigKey($key): ?string
+    private function createConfigKey($key) : ?string
     {
         if (is_string($key) && class_exists($key)) {
             return sprintf('\\%s::class', $key);
@@ -226,7 +226,7 @@ EOC;
     /**
      * @param mixed $value
      */
-    private function createConfigValue($value, int $indentLevel): string
+    private function createConfigValue($value, int $indentLevel) : string
     {
         if (is_array($value) || $value instanceof Traversable) {
             return $this->prepareConfig($value, $indentLevel + 1);

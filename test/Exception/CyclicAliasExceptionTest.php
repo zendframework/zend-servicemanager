@@ -34,7 +34,7 @@ class CyclicAliasExceptionTest extends TestCase
      *
      * @return string[][]|string[][][]
      */
-    public function cyclicAliasProvider(): array
+    public function cyclicAliasProvider() : array
     {
         return [
             [
@@ -122,7 +122,7 @@ class CyclicAliasExceptionTest extends TestCase
     /**
      * @return string[][]|string[][][]
      */
-    public function aliasesProvider(): array
+    public function aliasesProvider() : array
     {
         return [
             'empty set' => [

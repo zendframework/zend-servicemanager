@@ -107,7 +107,7 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      * {@inheritDoc}
      * @throws InvalidServiceException
      */
-    public function configure(array $config): ServiceManager
+    public function configure(array $config) : ServiceManager
     {
         if (isset($config['services'])) {
             foreach ($config['services'] as $service) {
@@ -125,7 +125,7 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      *
      * {@inheritDoc}
      */
-    public function setService(string $name, $service): void
+    public function setService(string $name, $service) : void
     {
         $this->validate($service);
         parent::setService($name, $service);
@@ -165,7 +165,7 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
     /**
      * {@inheritDoc}
      */
-    public function validate($instance): void
+    public function validate($instance) : void
     {
         if (method_exists($this, 'validatePlugin')) {
             trigger_error(sprintf(

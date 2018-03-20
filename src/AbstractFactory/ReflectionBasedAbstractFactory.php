@@ -136,7 +136,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function canCreate(ContainerInterface $container, string $requestedName): bool
+    public function canCreate(ContainerInterface $container, string $requestedName) : bool
     {
         return class_exists($requestedName);
     }
@@ -150,7 +150,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
     private function resolveParameterWithoutConfigService(
         ContainerInterface $container,
         string $requestedName
-    ): callable {
+    ) : callable {
         /**
          * @param ReflectionParameter $parameter
          * @return mixed
@@ -168,7 +168,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
      * Unlike resolveParameter(), this version will detect `$config` array
      * arguments and have them return the 'config' service.
      */
-    private function resolveParameterWithConfigService(ContainerInterface $container, string $requestedName): callable
+    private function resolveParameterWithConfigService(ContainerInterface $container, string $requestedName) : callable
     {
         /**
          * @param ReflectionParameter $parameter

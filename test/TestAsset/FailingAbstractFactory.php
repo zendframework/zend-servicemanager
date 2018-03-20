@@ -15,7 +15,7 @@ class FailingAbstractFactory implements AbstractFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function canCreate(ContainerInterface $container, string $name): bool
+    public function canCreate(ContainerInterface $container, string $name) : bool
     {
         return false;
     }

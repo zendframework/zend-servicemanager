@@ -16,7 +16,7 @@ class SimpleInitializer implements InitializerInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ContainerInterface $container, $instance): void
+    public function __invoke(ContainerInterface $container, $instance) : void
     {
         if (! $instance instanceof stdClass) {
             return;

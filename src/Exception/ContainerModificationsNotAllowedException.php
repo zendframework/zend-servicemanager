@@ -19,7 +19,7 @@ class ContainerModificationsNotAllowedException extends DomainException implemen
     /**
      * @param string $service Name of service that already exists.
      */
-    public static function fromExistingService(string $service): self
+    public static function fromExistingService(string $service) : self
     {
         return new self(sprintf(
             'The container does not allow replacing or updating a service'
