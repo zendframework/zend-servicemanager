@@ -8,6 +8,7 @@
 namespace Zend\ServiceManager\AbstractFactory;
 
 use ArrayObject;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
@@ -24,12 +25,18 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
      *
      * {@inheritdoc}
      */
-    public function canCreate(\Psr\Container\ContainerInterface $container, $requestedName)
+    public function canCreate(ContainerInterface $container, $requestedName)
     {
-        if (! $container->has('config') || ! array_key_exists(self::class, $container->get('config'))) {
+        if (! $container->has('config')) {
             return false;
         }
+
         $config = $container->get('config');
+
+        if (! isset($config[self::class])) {
+            return false;
+        }
+
         $dependencies = $config[self::class];
 
         return is_array($dependencies) && array_key_exists($requestedName, $dependencies);
@@ -38,7 +45,7 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(\Psr\Container\ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         if (! $container->has('config')) {
             throw new ServiceNotCreatedException('Cannot find a config array in the container');
@@ -50,14 +57,14 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
             throw new ServiceNotCreatedException('Config must be an array or an instance of ArrayObject');
         }
 
-        if (! array_key_exists(self::class, $config)) {
+        if (! isset($config[self::class])) {
             throw new ServiceNotCreatedException('Cannot find a `' . self::class . '` key in the config array');
         }
 
         $dependencies = $config[self::class];
 
         if (! is_array($dependencies)
-            || ! array_key_exists($requestedName, $dependencies)
+            || ! isset($dependencies[$requestedName])
             || ! is_array($dependencies[$requestedName])
         ) {
             throw new ServiceNotCreatedException('Dependencies config must exist and be an array');
