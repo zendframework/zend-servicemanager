@@ -7,93 +7,16 @@
 
 namespace ZendTest\ServiceManager;
 
-use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
+use Zend\ContainerConfigTest\AbstractExpressiveContainerConfigTest;
+use Zend\ContainerConfigTest\SharedTestTrait;
 use Zend\ServiceManager\ServiceManager;
 
-class ContainerTest extends TestCase
+class ContainerTest extends AbstractExpressiveContainerConfigTest
 {
-    public function config()
-    {
-        yield 'factories' => [['factories' => ['service' => TestAsset\SampleFactory::class]]];
-        yield 'invokables' => [['invokables' => ['service' => TestAsset\InvokableObject::class]]];
-        yield 'aliases-invokables' => [
-            [
-                'aliases' => ['service' => TestAsset\InvokableObject::class],
-                'invokables' => [TestAsset\InvokableObject::class => TestAsset\InvokableObject::class],
-            ],
-        ];
-        yield 'aliases-factories' => [
-            [
-                'aliases' => ['service' => TestAsset\InvokableObject::class],
-                'factories' => [TestAsset\InvokableObject::class => TestAsset\SampleFactory::class],
-            ],
-        ];
-    }
+    use SharedTestTrait;
 
-    /**
-     * @dataProvider config
-     */
-    public function testIsSharedByDefault(array $config)
-    {
-        $container = $this->createContainer($config);
-
-        $service1 = $container->get('service');
-        $service2 = $container->get('service');
-
-        $this->assertSame($service1, $service2);
-    }
-
-    /**
-     * @dataProvider config
-     */
-    public function testCanDisableSharedByDefault(array $config)
-    {
-        $container = $this->createContainer(array_merge($config, [
-            'shared_by_default' => false,
-        ]));
-
-        $service1 = $container->get('service');
-        $service2 = $container->get('service');
-
-        $this->assertNotSame($service1, $service2);
-    }
-
-    /**
-     * @dataProvider config
-     */
-    public function testCanDisableSharedForSingleService(array $config)
-    {
-        $container = $this->createContainer(array_merge($config, [
-            'shared' => [
-                'service' => false,
-            ],
-        ]));
-
-        $service1 = $container->get('service');
-        $service2 = $container->get('service');
-
-        $this->assertNotSame($service1, $service2);
-    }
-
-    /**
-     * @dataProvider config
-     */
-    public function testCanEnableSharedForSingleService(array $config)
-    {
-        $container = $this->createContainer(array_merge($config, [
-            'shared_by_default' => false,
-            'shared' => [
-                'service' => true,
-            ],
-        ]));
-
-        $service1 = $container->get('service');
-        $service2 = $container->get('service');
-
-        $this->assertSame($service1, $service2);
-    }
-
-    private function createContainer(array $config)
+    protected function createContainer(array $config) : ContainerInterface
     {
         return new ServiceManager($config);
     }

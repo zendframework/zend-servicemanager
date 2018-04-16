@@ -30,7 +30,8 @@
         "ocramius/proxy-manager": "^2.1.1",
         "phpbench/phpbench": "^0.13.0",
         "phpunit/phpunit": "^6.4.4",
-        "zendframework/zend-coding-standard": "~1.0.0"
+        "zendframework/zend-coding-standard": "~1.0.0",
+        "zendframework/zend-container-config-test": "^0.2.1"
     },
     "provide": {
         "psr/container-implementation": "^1.0"
