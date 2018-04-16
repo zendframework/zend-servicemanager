@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "bba5f6d05be1ae91bc424cd3510f5bbc",
+    "content-hash": "f280e96d0b05401d973f1fdd15dc0c90",
     "packages": [
         {
             "name": "psr/container",
@@ -2862,6 +2862,61 @@
                 "zf"
             ],
             "time": "2016-11-09T21:30:43+00:00"
+        },
+        {
+            "name": "zendframework/zend-container-config-test",
+            "version": "0.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/zend-container-config-test.git",
+                "reference": "ebc45b7b6b2a8e382fe8a4a4d6c74a196fe53554"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zendframework/zend-container-config-test/zipball/ebc45b7b6b2a8e382fe8a4a4d6c74a196fe53554",
+                "reference": "ebc45b7b6b2a8e382fe8a4a4d6c74a196fe53554",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1",
+                "psr/container": "^1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.0.2",
+                "zendframework/zend-auradi-config": "^1.0.1",
+                "zendframework/zend-coding-standard": "~1.0.0",
+                "zendframework/zend-pimple-config": "^1.1",
+                "zendframework/zend-servicemanager": "^3.3.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/TestAsset/function-factory.php",
+                    "src/TestAsset/function-factory-with-name.php"
+                ],
+                "psr-4": {
+                    "Zend\\ContainerConfigTest\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Expressive PSR-11 container configuration tests",
+            "keywords": [
+                "PSR-11",
+                "ZendFramework",
+                "container",
+                "expressive",
+                "test",
+                "zf"
+            ],
+            "time": "2018-04-12T18:58:34+00:00"
         },
         {
             "name": "zendframework/zend-eventmanager",
