@@ -34,5 +34,5 @@ interface DelegatorFactoryInterface
      *     creating a service.
      * @throws ContainerException if any other error occurs
      */
-    public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null);
+    public function __invoke(ContainerInterface $container, string $name, callable $callback, array $options = null);
 }

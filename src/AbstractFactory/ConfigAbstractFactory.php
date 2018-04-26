@@ -8,6 +8,7 @@
 namespace Zend\ServiceManager\AbstractFactory;
 
 use ArrayObject;
+use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
@@ -24,7 +25,7 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
      *
      * {@inheritdoc}
      */
-    public function canCreate(\Psr\Container\ContainerInterface $container, $requestedName)
+    public function canCreate(ContainerInterface $container, string $requestedName) : bool
     {
         if (! $container->has('config') || ! array_key_exists(self::class, $container->get('config'))) {
             return false;
@@ -38,7 +39,7 @@ final class ConfigAbstractFactory implements AbstractFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(\Psr\Container\ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, string $requestedName, array $options = null)
     {
         if (! $container->has('config')) {
             throw new ServiceNotCreatedException('Cannot find a config array in the container');

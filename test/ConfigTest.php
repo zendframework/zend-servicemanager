@@ -104,10 +104,11 @@ class ConfigTest extends TestCase
         ];
 
         $services = $this->prophesize(ServiceManager::class);
-        $services->configure($expected)->willReturn('CALLED');
+        $object = $services->reveal();
+        $services->configure($expected)->willReturn($object);
 
         $configuration = new Config($config);
-        self::assertEquals('CALLED', $configuration->configureServiceManager($services->reveal()));
+        self::assertEquals($object, $configuration->configureServiceManager($object));
 
         return [
             'array'  => $expected,

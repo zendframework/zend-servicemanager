@@ -25,7 +25,7 @@ final class InvokableFactory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $container, string $requestedName, array $options = null)
     {
         return (null === $options) ? new $requestedName : new $requestedName($options);
     }

@@ -19,7 +19,7 @@ interface ConfigInterface
      * @param ServiceManager $serviceManager
      * @return ServiceManager
      */
-    public function configureServiceManager(ServiceManager $serviceManager);
+    public function configureServiceManager(ServiceManager $serviceManager) : ServiceManager;
 
     /**
      * Return configuration for a service manager instance as an array.
@@ -42,5 +42,5 @@ interface ConfigInterface
      *
      * @return array
      */
-    public function toArray();
+    public function toArray() : array;
 }

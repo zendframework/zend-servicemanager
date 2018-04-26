@@ -25,7 +25,7 @@ class InvalidArgumentException extends SplInvalidArgumentException implements Ex
      * @param mixed $initializer
      * @return self
      */
-    public static function fromInvalidInitializer($initializer)
+    public static function fromInvalidInitializer($initializer) : self
     {
         return new self(sprintf(
             'An invalid initializer was registered. Expected a callable or an'
@@ -39,7 +39,7 @@ class InvalidArgumentException extends SplInvalidArgumentException implements Ex
      * @param mixed $abstractFactory
      * @return self
      */
-    public static function fromInvalidAbstractFactory($abstractFactory)
+    public static function fromInvalidAbstractFactory($abstractFactory) : self
     {
         return new self(sprintf(
             'An invalid abstract factory was registered. Expected an instance of or a valid'

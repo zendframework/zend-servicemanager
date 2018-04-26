@@ -39,13 +39,6 @@ class ConfigDumperTest extends TestCase
         $this->dumper = new ConfigDumper();
     }
 
-    public function testCreateDependencyConfigExceptsIfClassNameIsNotString()
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Class name must be a string, integer given');
-        $this->dumper->createDependencyConfig([], 42);
-    }
-
     public function testCreateDependencyConfigExceptsIfClassDoesNotExist()
     {
         $className = 'Dirk\Gentley\Holistic\Detective\Agency';
@@ -210,13 +203,6 @@ class ConfigDumperTest extends TestCase
         ];
 
         self::assertEquals($expectedConfig, $this->dumper->createDependencyConfig([], DoubleDependencyObject::class));
-    }
-
-    public function testCreateFactoryMappingsExceptsIfClassNameIsNotString()
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Class name must be a string, integer given');
-        $this->dumper->createFactoryMappings([], 42);
     }
 
     public function testCreateFactoryMappingsExceptsIfClassDoesNotExist()
