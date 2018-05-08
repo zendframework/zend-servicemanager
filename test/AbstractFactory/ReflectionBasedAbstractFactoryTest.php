@@ -1,7 +1,7 @@
 <?php
 /**
  * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -15,6 +15,8 @@ use Zend\ServiceManager\Exception\ServiceNotFoundException;
 
 class ReflectionBasedAbstractFactoryTest extends TestCase
 {
+    private $container;
+
     public function setUp()
     {
         $this->container = $this->prophesize(ContainerInterface::class);
@@ -34,6 +36,20 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
     {
         $factory = new ReflectionBasedAbstractFactory();
         $this->assertFalse($factory->canCreate($this->container->reveal(), $requestedName));
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testCanCreateReturnsFalseWhenConstructorIsPrivate() : void
+    {
+        self::assertFalse(
+            (new ReflectionBasedAbstractFactory())->canCreate(
+                $this->container->reveal(),
+                TestAsset\ClassWithPrivateConstructor::class
+            ),
+            'ReflectionBasedAbstractFactory should not be able to instantiate a class with a private constructor'
+        );
     }
 
     public function testFactoryInstantiatesClassDirectlyIfItHasNoConstructor()
