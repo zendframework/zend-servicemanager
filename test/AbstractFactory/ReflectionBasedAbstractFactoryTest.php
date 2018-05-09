@@ -51,6 +51,17 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
         );
     }
 
+    public function testCanCreateReturnsTrueWhenClassHasNoConstructor() : void
+    {
+        self::assertTrue(
+            (new ReflectionBasedAbstractFactory())->canCreate(
+                $this->container->reveal(),
+                TestAsset\ClassWithNoConstructor::class
+            ),
+            'ReflectionBasedAbstractFactory should be able to instantiate a class without a constructor'
+        );
+    }
+
     public function testFactoryInstantiatesClassDirectlyIfItHasNoConstructor()
     {
         $factory = new ReflectionBasedAbstractFactory();

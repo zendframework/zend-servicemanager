@@ -141,11 +141,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
     {
         $constructor = (new ReflectionClass($requestedName))->getConstructor();
 
-        if ($constructor === null) {
-            return true;
-        }
-
-        return $constructor->isPublic();
+        return $constructor === null || $constructor->isPublic();
     }
 
     /**
