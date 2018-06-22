@@ -437,6 +437,16 @@ class AbstractPluginManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(InvokableObject::class, $pluginManager->get('foo'));
     }
 
+    public function testStaticFactoryMethod()
+    {
+        $pluginManager = new FooPluginManager(new Config([
+            'factories' => [
+                'Foo' => 'ZendTest\ServiceManager\TestAsset\FooStaticFactory::createService',
+            ],
+        ]));
+        $this->assertInstanceOf(TestAsset\Foo::class, $pluginManager->get('foo'));
+    }
+
     public function testInvokableFactoryHasMutableOptions()
     {
         $pluginManager = new FooPluginManager($this->serviceManager);
