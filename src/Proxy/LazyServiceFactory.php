@@ -49,14 +49,14 @@ final class LazyServiceFactory implements DelegatorFactoryInterface
      */
     public function __invoke(ContainerInterface $container, $name, callable $callback, array $options = null)
     {
-        $initializer = function (&$wrappedInstance, LazyLoadingInterface $proxy) use ($callback) {
-            $proxy->setProxyInitializer(null);
-            $wrappedInstance = $callback();
-
-            return true;
-        };
-
         if (isset($this->servicesMap[$name])) {
+            $initializer = function (&$wrappedInstance, LazyLoadingInterface $proxy) use ($callback) {
+                $proxy->setProxyInitializer(null);
+                $wrappedInstance = $callback();
+
+                return true;
+            };
+
             return $this->proxyFactory->createProxy($this->servicesMap[$name], $initializer);
         }
 
