@@ -69,7 +69,7 @@ EOT;
     }
 
     /**
-     * @param $className
+     * @param string $className
      * @return string
      */
     private function getClassName($className)
@@ -86,11 +86,12 @@ EOT;
     {
         $reflectionClass = new ReflectionClass($className);
 
-        if (! $reflectionClass || ! $reflectionClass->getConstructor()) {
+        $reflectionConstructor = $reflectionClass->getConstructor();
+        if (! $reflectionConstructor) {
             return [];
         }
 
-        $constructorParameters = $reflectionClass->getConstructor()->getParameters();
+        $constructorParameters = $reflectionConstructor->getParameters();
 
         if (empty($constructorParameters)) {
             return [];
@@ -120,7 +121,9 @@ EOT;
         }
 
         return array_map(function (ReflectionParameter $parameter) {
-            return $parameter->getClass()->getName();
+            /** @var ReflectionClass $class */
+            $class = $parameter->getClass();
+            return $class->getName();
         }, $constructorParameters);
     }
 

@@ -69,7 +69,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Whether or not changes may be made to this instance.
      *
-     * @param bool
+     * @var bool
      */
     protected $allowOverride = false;
 
@@ -645,7 +645,7 @@ class ServiceManager implements ServiceLocatorInterface
             };
         }
 
-        return $creationCallback($this->creationContext, $name, $creationCallback, $options);
+        return $creationCallback();
     }
 
     /**
