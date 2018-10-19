@@ -23,6 +23,7 @@ matrix:
         - BENCHMARKS=true
         - TEST_COVERAGE=true
         - PHPSTAN_TEST=true
+        - LEGACY_DEPS="ocramius/proxy-manager phpbench/phpbench phpunit/phpunit"
     - php: 7.1
       env:
         - DEPS=latest
