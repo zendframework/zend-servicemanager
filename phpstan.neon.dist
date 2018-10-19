@@ -15,6 +15,5 @@ parameters:
         - "#Casting to [a-z]+ something that's already [a-z]+#"
         - '#PHPDoc tag @throws with type Interop\\Container\\Exception\\ContainerException is not subtype of Throwable#'
         - '#PHPDoc tag @throws with type ([\w\\\|]+\|)?Psr\\Container\\ContainerExceptionInterface(\|[\w\\\|]+)? is not subtype of Throwable#'
-        - '#Parameter \#2 \$search of function array_key_exists expects array, (array\|)?ArrayObject given#'
 # AbstractPluginManager::__construct() accepts more types:
         - '#Result of && is always false#'
