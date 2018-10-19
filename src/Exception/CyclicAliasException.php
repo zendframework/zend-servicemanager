@@ -108,7 +108,7 @@ class CyclicAliasException extends InvalidArgumentException
     }
 
     /**
-     * @param string[][] $detectedCycles
+     * @param bool[][] $detectedCycles
      * @return string
      */
     private static function printCycles(array $detectedCycles)
@@ -117,7 +117,7 @@ class CyclicAliasException extends InvalidArgumentException
     }
 
     /**
-     * @param string[] $detectedCycle
+     * @param bool[] $detectedCycle
      * @return string
      */
     private static function printCycle(array $detectedCycle)
