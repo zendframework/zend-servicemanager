@@ -23,7 +23,6 @@ matrix:
         - BENCHMARKS=true
         - TEST_COVERAGE=true
         - PHPSTAN_TEST=true
-        - LEGACY_DEPS="ocramius/proxy-manager phpbench/phpbench phpunit/phpunit"
     - php: 7.1
       env:
         - DEPS=latest
@@ -45,7 +44,6 @@ install:
   - if [[ $DEPS == 'latest' ]]; then travis_retry composer update $COMPOSER_ARGS ; fi
   - if [[ $DEPS == 'lowest' ]]; then travis_retry composer update --prefer-lowest --prefer-stable $COMPOSER_ARGS ; fi
   - if [[ $TEST_COVERAGE == 'true' ]]; then travis_retry composer require --dev $COMPOSER_ARGS $COVERAGE_DEPS ; fi
-  - if [[ $PHPSTAN_TEST == 'true' ]]; then travis_retry composer require --dev $COMPOSER_ARGS $PHPSTAN_DEPS ; fi
   - stty cols 120 && composer show
 
 script:
