@@ -8,6 +8,7 @@
 namespace Zend\ServiceManager;
 
 use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface as PsrContainerInterface;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 
 /**
@@ -52,6 +53,11 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      */
     public function __construct($configInstanceOrParentLocator = null, array $config = [])
     {
+        if ($configInstanceOrParentLocator instanceof PsrContainerInterface
+            && ! $configInstanceOrParentLocator instanceof ContainerInterface
+        ) {
+            $configInstanceOrParentLocator = new PsrContainerDecorator($configInstanceOrParentLocator);
+        }
         if (null !== $configInstanceOrParentLocator
             && ! $configInstanceOrParentLocator instanceof ConfigInterface
             && ! $configInstanceOrParentLocator instanceof ContainerInterface
