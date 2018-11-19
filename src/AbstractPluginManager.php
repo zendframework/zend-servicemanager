@@ -56,6 +56,11 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
         if ($configInstanceOrParentLocator instanceof PsrContainerInterface
             && ! $configInstanceOrParentLocator instanceof ContainerInterface
         ) {
+            /**
+             * {@see \Zend\ServiceManager\Factory\FactoryInterface} typehints
+             * against interop container and as such cannot accept non-interop
+             * psr container. Decorate it as interop.
+             */
             $configInstanceOrParentLocator = new PsrContainerDecorator($configInstanceOrParentLocator);
         }
         if (null !== $configInstanceOrParentLocator
