@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [PR] Adds the ability to decorate the `$options` array in delegator factories. 
+- [#276](https://github.com/zendframework/zend-servicemanager/pull/276) adds the ability 
+  to decorate the `$options` array in delegator factories.
 
 ### Changed
 
