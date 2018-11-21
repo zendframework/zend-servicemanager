@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [PR] Adds the ability to decorate the `$options` array in delegator factories. 
 
 ### Changed
 
