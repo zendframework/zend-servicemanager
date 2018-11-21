@@ -7,11 +7,15 @@
 
 namespace ZendTest\ServiceManager;
 
+use ArrayObject;
 use DateTime;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 use Psr\Container\ContainerInterface;
 use stdClass;
+use Zend\ContainerConfigTest\TestAsset\Service;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
@@ -362,5 +366,37 @@ class ServiceManagerTest extends TestCase
             ->willReturn(false);
 
         self::assertFalse($serviceManager->has('Alias'));
+    }
+
+    public function testDelegatorCanDecorateServiceOptions() : void
+    {
+        $factoryProphecy = $this->prophesize(FactoryInterface::class);
+        $serviceManager = new ServiceManager([
+            'factories' => [
+                'decorated' => $factoryProphecy->reveal(),
+            ],
+            'delegators' => [
+                'decorated' => [
+                    function (ContainerInterface $container, string $name, callable $factory, array $options = null) {
+                        $options['bar'] = 'decoratedValue';
+                        return $factory($options);
+                    },
+                ],
+            ],
+        ]);
+
+        // Expect the call with decorated options and reveal them
+        // as ArrayObject service
+        $factoryProphecy
+            ->__invoke($serviceManager, 'decorated', ['foo' => 'bar', 'bar' => 'decoratedValue'])
+            ->will(function (array $args) {
+                return new ArrayObject($args[2]);
+            });
+
+        $object = $serviceManager->build('decorated', [
+            'foo' => 'bar'
+        ]);
+
+        self::assertEquals(new ArrayObject(['foo' => 'bar', 'bar' => 'decoratedValue']), $object);
     }
 }

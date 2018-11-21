@@ -603,10 +603,10 @@ class ServiceManager implements ServiceLocatorInterface
      */
     private function createDelegatorFromName($name, array $options = null)
     {
-        $creationCallback = function () use ($name, $options) {
+        $creationCallback = function (array $decoratedOptions = null) use ($name, $options) {
             // Code is inlined for performance reason, instead of abstracting the creation
             $factory = $this->getFactory($name);
-            return $factory($this->creationContext, $name, $options);
+            return $factory($this->creationContext, $name, $decoratedOptions ?? $options);
         };
 
         foreach ($this->delegators[$name] as $index => $delegatorFactory) {
@@ -640,12 +640,22 @@ class ServiceManager implements ServiceLocatorInterface
 
             $this->delegators[$name][$index] = $delegatorFactory;
 
-            $creationCallback = function () use ($delegatorFactory, $name, $creationCallback, $options) {
-                return $delegatorFactory($this->creationContext, $name, $creationCallback, $options);
+            $creationCallback = function (array $decoratedOptions = null) use (
+                $delegatorFactory,
+                $name,
+                $creationCallback,
+                $options
+            ) {
+                return $delegatorFactory(
+                    $this->creationContext,
+                    $name,
+                    $creationCallback,
+                    $decoratedOptions ?? $options
+                );
             };
         }
 
-        return $creationCallback($this->creationContext, $name, $creationCallback, $options);
+        return $creationCallback();
     }
 
     /**
