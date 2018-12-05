@@ -1,17 +1,14 @@
 <?php
-
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2018 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @see       https://github.com/zendframework/zend-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   https://github.com/zendframework/zend-servicemanager/blob/master/LICENSE.md New BSD License
  */
 
 namespace Zend\ServiceManager;
 
 use Interop\Container\ContainerInterface;
-use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * @internal for use in abstract plugin manager
@@ -29,14 +26,7 @@ final class PsrContainerDecorator implements ContainerInterface
     }
 
     /**
-     * Finds an entry of the container by its identifier and returns it.
-     *
-     * @param string $id Identifier of the entry to look for.
-     *
-     * @throws NotFoundExceptionInterface  No entry was found for **this** identifier.
-     * @throws ContainerExceptionInterface Error while retrieving the entry.
-     *
-     * @return mixed Entry.
+     * {@inheritdoc}
      */
     public function get($id)
     {
@@ -44,15 +34,7 @@ final class PsrContainerDecorator implements ContainerInterface
     }
 
     /**
-     * Returns true if the container can return an entry for the given identifier.
-     * Returns false otherwise.
-     *
-     * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
-     * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
-     *
-     * @param string $id Identifier of the entry to look for.
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function has($id)
     {
