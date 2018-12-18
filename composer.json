@@ -29,7 +29,6 @@
         "mikey179/vfsStream": "^1.6.4",
         "ocramius/proxy-manager": "^2.1.1",
         "phpbench/phpbench": "^0.13.0",
-        "phpstan/phpstan": "^0.10.3",
         "phpunit/phpunit": "^6.4.4",
         "zendframework/zend-coding-standard": "~1.0.0",
         "zendframework/zend-container-config-test": "^0.2.1"
