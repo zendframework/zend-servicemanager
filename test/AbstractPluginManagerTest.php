@@ -1,15 +1,17 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @see       https://github.com/zendframework/zend-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2018 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   https://github.com/zendframework/zend-servicemanager/blob/master/LICENSE.md New BSD License
  */
 
 namespace ZendTest\ServiceManager;
 
 use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface as PsrContainerInterface;
 use stdClass;
+use Zend\ServiceManager\AbstractPluginManager;
 use Zend\ServiceManager\ConfigInterface;
 use Zend\ServiceManager\Exception\InvalidArgumentException;
 use Zend\ServiceManager\Exception\InvalidServiceException;
@@ -17,6 +19,7 @@ use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
+use Zend\ServiceManager\PsrContainerDecorator;
 use Zend\ServiceManager\ServiceManager;
 use ZendTest\ServiceManager\TestAsset\InvokableObject;
 use ZendTest\ServiceManager\TestAsset\SimplePluginManager;
@@ -58,6 +61,32 @@ class AbstractPluginManagerTest extends TestCase
         $object = $pluginManager->get(InvokableObject::class);
 
         $this->assertInstanceOf(InvokableObject::class, $object);
+    }
+
+    public function testTransparentlyDecoratesNonInteropPsrContainerAsInteropContainer()
+    {
+        $invokableFactory = $this->getMockBuilder(FactoryInterface::class)
+            ->getMock();
+        $invokableFactory->method('__invoke')
+            ->will($this->returnArgument(0));
+
+        $config = [
+            'factories' => [
+                'creation context container' => $invokableFactory,
+            ],
+        ];
+
+        $container     = $this->getMockBuilder(PsrContainerInterface::class)
+            ->getMock();
+        $pluginManager = $this->getMockForAbstractClass(
+            AbstractPluginManager::class,
+            [$container, $config]
+        );
+
+        $object = $pluginManager->get('creation context container');
+
+        $this->assertInstanceOf(PsrContainerDecorator::class, $object);
+        $this->assertSame($container, $object->getContainer());
     }
 
     public function testValidateInstance()

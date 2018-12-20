@@ -1,13 +1,14 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @see       https://github.com/zendframework/zend-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2005-2018 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   https://github.com/zendframework/zend-servicemanager/blob/master/LICENSE.md New BSD License
  */
 
 namespace Zend\ServiceManager;
 
 use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface as PsrContainerInterface;
 use Zend\ServiceManager\Exception\InvalidServiceException;
 
 /**
@@ -47,11 +48,21 @@ abstract class AbstractPluginManager extends ServiceManager implements PluginMan
      * factories; for $config, {@see \Zend\ServiceManager\ServiceManager::configure()}
      * for details on its accepted structure.
      *
-     * @param null|ConfigInterface|ContainerInterface $configInstanceOrParentLocator
+     * @param null|ConfigInterface|ContainerInterface|PsrContainerInterface $configInstanceOrParentLocator
      * @param array $config
      */
     public function __construct($configInstanceOrParentLocator = null, array $config = [])
     {
+        if ($configInstanceOrParentLocator instanceof PsrContainerInterface
+            && ! $configInstanceOrParentLocator instanceof ContainerInterface
+        ) {
+            /**
+             * {@see \Zend\ServiceManager\Factory\FactoryInterface} typehints
+             * against interop container and as such cannot accept non-interop
+             * psr container. Decorate it as interop.
+             */
+            $configInstanceOrParentLocator = new PsrContainerDecorator($configInstanceOrParentLocator);
+        }
         if (null !== $configInstanceOrParentLocator
             && ! $configInstanceOrParentLocator instanceof ConfigInterface
             && ! $configInstanceOrParentLocator instanceof ContainerInterface
