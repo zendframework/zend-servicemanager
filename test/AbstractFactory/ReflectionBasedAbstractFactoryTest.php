@@ -1,14 +1,15 @@
 <?php
 /**
- * @link      http://github.com/zendframework/zend-servicemanager for the canonical source repository
- * @copyright Copyright (c) 2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @see       https://github.com/zendframework/zend-servicemanager for the canonical source repository
+ * @copyright Copyright (c) 2016-2018 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   https://github.com/zendframework/zend-servicemanager/blob/master/LICENSE.md New BSD License
  */
 
 namespace ZendTest\ServiceManager\AbstractFactory;
 
 use ArrayAccess;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
@@ -17,6 +18,9 @@ use function sprintf;
 
 class ReflectionBasedAbstractFactoryTest extends TestCase
 {
+    /** @var ContainerInterface|ObjectProphecy */
+    private $container;
+
     public function setUp()
     {
         $this->container = $this->prophesize(ContainerInterface::class);
@@ -36,6 +40,28 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
     {
         $factory = new ReflectionBasedAbstractFactory();
         self::assertFalse($factory->canCreate($this->container->reveal(), $requestedName));
+    }
+
+    public function testCanCreateReturnsFalseWhenConstructorIsPrivate() : void
+    {
+        self::assertFalse(
+            (new ReflectionBasedAbstractFactory())->canCreate(
+                $this->container->reveal(),
+                TestAsset\ClassWithPrivateConstructor::class
+            ),
+            'ReflectionBasedAbstractFactory should not be able to instantiate a class with a private constructor'
+        );
+    }
+
+    public function testCanCreateReturnsTrueWhenClassHasNoConstructor() : void
+    {
+        self::assertTrue(
+            (new ReflectionBasedAbstractFactory())->canCreate(
+                $this->container->reveal(),
+                TestAsset\ClassWithNoConstructor::class
+            ),
+            'ReflectionBasedAbstractFactory should be able to instantiate a class without a constructor'
+        );
     }
 
     public function testFactoryInstantiatesClassDirectlyIfItHasNoConstructor()

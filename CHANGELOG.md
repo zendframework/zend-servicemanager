@@ -54,7 +54,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#268](https://github.com/zendframework/zend-servicemanager/pull/268) Fixes
+  ReflectionBasedAbstractFactory trying to instantiate classes with private
+  constructors
 
 ## 3.3.2 - 2018-01-29
 
