@@ -51,7 +51,7 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
         );
     }
 
-    public function testCanCreateReturnsTrueWhenClassHasNoConstructor() : void
+    public function testCanCreateReturnsTrueWhenClassHasNoConstructor()
     {
         self::assertTrue(
             (new ReflectionBasedAbstractFactory())->canCreate(

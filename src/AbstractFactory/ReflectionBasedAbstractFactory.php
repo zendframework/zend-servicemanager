@@ -137,7 +137,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
         return class_exists($requestedName) && $this->canCallConstructor($requestedName);
     }
 
-    private function canCallConstructor(string $requestedName) : bool
+    private function canCallConstructor($requestedName)
     {
         $constructor = (new ReflectionClass($requestedName))->getConstructor();
 
