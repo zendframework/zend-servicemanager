@@ -609,7 +609,7 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @param string[] $aliases
      *
-     * @returns void
+     * @return void
      */
     private function resolveAliases(array $aliases)
     {
