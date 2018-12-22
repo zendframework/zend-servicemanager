@@ -2,11 +2,13 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 3.4.0 - TBD
+## 3.4.0 - 2018-12-22
 
 ### Added
 
-- [#275](https://github.com/zendframework/zend-servicemanager/pull/275) Enables plugin managers to accept as a creation context PSR Containers not implementing Interop interface
+- [#275](https://github.com/zendframework/zend-servicemanager/pull/275) Enables
+  plugin managers to accept as a creation context PSR Containers not
+  implementing Interop interface
 
 ### Changed
 
