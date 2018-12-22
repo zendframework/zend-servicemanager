@@ -32,7 +32,7 @@ All notable changes to this project will be documented in this file, in reverse 
 - [#230](https://github.com/zendframework/zend-servicemanager/pull/230) fixes a
   problem in detecting cyclic aliases, ensuring they are detected correctly.
 
-## 3.4.0 - TBD
+## 3.4.0 - 2018.12.22
 
 ### Added
 
