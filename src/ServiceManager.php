@@ -191,7 +191,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         // Determine if the service should be shared.
-        $sharedService = isset($this->shared[$name]) ? $this->shared[$name] : $this->sharedByDefault;
+        $sharedService = $this->shared[$name] ?? $this->sharedByDefault;
 
         // We achieve better performance if we can let all alias
         // considerations out.
@@ -206,7 +206,7 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         // We now deal with requests which may be aliases.
-        $resolvedName = isset($this->aliases[$name]) ? $this->aliases[$name] : $name;
+        $resolvedName = $this->aliases[$name] ?? $name;
 
         // The following is only true if the requested service is a shared alias.
         $sharedAlias = $sharedService && isset($this->services[$resolvedName]);
