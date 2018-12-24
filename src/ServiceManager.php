@@ -610,8 +610,6 @@ class ServiceManager implements ServiceLocatorInterface
         };
 
         foreach ($this->delegators[$name] as $index => $delegatorFactory) {
-            $delegatorFactory = $this->delegators[$name][$index];
-
             if ($delegatorFactory === Proxy\LazyServiceFactory::class) {
                 $delegatorFactory = $this->createLazyServiceDelegatorFactory();
             }
