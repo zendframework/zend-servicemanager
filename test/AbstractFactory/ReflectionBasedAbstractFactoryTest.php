@@ -12,7 +12,10 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
+use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\ServiceManager;
+use ZendTest\ServiceManager\AbstractFactory\TestAsset\SampleInterface;
 
 use function sprintf;
 
@@ -198,5 +201,26 @@ class ReflectionBasedAbstractFactoryTest extends TestCase
         );
         $this->assertInstanceOf(TestAsset\ClassWithTypehintedDefaultValue::class, $instance);
         $this->assertNull($instance->value);
+    }
+
+    public function testFactoryThrowsExceptionWhenCyclicDependencyDetectedForDecorators(): void
+    {
+        $serviceManager = new ServiceManager();
+        $serviceManager->setAlias(
+            TestAsset\SampleInterface::class,
+            TestAsset\DecoratorWithCyclicDependencyOnInterface::class
+        );
+        $serviceManager->addAbstractFactory(ReflectionBasedAbstractFactory::class);
+        $serviceManager->setFactory(
+            TestAsset\DecoratorWithCyclicDependencyOnInterface::class,
+            ReflectionBasedAbstractFactory::class
+        );
+
+        $this->expectException(InvalidServiceException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Unable to create service "%s"; a cyclic dependency was detected',
+            TestAsset\SampleInterface::class
+        ));
+        $serviceManager->get(SampleInterface::class);
     }
 }

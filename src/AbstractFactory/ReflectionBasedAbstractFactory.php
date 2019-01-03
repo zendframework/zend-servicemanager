@@ -10,8 +10,11 @@ namespace Zend\ServiceManager\AbstractFactory;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionParameter;
+use ReflectionProperty;
+use Zend\ServiceManager\Exception\InvalidServiceException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Zend\ServiceManager\ServiceManager;
 
 use function array_map;
 use function class_exists;
@@ -204,8 +207,10 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
      * @param ContainerInterface $container
      * @param string $requestedName
      * @return mixed
+     * @throws \Zend\ServiceManager\Exception\InvalidServiceException
      * @throws ServiceNotFoundException If type-hinted parameter cannot be
      *   resolved to a service in the container.
+     * @throws \ReflectionException
      */
     private function resolveParameter(ReflectionParameter $parameter, ContainerInterface $container, $requestedName)
     {
@@ -230,6 +235,19 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
         $type = $this->aliases[$type] ?? $type;
 
         if ($container->has($type)) {
+            if ($container instanceof ServiceManager) {
+                $aliasProperty = new ReflectionProperty($container, 'aliases');
+                $aliasProperty->setAccessible(true);
+                $serviceManagerAliases = $aliasProperty->getValue($container);
+                $unaliasedService = array_search($requestedName, $serviceManagerAliases, true);
+
+                if (false !== $unaliasedService && $unaliasedService === $type) {
+                    throw new InvalidServiceException(sprintf(
+                        'Unable to create service "%s"; a cyclic dependency was detected',
+                        $unaliasedService
+                    ));
+                }
+            }
             return $container->get($type);
         }
 
