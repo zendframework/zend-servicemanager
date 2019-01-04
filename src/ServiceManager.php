@@ -353,7 +353,7 @@ class ServiceManager implements ServiceLocatorInterface
             $this->services = $config['services'] + $this->services;
         }
 
-        if (isset($config['invokables']) && ! empty($config['invokables'])) {
+        if (! empty($config['invokables'])) {
             $this->createAliasesAndFactoriesForInvokables($config['invokables']);
         }
 
@@ -382,7 +382,7 @@ class ServiceManager implements ServiceLocatorInterface
 
         // If lazy service configuration was provided, reset the lazy services
         // delegator factory.
-        if (isset($config['lazy_services']) && ! empty($config['lazy_services'])) {
+        if (! empty($config['lazy_services'])) {
             $this->lazyServices          = array_merge_recursive($this->lazyServices, $config['lazy_services']);
             $this->lazyServicesDelegator = null;
         }
