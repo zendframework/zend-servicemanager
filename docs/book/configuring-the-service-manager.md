@@ -103,8 +103,8 @@ class MyObjectFactory implements FactoryInterface
     }
 }
 
-// or without implementing the interface:
-class MyObjectFactory
+// or without implementing the interface (MyObject.php):
+class MyObject
 {
     public function __invoke(ContainerInterface $container, $requestedName)
     {
