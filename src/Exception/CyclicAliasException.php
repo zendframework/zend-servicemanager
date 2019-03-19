@@ -46,6 +46,7 @@ class CyclicAliasException extends InvalidArgumentException
      */
     public static function fromAliasesMap(array $aliases)
     {
+        /** @var bool[][] $detectedCycles */
         $detectedCycles = array_filter(array_map(
             function ($alias) use ($aliases) {
                 return self::getCycleFor($aliases, $alias);
@@ -73,7 +74,7 @@ class CyclicAliasException extends InvalidArgumentException
      *
      * @param string[] $aliases
      * @param string   $alias
-     * @return array|null
+     * @return bool[]|null
      */
     private static function getCycleFor(array $aliases, $alias)
     {
@@ -108,7 +109,7 @@ class CyclicAliasException extends InvalidArgumentException
     }
 
     /**
-     * @param string[][] $detectedCycles
+     * @param bool[][] $detectedCycles
      * @return string
      */
     private static function printCycles(array $detectedCycles)
@@ -117,7 +118,7 @@ class CyclicAliasException extends InvalidArgumentException
     }
 
     /**
-     * @param string[] $detectedCycle
+     * @param bool[] $detectedCycle
      * @return string
      */
     private static function printCycle(array $detectedCycle)

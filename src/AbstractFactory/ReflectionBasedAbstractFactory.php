@@ -114,7 +114,9 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
     {
         $reflectionClass = new ReflectionClass($requestedName);
 
-        if (null === ($constructor = $reflectionClass->getConstructor())) {
+        $constructor = $reflectionClass->getConstructor();
+
+        if (null === $constructor) {
             return new $requestedName();
         }
 
@@ -213,7 +215,9 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
             return [];
         }
 
-        if (! $parameter->getClass()) {
+        $parameterClass = $parameter->getClass();
+
+        if (! $parameterClass) {
             if (! $parameter->isDefaultValueAvailable()) {
                 throw new ServiceNotFoundException(sprintf(
                     'Unable to create service "%s"; unable to resolve parameter "%s" '
@@ -226,7 +230,7 @@ class ReflectionBasedAbstractFactory implements AbstractFactoryInterface
             return $parameter->getDefaultValue();
         }
 
-        $type = $parameter->getClass()->getName();
+        $type = $parameterClass->getName();
         $type = $this->aliases[$type] ?? $type;
 
         if ($container->has($type)) {

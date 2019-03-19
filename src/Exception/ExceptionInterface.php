@@ -8,10 +8,11 @@
 namespace Zend\ServiceManager\Exception;
 
 use Psr\Container\ContainerExceptionInterface;
+use Throwable;
 
 /**
  * Base exception for all Zend\ServiceManager exceptions.
  */
-interface ExceptionInterface extends ContainerExceptionInterface
+interface ExceptionInterface extends ContainerExceptionInterface, Throwable
 {
 }

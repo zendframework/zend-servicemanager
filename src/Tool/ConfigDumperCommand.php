@@ -139,7 +139,7 @@ EOH;
             $arg1 = array_shift($args);
         }
 
-        if (! $args) {
+        if (empty($args)) {
             return $this->createErrorArgument('Missing class name');
         }
 

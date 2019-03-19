@@ -43,7 +43,7 @@ return %s;
 EOC;
 
     /**
-     * @var ContainerInterface
+     * @var ContainerInterface|null
      */
     private $container;
 
@@ -74,11 +74,12 @@ EOC;
         }
 
         // class has no constructor, treat it as an invokable
-        if (! $reflectionClass->getConstructor()) {
+        $constructor = $reflectionClass->getConstructor();
+        if (! $constructor) {
             return $this->createInvokable($config, $className);
         }
 
-        $constructorArguments = $reflectionClass->getConstructor()->getParameters();
+        $constructorArguments = $constructor->getParameters();
         $constructorArguments = array_filter(
             $constructorArguments,
             function (ReflectionParameter $argument) {
@@ -121,7 +122,7 @@ EOC;
     }
 
     /**
-     * @param $className
+     * @param string $className
      * @throws InvalidArgumentException if class name is not a string or does
      *     not exist.
      */

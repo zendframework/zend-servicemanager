@@ -10,6 +10,7 @@ env:
   global:
     - COMPOSER_ARGS="--no-interaction"
     - COVERAGE_DEPS="php-coveralls/php-coveralls"
+    - STATIC_ANALYSIS_DEPS="phpstan/phpstan"
 
 matrix:
   include:
@@ -22,6 +23,7 @@ matrix:
         - CS_CHECK=true
         - BENCHMARKS=true
         - TEST_COVERAGE=true
+        - STATIC_ANALYSIS=true
     - php: 7.1
       env:
         - DEPS=latest
@@ -43,12 +45,14 @@ install:
   - if [[ $DEPS == 'latest' ]]; then travis_retry composer update $COMPOSER_ARGS ; fi
   - if [[ $DEPS == 'lowest' ]]; then travis_retry composer update --prefer-lowest --prefer-stable $COMPOSER_ARGS ; fi
   - if [[ $TEST_COVERAGE == 'true' ]]; then travis_retry composer require --dev $COMPOSER_ARGS $COVERAGE_DEPS ; fi
+  - if [[ $STATIC_ANALYSIS == 'true' ]]; then travis_retry composer require --dev $COMPOSER_ARGS $STATIC_ANALYSIS_DEPS ; fi
   - stty cols 120 && composer show
 
 script:
   - if [[ $TEST_COVERAGE == 'true' ]]; then composer test-coverage ; else composer test ; fi
   - if [[ $BENCHMARKS == 'true' ]]; then vendor/bin/phpbench run --revs=2 --iterations=2 --report=aggregate ; fi
   - if [[ $CS_CHECK == 'true' ]]; then composer cs-check ; fi
+  - if [[ $STATIC_ANALYSIS == 'true' ]]; then ./vendor/bin/phpstan analyse --no-progress . ; fi
 
 after_script:
   - if [[ $TEST_COVERAGE == 'true' ]]; then vendor/bin/php-coveralls -v ; fi
