@@ -11,7 +11,8 @@
 
     <title>Migration Guide - zend-servicemanager</title>
 
-    <link rel="stylesheet" href="../css/styles-e95dab66f8.css">
+    <link rel="stylesheet" href="../css/styles-18b942728f.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.0/anchor.min.js"></script>
 </head>
 <body id="page-top">
 
@@ -66,7 +67,7 @@
                     
     <div class="subnavigation hidden-print">
         <h4 class="subnavigation__title">
-            <a href="..">zend-servicemanager</a>
+            <a href="">zend-servicemanager</a>
         </h4>
 
         <h5 class="subnavigation__subtitle">Table of Contents</h5>
@@ -75,13 +76,13 @@
             
                 
                     <li class="subnavigation__list-item ">
-                        <a href=".." class="subnavigation__link">zend-servicemanager</a>
+                        <a href="" class="subnavigation__link">zend-servicemanager</a>
                     </li>
                 
             
                 
                     <li class="subnavigation__list-item ">
-                        <a href="../quick-start/" class="subnavigation__link">Quick Start</a>
+                        <a href="quick-start/" class="subnavigation__link">Quick Start</a>
                     </li>
                 
             
@@ -92,49 +93,49 @@
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../psr-11/" class="subnavigation__link">PSR-11 Support</a>
+        <a href="psr-11/" class="subnavigation__link">PSR-11 Support</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../configuring-the-service-manager/" class="subnavigation__link">Configuring the service manager</a>
+        <a href="configuring-the-service-manager/" class="subnavigation__link">Configuring the service manager</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../delegators/" class="subnavigation__link">Delegators</a>
+        <a href="delegators/" class="subnavigation__link">Delegators</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../lazy-services/" class="subnavigation__link">Lazy services</a>
+        <a href="lazy-services/" class="subnavigation__link">Lazy services</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../plugin-managers/" class="subnavigation__link">Plugin managers</a>
+        <a href="plugin-managers/" class="subnavigation__link">Plugin managers</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../config-abstract-factory/" class="subnavigation__link">Configuration-based Abstract Factory</a>
+        <a href="config-abstract-factory/" class="subnavigation__link">Configuration-based Abstract Factory</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../reflection-abstract-factory/" class="subnavigation__link">Reflection-based Abstract Factory</a>
+        <a href="reflection-abstract-factory/" class="subnavigation__link">Reflection-based Abstract Factory</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../console-tools/" class="subnavigation__link">Console Tools</a>
+        <a href="console-tools/" class="subnavigation__link">Console Tools</a>
     </li>
 
                             
@@ -149,7 +150,7 @@
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../cookbook/factories-vs-abstract-factories/" class="subnavigation__link">Factories vs Abstract Factories</a>
+        <a href="cookbook/factories-vs-abstract-factories/" class="subnavigation__link">Factories vs Abstract Factories</a>
     </li>
 
                             
@@ -159,7 +160,7 @@
             
                 
                     <li class="subnavigation__list-item subnavigation__list-item--active">
-                        <a href="./" class="subnavigation__link">Migration Guide</a>
+                        <a href="migration/" class="subnavigation__link">Migration Guide</a>
                     </li>
                 
             
@@ -216,6 +217,17 @@
 </header>
 
     
+    <div class="laminas-announcement">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                Zend Framework transitions to the Linux Foundation. <a href="https://getlaminas.org">Learn More.</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
     <div class="container">
         <div class="row">
             <div class="col-md-9 col-xs-12 content" role="main">
@@ -228,7 +240,7 @@
         <li><a href="https://docs.zendframework.com/">Documentation</a></li>
 
         
-            <li><a href="..">zend-servicemanager</a></li>
+            <li><a href="">zend-servicemanager</a></li>
 
             
 
@@ -1146,7 +1158,7 @@ following for the initial argument:</p>
     }
 
     throw new InvalidServiceException(sprintf(
-        'Plugin manager &quot;%s&quot; expected an instance of type &quot;%s&quot;, but &quot;%s&quot; was received',
+        'Plugin manager "%s" expected an instance of type "%s", but "%s" was received',
         __CLASS__,
         $this-&gt;instanceOf,
         is_object($instance) ? get_class($instance) : gettype($instance)
@@ -1264,7 +1276,7 @@ class ObserverPluginManager extends AbstractPluginManager
     {
         if (! $instance instanceof ObserverInterface) {
             throw new RuntimeException(sprintf(
-                'Invalid plugin &quot;%s&quot; created; not an instance of %s',
+                'Invalid plugin "%s" created; not an instance of %s',
                 get_class($instance),
                 ObserverInterface::class
             ));
@@ -1315,7 +1327,7 @@ class ObserverPluginManager extends AbstractPluginManager
     {
         if (! $instance instanceof $this-&gt;instanceOf) {
             throw new InvalidServiceException(sprintf(
-                'Invalid plugin &quot;%s&quot; created; not an instance of %s',
+                'Invalid plugin "%s" created; not an instance of %s',
                 get_class($instance),
                 $this-&gt;instanceOf
             ));
@@ -1465,7 +1477,7 @@ container should never be composed by objects.</p>
         
         <li class="page-nav__item">
             
-                <a rel="prev" class="page-nav__link page-nav__link--prev" href="../cookbook/factories-vs-abstract-factories/">
+                <a rel="prev" class="page-nav__link page-nav__link--prev" href="cookbook/factories-vs-abstract-factories/">
                     <i class="fa fa-chevron-left"></i> Previous
                 </a>
             
@@ -1505,7 +1517,7 @@ container should never be composed by objects.</p>
                     
     <div class="subnavigation hidden-print">
         <h4 class="subnavigation__title">
-            <a href="..">zend-servicemanager</a>
+            <a href="">zend-servicemanager</a>
         </h4>
 
         <h5 class="subnavigation__subtitle">Table of Contents</h5>
@@ -1514,13 +1526,13 @@ container should never be composed by objects.</p>
             
                 
                     <li class="subnavigation__list-item ">
-                        <a href=".." class="subnavigation__link">zend-servicemanager</a>
+                        <a href="" class="subnavigation__link">zend-servicemanager</a>
                     </li>
                 
             
                 
                     <li class="subnavigation__list-item ">
-                        <a href="../quick-start/" class="subnavigation__link">Quick Start</a>
+                        <a href="quick-start/" class="subnavigation__link">Quick Start</a>
                     </li>
                 
             
@@ -1531,49 +1543,49 @@ container should never be composed by objects.</p>
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../psr-11/" class="subnavigation__link">PSR-11 Support</a>
+        <a href="psr-11/" class="subnavigation__link">PSR-11 Support</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../configuring-the-service-manager/" class="subnavigation__link">Configuring the service manager</a>
+        <a href="configuring-the-service-manager/" class="subnavigation__link">Configuring the service manager</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../delegators/" class="subnavigation__link">Delegators</a>
+        <a href="delegators/" class="subnavigation__link">Delegators</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../lazy-services/" class="subnavigation__link">Lazy services</a>
+        <a href="lazy-services/" class="subnavigation__link">Lazy services</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../plugin-managers/" class="subnavigation__link">Plugin managers</a>
+        <a href="plugin-managers/" class="subnavigation__link">Plugin managers</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../config-abstract-factory/" class="subnavigation__link">Configuration-based Abstract Factory</a>
+        <a href="config-abstract-factory/" class="subnavigation__link">Configuration-based Abstract Factory</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../reflection-abstract-factory/" class="subnavigation__link">Reflection-based Abstract Factory</a>
+        <a href="reflection-abstract-factory/" class="subnavigation__link">Reflection-based Abstract Factory</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../console-tools/" class="subnavigation__link">Console Tools</a>
+        <a href="console-tools/" class="subnavigation__link">Console Tools</a>
     </li>
 
                             
@@ -1588,7 +1600,7 @@ container should never be composed by objects.</p>
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../cookbook/factories-vs-abstract-factories/" class="subnavigation__link">Factories vs Abstract Factories</a>
+        <a href="cookbook/factories-vs-abstract-factories/" class="subnavigation__link">Factories vs Abstract Factories</a>
     </li>
 
                             
@@ -1598,7 +1610,7 @@ container should never be composed by objects.</p>
             
                 
                     <li class="subnavigation__list-item subnavigation__list-item--active">
-                        <a href="./" class="subnavigation__link">Migration Guide</a>
+                        <a href="migration/" class="subnavigation__link">Migration Guide</a>
                     </li>
                 
             
@@ -1676,9 +1688,8 @@ container should never be composed by objects.</p>
         var base_url = '..',
             siteName = 'zend-servicemanager';
     </script>
-    <script src="../js/scripts-a978f1ec1a.js"></script>
-        <script src="../search/require.js"></script>
-        <script src="../search/search.js"></script>
+    <script src="../js/scripts-edc4cfa790.js"></script>
+        <script src="../search/main.js"></script>
 
     
     <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
@@ -1707,6 +1718,14 @@ container should never be composed by objects.</p>
             </div>
         </div>
     </div>
+
+<script>
+// Anchors
+anchors.options.placement = 'left';
+anchors.add(
+    '.content h1:not(.content__title), .content h2, .content > h3, .content h4, .content h5'
+);
+</script>
 
 
 

@@ -11,7 +11,8 @@
 
     <title>Delegators - zend-servicemanager</title>
 
-    <link rel="stylesheet" href="../css/styles-e95dab66f8.css">
+    <link rel="stylesheet" href="../css/styles-18b942728f.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.0/anchor.min.js"></script>
 </head>
 <body id="page-top">
 
@@ -66,7 +67,7 @@
                     
     <div class="subnavigation hidden-print">
         <h4 class="subnavigation__title">
-            <a href="..">zend-servicemanager</a>
+            <a href="">zend-servicemanager</a>
         </h4>
 
         <h5 class="subnavigation__subtitle">Table of Contents</h5>
@@ -75,13 +76,13 @@
             
                 
                     <li class="subnavigation__list-item ">
-                        <a href=".." class="subnavigation__link">zend-servicemanager</a>
+                        <a href="" class="subnavigation__link">zend-servicemanager</a>
                     </li>
                 
             
                 
                     <li class="subnavigation__list-item ">
-                        <a href="../quick-start/" class="subnavigation__link">Quick Start</a>
+                        <a href="quick-start/" class="subnavigation__link">Quick Start</a>
                     </li>
                 
             
@@ -92,49 +93,49 @@
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../psr-11/" class="subnavigation__link">PSR-11 Support</a>
+        <a href="psr-11/" class="subnavigation__link">PSR-11 Support</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../configuring-the-service-manager/" class="subnavigation__link">Configuring the service manager</a>
+        <a href="configuring-the-service-manager/" class="subnavigation__link">Configuring the service manager</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item subnavigation__list-item--active">
-        <a href="./" class="subnavigation__link">Delegators</a>
+        <a href="delegators/" class="subnavigation__link">Delegators</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../lazy-services/" class="subnavigation__link">Lazy services</a>
+        <a href="lazy-services/" class="subnavigation__link">Lazy services</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../plugin-managers/" class="subnavigation__link">Plugin managers</a>
+        <a href="plugin-managers/" class="subnavigation__link">Plugin managers</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../config-abstract-factory/" class="subnavigation__link">Configuration-based Abstract Factory</a>
+        <a href="config-abstract-factory/" class="subnavigation__link">Configuration-based Abstract Factory</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../reflection-abstract-factory/" class="subnavigation__link">Reflection-based Abstract Factory</a>
+        <a href="reflection-abstract-factory/" class="subnavigation__link">Reflection-based Abstract Factory</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../console-tools/" class="subnavigation__link">Console Tools</a>
+        <a href="console-tools/" class="subnavigation__link">Console Tools</a>
     </li>
 
                             
@@ -149,7 +150,7 @@
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../cookbook/factories-vs-abstract-factories/" class="subnavigation__link">Factories vs Abstract Factories</a>
+        <a href="cookbook/factories-vs-abstract-factories/" class="subnavigation__link">Factories vs Abstract Factories</a>
     </li>
 
                             
@@ -159,7 +160,7 @@
             
                 
                     <li class="subnavigation__list-item ">
-                        <a href="../migration/" class="subnavigation__link">Migration Guide</a>
+                        <a href="migration/" class="subnavigation__link">Migration Guide</a>
                     </li>
                 
             
@@ -216,6 +217,17 @@
 </header>
 
     
+    <div class="laminas-announcement">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                Zend Framework transitions to the Linux Foundation. <a href="https://getlaminas.org">Learn More.</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
     <div class="container">
         <div class="row">
             <div class="col-md-9 col-xs-12 content" role="main">
@@ -228,7 +240,7 @@
         <li><a href="https://docs.zendframework.com/">Documentation</a></li>
 
         
-            <li><a href="..">zend-servicemanager</a></li>
+            <li><a href="">zend-servicemanager</a></li>
 
             
                 
@@ -333,11 +345,11 @@ class BuzzerDelegator extends Buzzer
 <pre class="codehilite"><code class="language-php">$wrappedBuzzer = new Buzzer();
 $eventManager  = new Zend\EventManager\EventManager();
 
-$eventManager-&gt;attach('buzz', function () { echo &quot;Stare at the art!\n&quot;; });
+$eventManager-&gt;attach('buzz', function () { echo "Stare at the art!\n"; });
 
 $buzzer = new BuzzerDelegator($wrappedBuzzer, $eventManager);
 
-echo $buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;</code></pre>
+echo $buzzer-&gt;buzz(); // "Stare at the art!\nBuzz!"</code></pre>
 
 <p>This logic is fairly simple as long as you have access to the instantiation
 logic of the <code>$wrappedBuzzer</code> object.</p>
@@ -358,7 +370,7 @@ class BuzzerDelegatorFactory implements DelegatorFactoryInterface
         $realBuzzer   = call_user_func($callback);
         $eventManager = $container-&gt;get('EventManager');
 
-        $eventManager-&gt;attach('buzz', function () { echo &quot;Stare at the art!\n&quot;; });
+        $eventManager-&gt;attach('buzz', function () { echo "Stare at the art!\n"; });
 
         return new BuzzerDelegator($realBuzzer, $eventManager);
     }
@@ -383,7 +395,7 @@ $serviceManager = new Zend\ServiceManager\ServiceManager([
 // now, when fetching Buzzer, we get a BuzzerDelegator instead
 $buzzer = $serviceManager-&gt;get(Buzzer::class);
 
-$buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;</code></pre>
+$buzzer-&gt;buzz(); // "Stare at the art!\nBuzz!"</code></pre>
 
 <p>You can specify multiple delegators for a service. Each will add one decorator
 around the instantiation logic of that particular service.</p>
@@ -398,7 +410,7 @@ instantiation logic for a service</em>.</p>
         
         <li class="page-nav__item">
             
-                <a rel="prev" class="page-nav__link page-nav__link--prev" href="../configuring-the-service-manager/">
+                <a rel="prev" class="page-nav__link page-nav__link--prev" href="configuring-the-service-manager/">
                     <i class="fa fa-chevron-left"></i> Previous
                 </a>
             
@@ -407,7 +419,7 @@ instantiation logic for a service</em>.</p>
         
         <li class="page-nav__item">
             
-                <a rel="next" class="page-nav__link page-nav__link--next" href="../lazy-services/">
+                <a rel="next" class="page-nav__link page-nav__link--next" href="lazy-services/">
                     Next <i class="fa fa-chevron-right"></i>
                 </a>
             
@@ -442,7 +454,7 @@ instantiation logic for a service</em>.</p>
                     
     <div class="subnavigation hidden-print">
         <h4 class="subnavigation__title">
-            <a href="..">zend-servicemanager</a>
+            <a href="">zend-servicemanager</a>
         </h4>
 
         <h5 class="subnavigation__subtitle">Table of Contents</h5>
@@ -451,13 +463,13 @@ instantiation logic for a service</em>.</p>
             
                 
                     <li class="subnavigation__list-item ">
-                        <a href=".." class="subnavigation__link">zend-servicemanager</a>
+                        <a href="" class="subnavigation__link">zend-servicemanager</a>
                     </li>
                 
             
                 
                     <li class="subnavigation__list-item ">
-                        <a href="../quick-start/" class="subnavigation__link">Quick Start</a>
+                        <a href="quick-start/" class="subnavigation__link">Quick Start</a>
                     </li>
                 
             
@@ -468,49 +480,49 @@ instantiation logic for a service</em>.</p>
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../psr-11/" class="subnavigation__link">PSR-11 Support</a>
+        <a href="psr-11/" class="subnavigation__link">PSR-11 Support</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../configuring-the-service-manager/" class="subnavigation__link">Configuring the service manager</a>
+        <a href="configuring-the-service-manager/" class="subnavigation__link">Configuring the service manager</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item subnavigation__list-item--active">
-        <a href="./" class="subnavigation__link">Delegators</a>
+        <a href="delegators/" class="subnavigation__link">Delegators</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../lazy-services/" class="subnavigation__link">Lazy services</a>
+        <a href="lazy-services/" class="subnavigation__link">Lazy services</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../plugin-managers/" class="subnavigation__link">Plugin managers</a>
+        <a href="plugin-managers/" class="subnavigation__link">Plugin managers</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../config-abstract-factory/" class="subnavigation__link">Configuration-based Abstract Factory</a>
+        <a href="config-abstract-factory/" class="subnavigation__link">Configuration-based Abstract Factory</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../reflection-abstract-factory/" class="subnavigation__link">Reflection-based Abstract Factory</a>
+        <a href="reflection-abstract-factory/" class="subnavigation__link">Reflection-based Abstract Factory</a>
     </li>
 
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../console-tools/" class="subnavigation__link">Console Tools</a>
+        <a href="console-tools/" class="subnavigation__link">Console Tools</a>
     </li>
 
                             
@@ -525,7 +537,7 @@ instantiation logic for a service</em>.</p>
                             
                                 
     <li class="subnavigation__list-item ">
-        <a href="../cookbook/factories-vs-abstract-factories/" class="subnavigation__link">Factories vs Abstract Factories</a>
+        <a href="cookbook/factories-vs-abstract-factories/" class="subnavigation__link">Factories vs Abstract Factories</a>
     </li>
 
                             
@@ -535,7 +547,7 @@ instantiation logic for a service</em>.</p>
             
                 
                     <li class="subnavigation__list-item ">
-                        <a href="../migration/" class="subnavigation__link">Migration Guide</a>
+                        <a href="migration/" class="subnavigation__link">Migration Guide</a>
                     </li>
                 
             
@@ -613,9 +625,8 @@ instantiation logic for a service</em>.</p>
         var base_url = '..',
             siteName = 'zend-servicemanager';
     </script>
-    <script src="../js/scripts-a978f1ec1a.js"></script>
-        <script src="../search/require.js"></script>
-        <script src="../search/search.js"></script>
+    <script src="../js/scripts-edc4cfa790.js"></script>
+        <script src="../search/main.js"></script>
 
     
     <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
@@ -644,6 +655,14 @@ instantiation logic for a service</em>.</p>
             </div>
         </div>
     </div>
+
+<script>
+// Anchors
+anchors.options.placement = 'left';
+anchors.add(
+    '.content h1:not(.content__title), .content h2, .content > h3, .content h4, .content h5'
+);
+</script>
 
 
 
