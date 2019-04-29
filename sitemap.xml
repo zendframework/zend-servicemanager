@@ -1,63 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-     <loc>None</loc>
-     <lastmod>2019-04-23</lastmod>
+     <loc>https://docs.zendframework.com/zend-servicemanager/</loc>
+     <lastmod>2019-04-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>None</loc>
-     <lastmod>2019-04-23</lastmod>
+     <loc>https://docs.zendframework.com/zend-servicemanager/quick-start/</loc>
+     <lastmod>2019-04-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>None</loc>
-     <lastmod>2019-04-23</lastmod>
+     <loc>https://docs.zendframework.com/zend-servicemanager/psr-11/</loc>
+     <lastmod>2019-04-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>None</loc>
-     <lastmod>2019-04-23</lastmod>
+     <loc>https://docs.zendframework.com/zend-servicemanager/configuring-the-service-manager/</loc>
+     <lastmod>2019-04-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>None</loc>
-     <lastmod>2019-04-23</lastmod>
+     <loc>https://docs.zendframework.com/zend-servicemanager/delegators/</loc>
+     <lastmod>2019-04-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>None</loc>
-     <lastmod>2019-04-23</lastmod>
+     <loc>https://docs.zendframework.com/zend-servicemanager/lazy-services/</loc>
+     <lastmod>2019-04-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>None</loc>
-     <lastmod>2019-04-23</lastmod>
+     <loc>https://docs.zendframework.com/zend-servicemanager/plugin-managers/</loc>
+     <lastmod>2019-04-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>None</loc>
-     <lastmod>2019-04-23</lastmod>
+     <loc>https://docs.zendframework.com/zend-servicemanager/config-abstract-factory/</loc>
+     <lastmod>2019-04-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>None</loc>
-     <lastmod>2019-04-23</lastmod>
+     <loc>https://docs.zendframework.com/zend-servicemanager/reflection-abstract-factory/</loc>
+     <lastmod>2019-04-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>None</loc>
-     <lastmod>2019-04-23</lastmod>
+     <loc>https://docs.zendframework.com/zend-servicemanager/console-tools/</loc>
+     <lastmod>2019-04-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>None</loc>
-     <lastmod>2019-04-23</lastmod>
+     <loc>https://docs.zendframework.com/zend-servicemanager/cookbook/factories-vs-abstract-factories/</loc>
+     <lastmod>2019-04-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>None</loc>
-     <lastmod>2019-04-23</lastmod>
+     <loc>https://docs.zendframework.com/zend-servicemanager/migration/</loc>
+     <lastmod>2019-04-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
