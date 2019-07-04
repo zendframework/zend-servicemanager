@@ -834,7 +834,7 @@ class ServiceManager implements ServiceLocatorInterface
     /**
      * Merge delegators avoiding multiple same delegators for the same service.
      * It works with strings and class instances.
-     * It's not possibile to de-duple anonymous functions
+     * It's not possible to de-duple anonymous functions
      *
      * @param string[][]|Factory\DelegatorFactoryInterface[][] $config
      * @return string[][]|Factory\DelegatorFactoryInterface[][]
