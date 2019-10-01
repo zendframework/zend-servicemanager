@@ -344,11 +344,10 @@ rather than having to create separate factories for each of your services.</p>
 <p>Enable the <code>ConfigAbstractFactory</code> in the same way that you would enable
 any other abstract factory.</p>
 <p>Programmatically:</p>
-<pre class="codehilite"><code class="language-php">$serviceManager = new ServiceManager();
-$serviceManager-&gt;addAbstractFactory(new ConfigAbstractFactory());</code></pre>
-
+<p> <pre class=codehilite><code class=language-php>$serviceManager = new ServiceManager();
+$serviceManager-&gt;addAbstractFactory(new ConfigAbstractFactory());</code></pre></p>
 <p>Or within configuration:</p>
-<pre class="codehilite"><code class="language-php">return [
+<p> <pre class=codehilite><code class=language-php>return [
     // zend-mvc:
     'service_manager' =&gt; [
         'abstract_factories' =&gt; [
@@ -362,19 +361,17 @@ $serviceManager-&gt;addAbstractFactory(new ConfigAbstractFactory());</code></pre
             ConfigAbstractFactory::class,
         ],
     ],
-];</code></pre>
-
+];</code></pre></p>
 <p>Like all abstract factories starting in version 3, you may also use the config
 abstract factory as a mapped factory, registering it as a factory for a specific
 class:</p>
-<pre class="codehilite"><code class="language-php">return [
+<p> <pre class=codehilite><code class=language-php>return [
     'service_manager' =&gt; [
         'factories' =&gt; [
             SomeCustomClass::class =&gt; ConfigAbstractFactory::class,
         ],
     ],
-];</code></pre>
-
+];</code></pre></p>
 <h2 id="configuration">Configuration</h2>
 <p>Configuration should be provided via the <code>config</code> service, which should return
 an array or <code>ArrayObject</code>. <code>ConfigAbstractFactory</code> looks for a top-level key in
@@ -388,7 +385,7 @@ that is an array value. Each item in the array:</p>
   container.</li>
 </ul>
 <p>As an example:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+<p> <pre class=codehilite><code class=language-php>use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 
 return [
     ConfigAbstractFactory::class =&gt; [
@@ -400,8 +397,7 @@ return [
             Handler::class,
         ],
     ],
-];</code></pre>
-
+];</code></pre></p>
 <p>The definition tells the service manager how this abstract factory should manage
 dependencies in the classes defined. In the above example, <code>MySimpleClass</code> has a
 single dependency on a <code>Logger</code> instance. The abstract factory will simply look
@@ -414,7 +410,7 @@ if it will fail; however, if <code>Handler</code> is configured directly with th
 already &mdash; for example, mapped to a custom factory &mdash; the service will
 be created and used as a dependency.</p>
 <p>As another, more complete example, consider the following classes:</p>
-<pre class="codehilite"><code class="language-php">class UserMapper
+<p> <pre class=codehilite><code class=language-php>class UserMapper
 {
     public function __construct(Adapter $db, Cache $cache) {}
 }
@@ -431,10 +427,9 @@ class Cache
 
 class CacheAdapter
 {
-}</code></pre>
-
+}</code></pre></p>
 <p>In this case, we can define the configuration for these classes as follows:</p>
-<pre class="codehilite"><code class="language-php">// config/autoload/dependencies.php or anywhere that gets merged into global config
+<p> <pre class=codehilite><code class=language-php>// config/autoload/dependencies.php or anywhere that gets merged into global config
 return [
     ConfigAbstractFactory::class =&gt; [
         CacheAdapter::class =&gt; [], // no dependencies
@@ -451,7 +446,7 @@ return [
             Adapter::class =&gt; AdapterFactory::class, // normal factory not using above config
         ],
     ],
-],</code></pre>
+],</code></pre></p>
 
 
 
@@ -485,7 +480,7 @@ return [
     <div class="help-wanted">
         <p>
             Found a mistake or want to contribute to the documentation?
-            <a href="https://github.com/zendframework/zend-servicemanager/edit/master/docs/config-abstract-factory.md" target="_blank" class="help-wanted__link">
+            <a href="https://github.com/zendframework/zend-servicemanager/edit/master/docs/book/config-abstract-factory.md" target="_blank" class="help-wanted__link">
                 Edit this page on GitHub!
             </a>
         </p>

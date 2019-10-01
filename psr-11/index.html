@@ -336,32 +336,32 @@ following factory types:</p>
 <li><code>Zend\ServiceManager\Factory\FactoryInterface</code>: use a callable with the
   following signature:</li>
 </ul>
-<pre class="codehilite"><code class="language-php">function (
-    \Psr\Container\ContainerInterface $container,
-    string $requestedName,
-    array $options = null
-)</code></pre>
-
+<p><code>php
+  function (
+      \Psr\Container\ContainerInterface $container,
+      string $requestedName,
+      array $options = null
+  )</code></p>
 <ul>
 <li><code>Zend\ServiceManager\Factory\DelegatorFactoryInterface</code>: use a callable with
   the following signature:</li>
 </ul>
-<pre class="codehilite"><code class="language-php">function (
-    \Psr\Container\ContainerInterface $container,
-    string $name,
-    callable $callback,
-    array $options = null
-)</code></pre>
-
+<p><code>php
+  function (
+      \Psr\Container\ContainerInterface $container,
+      string $name,
+      callable $callback,
+      array $options = null
+  )</code></p>
 <ul>
 <li><code>Zend\ServiceManager\Initializer\InitializerInterface</code>: use a callable with
   the following signature:</li>
 </ul>
-<pre class="codehilite"><code class="language-php">function (
-    \Psr\Container\ContainerInterface $container,
-    $instance
-)</code></pre>
-
+<p><code>php
+  function (
+      \Psr\Container\ContainerInterface $container,
+      $instance
+  )</code></p>
 <p>Abstract factories <em>can not</em> be duck typed, due to the additional <code>canCreate()</code>
 method.</p>
 <p>You can also leave your factories as-is for now, and update them once
@@ -400,7 +400,7 @@ to help migrate your factories to PSR-11.</p>
     <div class="help-wanted">
         <p>
             Found a mistake or want to contribute to the documentation?
-            <a href="https://github.com/zendframework/zend-servicemanager/edit/master/docs/psr-11.md" target="_blank" class="help-wanted__link">
+            <a href="https://github.com/zendframework/zend-servicemanager/edit/master/docs/book/psr-11.md" target="_blank" class="help-wanted__link">
                 Edit this page on GitHub!
             </a>
         </p>

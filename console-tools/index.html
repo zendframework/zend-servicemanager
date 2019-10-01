@@ -336,7 +336,7 @@
 <p>Starting in 3.2.0, zend-servicemanager began shipping with console tools. This
 document details each.</p>
 <h2 id="generate-deps-for-config-factory">generate-deps-for-config-factory</h2>
-<pre class="codehilite"><code class="language-bash">$ ./vendor/bin/generate-deps-for-config-factory
+<p> <pre class=codehilite><code class=language-bash>$ ./vendor/bin/generate-deps-for-config-factory
 Usage:
 
   generate-deps-for-config-factory [-h|--help|help] [-i|--ignore-unresolved] &lt;configFile&gt; &lt;className&gt;
@@ -356,8 +356,7 @@ Arguments:
 
 Reads the provided configuration file (creating it if it does not exist),
 and injects it with ConfigAbstractFactory dependency configuration for
-the provided class name, writing the changes back to the file.</code></pre>
-
+the provided class name, writing the changes back to the file.</code></pre></p>
 <p>This utility will generate dependency configuration for the named class for use
 with the <a href="../config-abstract-factory/">ConfigAbstractFactory</a>. When doing so, it
 will read the named configuration file (creating it if it does not exist), and
@@ -370,7 +369,7 @@ exception message. By adding the flag, you can have it continue and produce
 configuration. This option is particularly useful when typehints are on
 interfaces or resolve to services served by other abstract factories.</p>
 <h2 id="generate-factory-for-class">generate-factory-for-class</h2>
-<pre class="codehilite"><code class="language-bash">$ ./vendor/bin/generate-factory-for-class
+<p> <pre class=codehilite><code class=language-bash>$ ./vendor/bin/generate-factory-for-class
 
 Usage:
 
@@ -383,14 +382,12 @@ Arguments:
                     a factory.
 
 Generates to STDOUT a factory for creating the specified class; this may then
-be added to your application, and configured as a factory for the class.</code></pre>
-
+be added to your application, and configured as a factory for the class.</code></pre></p>
 <p>This utility generates a factory class for the given class, based on the
 typehints in its constructor. The factory is emitted to STDOUT, and may be piped
 to a file if desired:</p>
-<pre class="codehilite"><code class="language-bash">$ ./vendor/bin/generate-factory-for-class \
-&gt; "Application\\Model\\AlbumModel" &gt; ./module/Application/src/Model/AlbumModelFactory.php</code></pre>
-
+<p> <pre class=codehilite><code class=language-bash>$ ./vendor/bin/generate-factory-for-class \
+&gt; &quot;Application\\Model\\AlbumModel&quot; &gt; ./module/Application/src/Model/AlbumModelFactory.php</code></pre></p>
 <p>The class generated implements <code>Zend\ServiceManager\Factory\FactoryInterface</code>,
 and is generated within the same namespace as the originating class.</p>
 
@@ -426,7 +423,7 @@ and is generated within the same namespace as the originating class.</p>
     <div class="help-wanted">
         <p>
             Found a mistake or want to contribute to the documentation?
-            <a href="https://github.com/zendframework/zend-servicemanager/edit/master/docs/console-tools.md" target="_blank" class="help-wanted__link">
+            <a href="https://github.com/zendframework/zend-servicemanager/edit/master/docs/book/console-tools.md" target="_blank" class="help-wanted__link">
                 Edit this page on GitHub!
             </a>
         </p>

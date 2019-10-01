@@ -361,13 +361,12 @@ object is really needed.</p>
 capable of generating lazy loading proxies for your services.</p>
 <p>The lazy service facilities depend on <a href="https://github.com/Ocramius/ProxyManager">ProxyManager</a>;
 you will need to install that package before using the feature:</p>
-<pre class="codehilite"><code class="language-php">$ composer require ocramius/proxy-manager</code></pre>
-
+<p> <pre class=codehilite><code class=language-php>$ composer require ocramius/proxy-manager</code></pre></p>
 <h2 id="practical-example">Practical example</h2>
 <p>To demonstrate how a lazy service works, you may use the following <code>Buzzer</code>
 example class, which is designed to be slow at instantiation time for
 demonstration purposes:</p>
-<pre class="codehilite"><code class="language-php">namespace MyApp;
+<p> <pre class=codehilite><code class=language-php>namespace MyApp;
 
 class Buzzer
 {
@@ -381,11 +380,10 @@ class Buzzer
     {
         return 'Buzz!';
     }
-}</code></pre>
-
+}</code></pre></p>
 <p>You can then proceed and configure the service manager to generate proxies
 instead of real services:</p>
-<pre class="codehilite"><code class="language-php">use MyApp\Buzzer;
+<p> <pre class=codehilite><code class=language-php>use MyApp\Buzzer;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\Proxy\LazyServiceFactory;
 use Zend\ServiceManager\ServiceManager;
@@ -406,32 +404,29 @@ $serviceManager = new \Zend\ServiceManager\ServiceManager([
             LazyServiceFactory::class,
         ],
     ],
-]);</code></pre>
-
+]);</code></pre></p>
 <p>This configuration tells the service manager to add the add
 <code>LazyServiceFactory</code> as a delegator for <code>Buzzer</code>.</p>
 <p>You can now retrieve the buzzer:</p>
-<pre class="codehilite"><code class="language-php">use MyApp\Buzzer;
+<p> <pre class=codehilite><code class=language-php>use MyApp\Buzzer;
 
 $buzzer = $serviceManager-&gt;get(Buzzer::class);
-echo $buzzer-&gt;buzz();</code></pre>
-
+echo $buzzer-&gt;buzz();</code></pre></p>
 <p>To verify that the proxying occurred correctly, you can run the following code,
 which should delay the 5 seconds wait time hardcoded in <code>Buzzer::__construct</code>
 until <code>Buzzer::buzz</code> is invoked:</p>
-<pre class="codehilite"><code class="language-php">use MyApp\Buzzer;
+<p> <pre class=codehilite><code class=language-php>use MyApp\Buzzer;
 
 for ($i = 0; $i &lt; 100; $i += 1) {
     $buzzer = $serviceManager-&gt;get(Buzzer::class);
-    echo "created buzzer $i\n";
+    echo &quot;created buzzer $i\n&quot;;
 }
 
-echo $buzzer-&gt;buzz();</code></pre>
-
+echo $buzzer-&gt;buzz();</code></pre></p>
 <h2 id="configuration">Configuration</h2>
 <p>This is the config structure expected by <code>Zend\ServiceManager\Proxy\LazyServiceFactory</code>,
 in the <code>lazy_services</code> key passed in the service manager configuration:</p>
-<pre class="codehilite"><code class="language-php">[
+<p> <pre class=codehilite><code class=language-php>[
     // map of service names and their relative class names - this
     // is required since the service manager cannot know the
     // class name of defined services up front
@@ -442,16 +437,15 @@ in the <code>lazy_services</code> key passed in the service manager configuratio
     // directory where proxy classes will be written - default to system_get_tmp_dir()
     'proxies_target_dir' =&gt; null,
 
-    // namespace of the generated proxies, default to "ProxyManagerGeneratedProxy"
+    // namespace of the generated proxies, default to &quot;ProxyManagerGeneratedProxy&quot;
     'proxies_namespace' =&gt; null,
 
     // whether the generated proxy classes should be written to disk or generated on-the-fly
     'write_proxy_files' =&gt; false,
-];</code></pre>
-
+];</code></pre></p>
 <p>After you have an instance, you can map lazy service/class pairs using
 <code>mapLazyService()</code>:</p>
-<pre class="codehilite"><code class="language-php">$container-&gt;mapLazyService('foo', \MyApplication\Foo::class);</code></pre>
+<p> <pre class=codehilite><code class=language-php>$container-&gt;mapLazyService('foo', \MyApplication\Foo::class);</code></pre></p>
 
 
 
@@ -485,7 +479,7 @@ in the <code>lazy_services</code> key passed in the service manager configuratio
     <div class="help-wanted">
         <p>
             Found a mistake or want to contribute to the documentation?
-            <a href="https://github.com/zendframework/zend-servicemanager/edit/master/docs/lazy-services.md" target="_blank" class="help-wanted__link">
+            <a href="https://github.com/zendframework/zend-servicemanager/edit/master/docs/book/lazy-services.md" target="_blank" class="help-wanted__link">
                 Edit this page on GitHub!
             </a>
         </p>

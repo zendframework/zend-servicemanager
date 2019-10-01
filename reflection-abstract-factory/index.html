@@ -347,7 +347,7 @@ out dependencies.</p>
 which provides a reflection-based approach to instantiation, resolving
 constructor dependencies to the relevant services. The factory may be used as
 either an abstract factory, or mapped to specific service names as a factory:</p>
-<pre class="codehilite"><code class="language-php">use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
+<p> <pre class=codehilite><code class=language-php>use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
 return [
     /* ... */
@@ -360,8 +360,7 @@ return [
         ],
     ],
     /* ... */
-];</code></pre>
-
+];</code></pre></p>
 <p>Mapping services to the factory is more explicit and performant.</p>
 <p>The factory operates with the following constraints/features:</p>
 <ul>
@@ -398,7 +397,7 @@ entries based on their class name (for historical reasons). As examples:</p>
 <p>To allow the <code>ReflectionBasedAbstractFactory</code> to find these, you have two
 options.</p>
 <p>The first is to pass an array of mappings via the constructor:</p>
-<pre class="codehilite"><code class="language-php">$reflectionFactory = new ReflectionBasedAbstractFactory([
+<p> <pre class=codehilite><code class=language-php>$reflectionFactory = new ReflectionBasedAbstractFactory([
     \Zend\Console\Adapter\AdapterInterface::class     =&gt; 'ConsoleAdapter',
     \Zend\Filter\FilterPluginManager::class           =&gt; 'FilterManager',
     \Zend\Hydrator\HydratorPluginManager::class       =&gt; 'HydratorManager',
@@ -409,14 +408,13 @@ options.</p>
     \Zend\Log\WriterPluginManager::class              =&gt; 'LogWriterManager',
     \Zend\Serializer\AdapterPluginManager::class      =&gt; 'SerializerAdapterManager',
     \Zend\Validator\ValidatorPluginManager::class     =&gt; 'ValidatorManager',
-]);</code></pre>
-
+]);</code></pre></p>
 <p>This can be done either in your configuration file (which could be problematic
 when considering serialization for caching), or during an early phase of
 application bootstrapping.</p>
 <p>For instance, with zend-mvc, this might be in your <code>Application</code> module's
 bootstrap listener:</p>
-<pre class="codehilite"><code class="language-php">namespace Application
+<p> <pre class=codehilite><code class=language-php>namespace Application
 
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
@@ -431,19 +429,17 @@ class Module
             /* ... */
         ]));
     }
-}</code></pre>
-
+}</code></pre></p>
 <p>For Expressive, it could be part of your <code>config/container.php</code> definition:</p>
-<pre class="codehilite"><code class="language-php">$container = new ServiceManager();
+<p> <pre class=codehilite><code class=language-php>$container = new ServiceManager();
 (new Config($config['dependencies']))-&gt;configureServiceManager($container);
 // Add the following:
 $container-&gt;addAbstractFactory(new ReflectionBasedAbstractFactory([
     /* ... */
-]));</code></pre>
-
+]));</code></pre></p>
 <p>The second approach is to extend the class, and define the map in the
 <code>$aliases</code> property:</p>
-<pre class="codehilite"><code class="language-php">namespace Application;
+<p> <pre class=codehilite><code class=language-php>namespace Application;
 
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
@@ -461,8 +457,7 @@ class ReflectionAbstractFactory extends ReflectionBasedAbstractFactory
         \Zend\Serializer\AdapterPluginManager::class      =&gt; 'SerializerAdapterManager',
         \Zend\Validator\ValidatorPluginManager::class     =&gt; 'ValidatorManager',
     ];
-}</code></pre>
-
+}</code></pre></p>
 <p>You could then register it via class name in your service configuration.</p>
 <h2 id="alternatives">Alternatives</h2>
 <p>You may also use the <a href="../config-abstract-factory/">Config Abstract Factory</a>,
@@ -510,7 +505,7 @@ which gives slightly more flexibility in terms of mapping dependencies:</p>
     <div class="help-wanted">
         <p>
             Found a mistake or want to contribute to the documentation?
-            <a href="https://github.com/zendframework/zend-servicemanager/edit/master/docs/reflection-abstract-factory.md" target="_blank" class="help-wanted__link">
+            <a href="https://github.com/zendframework/zend-servicemanager/edit/master/docs/book/reflection-abstract-factory.md" target="_blank" class="help-wanted__link">
                 Edit this page on GitHub!
             </a>
         </p>
