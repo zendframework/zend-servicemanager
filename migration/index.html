@@ -459,32 +459,33 @@ definition, you will need to make some changes.</p>
 <p><code>$invokableClasses</code> will need to become <code>$factories</code> entries, and you will
 potentially need to add <code>$aliases</code> entries.</p>
 <p>As an example, consider the following, from zend-math v2.x:</p>
-<p><code>php
+<p><pre class=codehilite><code class=language-php>
 class AdapterPluginManager extends AbstractPluginManager
 {
     protected $invokableClasses = [
         'bcmath' =&gt; Adapter\Bcmath::class,
         'gmp'    =&gt; Adapter\Gmp::class,
     ];
-}</code></p>
+}
+</code></pre></p>
 <p>Because we no longer define an <code>$invokableClasses</code> property, for v3.x, this
 now becomes:</p>
-<p>```php
-use Zend\ServiceManager\Factory\InvokableFactory;</p>
-<p>class AdapterPluginManager extends AbstractPluginManager
+<p><pre class=codehilite><code class=language-php>
+use Zend\ServiceManager\Factory\InvokableFactory;
+
+class AdapterPluginManager extends AbstractPluginManager
 {
     protected $aliases = [
         'bcmath' =&gt; Adapter\Bcmath::class,
         'gmp'    =&gt; Adapter\Gmp::class,
-    ];</p>
-<pre class="codehilite"><code>protected $factories = [
-    Adapter\BcMath::class =&gt; InvokableFactory::class,
-    Adapter\Gmp::class    =&gt; InvokableFactory::class,
-];</code></pre>
+    ];
 
-
-<p>}
-```</p>
+    protected $factories = [
+        Adapter\BcMath::class =&gt; InvokableFactory::class,
+        Adapter\Gmp::class    =&gt; InvokableFactory::class,
+    ];
+}
+</code></pre></p>
 </blockquote>
 <h2 id="lazy-services">Lazy Services</h2>
 <p>In v2, if you wanted to create a lazy service, you needed to take the following
@@ -1075,17 +1076,18 @@ instead. This guarantees that the correct method is called based on the
 version of the <code>ServiceManager</code> in use.</p>
 <p>The second approach is to omit typehints on the arguments, and do typechecks
 internally. As an example, let's say you have the following:</p>
-<p><code>php
+<p><pre class=codehilite><code class=language-php>
 $container-&gt;addInitializer(function ($instance, ContainerInterface $container) {
      if (! $instance implements FooAwareInterface) {
          return $instance;
      }
      $container-&gt;setFoo($services-&gt;get(FooInterface::class);
      return $instance;
-});</code></p>
+});
+</code></pre></p>
 <p>To make this future-proof, remove the typehints, and check the types within
 the callable:</p>
-<p><code>php
+<p><pre class=codehilite><code class=language-php>
 $container-&gt;addInitializer(function ($first, $second) {
      if ($first instanceof ContainerInterface) {
          $container = $first;
@@ -1098,7 +1100,8 @@ $container-&gt;addInitializer(function ($first, $second) {
          return;
      }
      $container-&gt;setFoo($services-&gt;get(FooInterface::class);
-});</code></p>
+});
+</code></pre></p>
 <p>This approach can also be done if you omitted typehints in the first place.
 Regardless, the important part to remember is that order of arguments is
 inverted between the two versions.</p>

@@ -398,11 +398,12 @@ of a service created by a plugin manager, the passed container <strong>will not
 be</strong> the plugin manager, but the parent service manager instead. If you need
 access to other plugins of the same type, you will need to fetch the plugin
 manager from the container:</p>
-<p><code>php
+<p><pre class=codehilite><code class=language-php>
 function ($container, $name, array $options = []) {
     $validators = $container-&gt;get(ValidatorPluginManager::class);
     // ...
-}</code></p>
+}
+</code></pre></p>
 </blockquote>
 
 
