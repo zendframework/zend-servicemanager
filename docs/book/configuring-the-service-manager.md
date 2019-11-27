@@ -57,7 +57,7 @@ use stdClass;
 
 $serviceManager = new ServiceManager([
     'factories' => [
-        MyObject::class => MyObjectFactory::class,
+        stdClass::class => InvokableFactory::class,
     ],
 ]);
 ```
