@@ -2,7 +2,7 @@
 
 > ## Repository abandoned 2019-12-31
 >
-> This repository has moved to laminas/laminas-servicemanager.
+> This repository has moved to [laminas/laminas-servicemanager](https://github.com/laminas/laminas-servicemanager).
 
 Master:
 [![Build Status](https://secure.travis-ci.org/zendframework/zend-servicemanager.svg?branch=master)](https://secure.travis-ci.org/zendframework/zend-servicemanager)
