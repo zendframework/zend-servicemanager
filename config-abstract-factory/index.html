@@ -7,12 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="zend-servicemanager: factory-driven dependency injection container">  
-    <link rel="canonical" href="https://docs.zendframework.com/zend-servicemanager/config-abstract-factory/">
+    <link rel="canonical" href="https://docs.zendframework.com/config-abstract-factory/">
     <link rel="shortcut icon" href="../img/favicon.ico">
 
     <title>Configuration-based Abstract Factory - zend-servicemanager - Zend Framework Docs</title>
 
-    <link rel="stylesheet" href="../css/styles-5cfabd53ee.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body id="page-top">
 
@@ -262,9 +262,9 @@
     <div class="laminas-announcement">
     <div class="container">
         <div class="row">
-            <div class="col-xs-12">
-                Zend Framework transitions to the Linux Foundation. <a href="https://getlaminas.org">Learn More.</a>
-            </div>
+            <div class="col-xs-12"><strong>
+                This package has moved. Visit its replacement, <a href="https://docs.laminas.dev/laminas-servicemanager/">laminas/laminas-servicemanager.</a>
+            </strong></div>
         </div>
     </div>
 </div>
@@ -344,10 +344,12 @@ rather than having to create separate factories for each of your services.</p>
 <p>Enable the <code>ConfigAbstractFactory</code> in the same way that you would enable
 any other abstract factory.</p>
 <p>Programmatically:</p>
-<p> <pre class=codehilite><code class=language-php>$serviceManager = new ServiceManager();
-$serviceManager-&gt;addAbstractFactory(new ConfigAbstractFactory());</code></pre></p>
+<pre><code class="language-php">$serviceManager = new ServiceManager();
+$serviceManager-&gt;addAbstractFactory(new ConfigAbstractFactory());
+</code></pre>
+
 <p>Or within configuration:</p>
-<p> <pre class=codehilite><code class=language-php>return [
+<pre><code class="language-php">return [
     // zend-mvc:
     'service_manager' =&gt; [
         'abstract_factories' =&gt; [
@@ -361,17 +363,21 @@ $serviceManager-&gt;addAbstractFactory(new ConfigAbstractFactory());</code></pre
             ConfigAbstractFactory::class,
         ],
     ],
-];</code></pre></p>
+];
+</code></pre>
+
 <p>Like all abstract factories starting in version 3, you may also use the config
 abstract factory as a mapped factory, registering it as a factory for a specific
 class:</p>
-<p> <pre class=codehilite><code class=language-php>return [
+<pre><code class="language-php">return [
     'service_manager' =&gt; [
         'factories' =&gt; [
             SomeCustomClass::class =&gt; ConfigAbstractFactory::class,
         ],
     ],
-];</code></pre></p>
+];
+</code></pre>
+
 <h2 id="configuration">Configuration</h2>
 <p>Configuration should be provided via the <code>config</code> service, which should return
 an array or <code>ArrayObject</code>. <code>ConfigAbstractFactory</code> looks for a top-level key in
@@ -385,7 +391,7 @@ that is an array value. Each item in the array:</p>
   container.</li>
 </ul>
 <p>As an example:</p>
-<p> <pre class=codehilite><code class=language-php>use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+<pre><code class="language-php">use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 
 return [
     ConfigAbstractFactory::class =&gt; [
@@ -397,7 +403,9 @@ return [
             Handler::class,
         ],
     ],
-];</code></pre></p>
+];
+</code></pre>
+
 <p>The definition tells the service manager how this abstract factory should manage
 dependencies in the classes defined. In the above example, <code>MySimpleClass</code> has a
 single dependency on a <code>Logger</code> instance. The abstract factory will simply look
@@ -410,7 +418,7 @@ if it will fail; however, if <code>Handler</code> is configured directly with th
 already &mdash; for example, mapped to a custom factory &mdash; the service will
 be created and used as a dependency.</p>
 <p>As another, more complete example, consider the following classes:</p>
-<p> <pre class=codehilite><code class=language-php>class UserMapper
+<pre><code class="language-php">class UserMapper
 {
     public function __construct(Adapter $db, Cache $cache) {}
 }
@@ -427,9 +435,11 @@ class Cache
 
 class CacheAdapter
 {
-}</code></pre></p>
+}
+</code></pre>
+
 <p>In this case, we can define the configuration for these classes as follows:</p>
-<p> <pre class=codehilite><code class=language-php>// config/autoload/dependencies.php or anywhere that gets merged into global config
+<pre><code class="language-php">// config/autoload/dependencies.php or anywhere that gets merged into global config
 return [
     ConfigAbstractFactory::class =&gt; [
         CacheAdapter::class =&gt; [], // no dependencies
@@ -446,7 +456,8 @@ return [
             Adapter::class =&gt; AdapterFactory::class, // normal factory not using above config
         ],
     ],
-],</code></pre></p>
+],
+</code></pre>
 
 
 
@@ -675,7 +686,7 @@ return [
             
             <div class="col-md-9">
                 <h4 class="footer__headline">Copyright</h4>
-                <p>&copy; 2006-2019 by <a href="https://www.zend.com/">Zend</a>, a <a href="https://www.roguewave.com/">Rogue Wave Company</a>.</p>
+                <p>&copy; 2006-2020 by <a href="https://www.zend.com/">Zend</a> by <a href="https://www.perforce.com/">Perforce</a>.</p>
             </div>
 
             
@@ -683,10 +694,10 @@ return [
                 <h4 class="footer__headline">Support</h4>
                 <ul class="support__list">
                     <li class="support__list-item">
-                        <a href="https://discourse.zendframework.com" class="support__link" title="Forum"><i class="fa fa-comments"></i></a>
+                        <a href="https://discourse.laminas.dev" class="support__link" title="Forum"><i class="fa fa-comments"></i></a>
                     </li>
                     <li class="support__list-item">
-                        <a href="https://zendframework-slack.herokuapp.com" class="support__link" title="Chat"><i class="fa fa-slack"></i></a>
+                        <a href="https://laminas.dev/chat/" class="support__link" title="Chat"><i class="fa fa-slack"></i></a>
                     </li>
                     <li class="support__list-item">
                         <a href="https://github.com/zendframework" class="support__link" title="Github"><i class="fa fa-github"></i></a>
@@ -694,27 +705,28 @@ return [
                     <li class="support__list-item">
                         <a href="https://twitter.com/zfdevteam" class="support__link" title="Twitter"><i class="fa fa-twitter"></i></a>
                     </li>
-                    <li class="support__list-item">
-                        <a href="https://tinyletter.com/mwopzend" class="support__link" title="Newsletter"><i class="fa fa-envelope"></i></a>
-                    </li>
-                    <li class="support__list-item">
-                        <a href="https://framework.zend.com/blog/feed-rss.xml" class="support__link" title="Blog feed"><i class="fa fa-rss"></i></a>
-                    </li>
-                    <li class="support__list-item">
-                        <a href="https://framework.zend.com/security/feed" class="support__link" title="Security feed"><i class="fa fa-rss-square"></i></a>
-                    </li>
                 </ul>
             </div>
         </div>
     </div>
 </footer>
 
+<nav class="cookie-bar navbar navbar-fixed-bottom navbar-default hidden">
+    <div class="container">
+        <p class="navbar-text">
+            We use cookies to allow you to dismiss dialogs such as the Laminas
+            Project notification.
+        </p>
+        <button type="button" class="cookie-button btn btn-default navbar-btn">Allow Cookies</button>
+    </div>
+</nav>
+
     <script>
         var base_url = '..',
             siteName = 'zend-servicemanager';
     </script>
-    <script src="../js/scripts-8d7ae56abf.js"></script>
-        <script src="../search/main.js"></script>
+    <script src="/js/scripts.js"></script>
+    <script src="../search/main.js"></script>
 
     
     <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">

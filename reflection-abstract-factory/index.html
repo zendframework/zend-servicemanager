@@ -7,12 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="zend-servicemanager: factory-driven dependency injection container">  
-    <link rel="canonical" href="https://docs.zendframework.com/zend-servicemanager/reflection-abstract-factory/">
+    <link rel="canonical" href="https://docs.zendframework.com/reflection-abstract-factory/">
     <link rel="shortcut icon" href="../img/favicon.ico">
 
     <title>Reflection-based Abstract Factory - zend-servicemanager - Zend Framework Docs</title>
 
-    <link rel="stylesheet" href="../css/styles-5cfabd53ee.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body id="page-top">
 
@@ -262,9 +262,9 @@
     <div class="laminas-announcement">
     <div class="container">
         <div class="row">
-            <div class="col-xs-12">
-                Zend Framework transitions to the Linux Foundation. <a href="https://getlaminas.org">Learn More.</a>
-            </div>
+            <div class="col-xs-12"><strong>
+                This package has moved. Visit its replacement, <a href="https://docs.laminas.dev/laminas-servicemanager/">laminas/laminas-servicemanager.</a>
+            </strong></div>
         </div>
     </div>
 </div>
@@ -347,7 +347,7 @@ out dependencies.</p>
 which provides a reflection-based approach to instantiation, resolving
 constructor dependencies to the relevant services. The factory may be used as
 either an abstract factory, or mapped to specific service names as a factory:</p>
-<p> <pre class=codehilite><code class=language-php>use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
+<pre><code class="language-php">use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
 return [
     /* ... */
@@ -360,7 +360,9 @@ return [
         ],
     ],
     /* ... */
-];</code></pre></p>
+];
+</code></pre>
+
 <p>Mapping services to the factory is more explicit and performant.</p>
 <p>The factory operates with the following constraints/features:</p>
 <ul>
@@ -397,7 +399,7 @@ entries based on their class name (for historical reasons). As examples:</p>
 <p>To allow the <code>ReflectionBasedAbstractFactory</code> to find these, you have two
 options.</p>
 <p>The first is to pass an array of mappings via the constructor:</p>
-<p> <pre class=codehilite><code class=language-php>$reflectionFactory = new ReflectionBasedAbstractFactory([
+<pre><code class="language-php">$reflectionFactory = new ReflectionBasedAbstractFactory([
     \Zend\Console\Adapter\AdapterInterface::class     =&gt; 'ConsoleAdapter',
     \Zend\Filter\FilterPluginManager::class           =&gt; 'FilterManager',
     \Zend\Hydrator\HydratorPluginManager::class       =&gt; 'HydratorManager',
@@ -408,13 +410,15 @@ options.</p>
     \Zend\Log\WriterPluginManager::class              =&gt; 'LogWriterManager',
     \Zend\Serializer\AdapterPluginManager::class      =&gt; 'SerializerAdapterManager',
     \Zend\Validator\ValidatorPluginManager::class     =&gt; 'ValidatorManager',
-]);</code></pre></p>
+]);
+</code></pre>
+
 <p>This can be done either in your configuration file (which could be problematic
 when considering serialization for caching), or during an early phase of
 application bootstrapping.</p>
 <p>For instance, with zend-mvc, this might be in your <code>Application</code> module's
 bootstrap listener:</p>
-<p> <pre class=codehilite><code class=language-php>namespace Application
+<pre><code class="language-php">namespace Application
 
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
@@ -429,17 +433,21 @@ class Module
             /* ... */
         ]));
     }
-}</code></pre></p>
+}
+</code></pre>
+
 <p>For Expressive, it could be part of your <code>config/container.php</code> definition:</p>
-<p> <pre class=codehilite><code class=language-php>$container = new ServiceManager();
+<pre><code class="language-php">$container = new ServiceManager();
 (new Config($config['dependencies']))-&gt;configureServiceManager($container);
 // Add the following:
 $container-&gt;addAbstractFactory(new ReflectionBasedAbstractFactory([
     /* ... */
-]));</code></pre></p>
+]));
+</code></pre>
+
 <p>The second approach is to extend the class, and define the map in the
 <code>$aliases</code> property:</p>
-<p> <pre class=codehilite><code class=language-php>namespace Application;
+<pre><code class="language-php">namespace Application;
 
 use Zend\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
@@ -457,7 +465,9 @@ class ReflectionAbstractFactory extends ReflectionBasedAbstractFactory
         \Zend\Serializer\AdapterPluginManager::class      =&gt; 'SerializerAdapterManager',
         \Zend\Validator\ValidatorPluginManager::class     =&gt; 'ValidatorManager',
     ];
-}</code></pre></p>
+}
+</code></pre>
+
 <p>You could then register it via class name in your service configuration.</p>
 <h2 id="alternatives">Alternatives</h2>
 <p>You may also use the <a href="../config-abstract-factory/">Config Abstract Factory</a>,
@@ -700,7 +710,7 @@ which gives slightly more flexibility in terms of mapping dependencies:</p>
             
             <div class="col-md-9">
                 <h4 class="footer__headline">Copyright</h4>
-                <p>&copy; 2006-2019 by <a href="https://www.zend.com/">Zend</a>, a <a href="https://www.roguewave.com/">Rogue Wave Company</a>.</p>
+                <p>&copy; 2006-2020 by <a href="https://www.zend.com/">Zend</a> by <a href="https://www.perforce.com/">Perforce</a>.</p>
             </div>
 
             
@@ -708,10 +718,10 @@ which gives slightly more flexibility in terms of mapping dependencies:</p>
                 <h4 class="footer__headline">Support</h4>
                 <ul class="support__list">
                     <li class="support__list-item">
-                        <a href="https://discourse.zendframework.com" class="support__link" title="Forum"><i class="fa fa-comments"></i></a>
+                        <a href="https://discourse.laminas.dev" class="support__link" title="Forum"><i class="fa fa-comments"></i></a>
                     </li>
                     <li class="support__list-item">
-                        <a href="https://zendframework-slack.herokuapp.com" class="support__link" title="Chat"><i class="fa fa-slack"></i></a>
+                        <a href="https://laminas.dev/chat/" class="support__link" title="Chat"><i class="fa fa-slack"></i></a>
                     </li>
                     <li class="support__list-item">
                         <a href="https://github.com/zendframework" class="support__link" title="Github"><i class="fa fa-github"></i></a>
@@ -719,27 +729,28 @@ which gives slightly more flexibility in terms of mapping dependencies:</p>
                     <li class="support__list-item">
                         <a href="https://twitter.com/zfdevteam" class="support__link" title="Twitter"><i class="fa fa-twitter"></i></a>
                     </li>
-                    <li class="support__list-item">
-                        <a href="https://tinyletter.com/mwopzend" class="support__link" title="Newsletter"><i class="fa fa-envelope"></i></a>
-                    </li>
-                    <li class="support__list-item">
-                        <a href="https://framework.zend.com/blog/feed-rss.xml" class="support__link" title="Blog feed"><i class="fa fa-rss"></i></a>
-                    </li>
-                    <li class="support__list-item">
-                        <a href="https://framework.zend.com/security/feed" class="support__link" title="Security feed"><i class="fa fa-rss-square"></i></a>
-                    </li>
                 </ul>
             </div>
         </div>
     </div>
 </footer>
 
+<nav class="cookie-bar navbar navbar-fixed-bottom navbar-default hidden">
+    <div class="container">
+        <p class="navbar-text">
+            We use cookies to allow you to dismiss dialogs such as the Laminas
+            Project notification.
+        </p>
+        <button type="button" class="cookie-button btn btn-default navbar-btn">Allow Cookies</button>
+    </div>
+</nav>
+
     <script>
         var base_url = '..',
             siteName = 'zend-servicemanager';
     </script>
-    <script src="../js/scripts-8d7ae56abf.js"></script>
-        <script src="../search/main.js"></script>
+    <script src="/js/scripts.js"></script>
+    <script src="../search/main.js"></script>
 
     
     <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">

@@ -7,12 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="zend-servicemanager: factory-driven dependency injection container">  
-    <link rel="canonical" href="https://docs.zendframework.com/zend-servicemanager/lazy-services/">
+    <link rel="canonical" href="https://docs.zendframework.com/lazy-services/">
     <link rel="shortcut icon" href="../img/favicon.ico">
 
     <title>Lazy services - zend-servicemanager - Zend Framework Docs</title>
 
-    <link rel="stylesheet" href="../css/styles-5cfabd53ee.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body id="page-top">
 
@@ -262,9 +262,9 @@
     <div class="laminas-announcement">
     <div class="container">
         <div class="row">
-            <div class="col-xs-12">
-                Zend Framework transitions to the Linux Foundation. <a href="https://getlaminas.org">Learn More.</a>
-            </div>
+            <div class="col-xs-12"><strong>
+                This package has moved. Visit its replacement, <a href="https://docs.laminas.dev/laminas-servicemanager/">laminas/laminas-servicemanager.</a>
+            </strong></div>
         </div>
     </div>
 </div>
@@ -361,12 +361,14 @@ object is really needed.</p>
 capable of generating lazy loading proxies for your services.</p>
 <p>The lazy service facilities depend on <a href="https://github.com/Ocramius/ProxyManager">ProxyManager</a>;
 you will need to install that package before using the feature:</p>
-<p> <pre class=codehilite><code class=language-php>$ composer require ocramius/proxy-manager</code></pre></p>
+<pre><code class="language-php">$ composer require ocramius/proxy-manager
+</code></pre>
+
 <h2 id="practical-example">Practical example</h2>
 <p>To demonstrate how a lazy service works, you may use the following <code>Buzzer</code>
 example class, which is designed to be slow at instantiation time for
 demonstration purposes:</p>
-<p> <pre class=codehilite><code class=language-php>namespace MyApp;
+<pre><code class="language-php">namespace MyApp;
 
 class Buzzer
 {
@@ -380,10 +382,12 @@ class Buzzer
     {
         return 'Buzz!';
     }
-}</code></pre></p>
+}
+</code></pre>
+
 <p>You can then proceed and configure the service manager to generate proxies
 instead of real services:</p>
-<p> <pre class=codehilite><code class=language-php>use MyApp\Buzzer;
+<pre><code class="language-php">use MyApp\Buzzer;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\Proxy\LazyServiceFactory;
 use Zend\ServiceManager\ServiceManager;
@@ -404,29 +408,35 @@ $serviceManager = new \Zend\ServiceManager\ServiceManager([
             LazyServiceFactory::class,
         ],
     ],
-]);</code></pre></p>
+]);
+</code></pre>
+
 <p>This configuration tells the service manager to add the add
 <code>LazyServiceFactory</code> as a delegator for <code>Buzzer</code>.</p>
 <p>You can now retrieve the buzzer:</p>
-<p> <pre class=codehilite><code class=language-php>use MyApp\Buzzer;
+<pre><code class="language-php">use MyApp\Buzzer;
 
 $buzzer = $serviceManager-&gt;get(Buzzer::class);
-echo $buzzer-&gt;buzz();</code></pre></p>
+echo $buzzer-&gt;buzz();
+</code></pre>
+
 <p>To verify that the proxying occurred correctly, you can run the following code,
 which should delay the 5 seconds wait time hardcoded in <code>Buzzer::__construct</code>
 until <code>Buzzer::buzz</code> is invoked:</p>
-<p> <pre class=codehilite><code class=language-php>use MyApp\Buzzer;
+<pre><code class="language-php">use MyApp\Buzzer;
 
 for ($i = 0; $i &lt; 100; $i += 1) {
     $buzzer = $serviceManager-&gt;get(Buzzer::class);
     echo &quot;created buzzer $i\n&quot;;
 }
 
-echo $buzzer-&gt;buzz();</code></pre></p>
+echo $buzzer-&gt;buzz();
+</code></pre>
+
 <h2 id="configuration">Configuration</h2>
 <p>This is the config structure expected by <code>Zend\ServiceManager\Proxy\LazyServiceFactory</code>,
 in the <code>lazy_services</code> key passed in the service manager configuration:</p>
-<p> <pre class=codehilite><code class=language-php>[
+<pre><code class="language-php">[
     // map of service names and their relative class names - this
     // is required since the service manager cannot know the
     // class name of defined services up front
@@ -442,10 +452,13 @@ in the <code>lazy_services</code> key passed in the service manager configuratio
 
     // whether the generated proxy classes should be written to disk or generated on-the-fly
     'write_proxy_files' =&gt; false,
-];</code></pre></p>
+];
+</code></pre>
+
 <p>After you have an instance, you can map lazy service/class pairs using
 <code>mapLazyService()</code>:</p>
-<p> <pre class=codehilite><code class=language-php>$container-&gt;mapLazyService('foo', \MyApplication\Foo::class);</code></pre></p>
+<pre><code class="language-php">$container-&gt;mapLazyService('foo', \MyApplication\Foo::class);
+</code></pre>
 
 
 
@@ -674,7 +687,7 @@ in the <code>lazy_services</code> key passed in the service manager configuratio
             
             <div class="col-md-9">
                 <h4 class="footer__headline">Copyright</h4>
-                <p>&copy; 2006-2019 by <a href="https://www.zend.com/">Zend</a>, a <a href="https://www.roguewave.com/">Rogue Wave Company</a>.</p>
+                <p>&copy; 2006-2020 by <a href="https://www.zend.com/">Zend</a> by <a href="https://www.perforce.com/">Perforce</a>.</p>
             </div>
 
             
@@ -682,10 +695,10 @@ in the <code>lazy_services</code> key passed in the service manager configuratio
                 <h4 class="footer__headline">Support</h4>
                 <ul class="support__list">
                     <li class="support__list-item">
-                        <a href="https://discourse.zendframework.com" class="support__link" title="Forum"><i class="fa fa-comments"></i></a>
+                        <a href="https://discourse.laminas.dev" class="support__link" title="Forum"><i class="fa fa-comments"></i></a>
                     </li>
                     <li class="support__list-item">
-                        <a href="https://zendframework-slack.herokuapp.com" class="support__link" title="Chat"><i class="fa fa-slack"></i></a>
+                        <a href="https://laminas.dev/chat/" class="support__link" title="Chat"><i class="fa fa-slack"></i></a>
                     </li>
                     <li class="support__list-item">
                         <a href="https://github.com/zendframework" class="support__link" title="Github"><i class="fa fa-github"></i></a>
@@ -693,27 +706,28 @@ in the <code>lazy_services</code> key passed in the service manager configuratio
                     <li class="support__list-item">
                         <a href="https://twitter.com/zfdevteam" class="support__link" title="Twitter"><i class="fa fa-twitter"></i></a>
                     </li>
-                    <li class="support__list-item">
-                        <a href="https://tinyletter.com/mwopzend" class="support__link" title="Newsletter"><i class="fa fa-envelope"></i></a>
-                    </li>
-                    <li class="support__list-item">
-                        <a href="https://framework.zend.com/blog/feed-rss.xml" class="support__link" title="Blog feed"><i class="fa fa-rss"></i></a>
-                    </li>
-                    <li class="support__list-item">
-                        <a href="https://framework.zend.com/security/feed" class="support__link" title="Security feed"><i class="fa fa-rss-square"></i></a>
-                    </li>
                 </ul>
             </div>
         </div>
     </div>
 </footer>
 
+<nav class="cookie-bar navbar navbar-fixed-bottom navbar-default hidden">
+    <div class="container">
+        <p class="navbar-text">
+            We use cookies to allow you to dismiss dialogs such as the Laminas
+            Project notification.
+        </p>
+        <button type="button" class="cookie-button btn btn-default navbar-btn">Allow Cookies</button>
+    </div>
+</nav>
+
     <script>
         var base_url = '..',
             siteName = 'zend-servicemanager';
     </script>
-    <script src="../js/scripts-8d7ae56abf.js"></script>
-        <script src="../search/main.js"></script>
+    <script src="/js/scripts.js"></script>
+    <script src="../search/main.js"></script>
 
     
     <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">

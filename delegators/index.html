@@ -7,12 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="zend-servicemanager: factory-driven dependency injection container">  
-    <link rel="canonical" href="https://docs.zendframework.com/zend-servicemanager/delegators/">
+    <link rel="canonical" href="https://docs.zendframework.com/delegators/">
     <link rel="shortcut icon" href="../img/favicon.ico">
 
     <title>Delegators - zend-servicemanager - Zend Framework Docs</title>
 
-    <link rel="stylesheet" href="../css/styles-5cfabd53ee.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body id="page-top">
 
@@ -262,9 +262,9 @@
     <div class="laminas-announcement">
     <div class="container">
         <div class="row">
-            <div class="col-xs-12">
-                Zend Framework transitions to the Linux Foundation. <a href="https://getlaminas.org">Learn More.</a>
-            </div>
+            <div class="col-xs-12"><strong>
+                This package has moved. Visit its replacement, <a href="https://docs.laminas.dev/laminas-servicemanager/">laminas/laminas-servicemanager.</a>
+            </strong></div>
         </div>
     </div>
 </div>
@@ -342,14 +342,16 @@ intercept actions being performed on the delegate in an
 <a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">AOP</a> fashioned way.</p>
 <h2 id="delegator-factory-signature">Delegator factory signature</h2>
 <p>A delegator factory has the following signature:</p>
-<p> <pre class=codehilite><code class=language-php>use Interop\Container\ContainerInterface;
+<pre><code class="language-php">use Interop\Container\ContainerInterface;
 
 public function __invoke(
     ContainerInterface $container,
     $name,
     callable $callback,
     array $options = null
-);</code></pre></p>
+);
+</code></pre>
+
 <p>The parameters passed to the delegator factory are the following:</p>
 <ul>
 <li><code>$container</code> is the service locator that is used while creating the delegator
@@ -366,15 +368,17 @@ called.</p>
 <p>In the following example, an event is being triggered before <code>Buzzer::buzz()</code> is
 called and some output text is prepended.</p>
 <p>The delegated object <code>Buzzer</code> (original object) is defined as following:</p>
-<p> <pre class=codehilite><code class=language-php>class Buzzer
+<pre><code class="language-php">class Buzzer
 {
     public function buzz()
     {
         return 'Buzz!';
     }
-}</code></pre></p>
+}
+</code></pre>
+
 <p>The delegator class <code>BuzzerDelegator</code> has the following structure:</p>
-<p> <pre class=codehilite><code class=language-php>use Zend\EventManager\EventManagerInterface;
+<pre><code class="language-php">use Zend\EventManager\EventManagerInterface;
 
 class BuzzerDelegator extends Buzzer
 {
@@ -393,16 +397,20 @@ class BuzzerDelegator extends Buzzer
 
         return $this-&gt;realBuzzer-&gt;buzz();
     }
-}</code></pre></p>
+}
+</code></pre>
+
 <p>To use the <code>BuzzerDelegator</code>, you can run the following code:</p>
-<p> <pre class=codehilite><code class=language-php>$wrappedBuzzer = new Buzzer();
+<pre><code class="language-php">$wrappedBuzzer = new Buzzer();
 $eventManager  = new Zend\EventManager\EventManager();
 
 $eventManager-&gt;attach('buzz', function () { echo &quot;Stare at the art!\n&quot;; });
 
 $buzzer = new BuzzerDelegator($wrappedBuzzer, $eventManager);
 
-echo $buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;</code></pre></p>
+echo $buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;
+</code></pre>
+
 <p>This logic is fairly simple as long as you have access to the instantiation
 logic of the <code>$wrappedBuzzer</code> object.</p>
 <p>You may not always be able to define how <code>$wrappedBuzzer</code> is created, since a
@@ -412,7 +420,7 @@ which you cannot modify without introducing further complexity.</p>
 decorate or modify any existing service.</p>
 <p>A simple delegator factory for the <code>buzzer</code> service can be implemented as
 following:</p>
-<p> <pre class=codehilite><code class=language-php>use Interop\Container\ContainerInterface;
+<pre><code class="language-php">use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\DelegatorFactoryInterface;
 
 class BuzzerDelegatorFactory implements DelegatorFactoryInterface
@@ -426,10 +434,12 @@ class BuzzerDelegatorFactory implements DelegatorFactoryInterface
 
         return new BuzzerDelegator($realBuzzer, $eventManager);
     }
-}</code></pre></p>
+}
+</code></pre>
+
 <p>You can then instruct the service manager to handle the service <code>buzzer</code> as a
 delegate:</p>
-<p> <pre class=codehilite><code class=language-php>use Zend\ServiceManager\Factory\InvokableFactory;
+<pre><code class="language-php">use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\ServiceManager\ServiceManager;
 
 $serviceManager = new Zend\ServiceManager\ServiceManager([
@@ -446,7 +456,9 @@ $serviceManager = new Zend\ServiceManager\ServiceManager([
 // now, when fetching Buzzer, we get a BuzzerDelegator instead
 $buzzer = $serviceManager-&gt;get(Buzzer::class);
 
-$buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;</code></pre></p>
+$buzzer-&gt;buzz(); // &quot;Stare at the art!\nBuzz!&quot;
+</code></pre>
+
 <p>You can specify multiple delegators for a service. Each will add one decorator
 around the instantiation logic of that particular service.</p>
 <p>This latter point is the primary use case for delegators: <em>decorating the
@@ -679,7 +691,7 @@ instantiation logic for a service</em>.</p>
             
             <div class="col-md-9">
                 <h4 class="footer__headline">Copyright</h4>
-                <p>&copy; 2006-2019 by <a href="https://www.zend.com/">Zend</a>, a <a href="https://www.roguewave.com/">Rogue Wave Company</a>.</p>
+                <p>&copy; 2006-2020 by <a href="https://www.zend.com/">Zend</a> by <a href="https://www.perforce.com/">Perforce</a>.</p>
             </div>
 
             
@@ -687,10 +699,10 @@ instantiation logic for a service</em>.</p>
                 <h4 class="footer__headline">Support</h4>
                 <ul class="support__list">
                     <li class="support__list-item">
-                        <a href="https://discourse.zendframework.com" class="support__link" title="Forum"><i class="fa fa-comments"></i></a>
+                        <a href="https://discourse.laminas.dev" class="support__link" title="Forum"><i class="fa fa-comments"></i></a>
                     </li>
                     <li class="support__list-item">
-                        <a href="https://zendframework-slack.herokuapp.com" class="support__link" title="Chat"><i class="fa fa-slack"></i></a>
+                        <a href="https://laminas.dev/chat/" class="support__link" title="Chat"><i class="fa fa-slack"></i></a>
                     </li>
                     <li class="support__list-item">
                         <a href="https://github.com/zendframework" class="support__link" title="Github"><i class="fa fa-github"></i></a>
@@ -698,27 +710,28 @@ instantiation logic for a service</em>.</p>
                     <li class="support__list-item">
                         <a href="https://twitter.com/zfdevteam" class="support__link" title="Twitter"><i class="fa fa-twitter"></i></a>
                     </li>
-                    <li class="support__list-item">
-                        <a href="https://tinyletter.com/mwopzend" class="support__link" title="Newsletter"><i class="fa fa-envelope"></i></a>
-                    </li>
-                    <li class="support__list-item">
-                        <a href="https://framework.zend.com/blog/feed-rss.xml" class="support__link" title="Blog feed"><i class="fa fa-rss"></i></a>
-                    </li>
-                    <li class="support__list-item">
-                        <a href="https://framework.zend.com/security/feed" class="support__link" title="Security feed"><i class="fa fa-rss-square"></i></a>
-                    </li>
                 </ul>
             </div>
         </div>
     </div>
 </footer>
 
+<nav class="cookie-bar navbar navbar-fixed-bottom navbar-default hidden">
+    <div class="container">
+        <p class="navbar-text">
+            We use cookies to allow you to dismiss dialogs such as the Laminas
+            Project notification.
+        </p>
+        <button type="button" class="cookie-button btn btn-default navbar-btn">Allow Cookies</button>
+    </div>
+</nav>
+
     <script>
         var base_url = '..',
             siteName = 'zend-servicemanager';
     </script>
-    <script src="../js/scripts-8d7ae56abf.js"></script>
-        <script src="../search/main.js"></script>
+    <script src="/js/scripts.js"></script>
+    <script src="../search/main.js"></script>
 
     
     <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
